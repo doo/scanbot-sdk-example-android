@@ -1,1 +1,1 @@
-include ':simple', ':themes'
+include ':simple', ':themes', ':jpeg'

@@ -3,6 +3,7 @@ package io.scanbot.example;
 import android.app.Application;
 
 import net.doo.snap.ScanbotSDKInitializer;
+import net.doo.snap.process.draft.MultipleDocumentsDraftExtractor;
 
 import roboguice.RoboGuice;
 
@@ -14,7 +15,10 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
-        new ScanbotSDKInitializer().initialize(this);
+        new ScanbotSDKInitializer()
+                .documentDraftExtractor(MultipleDocumentsDraftExtractor.forJpeg())
+                .initialize(this);
+
         super.onCreate();
     }
 }
