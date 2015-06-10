@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 
 import net.doo.snap.Constants;
 import net.doo.snap.entity.Document;
+import net.doo.snap.persistence.cleanup.Cleaner;
 import net.doo.snap.process.DocumentProcessingResult;
 import net.doo.snap.process.DocumentProcessor;
 import net.doo.snap.process.util.DocumentDraft;
@@ -32,6 +33,8 @@ public class MainActivity extends RoboActionBarActivity {
 
     @Inject
     private DocumentProcessor documentProcessor;
+    @Inject
+    private Cleaner cleaner;
 
     private View progressView;
 
@@ -106,6 +109,8 @@ public class MainActivity extends RoboActionBarActivity {
                     e.printStackTrace();
                 }
             }
+
+            cleaner.cleanUp();
 
             return results;
         }
