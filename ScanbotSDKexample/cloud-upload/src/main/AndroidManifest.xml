@@ -10,6 +10,10 @@
         android:theme="@style/Theme.AppCompat"
         tools:replace="android:allowBackup">
 
+        <!-- TODO
+        <meta-data android:name="SCANBOT_SDK_LICENSE_KEY" android:value="Insert your key here" />
+        -->
+
         <!-- OPTIONAL -->
         <!-- Replace with your DROPBOX app key and app secret-->
         <meta-data
