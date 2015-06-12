@@ -42,21 +42,6 @@ public class MainActivity extends RoboActionBarActivity {
     private DocumentUploader documentUploader;
 
     private EditText filePathView;
-    private AsyncTask<UploadInfo, Void, Void> uploadFileTask = new AsyncTask<UploadInfo, Void, Void>() {
-        @Override
-        protected Void doInBackground(UploadInfo... params) {
-            if (selectedStorage == null) {
-                return null;
-            }
-
-            try {
-                documentUploader.uploadDocument(params[0], selectedStorage, new OnFileUploadListenerExample());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    };
     private Spinner cloudStorageSpinner;
     private CloudStorage selectedStorage;
 
@@ -170,7 +155,7 @@ public class MainActivity extends RoboActionBarActivity {
             // For other cloud storages can be ignored.
             startSlackChooser(file, target);
         } else {
-            uploadFileTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, new UploadInfo(file));
+            new UploadFileTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, new UploadInfo(file));
         }
     }
 
@@ -180,7 +165,7 @@ public class MainActivity extends RoboActionBarActivity {
             ((SlackManualUploadFragment) dialog).setSlackUploadListener(new SlackManualUploadFragment.SlackUploadListener() {
                 @Override
                 public void startUpload(List<UploadInfo> list, CloudStorage cloudStorage, Bundle extras) {
-                    uploadFileTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, new UploadInfo(null, null, null, null, null, extras, file));
+                    new UploadFileTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, new UploadInfo(null, null, null, null, null, extras, file));
                 }
             });
             dialog.show(getSupportFragmentManager(), UPLOAD_FRAGMENT_TAG);
@@ -200,6 +185,22 @@ public class MainActivity extends RoboActionBarActivity {
             // Potentially direct the user to the Market with a Dialog
             Toast.makeText(this, "Please install a File Manager.",
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class UploadFileTask extends AsyncTask<UploadInfo, Void, Void> {
+        @Override
+        protected Void doInBackground(UploadInfo... params) {
+            if (selectedStorage == null) {
+                return null;
+            }
+
+            try {
+                documentUploader.uploadDocument(params[0], selectedStorage, new OnFileUploadListenerExample());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
