@@ -7,7 +7,7 @@
         android:name=".ExampleApplication"
         android:allowBackup="true"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat"
+        android:theme="@style/ScanbotTheme"
         tools:replace="android:allowBackup">
 
         <!-- TODO
@@ -25,9 +25,10 @@
 
         <!-- OPTIONAL -->
         <!-- Replace with your ONEDRIVE client id-->
+        <!-- Add "\ " to the client id to force a meta-data to type Sting. It will be removed from the result value.-->
         <meta-data
             android:name="onedrive_client_id"
-            android:value="INSERT_CLIENT_ID" />
+            android:value="\ INSERT_CLIENT_ID" />
 
         <!-- OPTIONAL -->
         <!-- Replace with your AMAZON client id, client secret and redirect uri-->
@@ -43,9 +44,10 @@
 
         <!-- OPTIONAL -->
         <!-- Replace with your SLACK client id, secret and redirect uri-->
+        <!-- Add "\ " to the client id to force a meta-data to type Sting. It will be removed from the result value.-->
         <meta-data
             android:name="slack_client_id"
-            android:value="INSERT_CLIENT_ID" />
+            android:value="\ INSERT_CLIENT_ID" />
         <meta-data
             android:name="slack_secret"
             android:value="INSERT_CLIENT_SECRET" />

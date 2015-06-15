@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import net.doo.snap.util.FileChooserUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -160,7 +162,9 @@ public class MainActivity extends RoboActionBarActivity {
     }
 
     private void startSlackChooser(final File file, CloudStorage target) {
-        ScanbotDialogFragment dialog = CloudStorage.getManualUploadFragment(target, null);
+        ArrayList<UploadInfo> uploadInfos = new ArrayList<>();
+        uploadInfos.add(new UploadInfo(file.getName(), null, null, null, null, null, file));
+        ScanbotDialogFragment dialog = CloudStorage.getManualUploadFragment(target, uploadInfos);
         if (dialog != null) {
             ((SlackManualUploadFragment) dialog).setSlackUploadListener(new SlackManualUploadFragment.SlackUploadListener() {
                 @Override
@@ -168,7 +172,9 @@ public class MainActivity extends RoboActionBarActivity {
                     new UploadFileTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, new UploadInfo(null, null, null, null, null, extras, file));
                 }
             });
-            dialog.show(getSupportFragmentManager(), UPLOAD_FRAGMENT_TAG);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(dialog, UPLOAD_FRAGMENT_TAG);
+            transaction.commitAllowingStateLoss();
         }
     }
 
