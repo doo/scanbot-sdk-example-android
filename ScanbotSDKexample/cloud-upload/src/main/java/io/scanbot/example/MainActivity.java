@@ -194,6 +194,10 @@ public class MainActivity extends RoboActionBarActivity {
         }
     }
 
+    /*
+    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
+    AsyncTasks in your application
+     */
     private class UploadFileTask extends AsyncTask<UploadInfo, Void, Void> {
         @Override
         protected Void doInBackground(UploadInfo... params) {
