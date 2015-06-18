@@ -144,11 +144,11 @@ public class MainActivity extends RoboActionBarActivity {
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
      */
-    private class ProcessDocumentTask extends AsyncTask<DocumentDraft[], Void, List<DocumentProcessingResult>> {
+    private class ProcessDocumentTask extends AsyncTask<DocumentDraft[], Void, DocumentProcessingResult> {
 
         @Override
-        protected List<DocumentProcessingResult> doInBackground(DocumentDraft[]... params) {
-            List<DocumentProcessingResult> results = new ArrayList<>();
+        protected DocumentProcessingResult doInBackground(DocumentDraft[]... params) {
+            DocumentProcessingResult result = null;
 
             for (DocumentDraft draft : params[0]) {
                 try {
@@ -164,7 +164,7 @@ public class MainActivity extends RoboActionBarActivity {
                     */
                     draft.getDocument().setOcrStatus(OcrStatus.PENDING);
 
-                    results.add(documentProcessor.processDocument(draft));
+                    result = documentProcessor.processDocument(draft);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -172,18 +172,17 @@ public class MainActivity extends RoboActionBarActivity {
 
             cleaner.cleanUp();
 
-            return results;
+            return result;
         }
 
         @Override
-        protected void onPostExecute(List<DocumentProcessingResult> documentProcessingResults) {
+        protected void onPostExecute(DocumentProcessingResult documentProcessingResult) {
             progressView.setVisibility(View.GONE);
 
             //open first document
-            if (documentProcessingResults.size() > 0) {
-                DocumentProcessingResult firstResult = documentProcessingResults.get(0);
-                Log.i("Scanbot SDK OCR example", "First document content:\n" + firstResult.getDocument().getOcrText());
-                openDocument(firstResult);
+            if (documentProcessingResult != null) {
+                Log.i("Scanbot SDK OCR example", "First document content:\n" + documentProcessingResult.getDocument().getOcrText());
+                openDocument(documentProcessingResult);
             }
         }
 
