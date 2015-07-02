@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 
 import net.doo.snap.Constants;
 import net.doo.snap.entity.Document;
+import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.persistence.cleanup.Cleaner;
 import net.doo.snap.process.DocumentProcessingResult;
 import net.doo.snap.process.DocumentProcessor;
