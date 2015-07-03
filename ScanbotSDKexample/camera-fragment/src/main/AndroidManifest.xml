@@ -7,7 +7,7 @@
         android:allowBackup="true"
         android:name=".ExampleApplication"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
+        android:theme="@style/ScanbotTheme"
         tools:replace="android:theme">
 
         <!-- TODO
