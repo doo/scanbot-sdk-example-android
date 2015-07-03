@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.scanbot.example">
+
+    <application
+        android:name=".ExampleApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/ScanbotTheme"
+        tools:replace="android:allowBackup">
+
+        <!-- TODO
+        <meta-data android:name="SCANBOT_SDK_LICENSE_KEY" android:value="Insert your key here" />
+        -->
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your DROPBOX app key and app secret-->
+        <meta-data
+            android:name="dropbox_app_key"
+            android:value="INSERT_APP_KEY" />
+        <meta-data
+            android:name="dropbox_app_secret"
+            android:value="INSERT_APP_SECRET" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your ONEDRIVE client id-->
+        <!-- Add "\ " to the client id to force a meta-data to type Sting. It will be removed from the result value.-->
+        <meta-data
+            android:name="onedrive_client_id"
+            android:value="\ INSERT_CLIENT_ID" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your AMAZON client id, client secret and redirect uri-->
+        <meta-data
+            android:name="amazon_client_id"
+            android:value="INSERT_CLIENT_ID" />
+        <meta-data
+            android:name="amazon_client_secret"
+            android:value="INSERT_CLIENT_SECRET" />
+        <meta-data
+            android:name="amazon_redirect_url"
+            android:value="INSERT_REDIRECT_URI" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your SLACK client id, secret and redirect uri-->
+        <!-- Add "\ " to the client id to force a meta-data to type Sting. It will be removed from the result value.-->
+        <meta-data
+            android:name="slack_client_id"
+            android:value="\ INSERT_CLIENT_ID" />
+        <meta-data
+            android:name="slack_secret"
+            android:value="INSERT_CLIENT_SECRET" />
+        <meta-data
+            android:name="slack_redirect_url"
+            android:value="INSERT_REDIRECT_URI" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your WUNDERLIST client id, secret and redirect uri-->
+        <meta-data
+            android:name="wunderlist_client_id"
+            android:value="INSERT_CLIENT_ID" />
+        <meta-data
+            android:name="wunderlist_client_secret"
+            android:value="INSERT_CLIENT_SECRET" />
+        <meta-data
+            android:name="wunderlist_redirect_url"
+            android:value="INSERT_REDIRECT_URI" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your EVERNOTE consumer key and consumer secret-->
+        <meta-data
+            android:name="evernote_consumer_key"
+            android:value="INSERT_CONSUMER_KEY" />
+        <meta-data
+            android:name="evernote_consumer_secret"
+            android:value="INSERT_CONSUMER_SECRET" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your YANDEX_DISK client id-->
+        <meta-data
+            android:name="yandex_client_id"
+            android:value="INSERT_CLIENT_ID" />
+
+        <!-- OPTIONAL -->
+        <!-- Replace with your SHOEBOXED client id, secret and redirect uri-->
+        <meta-data
+            android:name="shoeboxed_api_client_id"
+            android:value="INSERT_CLIENT_ID" />
+        <meta-data
+            android:name="shoeboxed_api_secret"
+            android:value="INSERT_CLIENT_SECRET" />
+        <meta-data
+            android:name="shoeboxed_api_redirect_url"
+            android:value="INSERT_REDIRECT_URI" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- OPTIONAL -->
+        <!-- This activity is needed only for Dropbox SDK authorization.
+        https://www.dropbox.com/developers/core/sdks/android-->
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <!-- Change this to be db- followed by your app key -->
+                <data android:scheme="db-INSERT_APP_KEY" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- OPTIONAL -->
+        <!-- This activity is needed only for Yandex Disk SDK authorization.-->
+        <activity
+            android:name="net.doo.snap.ui.upload.AuthYandexDiskActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="INSERT_HOST_HERE"
+                    android:scheme="INSERT_SCHEME_HERE" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

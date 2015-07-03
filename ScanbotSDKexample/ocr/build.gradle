@@ -10,6 +10,8 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -27,8 +29,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'io.scanbot:sdk-package-1:1.1.0'
+    compile 'io.scanbot:sdk-package-2:1.1.0'
 }
