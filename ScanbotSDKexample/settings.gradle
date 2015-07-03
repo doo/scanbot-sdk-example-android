@@ -1,1 +1,1 @@
-include ':simple', ':themes', ':jpeg', ':cloud-upload', ':ocr'
+include ':simple', ':themes', ':jpeg', ':cloud-upload', ':ocr', ':camera-fragment'
