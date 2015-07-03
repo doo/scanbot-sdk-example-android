@@ -5,5 +5,5 @@
     android:id="@+id/camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    class="net.doo.snap.ui.camera.CameraPreviewExtendedFragment"
+    class="net.doo.snap.ui.camera.ScanbotCameraFragment"
     tools:layout="@layout/camera_preview_fragment" />
