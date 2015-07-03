@@ -31,6 +31,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'io.scanbot:sdk-package-full:1.1.0-SNAPSHOT'
+    compile 'io.scanbot:sdk-package-full:1.1.0'
     compile 'com.android.support:multidex:1.0.1'
 }
