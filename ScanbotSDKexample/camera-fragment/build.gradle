@@ -30,7 +30,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.1.1'
 
-    compile('io.scanbot:sdk-package-1:1.1.0') {
-        changing = true
-    }
+    compile "io.scanbot:sdk-package-1:${project.scanbotSdkVersion}"
 }
