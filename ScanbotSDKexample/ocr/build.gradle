@@ -31,5 +31,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'io.scanbot:sdk-package-2:1.2.0-SNAPSHOT'
+    compile "io.scanbot:sdk-package-2:${project.scanbotSdkVersion}"
 }
