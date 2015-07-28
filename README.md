@@ -22,4 +22,4 @@ Please kindly take note of the following points when downloading the SDK:
 
 - This is a trial version and will only work for 1 minute (if you require a trial license which works for a longer period of time please contact us).
 - We are constantly updating and evolving the SDK and it is no final product.
-- The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products. (edited)
+- The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products.
