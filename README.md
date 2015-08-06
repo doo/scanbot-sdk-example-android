@@ -4,6 +4,8 @@
 
 Check out our Wiki: https://github.com/doo/Scanbot-SDK-Examples/wiki
 
+Check out JavaDocs: https://github.com/doo/Scanbot-SDK-Documentation/tree/master/Android
+
 #### How do I get the license?
 
 You can run examples and even develop your app without a license. If you do not specify the license in `AndroidManifest` then SDK will work in trial mode (currently, for 1 minute). If this is not enough for you, contact us at sdk@scanbot.io and we'll give you a free trial license for longer period.
