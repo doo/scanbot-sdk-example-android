@@ -4,7 +4,7 @@
 
 Check out our Wiki: https://github.com/doo/Scanbot-SDK-Examples/wiki
 
-Check out JavaDocs: https://github.com/doo/Scanbot-SDK-Documentation/tree/master/Android
+Check out JavaDocs:  http://doo.github.io/Scanbot-SDK-Documentation/Android/
 
 #### How do I get the license?
 
