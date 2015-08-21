@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.5.1
+Current version is 1.6.0
 
 #### Why example is not working / stopped working
 
