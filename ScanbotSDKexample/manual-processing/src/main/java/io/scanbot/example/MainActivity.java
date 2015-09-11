@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         if (openIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(openIntent);
         } else {
-            Toast.makeText(MainActivity.this, "Error while opening image", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Error while opening the document", Toast.LENGTH_LONG).show();
         }
     }
 
