@@ -6,12 +6,12 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.inject.Inject;
-
+import net.doo.snap.ScanbotSDK;
 import net.doo.snap.entity.Document;
 import net.doo.snap.entity.Page;
 import net.doo.snap.entity.SnappingDraft;
@@ -22,7 +22,6 @@ import net.doo.snap.process.DocumentProcessingResult;
 import net.doo.snap.process.DocumentProcessor;
 import net.doo.snap.process.draft.DocumentDraftExtractor;
 import net.doo.snap.process.util.DocumentDraft;
-import net.doo.snap.ui.RoboActionBarActivity;
 import net.doo.snap.util.FileChooserUtils;
 import net.doo.snap.util.bitmap.BitmapUtils;
 import net.doo.snap.util.thread.MimeUtils;
@@ -33,18 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends RoboActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final int SELECT_PICTURE_REQUEST = 100;
     private static final String IMAGE_TYPE = "image/*";
 
-    @Inject
     private PageFactory pageFactory;
-    @Inject
     private DocumentDraftExtractor documentDraftExtractor;
-    @Inject
     private DocumentProcessor documentProcessor;
-    @Inject
     private Cleaner cleaner;
 
     private View progressView;
@@ -53,6 +48,8 @@ public class MainActivity extends RoboActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initializeDependencies();
 
         findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +60,14 @@ public class MainActivity extends RoboActionBarActivity {
         progressView = findViewById(R.id.progressBar);
     }
 
+    private void initializeDependencies() {
+        ScanbotSDK scanbotSDK = new ScanbotSDK(this);
+        pageFactory = scanbotSDK.pageFactory();
+        documentDraftExtractor = scanbotSDK.documentDraftExtractor();
+        documentProcessor = scanbotSDK.documentProcessor();
+        cleaner = scanbotSDK.cleaner();
+    }
+
     private void openGallery() {
         Intent intent = new Intent();
         intent.setType(IMAGE_TYPE);
@@ -70,7 +75,7 @@ public class MainActivity extends RoboActionBarActivity {
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
 
         startActivityForResult(
-                Intent.createChooser(intent, getString(net.doo.snap.R.string.select_picture_title)),
+                Intent.createChooser(intent, "Select picture"),
                 SELECT_PICTURE_REQUEST
         );
     }
@@ -107,7 +112,7 @@ public class MainActivity extends RoboActionBarActivity {
         if (openIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(openIntent);
         } else {
-            Toast.makeText(MainActivity.this, getString(net.doo.snap.R.string.content_action_error), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Error while opening the document", Toast.LENGTH_LONG).show();
         }
     }
 

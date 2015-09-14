@@ -4,28 +4,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
-
-import com.google.inject.Key;
 
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.ui.PolygonView;
-import net.doo.snap.ui.RoboActionBarActivity;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import roboguice.RoboGuice;
-import roboguice.util.RoboContext;
 
 
-public class MainActivity extends RoboActionBarActivity implements RoboContext, PictureCallback {
-
-    protected final HashMap<Key<?>, Object> scopedObjects = new HashMap<>();
+public class MainActivity extends AppCompatActivity implements PictureCallback {
 
     private ScanbotCameraView cameraView;
     private ImageView resultView;
@@ -33,9 +23,7 @@ public class MainActivity extends RoboActionBarActivity implements RoboContext, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
-
         super.onCreate(savedInstanceState);
-        RoboGuice.getInjector(this).injectMembers(this);
 
         setContentView(R.layout.activity_main);
 
@@ -82,11 +70,6 @@ public class MainActivity extends RoboActionBarActivity implements RoboContext, 
     protected void onPause() {
         super.onPause();
         cameraView.onPause();
-    }
-
-    @Override
-    public Map<Key<?>, Object> getScopedObjectMap() {
-        return scopedObjects;
     }
 
     @Override

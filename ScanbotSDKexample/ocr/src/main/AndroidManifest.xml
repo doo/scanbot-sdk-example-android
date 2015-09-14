@@ -12,7 +12,7 @@
 
         <!-- Insert OCR data folder path. It can be external url - "http://download.com/your_ocrdata",
         or local assets folder - "your_folder_in_assets/"-->
-        <meta-data android:name="ocr_blobs_path" android:value="Insert path here" />
+        <meta-data android:name="ocr_blobs_path" android:value="" />
 
         <!-- TODO
         <meta-data android:name="SCANBOT_SDK_LICENSE_KEY" android:value="Insert your key here" />
