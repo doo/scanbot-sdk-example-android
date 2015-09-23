@@ -16,7 +16,7 @@ allprojects {
 
     repositories {
         jcenter()
-        mavenLocal()
+        mavenCentral()
 
         maven {
             url 'http://nexus.doo.net/nexus/content/repositories/releases/'
