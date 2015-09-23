@@ -16,7 +16,7 @@ allprojects {
 
     repositories {
         jcenter()
-        mavenCentral()
+        mavenLocal()
 
         maven {
             url 'http://nexus.doo.net/nexus/content/repositories/releases/'
@@ -35,4 +35,4 @@ allprojects {
 
 }
 
-project.ext.scanbotSdkVersion = "1.8.0"
+project.ext.scanbotSdkVersion = "1.9.2"
