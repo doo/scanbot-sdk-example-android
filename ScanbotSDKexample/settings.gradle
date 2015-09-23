@@ -1,1 +1,2 @@
-include ':ocr', ':manual-processing', ':camera-view'
+include ':simple', ':simple-fragment', ':themes', ':jpeg', ':cloud-upload', ':ocr', ':edit-polygon-view',
+        ':camera-fragment', ':manual-processing', ':camera-view', ':edit-polygon-view'
