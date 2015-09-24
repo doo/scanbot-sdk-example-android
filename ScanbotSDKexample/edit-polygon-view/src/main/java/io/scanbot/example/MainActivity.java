@@ -18,10 +18,12 @@ import net.doo.snap.ui.EditPolygonImageView;
 import net.doo.snap.ui.MagnifierView;
 import net.doo.snap.util.DrawMagnifierListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements DrawMagnifierListener {
+    private static final String POLYGON = "polygon";
 
     private MagnifierView magnifierView;
     private EditPolygonImageView editPolygonView;
@@ -48,7 +50,15 @@ public class MainActivity extends AppCompatActivity implements DrawMagnifierList
         // MagifierView should be set up every time when editPolygonView is set with new image
         magnifierView.setupMagnifier(editPolygonView);
 
+        setPolygon(savedInstanceState);
+
         new DetectLines().executeOnExecutor(Executors.newSingleThreadExecutor(), ((BitmapDrawable) editPolygonView.getDrawable()).getBitmap());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(POLYGON, (ArrayList<PointF>) editPolygonView.getPolygon());
     }
 
     @Override
@@ -59,6 +69,16 @@ public class MainActivity extends AppCompatActivity implements DrawMagnifierList
     @Override
     public void eraseMagnifier() {
         magnifierView.eraseMagnifier();
+    }
+
+    private void setPolygon(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            editPolygonView.setPolygon(EditPolygonImageView.DEFAULT_POLYGON);
+            return;
+        }
+
+        ArrayList<PointF> polygon = savedInstanceState.getParcelableArrayList(POLYGON);
+        editPolygonView.setPolygon(polygon);
     }
 
     /**
