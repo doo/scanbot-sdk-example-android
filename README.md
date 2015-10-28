@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.11.0
+Current version is 1.12.0
 
 #### Why example is not working / stopped working
 
@@ -27,6 +27,11 @@ Please kindly take note of the following points when downloading the SDK:
 - The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products.
 
 #### Changelog
+
+##### 1.12.0
+* Added `ScanbotSDKInitializer#withLogging()` method which allows you to turn on logging for SDK (disabled by default)
+* Improved edge detection
+* Added new filter to `ContourDetector`
 
 ##### 1.11.0
 * Added `ScanbotSDK.isLicenseActive()` method
