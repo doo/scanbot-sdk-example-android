@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.12.0
+Current version is 1.12.1
 
 #### Why example is not working / stopped working
 
@@ -27,6 +27,9 @@ Please kindly take note of the following points when downloading the SDK:
 - The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products.
 
 #### Changelog
+
+##### 1.12.1
+* Color-document filter was disabled in `ContourDetector`. Now it works again.
 
 ##### 1.12.0
 * Added `ScanbotSDKInitializer#withLogging()` method which allows you to turn on logging for SDK (disabled by default)
