@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             ContourDetector detector = new ContourDetector();
             detector.detect(bitmap);
             List<PointF> polygon = detector.getPolygonF();
-            return detector.processImageF(bitmap, polygon, ContourDetector.IMAGE_FILTER_BINARIZED);
+            return detector.processImageF(bitmap, polygon, ContourDetector.IMAGE_FILTER_GRAY);
         }
 
         private Bitmap loadImage() throws IOException {
