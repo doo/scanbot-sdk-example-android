@@ -28,6 +28,9 @@ Please kindly take note of the following points when downloading the SDK:
 
 #### Changelog
 
+##### 1.14.0
+* Removed unused dependencies. Removed permission declarations from Package 1. Users are now responsible for declaring permissions. For more information see [this page](https://github.com/doo/Scanbot-SDK-Examples/wiki/Permissions).
+
 ##### 1.13.1
 * Fixed bug when final image contained less than preview image from camera stream.
 
