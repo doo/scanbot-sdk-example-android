@@ -28,7 +28,7 @@ Please kindly take note of the following points when downloading the SDK:
 
 #### Changelog
 
-##### 1.15.0
+##### 1.15.1
 * Removed uses-feature android.hardware.camera. Camera is now optional.
 
 ##### 1.14.0
