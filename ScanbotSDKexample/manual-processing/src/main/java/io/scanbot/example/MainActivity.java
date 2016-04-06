@@ -166,7 +166,12 @@ public class MainActivity extends AppCompatActivity {
             ContourDetector detector = new ContourDetector();
             detector.detect(bitmap);
             List<PointF> polygon = detector.getPolygonF();
-            return detector.processImageF(bitmap, polygon, ContourDetector.IMAGE_FILTER_GRAY);
+
+            /*
+             * This operation crops original bitmap and creates a new one. Old bitmap is recycled
+             * and can't be used anymore. If that's not what you need, use processImageF() instead
+             */
+            return detector.processImageAndRelease(bitmap, polygon, ContourDetector.IMAGE_FILTER_GRAY);
         }
 
         private Bitmap loadImage() throws IOException {

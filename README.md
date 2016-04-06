@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.15.1
+Current version is 1.18.0
 
 #### Why example is not working / stopped working
 
@@ -28,6 +28,18 @@ Please kindly take note of the following points when downloading the SDK:
 
 #### Changelog
 
+##### 1.18.0
+* It's now possible to perform OCR without sandwiched PDF as part of result
+
+##### 1.17.0
+* It's now possible to customize the `Logger` implementation used by the SDK.
+
+##### 1.16.0
+* Added `ContourDetector.processImageAndRelease` - more memory efficient version of `ContourDetector.processImageF`.
+
+##### 1.15.3
+* Fixed build issues of OCR example.
+
 ##### 1.15.1
 * Removed uses-feature android.hardware.camera. Camera is now optional.
 
@@ -38,18 +50,18 @@ Please kindly take note of the following points when downloading the SDK:
 * Fixed bug when final image contained less than preview image from camera stream.
 
 ##### 1.13.0
-* Added `ImageQualityOptimizer` which allows you to optimize image size
+* Added `ImageQualityOptimizer` which allows you to optimize image size.
 
 ##### 1.12.2
-* Fixed bug when `AutosnappingController` stop operating after `onPause`
+* Fixed bug when `AutosnappingController` stop operating after `onPause`.
 
 ##### 1.12.1
 * Color-document filter was disabled in `ContourDetector`. Now it works again.
 
 ##### 1.12.0
-* Added `ScanbotSDKInitializer#withLogging()` method which allows you to turn on logging for SDK (disabled by default)
-* Improved edge detection
-* Added new filter to `ContourDetector`
+* Added `ScanbotSDKInitializer#withLogging()` method which allows you to turn on logging for SDK (disabled by default).
+* Improved edge detection.
+* Added new filter to `ContourDetector`.
 
 ##### 1.11.0
-* Added `ScanbotSDK.isLicenseActive()` method
+* Added `ScanbotSDK.isLicenseActive()` method.
