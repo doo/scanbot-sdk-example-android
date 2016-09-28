@@ -16,16 +16,14 @@ import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.lib.detector.Line2D;
 import net.doo.snap.ui.EditPolygonImageView;
 import net.doo.snap.ui.MagnifierView;
-import net.doo.snap.util.DrawMagnifierListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements DrawMagnifierListener {
+public class MainActivity extends AppCompatActivity {
     private static final String POLYGON = "polygon";
 
-    private MagnifierView magnifierView;
     private EditPolygonImageView editPolygonView;
 
     @Override
@@ -36,8 +34,13 @@ public class MainActivity extends AppCompatActivity implements DrawMagnifierList
 
         getSupportActionBar().hide();
 
-        magnifierView = (MagnifierView) findViewById(R.id.magnifier);
         editPolygonView = (EditPolygonImageView) findViewById(R.id.polygonView);
+        editPolygonView.setImageResource(R.drawable.test_receipt);
+
+        MagnifierView magnifierView = (MagnifierView) findViewById(R.id.magnifier);
+        // MagifierView should be set up every time when editPolygonView is set with new image
+        magnifierView.setupMagnifier(editPolygonView);
+
         findViewById(R.id.get_polygon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,10 +48,6 @@ public class MainActivity extends AppCompatActivity implements DrawMagnifierList
                 Log.i("EDIT_POLYGON_EXAMPLE", editPolygonView.getPolygon().toString());
             }
         });
-
-        editPolygonView.setImageResource(R.drawable.test_receipt);
-        // MagifierView should be set up every time when editPolygonView is set with new image
-        magnifierView.setupMagnifier(editPolygonView);
 
         setPolygon(savedInstanceState);
 
@@ -59,16 +58,6 @@ public class MainActivity extends AppCompatActivity implements DrawMagnifierList
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(POLYGON, (ArrayList<PointF>) editPolygonView.getPolygon());
-    }
-
-    @Override
-    public void drawMagnifier(PointF zoomPoint) {
-        magnifierView.drawMagnifier(zoomPoint);
-    }
-
-    @Override
-    public void eraseMagnifier() {
-        magnifierView.eraseMagnifier();
     }
 
     private void setPolygon(Bundle savedInstanceState) {
