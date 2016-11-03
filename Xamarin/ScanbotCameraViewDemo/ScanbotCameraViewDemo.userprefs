@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{406168A0-F5DA-45EA-8E81-AD3743A3E38C}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ScanbotCameraViewDemo/MainActivity.cs">
+    <Files>
+      <File FileName="ScanbotCameraViewDemo/MainActivity.cs" Line="55" Column="4" />
+      <File FileName="ScanbotCameraViewDemo/MainApplication.cs" Line="28" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.ScanbotCameraViewDemo AndroidDesignerPreferredDevice="Nexus 4" PreferredExecutionTarget="Android.42f7ff0ae2318fc1" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
