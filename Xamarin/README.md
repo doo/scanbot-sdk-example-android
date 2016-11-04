@@ -1,6 +1,6 @@
-##ScanboSDK Xamarin Binding
+##ScanboSDK Xamarin Demo
 
-###Requiered tools to work with Xamaring wrapper:
+###Requiered tools to work with Xamarin Demo projects:
 
 1. [Xamarin Studio](https://www.xamarin.com/studio)
 
