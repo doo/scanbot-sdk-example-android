@@ -42,27 +42,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
-    <Reference Include="Camera">
-      <HintPath>..\..\..\ScanbotSDK.Android\ScanbotSDK1\bin\Debug\Camera.dll</HintPath>
-    </Reference>
-    <Reference Include="Detector">
-      <HintPath>..\..\..\ScanbotSDK.Android\ScanbotSDK1\bin\Debug\Detector.dll</HintPath>
-    </Reference>
-    <Reference Include="Licensing">
-      <HintPath>..\..\..\ScanbotSDK.Android\ScanbotSDK1\bin\Debug\Licensing.dll</HintPath>
-    </Reference>
-    <Reference Include="ScanbotSDK">
-      <HintPath>..\..\..\ScanbotSDK.Android\ScanbotSDK1\bin\Debug\ScanbotSDK.dll</HintPath>
-    </Reference>
-    <Reference Include="ScanbotSDK1">
-      <HintPath>..\..\..\ScanbotSDK.Android\ScanbotSDK1\bin\Debug\ScanbotSDK1.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.v4">
-      <HintPath>..\packages\Xamarin.Android.Support.v4.22.1.1\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.v7.AppCompat">
-      <HintPath>..\packages\Xamarin.Android.Support.v7.AppCompat.22.1.1\lib\MonoAndroid403\Xamarin.Android.Support.v7.AppCompat.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -74,7 +53,6 @@
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
