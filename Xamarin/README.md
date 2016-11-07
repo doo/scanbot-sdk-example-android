@@ -1,4 +1,4 @@
-##ScanboSDK Xamarin Demo
+##ScanbotSDK Xamarin Demo
 
 ###Requiered tools to work with Xamarin Demo projects:
 
