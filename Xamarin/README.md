@@ -32,7 +32,7 @@ C# specific documentation will be added later.
 
 ### What is the latest version of the SDK?
 
-Current version is 1.19.0
+Current version is 1.20.0
 
 ### Why example is not working / stopped working
 
