@@ -15,11 +15,11 @@ C# specific documentation will be added later.
 
 1. Open ScanbotCameraViewDemo.sln solution
 2. Add .Net Assembly references (Project -> Edit References -> .Net Assembly):
-	* Camera-0.6.17.dll - Contains core camera functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/camera/0.6.17/Camera.dll)
-	* Detector-1.5.1.dll - Contains core page contour detection functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/detector/1.5.1/Detector.dll)
-	* Licensing-1.4.0.dll - Contains SDK licensing functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/licensing/1.4.0/Licensing.dll)
-	* ScanbotSDK-1.20.0.dll - Contains core Scanbot SDK functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/scanbotsdk/1.20.0/ScanbotSDK.dll)
-	* ScanbotSDK1-1.20.0.dll - Contains Scanbot SDK Package 1 features functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/scanbotsdk1/1.20.0/ScanbotSDK1.dll)
+	* Camera.dll - Contains core camera functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/camera/0.6.17/Camera.dll)
+	* Detector.dll - Contains core page contour detection functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/detector/1.5.1/Detector.dll)
+	* Licensing.dll - Contains SDK licensing functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/licensing/1.4.0/Licensing.dll)
+	* ScanbotSDK.dll - Contains core Scanbot SDK functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/scanbotsdk/1.20.0/ScanbotSDK.dll)
+	* ScanbotSDK1.dll - Contains Scanbot SDK Package 1 features functionality. (Download link: http://sdkdownload.scanbot.io.s3-website.eu-central-1.amazonaws.com/xamarin-sdk/android/scanbotsdk1/1.20.0/ScanbotSDK1.dll)
 3. Open Android SDK Manager	and download (Tools -> SDK Manager)
 	* Android SDK Tools (latest version)
 	* Android SDK Platform-Tools (latest version)
