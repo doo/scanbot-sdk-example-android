@@ -1,26 +1,5 @@
 ﻿<Properties StartupConfiguration="{406168A0-F5DA-45EA-8E81-AD3743A3E38C}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="ScanbotCameraViewDemo/Properties/AndroidManifest.xml">
-    <Files>
-      <File FileName="ScanbotCameraViewDemo/MainActivity.cs" Line="59" Column="36" />
-      <File FileName="ScanbotCameraViewDemo/MainApplication.cs" Line="28" Column="1" />
-      <File FileName="ScanbotCameraViewDemo/Properties/AndroidManifest.xml" Line="9" Column="12" />
-    </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="ScanbotCameraViewDemo" expanded="True">
-            <Node name="ScanbotCameraViewDemo" expanded="True">
-              <Node name="References" expanded="True" />
-              <Node name="Properties" expanded="True">
-                <Node name="AndroidManifest.xml" selected="True" />
-              </Node>
-              <Node name="Resources" expanded="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
