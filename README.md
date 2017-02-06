@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.21.1
+Current version is 1.21.2
 
 #### Why example is not working / stopped working
 
@@ -27,6 +27,9 @@ Please kindly take note of the following points when downloading the SDK:
 - The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products.
 
 #### Changelog
+
+##### 1.21.2
+* Fixed dependencies in SDK packages
 
 ##### 1.21.1
 * Added camera preview and picture size setters in `ScanbotCameraView`
