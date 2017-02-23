@@ -7,7 +7,7 @@ import io.scanbot.example.R;
 import javax.inject.Inject;
 
 /**
- * Created by biovamp on 22/02/2017.
+ * Android impl of {@link TextProvider}
  */
 public class AndroidTextProvider implements TextProvider {
 
