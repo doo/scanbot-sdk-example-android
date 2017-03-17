@@ -4,8 +4,6 @@ import android.app.Application;
 
 import net.doo.snap.ScanbotSDKInitializer;
 
-import roboguice.RoboGuice;
-
 /**
  * {@link ScanbotSDKInitializer} should be called
  * in {@code Application.onCreate()} method for RoboGuice modules initialization
