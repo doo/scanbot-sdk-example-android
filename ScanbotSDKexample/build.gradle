@@ -35,4 +35,4 @@ allprojects {
 
 }
 
-project.ext.scanbotSdkVersion = "1.22.0"
+project.ext.scanbotSdkVersion = "1.22.1"
