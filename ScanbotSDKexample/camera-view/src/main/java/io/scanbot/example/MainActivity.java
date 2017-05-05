@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import net.doo.snap.camera.AutoSnappingController;
+import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
@@ -30,6 +31,18 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
         getSupportActionBar().hide();
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
+        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
+            @Override
+            public void onCameraOpened() {
+                cameraView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        cameraView.continuousFocus();
+                    }
+                });
+            }
+        });
+
         resultView = (ImageView) findViewById(R.id.result);
 
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
@@ -83,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
             @Override
             public void run() {
                 resultView.setImageBitmap(bitmap);
+                cameraView.continuousFocus();
                 cameraView.startPreview();
             }
         });

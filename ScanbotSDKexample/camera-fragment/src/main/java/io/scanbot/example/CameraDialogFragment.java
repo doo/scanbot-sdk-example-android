@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import net.doo.snap.camera.AutoSnappingController;
+import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
@@ -41,6 +42,18 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         View baseView =  getActivity().getLayoutInflater().inflate(R.layout.scanbot_camera_view, container, false);
 
         cameraView = (ScanbotCameraView) baseView.findViewById(R.id.camera);
+        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
+            @Override
+            public void onCameraOpened() {
+                cameraView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        cameraView.continuousFocus();
+                    }
+                });
+            }
+        });
+
         resultView = (ImageView) baseView.findViewById(R.id.result);
 
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
@@ -108,6 +121,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
             @Override
             public void run() {
                 resultView.setImageBitmap(bitmap);
+                cameraView.continuousFocus();
                 cameraView.startPreview();
             }
         });

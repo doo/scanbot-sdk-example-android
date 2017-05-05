@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.22.2
+Current version is 1.22.3
 
 #### Why example is not working / stopped working
 
@@ -27,6 +27,9 @@ Please kindly take note of the following points when downloading the SDK:
 - The SDK with a trial license should only be tested in a experimental setting and it is not developed to be integrated into your live products.
 
 #### Changelog
+
+##### 1.22.3
+* Added continuous focus option for `ScanbotCameraView`
 
 ##### 1.22.2
 * Added method that provides internal OCR blobs directory in `BlobManager` in SDK-2
