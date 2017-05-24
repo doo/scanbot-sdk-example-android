@@ -6,7 +6,7 @@ import net.doo.snap.ScanbotSDKInitializer;
 
 /**
  * {@link ScanbotSDKInitializer} should be called
- * in {@code Application.onCreate()} method for RoboGuice modules initialization
+ * in {@code Application.onCreate()} method for DI initialization
  */
 public class ExampleApplication extends Application {
 
