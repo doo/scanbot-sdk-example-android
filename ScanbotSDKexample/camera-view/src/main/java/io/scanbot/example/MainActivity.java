@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
     private ScanbotCameraView cameraView;
     private ImageView resultView;
 
+    boolean flashEnabled = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
@@ -34,18 +36,21 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override
             public void onCameraOpened() {
-                cameraView.post(new Runnable() {
+                cameraView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         cameraView.continuousFocus();
+                        cameraView.useFlash(flashEnabled);
                     }
-                });
+                }, 700);
             }
         });
 
         resultView = (ImageView) findViewById(R.id.result);
 
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler.setAcceptedAngleScore(10);
+        contourDetectorFrameHandler.setAcceptedSizeScore(10);
 
         PolygonView polygonView = (PolygonView) findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView);
@@ -63,12 +68,10 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
 
-            boolean flashEnabled = false;
-
             @Override
             public void onClick(View v) {
-                cameraView.useFlash(!flashEnabled);
                 flashEnabled = !flashEnabled;
+                cameraView.useFlash(flashEnabled);
             }
         });
     }

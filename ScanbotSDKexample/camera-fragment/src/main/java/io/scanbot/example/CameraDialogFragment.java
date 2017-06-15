@@ -24,6 +24,8 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     private ScanbotCameraView cameraView;
     private ImageView resultView;
 
+    boolean flashEnabled = false;
+
     /**
      * Create a new instance of CameraDialogFragment
      */
@@ -45,12 +47,13 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override
             public void onCameraOpened() {
-                cameraView.post(new Runnable() {
+                cameraView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         cameraView.continuousFocus();
+                        cameraView.useFlash(flashEnabled);
                     }
-                });
+                }, 700);
             }
         });
 
@@ -74,12 +77,10 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         baseView.findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
 
-            boolean flashEnabled = false;
-
             @Override
             public void onClick(View v) {
-                cameraView.useFlash(!flashEnabled);
                 flashEnabled = !flashEnabled;
+                cameraView.useFlash(flashEnabled);
             }
         });
 
