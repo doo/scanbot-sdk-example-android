@@ -29,7 +29,7 @@ Please kindly take note of the following points when downloading the SDK:
 #### Changelog
 
 ##### 1.22.6
-* Fixed bug when `ScanbotCameraView` crashes with `IllegalStateException` after `onPause` or orientation changes.
+* Fixed bug when `ScanbotCameraView` crashes with `IllegalStateException` after `onPause`.
 
 ##### 1.22.5
 * Added methods for setting contour detector parameters in `ContourDetectorFrameHandler`
