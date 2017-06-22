@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Scanbot SDK Example</string>
+
+    <string name="sender">Sender</string>
+    <string name="iban">IBAN</string>
+    <string name="bic">BIC</string>
+    <string name="amount">Amount</string>
+    <string name="reference_number">Reference number</string>
+</resources>

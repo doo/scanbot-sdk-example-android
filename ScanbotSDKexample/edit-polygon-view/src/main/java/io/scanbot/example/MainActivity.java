@@ -1,6 +1,7 @@
 package io.scanbot.example;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -96,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(listListPair);
             if (listListPair != null) {
                 editPolygonView.setLines(listListPair.first, listListPair.second);
+                editPolygonView.setPolygon(EditPolygonImageView.DEFAULT_POLYGON);
+//                editPolygonView.setEdgeColor(Color.parseColor("#00FFFFFF"));
+
+
             }
         }
     }
