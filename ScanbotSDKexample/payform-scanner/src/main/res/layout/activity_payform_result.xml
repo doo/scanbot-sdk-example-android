@@ -26,6 +26,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
+            android:text="@string/sender_iban"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/sender_iban"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:text="@string/iban"
             android:layout_marginTop="8dp" />
 
@@ -70,6 +83,19 @@
 
         <TextView
             android:id="@+id/reference_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/reference_number_2"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/reference_number_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
