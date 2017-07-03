@@ -63,12 +63,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Collection<Blob> engOcrBlobs;
                 try {
-                    engOcrBlobs = blobFactory.ocrLanguageBlobs(Language.ENG);
-                    for (Blob blob : engOcrBlobs) {
+                    for (Blob blob : ocrBlobs()) {
                         if (!blobManager.isBlobAvailable(blob)) {
-                            Toast.makeText(MainActivity.this, "Download OCR data first!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Please download OCR data first!", Toast.LENGTH_LONG).show();
                             return;
                         }
                     }
@@ -86,6 +84,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         progressView = findViewById(R.id.progressBar);
+    }
+
+    private Collection<Blob> ocrBlobs() throws IOException {
+        // In this example OCR will be performed only for english language documents.
+        // But you can use all supported languages in net.doo.snap.entity.Language enum.
+
+        Collection<Blob> blobs = blobFactory.ocrLanguageBlobs(Language.ENG);
+
+        // required language detector blob of Scanbot SDK (see also "language_classifier_blob_path" in AndroidManifest.xml)
+        blobs.addAll(blobFactory.languageDetectorBlobs());
+
+        // add more OCR languages here if required
+        // blobs.addAll(blobFactory.ocrLanguageBlobs(Language.DEU));
+
+        return blobs;
     }
 
     private void openGallery() {
@@ -119,14 +132,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void downloadOcrData() {
-        Collection<Blob> engOcrBlobs = null;
         try {
-            /*
-            In example OCR will be performed only for english language documents.
-            But you can use all supported languages in net.doo.snap.entity.Language enum.
-             */
-            engOcrBlobs = blobFactory.ocrLanguageBlobs(Language.ENG);
-            for (Blob blob : engOcrBlobs) {
+            for (Blob blob : ocrBlobs()) {
                 if (!blobManager.isBlobAvailable(blob)) {
                     progressView.setVisibility(View.VISIBLE);
                     new MainActivity.DownloadOCRDataTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -265,8 +272,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Collection<Blob> engOcrBlobs = blobFactory.ocrLanguageBlobs(Language.ENG);
-                for (Blob blob : engOcrBlobs) {
+                for (Blob blob : ocrBlobs()) {
                     blobManager.fetch(blob, false);
                 }
             } catch (IOException e) {
@@ -279,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             progressView.setVisibility(View.GONE);
-            Toast.makeText(MainActivity.this, "English language OCR data is downloading! Try to scan some document when OCR data will be downloaded...", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Language OCR data is downloading! Try to run OCR when language data will be downloaded...", Toast.LENGTH_LONG).show();
         }
     }
 
