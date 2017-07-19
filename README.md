@@ -12,7 +12,7 @@ You can run examples and even develop your app without a license. If you do not 
 
 #### What is the latest version of the SDK?
 
-Current version is 1.23.0
+Current version is 1.23.2
 
 #### Why example is not working / stopped working
 
@@ -28,11 +28,15 @@ Please kindly take note of the following points when downloading the SDK:
 
 #### Changelog
 
+##### 1.23.2
+* Added `detectionScore` value in `DetectedFrame` class
+* Fixed 180 degree camera preview rotation
+
 ##### 1.23.0
 * Added Scanbot SDK package 3 with SEPA Pay Form scanner feature
 
 ##### 1.22.6
-* Fixed bug when `ScanbotCameraView` crashes with `IllegalStateException` after `onPause`.
+* Fixed bug when `ScanbotCameraView` crashes with `IllegalStateException` after `onPause`
 
 ##### 1.22.5
 * Added methods for setting contour detector parameters in `ContourDetectorFrameHandler`
