@@ -24,9 +24,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements PictureCallback {
 
     private ScanbotCameraView cameraView;
+    private PolygonView polygonView;
     private ImageView resultView;
+    private ContourDetectorFrameHandler contourDetectorFrameHandler;
+    private AutoSnappingController autoSnappingController;
 
-    boolean flashEnabled = false;
+    private boolean flashEnabled = false;
+    private boolean autoSnappingEnabled = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +57,16 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+
+        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(10);
         contourDetectorFrameHandler.setAcceptedSizeScore(10);
 
-        PolygonView polygonView = (PolygonView) findViewById(R.id.polygonView);
+        polygonView = (PolygonView) findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView);
 
-        AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
+        autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
         cameraView.addPictureCallback(this);
 
@@ -72,13 +78,22 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
         });
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 flashEnabled = !flashEnabled;
                 cameraView.useFlash(flashEnabled);
             }
         });
+
+        findViewById(R.id.autoSnappingToggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoSnappingEnabled = !autoSnappingEnabled;
+                setAutoSnapEnabled(autoSnappingEnabled);
+            }
+        });
+
+        setAutoSnapEnabled(autoSnappingEnabled);
     }
 
     @Override
@@ -125,6 +140,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
                 cameraView.startPreview();
             }
         });
+    }
+
+    private void setAutoSnapEnabled(boolean enabled) {
+        autoSnappingController.setEnabled(enabled);
+        contourDetectorFrameHandler.setEnabled(enabled);
+        polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
 }
