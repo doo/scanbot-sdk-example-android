@@ -3,12 +3,13 @@ package io.scanbot.example;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.CameraOpenCallback;
@@ -16,18 +17,19 @@ import net.doo.snap.camera.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.lib.detector.ContourDetector;
+import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
-import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity implements PictureCallback {
+public class MainActivity extends AppCompatActivity implements PictureCallback,
+        ContourDetectorFrameHandler.ResultHandler {
 
     private ScanbotCameraView cameraView;
     private PolygonView polygonView;
     private ImageView resultView;
     private ContourDetectorFrameHandler contourDetectorFrameHandler;
     private AutoSnappingController autoSnappingController;
+    private Toast userGuidanceToast;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
@@ -60,15 +62,19 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
         contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
-        contourDetectorFrameHandler.setAcceptedAngleScore(10);
-        contourDetectorFrameHandler.setAcceptedSizeScore(10);
+        contourDetectorFrameHandler.setAcceptedAngleScore(60);
+        contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         polygonView = (PolygonView) findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView);
+        contourDetectorFrameHandler.addResultHandler(this);
 
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
         cameraView.addPictureCallback(this);
+
+        userGuidanceToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        userGuidanceToast.setGravity(Gravity.CENTER, 0, 0);
 
         findViewById(R.id.snap).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +112,56 @@ public class MainActivity extends AppCompatActivity implements PictureCallback {
     protected void onPause() {
         super.onPause();
         cameraView.onPause();
+    }
+
+    @Override
+    public boolean handleResult(final ContourDetectorFrameHandler.DetectedFrame detectedFrame) {
+        // Here you are continuously notified about contour detection results.
+        // For example, you can show a user guidance text depending on the current detection status.
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showUserGuidance(detectedFrame.detectionResult);
+            }
+        });
+
+        return false; // typically you need to return false
+    }
+
+    private void showUserGuidance(final DetectionResult result) {
+        if (!autoSnappingEnabled) {
+            return;
+        }
+
+        switch (result) {
+            case OK:
+                userGuidanceToast.setText("Don't move");
+                userGuidanceToast.show();
+                break;
+            case OK_BUT_TOO_SMALL:
+                userGuidanceToast.setText("Move closer");
+                userGuidanceToast.show();
+                break;
+            case OK_BUT_BAD_ANGLES:
+                userGuidanceToast.setText("Perspective");
+                userGuidanceToast.show();
+                break;
+            case ERROR_NOTHING_DETECTED:
+                userGuidanceToast.setText("No Document");
+                userGuidanceToast.show();
+                break;
+            case ERROR_TOO_NOISY:
+                userGuidanceToast.setText("Background too noisy");
+                userGuidanceToast.show();
+                break;
+            case ERROR_TOO_DARK:
+                userGuidanceToast.setText("Poor light");
+                userGuidanceToast.show();
+                break;
+            default:
+                userGuidanceToast.cancel();
+                break;
+        }
     }
 
     @Override
