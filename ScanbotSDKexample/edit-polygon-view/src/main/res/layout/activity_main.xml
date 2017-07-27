@@ -3,15 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScanbotCameraViewActivity">
+    tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/get_polygon"
+        android:id="@+id/cropButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Get polygon" />
+        android:text="Crop"/>
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="Back"
+        android:visibility="gone"/>
 
     <net.doo.snap.ui.EditPolygonImageView
         android:id="@+id/polygonView"
@@ -22,7 +31,7 @@
         app:edgeImageSrc="@drawable/ui_crop_side_handle"
         app:editPolygonHandleSize="48dp"
         app:magneticLineTreshold="10dp"
-        android:layout_above="@+id/get_polygon"/>
+        android:layout_above="@+id/cropButton"/>
 
     <net.doo.snap.ui.MagnifierView
         android:id="@+id/magnifier"
@@ -35,6 +44,13 @@
         app:magnifierRadius="36dp"
         app:magnifierMargin="16dp"
         app:editPolygonMagnifier="#fff"
-        android:layout_above="@+id/get_polygon"/>
+        android:layout_above="@+id/cropButton"/>
+
+    <ImageView
+        android:id="@+id/resultImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/backButton"
+        android:visibility="gone"/>
 
 </RelativeLayout>
