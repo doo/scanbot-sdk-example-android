@@ -40,4 +40,11 @@
         android:layout_gravity="top|right"
         android:text="Flash" />
 
+    <Button
+        android:id="@+id/autoSnappingToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:text="Automatic" />
+
 </FrameLayout>

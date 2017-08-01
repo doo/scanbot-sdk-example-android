@@ -1,1 +1,0 @@
-Moved to https://github.com/doo/scanbot-sdk-example-xamarin
