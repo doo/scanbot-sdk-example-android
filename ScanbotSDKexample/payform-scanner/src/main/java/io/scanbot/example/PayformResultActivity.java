@@ -7,9 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import net.doo.snap.payformscanner.entity.RecognizedField;
-
 import java.util.List;
+
+import io.scanbot.payformscanner.model.RecognizedField;
 
 public class PayformResultActivity extends AppCompatActivity {
     public static final String EXTRA_SENDER = "sender";

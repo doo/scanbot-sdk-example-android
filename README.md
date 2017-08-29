@@ -37,10 +37,14 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-%26-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.23.3**
+The current version of the Scanbot SDK for Android is **1.24.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.24.0
+* Optimized transitive dependencies for Scanbot SDK library
+* Stop supporting `armeabi` architecture
 
 ##### 1.23.3
 * Fixed contour detection and autosnapping freeze on the autofocus tap

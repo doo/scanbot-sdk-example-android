@@ -14,12 +14,14 @@ import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.payformscanner.PayFormScanner;
 import net.doo.snap.payformscanner.PayFormScannerFrameHandler;
-import net.doo.snap.payformscanner.entity.DetectionResult;
-import net.doo.snap.payformscanner.entity.RecognizedField;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
 import java.util.List;
+
+import io.scanbot.payformscanner.model.RecognizedField;
+
+import static io.scanbot.payformscanner.PayFormScanner.*;
 
 public class PayformScannerActivity extends AppCompatActivity {
 
