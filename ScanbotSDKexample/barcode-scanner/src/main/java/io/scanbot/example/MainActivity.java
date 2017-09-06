@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
+import com.google.zxing.client.result.ParsedResult;
+import com.google.zxing.client.result.ResultParser;
 
 import net.doo.snap.ScanbotSDK;
 import net.doo.snap.camera.BarcodeDetectorFrameHandler;
@@ -71,16 +73,29 @@ public class MainActivity extends AppCompatActivity implements BarcodeDetectorFr
     }
 
     @Override
-    public boolean handleResult(final Result detectedBarcode) {
+    public boolean handleResult(final Result rawResult) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (detectedBarcode != null) {
+                if (rawResult != null) {
+                    final ParsedResult parsedResult = ResultParser.parseResult(rawResult);
                     Toast.makeText(
                             MainActivity.this,
-                            detectedBarcode.getText(),
+                            parsedResult.getDisplayResult(),
                             Toast.LENGTH_LONG
                     ).show();
+
+                /* Here you can implement a suitable result handler, like create a contact, open URL, etc.
+                switch (parsedResult.getType()) {
+                    case ADDRESSBOOK:
+                        // ...
+                        break;
+                    case URI:
+                        // ...
+                        break;
+                    // ...
+                }
+                */
                 }
             }
         });
