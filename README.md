@@ -37,10 +37,13 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-%26-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.24.0**
+The current version of the Scanbot SDK for Android is **1.25.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.25.0
+* Added Barcode/QR code scanner feature to the Scanbot SDK package 1
 
 ##### 1.24.0
 * Optimized transitive dependencies for Scanbot SDK library
