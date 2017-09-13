@@ -12,7 +12,10 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
-        new ScanbotSDKInitializer().initialize(this);
+        new ScanbotSDKInitializer()
+                // TODO add your license
+                // .license(this, "YOUR_SCANBOT_SDK_LICENSE_KEY")
+                .initialize(this);
         super.onCreate();
     }
 }
