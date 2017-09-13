@@ -20,9 +20,6 @@
         <meta-data
             android:name="language_classifier_blob_path"
             android:value="http://download.scanbot.io/di/android" />
-        <!-- TODO
-        <meta-data android:name="SCANBOT_SDK_LICENSE_KEY" android:value="Insert your key here" />
-        -->
 
         <activity
             android:name=".MainActivity"

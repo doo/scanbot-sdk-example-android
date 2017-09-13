@@ -13,10 +13,6 @@
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
 
-        <!-- TODO
-        <meta-data android:name="SCANBOT_SDK_LICENSE_KEY" android:value="Insert your key here" />
-        -->
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">

@@ -20,7 +20,7 @@ JavaDocs of the Scanbot SDK for Android can be found here: http://doo.github.io/
 ## License key
 
 You can run our examples and even develop your app without a license key.
-If you do not specify a license key in the `AndroidManifest.xml` file then the SDK will work in **trial mode (trial period of 1 minute)**.
+If you do not specify a license key in the `new ScanbotSDKInitializer().license(application, "YOUR_SCANBOT_SDK_LICENSE_KEY")` method then the SDK will work in **trial mode (trial period of 1 minute)**.
 After the trial period is over the Scanbot SDK functions will stop working. UI components (like CameraView) will freeze or may be terminated.
 You can just restart the app to get another trial period.
 
