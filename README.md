@@ -26,8 +26,11 @@ You can just restart the app to get another trial period.
 
 If you require a free trial license which works for a longer period of time please contact us at sdk@scanbot.io.
 
-Please note: The SDK with a trial license should only be used for evaluation and testing purposes or during the development phase.
-A trial license is not developed to be integrated into your production apps!
+
+## Trial Licenses
+You can get a free no strings attached trial license.
+Please kindly note that this license can only be used in a **development and staging environment**.
+You are **not allowed to publish** your app to the Play Store or any 3rd party Android App Store with a **trial license**.
 
 
 ## Pitfalls & issues
