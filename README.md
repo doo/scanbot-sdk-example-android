@@ -40,10 +40,14 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-%26-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.25.1**
+The current version of the Scanbot SDK for Android is **1.25.2**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.25.2
+* Added detected text paragraphs, lines and words blocks of the optical character recognitions result in `OcrResult`
+* Added `PageFactory#buildPage(Bitmap image)` and `PageFactory#buildPage(byte[] image)` methods for `Page` generation
 
 ##### 1.25.1
 * Added rotation methods for `EditPolygonImageView`

@@ -26,6 +26,8 @@ import net.doo.snap.persistence.PageFactory;
 import net.doo.snap.persistence.cleanup.Cleaner;
 import net.doo.snap.process.DocumentProcessingResult;
 import net.doo.snap.process.DocumentProcessor;
+import net.doo.snap.process.OcrResult;
+import net.doo.snap.process.TextRecognition;
 import net.doo.snap.process.draft.DocumentDraftExtractor;
 import net.doo.snap.process.util.DocumentDraft;
 import net.doo.snap.util.FileChooserUtils;
@@ -35,6 +37,7 @@ import net.doo.snap.util.thread.MimeUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private Cleaner cleaner;
     private BlobManager blobManager;
     private BlobFactory blobFactory;
+    private TextRecognition textRecognition;
 
     private View progressView;
 
@@ -127,7 +131,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        new ProcessDocumentTask(imageUri).execute();
+        new RecognizeTextWithPDFTask(imageUri).execute();
+
+// Alternative OCR examples:
+//        new RecognizeTextWithoutPDFTask(imageUri).execute();
+//        new ProcessDocumentTask(imageUri).execute();
+
         progressView.setVisibility(View.VISIBLE);
     }
 
@@ -155,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         cleaner = scanbotSDK.cleaner();
         blobManager = scanbotSDK.blobManager();
         blobFactory = scanbotSDK.blobFactory();
+        textRecognition = scanbotSDK.textRecognition();
     }
 
     private void openDocument(DocumentProcessingResult documentProcessingResult) {
@@ -258,6 +268,128 @@ public class MainActivity extends AppCompatActivity {
                 DocumentProcessingResult result = documentProcessingResults.get(0);
                 Log.i("Scanbot SDK OCR example", "First document content:\n" + result.getDocument().getOcrText());
                 openDocument(result);
+            }
+        }
+
+    }
+
+    /*
+    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
+    AsyncTasks in your application
+     */
+    private class RecognizeTextWithoutPDFTask extends AsyncTask<Void, Void, OcrResult> {
+
+        private final Uri imageUri;
+
+        private RecognizeTextWithoutPDFTask(Uri imageUri) {
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected OcrResult doInBackground(Void... voids) {
+            OcrResult ocrResult = null;
+
+            try {
+                Bitmap bitmap = loadImage();
+                Bitmap result = applyFilters(bitmap);
+
+                Page page = pageFactory.buildPage(result);
+
+                ocrResult = textRecognition.withoutPDF(Language.ENG, Arrays.asList(page)).recognize();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return ocrResult;
+        }
+
+        private Bitmap applyFilters(Bitmap bitmap) {
+            ContourDetector detector = new ContourDetector();
+            detector.detect(bitmap);
+            List<PointF> polygon = detector.getPolygonF();
+            return detector.processImageF(bitmap, polygon, ContourDetector.IMAGE_FILTER_BINARIZED);
+        }
+
+        private Bitmap loadImage() throws IOException {
+            String imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
+            Bitmap bitmap = BitmapUtils.decodeQuietly(imagePath, null);
+
+            if (bitmap == null) {
+                throw new IOException("Bitmap is null");
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(OcrResult ocrResult) {
+            progressView.setVisibility(View.GONE);
+
+            if (ocrResult != null) {
+                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.recognizedText);
+            }
+        }
+
+    }
+
+    /*
+    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
+    AsyncTasks in your application
+     */
+    private class RecognizeTextWithPDFTask extends AsyncTask<Void, Void, OcrResult> {
+
+        private final Uri imageUri;
+
+        private RecognizeTextWithPDFTask(Uri imageUri) {
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected OcrResult doInBackground(Void... voids) {
+            OcrResult ocrResult = null;
+
+            try {
+                Bitmap bitmap = loadImage();
+                Bitmap result = applyFilters(bitmap);
+
+                Page page = pageFactory.buildPage(result);
+
+                Document document = new Document();
+                document.setName("any_document_name.pdf");
+                document.setOcrStatus(OcrStatus.PENDING);
+                document.setId("any_unique_id");
+
+                ocrResult = textRecognition.withPDF(Language.ENG, document, Arrays.asList(page)).recognize();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return ocrResult;
+        }
+
+        private Bitmap applyFilters(Bitmap bitmap) {
+            ContourDetector detector = new ContourDetector();
+            detector.detect(bitmap);
+            List<PointF> polygon = detector.getPolygonF();
+            return detector.processImageF(bitmap, polygon, ContourDetector.IMAGE_FILTER_BINARIZED);
+        }
+
+        private Bitmap loadImage() throws IOException {
+            String imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
+            Bitmap bitmap = BitmapUtils.decodeQuietly(imagePath, null);
+
+            if (bitmap == null) {
+                throw new IOException("Bitmap is null");
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(OcrResult ocrResult) {
+            progressView.setVisibility(View.GONE);
+
+            if (ocrResult != null) {
+                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.recognizedText);
+                Log.i("Scanbot SDK OCR example", "Generated document path:\n" + ocrResult.sandwichedPdfDocumentFile.getPath());
             }
         }
 
