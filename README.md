@@ -35,7 +35,7 @@ You are **not allowed to publish** your app to the Play Store or any 3rd party A
 
 ## Pitfalls & issues
 
-Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-%26-issues
+Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 
 ## What is the latest version of the SDK?
