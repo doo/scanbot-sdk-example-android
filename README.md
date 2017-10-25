@@ -12,9 +12,8 @@ For more details visit our website https://scanbot.io/sdk.html
 
 ## Documentation
 
-To get started please check out our Wiki: https://github.com/doo/Scanbot-SDK-Examples/wiki
-
-JavaDocs of the Scanbot SDK for Android can be found here: http://doo.github.io/Scanbot-SDK-Documentation/Android/
+- [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
+- [API Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/)
 
 
 ## License key
