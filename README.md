@@ -39,10 +39,15 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.25.2**
+The current version of the Scanbot SDK for Android is **1.26.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.26.0
+* Optimized Scanbot SDK license check - added Java exceptions with human readable messages
+* Added `ScanbotSDK#isLicenseValid()` method for the license validation
+* Fixed bug when the image preview edge zooming in `MagnifierView` was displayed incorrectly
 
 ##### 1.25.2
 * Added detected text paragraphs, lines and words blocks of the optical character recognitions result in `OcrResult`
