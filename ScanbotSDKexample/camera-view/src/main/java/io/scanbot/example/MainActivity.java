@@ -3,6 +3,7 @@ package io.scanbot.example;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
                 cameraView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        cameraView.setAutoFocusSound(false);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                            cameraView.setShutterSound(false);
+                        }
+
                         cameraView.continuousFocus();
                         cameraView.useFlash(flashEnabled);
                     }

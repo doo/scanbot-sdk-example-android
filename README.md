@@ -39,10 +39,15 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.26.0**
+The current version of the Scanbot SDK for Android is **1.26.1**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.26.1
+* Updated transitive Scanbot SDK dependencies
+* Added `cameraView.setShutterSound(boolean enable)` and `cameraView.setAutoFocusSound(boolean enable)` methods in `ScanbotCameraView`
+* Optimized `AutoSnappingController` sensitivity and auto snapping timings
 
 ##### 1.26.0
 * Optimized Scanbot SDK license check - added Java exceptions with human readable messages
