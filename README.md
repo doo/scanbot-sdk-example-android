@@ -39,10 +39,13 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.26.2**
+The current version of the Scanbot SDK for Android is **1.26.4**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.26.4
+* Minor bug fixes
 
 ##### 1.26.2
 * Fixed bug when `cameraView.setShutterSound(boolean enable)` throws RuntimeException if the camera is already released.
