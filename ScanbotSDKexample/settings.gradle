@@ -1,1 +1,1 @@
-include ':simple', ':simple-fragment', ':themes', ':jpeg', ':cloud-upload', ':ocr', ':edit-polygon-view', ':manual-processing', ':camera-view', ':edit-polygon-view', ':camera-fragment', ':payform-scanner', ':barcode-scanner'
+include ':simple', ':simple-fragment', ':themes', ':jpeg', ':cloud-upload', ':ocr', ':edit-polygon-view', ':manual-processing', ':camera-view', ':edit-polygon-view', ':camera-fragment', ':payform-scanner', ':barcode-scanner', ':mrz-scanner'
