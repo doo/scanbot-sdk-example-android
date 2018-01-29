@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         scannerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(MRZScannerActivity.newIntent(MainActivity.this));
+                startActivity(DCScannerActivity.newIntent(MainActivity.this));
             }
         });
     }
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             logger.logException(e);
         }
 
-        Toast.makeText(MainActivity.this, "OCR data is downloaded! Try to scan some MRZ...", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "OCR data is downloaded! Try to scan some Disability Certificate...", Toast.LENGTH_LONG).show();
     }
 
     /*
@@ -85,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             try {
                 Collection<Blob> blobs = blobFactory.ocrLanguageBlobs(Language.DEU);
-                blobs.addAll(blobFactory.ocrLanguageBlobs(Language.ENG));
-                blobs.addAll(blobFactory.languageDetectorBlobs());
 
                 for (Blob blob : blobs) {
                     blobManager.fetch(blob, false);
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(MainActivity.this, "OCR data is downloading! Try to scan some MRZ when data will be downloaded...", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "OCR data is downloading! Try to scan some Disability Certificate when data will be downloaded...", Toast.LENGTH_LONG).show();
         }
     }
 }
