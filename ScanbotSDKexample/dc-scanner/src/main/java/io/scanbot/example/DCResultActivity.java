@@ -135,7 +135,7 @@ public class DCResultActivity extends AppCompatActivity {
         incapableSinceVC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_incapableSinceVC, 0)));
         incapableUntil.setText(getIntent().getStringExtra(EXTRA_incapableUntil));
         incapableUntilRC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_incapableUntilRC, 0)));
-        incapableUntilVC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_incapableSinceVC, 0)));
+        incapableUntilVC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_incapableUntilVC, 0)));
         diagnosedOn.setText(getIntent().getStringExtra(EXTRA_diagnosedOn));
         diagnosedOnRC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_diagnosedOnRC, 0)));
         diagnosedOnVC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_diagnosedOnVC, 0)));
