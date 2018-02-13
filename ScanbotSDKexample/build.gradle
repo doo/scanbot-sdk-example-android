@@ -34,10 +34,6 @@ allprojects {
         maven {
             url 'http://nexus.scanbot.io/nexus/content/repositories/snapshots/'
         }
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
     }
 
     configurations.all {
