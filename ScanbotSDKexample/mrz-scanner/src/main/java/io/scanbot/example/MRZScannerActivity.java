@@ -42,7 +42,6 @@ public class MRZScannerActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
-        cameraView.lockToLandscape();
 
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override

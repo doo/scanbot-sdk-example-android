@@ -16,6 +16,16 @@
 
     </net.doo.snap.camera.ScanbotCameraView>
 
+    <View
+        android:id="@+id/finder_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="200dp"
+        android:background="@drawable/mrz_finder_bg"/>
+
     <Button
         android:id="@+id/flash"
         android:layout_width="wrap_content"
