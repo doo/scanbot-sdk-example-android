@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
         Collection<Blob> blobs = null;
         try {
             blobs = blobFactory.ocrLanguageBlobs(Language.DEU);
-            blobs.addAll(blobFactory.ocrLanguageBlobs(Language.ENG));
-            blobs.addAll(blobFactory.languageDetectorBlobs());
 
             for (Blob blob : blobs) {
                 if (!blobManager.isBlobAvailable(blob)) {
