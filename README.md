@@ -39,10 +39,17 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.26.7**
+The current version of the Scanbot SDK for Android is **1.27.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.27.0
+* Added `MRZScanner` (Machine Readable Zone scanner) feature to the Scanbot SDK package 3.
+* Added Finder feature for `MRZScanner`.
+* Added `DCScanner` (Disability Certificate scanner) feature to the Scanbot SDK package 4.
+* Updated Tesseract version to 3.05.01.
+* Updated Android support library dependencies version to 27.0.2. 
 
 ##### 1.26.7
 * Minor bug fixes and improvements
