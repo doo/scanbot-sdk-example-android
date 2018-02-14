@@ -56,16 +56,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void downloadOcrAndBanksData() {
-        Collection<Blob> blobs = null;
         try {
-            blobs = blobFactory.ocrLanguageBlobs(Language.ENG);
-            blobs.add(blobFactory.mrzTraineddataBlob());
+            Blob mrzBlob = blobFactory.mrzTraineddataBlob();
 
-            for (Blob blob : blobs) {
-                if (!blobManager.isBlobAvailable(blob)) {
-                    new DownloadOCRDataTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-                    return;
-                }
+            if (!blobManager.isBlobAvailable(mrzBlob)) {
+                new DownloadOCRDataTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+                return;
             }
         } catch (IOException e) {
             logger.logException(e);
@@ -83,12 +79,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Collection<Blob> blobs = blobFactory.ocrLanguageBlobs(Language.ENG);
-                blobs.add(blobFactory.mrzTraineddataBlob());
-
-                for (Blob blob : blobs) {
-                    blobManager.fetch(blob, false);
-                }
+                blobManager.fetch(blobFactory.mrzTraineddataBlob(), false);
             } catch (IOException e) {
                 logger.logException(e);
             }
