@@ -47,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(DCScannerActivity.newIntent(MainActivity.this));
             }
         });
+        Button manualScannerBtn = (Button) findViewById(R.id.manual_scanner_btn);
+        manualScannerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ManualDCScannerActivity.newIntent(MainActivity.this));
+            }
+        });
     }
 
     private void initDependencies() {
