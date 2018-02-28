@@ -14,6 +14,7 @@ import android.widget.TextView;
 import net.doo.snap.ScanbotSDK;
 import net.doo.snap.util.FileChooserUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,17 +111,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private class WriteTIFFImageTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String imagePath;
-        private final String resultUrl;
+        private final File imageFile;
+        private final File resultFile;
 
         private WriteTIFFImageTask(Uri imageUri) {
-            this.imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
-            resultUrl = getExternalFilesDir(null).getPath() + "/tiff_result_" + System.currentTimeMillis() + ".tiff";
+            String imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
+            this.imageFile = new File(imagePath);
+            resultFile = new File(getExternalFilesDir(null).getPath() + "/tiff_result_" + System.currentTimeMillis() + ".tiff");
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return tiffWriter.writeSinglePageTIFFFromUri(imagePath, resultUrl);
+            return tiffWriter.writeSinglePageTIFFFromFile(imageFile, resultFile);
         }
 
         @Override
@@ -128,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (result) {
-                Log.i("TIFF example", "Generated TIFF image path:\n" + resultUrl);
-                resultTextView.setText("Result TIFF path:\n" + resultUrl);
+                Log.i("TIFF example", "Generated TIFF image path:\n" + resultFile.getPath());
+                resultTextView.setText("Result TIFF path:\n" + resultFile.getPath());
             }
         }
 
@@ -141,20 +143,22 @@ public class MainActivity extends AppCompatActivity {
      */
     private class WriteMultiPageTIFFImageTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final List<String> images = new ArrayList<>();
-        private final String resultUrl;
+        private final List<File> images = new ArrayList<>();
+        private final File resultFile;
 
         private WriteMultiPageTIFFImageTask(List<Uri> imageUris) {
             for (Uri uri : imageUris) {
-                images.add(FileChooserUtils.getPath(MainActivity.this, uri));
+                String imagePath = FileChooserUtils.getPath(MainActivity.this, uri);
+                images.add(new File(imagePath));
             }
 
-            resultUrl = getExternalFilesDir(null).getPath() + "/multi_page_tiff_result_" + System.currentTimeMillis() + ".tiff";
+            String resultFilePath = getExternalFilesDir(null).getPath() + "/multi_page_tiff_result_" + System.currentTimeMillis() + ".tiff";
+            resultFile = new File(resultFilePath);
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return tiffWriter.writeMultiPageTIFFFromUriList(images, resultUrl);
+            return tiffWriter.writeMultiPageTIFFFromFileList(images, resultFile);
         }
 
         @Override
@@ -162,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (result) {
-                Log.i("TIFF example", "Generated multi page TIFF path:\n" + resultUrl);
-                resultTextView.setText("Result TIFF path:\n" + resultUrl);
+                Log.i("TIFF example", "Generated multi page TIFF path:\n" + resultFile.getPath());
+                resultTextView.setText("Result TIFF path:\n" + resultFile.getPath());
             }
         }
 
