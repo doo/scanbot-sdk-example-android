@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import net.doo.snap.ScanbotSDK;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private View progressView;
     private TextView resultTextView;
+    private CheckBox binarizationCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         initDependencies();
 
         resultTextView = findViewById(R.id.result);
+        binarizationCheckBox = findViewById(R.id.binarizationCheckBox);
         findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +125,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return tiffWriter.writeSinglePageTIFFFromFile(imageFile, resultFile);
+            if (binarizationCheckBox.isChecked()) {
+                return tiffWriter.writeBinarizedSinglePageTIFFFromFile(imageFile, resultFile);
+            } else {
+                return tiffWriter.writeSinglePageTIFFFromFile(imageFile, resultFile);
+            }
         }
 
         @Override
@@ -158,7 +165,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return tiffWriter.writeMultiPageTIFFFromFileList(images, resultFile);
+            if (binarizationCheckBox.isChecked()) {
+                return tiffWriter.writeBinarizedMultiPageTIFFFromFileList(images, resultFile);
+            } else {
+                return tiffWriter.writeMultiPageTIFFFromFileList(images, resultFile);
+            }
         }
 
         @Override

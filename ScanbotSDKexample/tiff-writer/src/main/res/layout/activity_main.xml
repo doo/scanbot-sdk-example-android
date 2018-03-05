@@ -36,9 +36,18 @@
         android:id="@+id/result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/scanButton"
+        android:layout_below="@+id/binarizationCheckBox"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:textIsSelectable="true"/>
+
+    <CheckBox
+        android:id="@+id/binarizationCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/scanButton"
+        android:text="Perform binarization" />
 
 </RelativeLayout>
