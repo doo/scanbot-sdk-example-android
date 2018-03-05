@@ -39,10 +39,15 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.27.0**
+The current version of the Scanbot SDK for Android is **1.27.1**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.27.1
+* Added `TIFFWRiter` feature to the Scanbot SDK package 1.
+* Added new "Pure Binarization" (`ContourDetector.IMAGE_FILTER_PURE_BINARIZED`) filter. 
+* Added `DCScanner` recognition methods for `Bitmap`s and JPEG images.
 
 ##### 1.27.0
 * Added `MRZScanner` (Machine Readable Zone scanner) feature to the Scanbot SDK package 3.
