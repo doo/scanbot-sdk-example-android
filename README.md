@@ -14,6 +14,7 @@ For more details visit our website https://scanbot.io/sdk.html
 
 - [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
 - [API Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/)
+- [API Core Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/Core/)
 
 
 ## License key
