@@ -9,6 +9,7 @@ import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private ContourDetectorFrameHandler contourDetectorFrameHandler;
     private AutoSnappingController autoSnappingController;
     private Toast userGuidanceToast;
+    private Button autoSnappingToggleButton;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
@@ -97,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             }
         });
 
-        findViewById(R.id.autoSnappingToggle).setOnClickListener(new View.OnClickListener() {
+        autoSnappingToggleButton = findViewById(R.id.autoSnappingToggle);
+        autoSnappingToggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 autoSnappingEnabled = !autoSnappingEnabled;
@@ -208,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         autoSnappingController.setEnabled(enabled);
         contourDetectorFrameHandler.setEnabled(enabled);
         polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON":"OFF"));
     }
 
 }
