@@ -19,12 +19,25 @@
         android:layout_marginTop="32dp" />
 
     <Button
-        android:id="@+id/scanner_btn"
+        android:id="@+id/live_scanner_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Start MRZ Scanner"
+        android:text="MRZ Live Detection Scanner"
         app:layout_constraintTop_toBottomOf="@+id/download_btn"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.502" />
+
+    <Button
+        android:id="@+id/still_image_detection_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="MRZ Still Image Detection Scanner"
+        app:layout_constraintTop_toBottomOf="@+id/live_scanner_btn"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"

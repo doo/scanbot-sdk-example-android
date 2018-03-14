@@ -3,6 +3,7 @@ package io.scanbot.example;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -11,12 +12,10 @@ import net.doo.snap.ScanbotSDK;
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
 import net.doo.snap.entity.Blob;
-import net.doo.snap.entity.Language;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
 import java.io.IOException;
-import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,18 +32,29 @@ public class MainActivity extends AppCompatActivity {
 
         initDependencies();
 
-        Button downloadBtn = (Button) findViewById(R.id.download_btn);
+        Button downloadBtn = findViewById(R.id.download_btn);
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                downloadOcrAndBanksData();
+                downloadMRZTraineddata();
             }
         });
-        Button scannerBtn = (Button) findViewById(R.id.scanner_btn);
-        scannerBtn.setOnClickListener(new View.OnClickListener() {
+
+        Button liveScannerBtn = findViewById(R.id.live_scanner_btn);
+        liveScannerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(MRZScannerActivity.newIntent(MainActivity.this));
+                if (!checkMRZTraineddata()) { return; }
+                startActivity(MRZLiveDetectionActivity.newIntent(MainActivity.this));
+            }
+        });
+
+        Button stillImageScannerBtn = findViewById(R.id.still_image_detection_btn);
+        stillImageScannerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!checkMRZTraineddata()) { return; }
+                startActivity(MRZStillImageDetectionActivity.newIntent(MainActivity.this));
             }
         });
     }
@@ -55,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         blobFactory = scanbotSDK.blobFactory();
     }
 
-    private void downloadOcrAndBanksData() {
+    private void downloadMRZTraineddata() {
         try {
-            Blob mrzBlob = blobFactory.mrzTraineddataBlob();
+            final Blob mrzBlob = blobFactory.mrzTraineddataBlob();
 
             if (!blobManager.isBlobAvailable(mrzBlob)) {
                 new DownloadOCRDataTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -67,7 +77,25 @@ public class MainActivity extends AppCompatActivity {
             logger.logException(e);
         }
 
-        Toast.makeText(MainActivity.this, "OCR data is downloaded! Try to scan some MRZ...", Toast.LENGTH_LONG).show();
+        final Toast toast = Toast.makeText(this, "OCR data already downloaded. Try to scan a document with MRZ.", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
+
+    private boolean checkMRZTraineddata() {
+        try {
+            final Blob mrzBlob = blobFactory.mrzTraineddataBlob();
+            if (blobManager.isBlobAvailable(mrzBlob)) {
+                return true;
+            }
+        } catch (IOException e) {
+            logger.logException(e);
+        }
+
+        final Toast toast = Toast.makeText(MainActivity.this, "Please download the OCR data first!", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+        return false;
     }
 
     /*

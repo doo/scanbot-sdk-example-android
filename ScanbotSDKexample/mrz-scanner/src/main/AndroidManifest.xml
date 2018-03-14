@@ -23,8 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MRZScannerActivity" />
-        <activity android:name=".MRZResultActivity" />
+        <activity android:name=".MRZLiveDetectionActivity" />
+        <activity android:name=".MRZStillImageDetectionActivity" />
+        <activity android:name=".MRZResultActivity" android:label="MRZ recognition result" />
     </application>
 
 </manifest>

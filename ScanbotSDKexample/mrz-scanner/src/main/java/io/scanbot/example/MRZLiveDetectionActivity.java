@@ -19,7 +19,7 @@ import net.doo.snap.util.log.LoggerProvider;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 
-public class MRZScannerActivity extends AppCompatActivity {
+public class MRZLiveDetectionActivity extends AppCompatActivity {
 
     private final Logger logger = LoggerProvider.getLogger();
 
@@ -29,7 +29,7 @@ public class MRZScannerActivity extends AppCompatActivity {
     boolean flashEnabled = false;
 
     public static Intent newIntent(Context context) {
-        return new Intent(context, MRZScannerActivity.class);
+        return new Intent(context, MRZLiveDetectionActivity.class);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MRZScannerActivity extends AppCompatActivity {
 
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mrz_scanner);
+        setContentView(R.layout.activity_mrz_live_scanner);
 
         getSupportActionBar().hide();
 
@@ -69,7 +69,7 @@ public class MRZScannerActivity extends AppCompatActivity {
                     long a = System.currentTimeMillis();
 
                     try {
-                        startActivity(MRZResultActivity.newIntent(MRZScannerActivity.this, mrzRecognitionResult));
+                        startActivity(MRZResultActivity.newIntent(MRZLiveDetectionActivity.this, mrzRecognitionResult));
                     } finally {
                         long b = System.currentTimeMillis();
                         logger.d("MRZScanner", "Total scanning (sec): " + (b - a) / 1000f);
