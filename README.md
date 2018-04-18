@@ -40,10 +40,15 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.27.3**
+The current version of the Scanbot SDK for Android is **1.27.4**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.27.4
+* Added confidence values for detected fileds in `MRZScanner`.
+* Changed default barcode detector to ZXing barcode detector.
+* Added Finder feature for barcode detectors.
 
 ##### 1.27.3
 * Updated Google Mobile Vision library version to 12.0.0.
