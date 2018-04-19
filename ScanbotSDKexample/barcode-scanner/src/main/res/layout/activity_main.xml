@@ -1,20 +1,34 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent" tools:context=".MainActivity">
 
-    <net.doo.snap.camera.ScanbotCameraView
-        android:id="@+id/camera"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <Button
-        android:id="@+id/flash"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:text="Flash" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="50dp"
+        android:text="Choose a Barcode/QR-Code Scanner Example"/>
 
-</FrameLayout>
+    <Button
+        android:id="@+id/start_barcode_scanner_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simple Barcode Scanner"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="15dp" />
+
+    <Button
+        android:id="@+id/start_barcode_scanner_with_finder_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Barcode Scanner with Finder View"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp" />
+
+</LinearLayout>

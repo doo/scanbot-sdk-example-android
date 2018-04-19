@@ -3,6 +3,7 @@ package io.scanbot.example;
 import android.app.Application;
 
 import net.doo.snap.ScanbotSDKInitializer;
+import net.doo.snap.camera.barcode.ScanbotBarcodeDetector;
 
 /**
  * {@link ScanbotSDKInitializer} should be called
