@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap originalBitmap;
     private ImageView resultImageView;
     private Button cropButton;
+    private Button rotateButton;
     private Button backButton;
 
     @Override
@@ -58,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        rotateButton = (Button) findViewById(R.id.rotateButton);
+        rotateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rotate();
+            }
+        });
+
         backButton = (Button) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         new InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor(), originalBitmap);
+    }
+
+    private void rotate() {
+        editPolygonView.rotateClockwise();
     }
 
     private void crop() {
