@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +19,6 @@ import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.dcscanner.DCScanner;
 import net.doo.snap.lib.detector.ContourDetector;
-
-import java.util.ArrayList;
 
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 
