@@ -55,7 +55,6 @@
         app:magnifierImageSrc="@drawable/ui_crop_magnifier"
         app:magnifierRadius="36dp"
         app:magnifierMargin="16dp"
-        app:editPolygonMagnifier="#fff"
         android:layout_above="@+id/buttons"/>
 
     <ImageView
