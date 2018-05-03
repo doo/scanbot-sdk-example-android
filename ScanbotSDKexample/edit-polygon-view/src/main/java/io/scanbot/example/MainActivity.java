@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private Button cropButton;
     private Button rotateButton;
     private Button backButton;
-    private float rotation = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rotate() {
-        rotation += 90f;
         editPolygonView.rotateClockwise();
-        magnifierView.setImageRotation(rotation);
     }
 
     private void crop() {
