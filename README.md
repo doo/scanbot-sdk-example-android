@@ -46,13 +46,14 @@ The current version of the Scanbot SDK for Android is **1.28.2**
 ## Changelog of the Scanbot SDK for Android
 
 ##### 1.28.2
-* MagnifierView: parameters `magnifierCrossSize`, `magnifierCrossStrokeWidth`, `magnifierStrokeWidth` and `editPolygonMagnifier` are actually deprecated and not used anymore.
+* Removed deprecated attributes `magnifierCrossSize`, `magnifierCrossStrokeWidth`, `magnifierStrokeWidth` and `editPolygonMagnifier` from `MagnifierView` since they don't have any effects on the view. 
+To customize the `MagnifierView` please use the attributes `magnifierImageSrc`, `magnifierRadius` and `magnifierMargin`.
 
 ##### 1.28.1
-* MagnifierView.setImageRotation() is now public
+* Exposed the method `setImageRotation()` in `MagnifierView`.
 
 ##### 1.28.0
-* Added confidence values for detected fileds in `MRZScanner`.
+* Added confidence values for detected fields in `MRZScanner`.
 * Changed default barcode detector to ZXing barcode detector.
 * Added Finder feature for barcode detectors.
 
