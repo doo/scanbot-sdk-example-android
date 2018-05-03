@@ -2,11 +2,16 @@ package io.scanbot.example;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import net.doo.snap.ScanbotSDK;
@@ -14,12 +19,16 @@ import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.dcscanner.DCScanner;
+import net.doo.snap.lib.detector.ContourDetector;
+
+import java.util.ArrayList;
 
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 
 public class ManualDCScannerActivity extends AppCompatActivity implements PictureCallback {
 
     private ScanbotCameraView cameraView;
+    private ImageView resultImageView;
 
     boolean flashEnabled = false;
     private DCScanner dcScanner;
@@ -52,6 +61,8 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
             }
         });
         cameraView.addPictureCallback(this);
+
+        resultImageView = findViewById(R.id.resultImageView);
 
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
         dcScanner = scanbotSDK.dcScanner();
@@ -98,26 +109,70 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
         // Here we get the full image from the camera.
         // Implement a suitable async(!) detection and image handling here.
 
+        // Decode Bitmap from bytes of original image:
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
+        options.inSampleSize = 2; // use 1 for full, no downscaled image.
+        Bitmap originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length, options);
 
-        BitmapFactory.decodeByteArray(image, 0, image.length, options);
+        // rotate original image if required:
+        if (imageOrientation > 0) {
+            final Matrix matrix = new Matrix();
+            matrix.setRotate(imageOrientation, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f);
+            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, false);
+        }
 
-        // Run DC content recognition:
-        final DisabilityCertificateRecognizerResultInfo resultInfo = dcScanner.recognizeDCJPEG(image, options.outWidth, options.outHeight, imageOrientation);
+        // Run document detection on original image:
+        final ContourDetector detector = new ContourDetector();
+        detector.detect(originalBitmap);
+        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
 
+        // Show the cropped image as thumbnail preview
+        final Bitmap thumbnailImage = resizeImage(documentImage, 600, 600);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (resultInfo != null && resultInfo.recognitionSuccessful) {
-                    startActivity(DCResultActivity.newIntent(ManualDCScannerActivity.this, resultInfo));
-                } else {
-                    Toast.makeText(ManualDCScannerActivity.this, "No DC content detected!", Toast.LENGTH_SHORT).show();
-                }
-
+                resultImageView.setImageBitmap(thumbnailImage);
+                // continue with camera preview
                 cameraView.continuousFocus();
                 cameraView.startPreview();
             }
         });
+
+        // And finally run DC recognition on prepared document image:
+        final DisabilityCertificateRecognizerResultInfo resultInfo = dcScanner.recognizeDCBitmap(documentImage, 0);
+
+        if (resultInfo != null && resultInfo.recognitionSuccessful) {
+            startActivity(DCResultActivity.newIntent(ManualDCScannerActivity.this, resultInfo));
+        }
+        else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final Toast toast = Toast.makeText(ManualDCScannerActivity.this, "No DC content was recognized!", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+            });
+        }
+
+        // reset preview image
+        resultImageView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                resultImageView.setImageBitmap(null);
+            }
+        }, 1000);
     }
+
+    private Bitmap resizeImage(final Bitmap bitmap, final float width, final float height) {
+        final float oldWidth = bitmap.getWidth();
+        final float oldHeight = bitmap.getHeight();
+        final float scaleFactor = (oldWidth > oldHeight ? (width / oldWidth) : (height / oldHeight));
+
+        final int scaledWidth = Math.round(oldWidth * scaleFactor);
+        final int scaledHeight = Math.round(oldHeight * scaleFactor);
+
+        return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false);
+    }
+
 }
