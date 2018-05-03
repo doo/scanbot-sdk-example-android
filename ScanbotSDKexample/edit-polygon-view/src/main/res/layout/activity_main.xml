@@ -6,6 +6,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -45,20 +46,17 @@
         app:edgeImageSrc="@drawable/ui_crop_side_handle"
         app:editPolygonHandleSize="48dp"
         app:magneticLineTreshold="10dp"
-        android:layout_above="@+id/cropButton"/>
+        android:layout_above="@+id/buttons"/>
 
     <net.doo.snap.ui.MagnifierView
         android:id="@+id/magnifier"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:magnifierImageSrc="@drawable/ui_crop_magnifier"
-        app:magnifierCrossSize="16dp"
-        app:magnifierCrossStrokeWidth="2dp"
-        app:magnifierStrokeWidth="4dp"
         app:magnifierRadius="36dp"
         app:magnifierMargin="16dp"
         app:editPolygonMagnifier="#fff"
-        android:layout_above="@+id/cropButton"/>
+        android:layout_above="@+id/buttons"/>
 
     <ImageView
         android:id="@+id/resultImageView"

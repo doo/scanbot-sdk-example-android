@@ -40,10 +40,13 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.28.1**
+The current version of the Scanbot SDK for Android is **1.28.2**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.28.2
+* MagnifierView: parameters `magnifierCrossSize`, `magnifierCrossStrokeWidth`, `magnifierStrokeWidth` and `editPolygonMagnifier` are actually deprecated and not used anymore.
 
 ##### 1.28.1
 * MagnifierView.setImageRotation() is now public
