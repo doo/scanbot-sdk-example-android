@@ -1,6 +1,7 @@
 package io.scanbot.example;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private Button cropButton;
     private Button rotateButton;
     private Button backButton;
+    private int rotationDegrees = 0;
+    private long lastRotationEventTs = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         rotateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rotate();
+                rotatePreview();
             }
         });
 
@@ -76,23 +79,37 @@ public class MainActivity extends AppCompatActivity {
 
                 editPolygonView.setVisibility(View.VISIBLE);
                 cropButton.setVisibility(View.VISIBLE);
+                rotateButton.setVisibility(View.VISIBLE);
             }
         });
 
         new InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor(), originalBitmap);
     }
 
-    private void rotate() {
-        editPolygonView.rotateClockwise();
+    private void rotatePreview() {
+        if ((System.currentTimeMillis() - lastRotationEventTs) < 350) {
+            return;
+        }
+        rotationDegrees += 90;
+        editPolygonView.rotateClockwise(); // only rotates the preview image (animated)
+        lastRotationEventTs = System.currentTimeMillis();
     }
 
     private void crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        final Bitmap documentImage = new ContourDetector().processImageF(
+        Bitmap documentImage = new ContourDetector().processImageF(
                 originalBitmap, editPolygonView.getPolygon(), ContourDetector.IMAGE_FILTER_NONE);
+
+        if (rotationDegrees > 0) {
+            // rotate the final cropped image result based on current rotation value:
+            final Matrix matrix = new Matrix();
+            matrix.postRotate(rotationDegrees);
+            documentImage = Bitmap.createBitmap(documentImage, 0, 0, documentImage.getWidth(), documentImage.getHeight(), matrix, true);
+        }
 
         editPolygonView.setVisibility(View.GONE);
         cropButton.setVisibility(View.GONE);
+        rotateButton.setVisibility(View.GONE);
 
         resultImageView.setImageBitmap(documentImage);
         resultImageView.setVisibility(View.VISIBLE);
