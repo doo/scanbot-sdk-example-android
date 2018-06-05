@@ -45,7 +45,7 @@ The current version of the Scanbot SDK for Android is **1.28.7**
 
 ## Changelog of the Scanbot SDK for Android
 
-##### 1.28.6
+##### 1.28.7
 * Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
 * Improved `AutoSnappingController` precision.
 
