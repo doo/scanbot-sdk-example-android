@@ -40,10 +40,14 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.28.6**
+The current version of the Scanbot SDK for Android is **1.28.7**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.28.6
+* Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
+* Improved `AutoSnappingController` precision.
 
 ##### 1.28.6
 * Updated Google Mobile Vision library version to 12.0.1.
