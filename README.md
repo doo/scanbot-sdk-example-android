@@ -40,10 +40,16 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.28.7**
+The current version of the Scanbot SDK for Android is **1.30.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.30.0
+* Added **Ready-To-Use UI** components: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`. A set of easy to integrate and customize high-level UI components for the most common tasks in Scanbot SDK.
+* Published a new package `io.scanbot:sdk-package-ui` containing the Ready-To-Use UI components.
+* Added a new demo project `ready-to-use-ui` containing example code for the Ready-To-Use UI components.
+* Minor bug fixes and improvements.
 
 ##### 1.28.7
 * Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
@@ -54,18 +60,18 @@ The current version of the Scanbot SDK for Android is **1.28.7**
 * Optimized `ScanbotCameraView` performance.
 
 ##### 1.28.5
-* Added new attribute `magnifierEnableBounding` to `MagnifierView`, which allowing to enable/disable bounding of `MagnifierView` to the edge of screen. 
+* Added new attribute `magnifierEnableBounding` to `MagnifierView`, which allowing to enable/disable bounding of `MagnifierView` to the edge of screen.
 * Fixed issue with paddings on a `MagnifierView`
 
 ##### 1.28.4
-* `DCScanner` detection quality improvements. 
+* `DCScanner` detection quality improvements.
 
 ##### 1.28.3
 * Scanbot SDK could be reinitialised with the new SDK license.
 * `MagnifierView` should not be the same size as `EditPolygonImageView`, but have to have the same aspect ratio.
 
 ##### 1.28.2
-* Removed deprecated attributes `magnifierCrossSize`, `magnifierCrossStrokeWidth`, `magnifierStrokeWidth` and `editPolygonMagnifier` from `MagnifierView` since they don't have any effects on the view. 
+* Removed deprecated attributes `magnifierCrossSize`, `magnifierCrossStrokeWidth`, `magnifierStrokeWidth` and `editPolygonMagnifier` from `MagnifierView` since they don't have any effects on the view.
 To customize the `MagnifierView` please use the attributes `magnifierImageSrc`, `magnifierRadius` and `magnifierMargin`.
 
 ##### 1.28.1
@@ -81,11 +87,11 @@ To customize the `MagnifierView` please use the attributes `magnifierImageSrc`, 
 
 ##### 1.27.2
 * Fixed native libraries loading.
-* Fixed `DCScanner` bugs. 
+* Fixed `DCScanner` bugs.
 
 ##### 1.27.1
 * Added `TIFFWRiter` feature to the Scanbot SDK package 1.
-* Added new "Pure Binarization" (`ContourDetector.IMAGE_FILTER_PURE_BINARIZED`) filter. 
+* Added new "Pure Binarization" (`ContourDetector.IMAGE_FILTER_PURE_BINARIZED`) filter.
 * Added `DCScanner` recognition methods for `Bitmap`s and JPEG images.
 
 ##### 1.27.0
@@ -93,7 +99,7 @@ To customize the `MagnifierView` please use the attributes `magnifierImageSrc`, 
 * Added Finder feature for `MRZScanner`.
 * Added `DCScanner` (Disability Certificate scanner) feature to the Scanbot SDK package 4.
 * Updated Tesseract version to 3.05.01.
-* Updated Android support library dependencies version to 27.0.2. 
+* Updated Android support library dependencies version to 27.0.2.
 
 ##### 1.26.7
 * Minor bug fixes and improvements
