@@ -30,7 +30,6 @@ import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
-import io.scanbot.sdk.persistence.PolygonHelper;
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity;
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration;
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity;
@@ -111,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = DocumentScannerActivity.newIntent(MainActivity.this, cameraConfiguration);
                 startActivityForResult(intent, CAMERA_UI_REQUEST_CODE);
+            }
+        });
+        Button page_preview_activity = findViewById(R.id.page_preview_activity);
+        page_preview_activity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PagePreviewActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -241,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
             picture.recycle();
 
             String pageId = pageFileStorage.add(byteArray);
-            return new Page(pageId, PolygonHelper.getFulPolygon(), DetectionResult.OK);
+            return new Page(pageId, new ArrayList<>(), DetectionResult.OK);
         }
 
 

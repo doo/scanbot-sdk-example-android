@@ -25,7 +25,6 @@ import java.util.List;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
-import io.scanbot.sdk.persistence.PolygonHelper;
 import io.scanbot.sdk.ui.view.edit.CroppingActivity;
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
 
@@ -56,7 +55,7 @@ public class PagePreviewActivity extends AppCompatActivity {
             List<String> storedPages = new ScanbotSDK(this).getPageFileStorage().getStoredPages();
 
             for (String storedPage : storedPages) {
-                pages.add(new Page(storedPage, PolygonHelper.getFulPolygon(), DetectionResult.OK));
+                pages.add(new Page(storedPage, new ArrayList<>(), DetectionResult.OK));
             }
 
             adapter.setItems(pages);
