@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button camera_ui = findViewById(R.id.camera_ui);
-        camera_ui.setOnClickListener(new View.OnClickListener() {
+        Button document_scanner_btn = findViewById(R.id.document_scanner_btn);
+        document_scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button mrz_camera_ui = findViewById(R.id.mrz_camera_ui);
-        mrz_camera_ui.setOnClickListener(new View.OnClickListener() {
+        Button mrz_scanner_btn = findViewById(R.id.mrz_scanner_btn);
+        mrz_scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MRZScannerConfiguration mrzCameraConfiguration = new MRZScannerConfiguration();
@@ -136,20 +136,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button barcode_camera_ui = findViewById(R.id.barcode_camera_ui);
-        barcode_camera_ui.setOnClickListener(new View.OnClickListener() {
+        Button barcode_scanner_btn = findViewById(R.id.barcode_scanner_btn);
+        barcode_scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BarcodeScannerConfiguration barcodeCameraConfiguration = new BarcodeScannerConfiguration();
-                barcodeCameraConfiguration.setTopBarBackgroundColor(Color.parseColor("#00FFFF"));
-                barcodeCameraConfiguration.setTopBarButtonsColor(Color.parseColor("#FF0000"));
-
-                barcodeCameraConfiguration.setCameraOverlayColor(Color.parseColor("#80F0F000"));
-                barcodeCameraConfiguration.setFinderLineColor(Color.parseColor("#00F0F0"));
-                barcodeCameraConfiguration.setFinderHeight(800);
-                barcodeCameraConfiguration.setFinderWidth(800);
+                barcodeCameraConfiguration.setFinderLineColor(Color.parseColor("#FF0000"));
                 barcodeCameraConfiguration.setFinderLineWidth(10);
-
                 barcodeCameraConfiguration.setFlashEnabled(false);
 
                 Intent intent = BarcodeScannerActivity.newIntent(MainActivity.this, barcodeCameraConfiguration);

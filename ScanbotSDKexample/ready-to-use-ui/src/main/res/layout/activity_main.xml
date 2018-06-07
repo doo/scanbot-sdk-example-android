@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Scanbot SDK Demo" />
+            android:text="Scanbot SDK Ready-To-Use UI Demo" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -24,6 +24,27 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/document_scanner_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Document Scanner UI" />
+
+        <Button
+            android:id="@+id/barcode_scanner_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Barcode/QR-Code Scanner UI" />
+
+        <Button
+            android:id="@+id/mrz_scanner_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="MRZ Scanner UI" />
+
+        <Button
             android:id="@+id/crop_ui"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,32 +52,11 @@
             android:text="Ready to use UI Crop activity" />
 
         <Button
-            android:id="@+id/camera_ui"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Ready to use UI Camera" />
-
-        <Button
             android:id="@+id/page_preview_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Page Preview Activity" />
-
-        <Button
-            android:id="@+id/mrz_camera_ui"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Ready to use UI MRZ Camera" />
-
-        <Button
-            android:id="@+id/barcode_camera_ui"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Ready to use UI Barcode Camera" />
 
     </LinearLayout>
 </ScrollView>
