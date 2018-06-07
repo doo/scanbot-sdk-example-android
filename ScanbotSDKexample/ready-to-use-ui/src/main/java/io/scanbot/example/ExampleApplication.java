@@ -19,7 +19,7 @@ public class ExampleApplication extends MultiDexApplication {
                 // .license(this, "YOUR_SCANBOT_SDK_LICENSE_KEY")
                 .usePageStorageSettings(
                         new PageStorageSettings.Builder()
-                                .previewTargetMax(400)
+                                .previewTargetMax(600)
                                 .build())
                 .initialize(this);
         super.onCreate();

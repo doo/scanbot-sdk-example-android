@@ -45,18 +45,18 @@
             android:text="MRZ Scanner UI" />
 
         <Button
-            android:id="@+id/crop_ui"
+            android:id="@+id/cropping_ui_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Ready to use UI Crop activity" />
+            android:text="Cropping UI (via Photo Library)" />
 
         <Button
             android:id="@+id/page_preview_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Page Preview Activity" />
+            android:text="Show all images" />
 
     </LinearLayout>
 </ScrollView>

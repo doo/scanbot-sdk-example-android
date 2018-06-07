@@ -136,17 +136,14 @@ public class PagePreviewActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             int itemPosition = recycleView.getChildLayoutPosition(v);
-            Page item = adapter.items.get(itemPosition);
-            CroppingConfiguration editPolygonConfiguration = new CroppingConfiguration();
+            Page page = adapter.items.get(itemPosition);
+            CroppingConfiguration configuration = new CroppingConfiguration();
+            // Customize colors, text resources, etc via configuration:
+            //configuration.set...
 
-            editPolygonConfiguration.setPage(
-                    item
-            );
+            configuration.setPage(page);
 
-            Intent intent = CroppingActivity.newIntent(
-                    getApplicationContext(),
-                    editPolygonConfiguration
-            );
+            Intent intent = CroppingActivity.newIntent(getApplicationContext(), configuration);
             startActivityForResult(intent, CROP_UI_REQUEST_CODE);
         }
     }

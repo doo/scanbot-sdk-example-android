@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
         initDependencies();
 
         progressBar = findViewById(R.id.progressBar);
-        Button crop_ui = findViewById(R.id.crop_ui);
-        crop_ui.setOnClickListener(new View.OnClickListener() {
+        Button cropping_ui_btn = findViewById(R.id.cropping_ui_btn);
+        cropping_ui_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -102,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                DocumentScannerConfiguration cameraConfiguration = new DocumentScannerConfiguration();
+                DocumentScannerConfiguration configuration = new DocumentScannerConfiguration();
+                // Customize colors, text resources, etc via configuration:
+                configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
+                //configuration.setMultiPageEnabled(true);
+                //configuration.set...
 
-                cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
-                cameraConfiguration.setIgnoreBadAspectRatio(true);
-                cameraConfiguration.setImageScale(0.5f);
-
-                Intent intent = DocumentScannerActivity.newIntent(MainActivity.this, cameraConfiguration);
+                Intent intent = DocumentScannerActivity.newIntent(MainActivity.this, configuration);
                 startActivityForResult(intent, CAMERA_UI_REQUEST_CODE);
             }
         });
@@ -125,20 +125,12 @@ public class MainActivity extends AppCompatActivity {
         mrz_scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MRZScannerConfiguration mrzCameraConfiguration = new MRZScannerConfiguration();
-                mrzCameraConfiguration.setTopBarBackgroundColor(Color.parseColor("#00FFFF"));
-                mrzCameraConfiguration.setTopBarButtonsColor(Color.parseColor("#FF0000"));
+                MRZScannerConfiguration configuration = new MRZScannerConfiguration();
+                // Customize colors, text resources, etc via configuration:
+                //configuration.setFinderLineColor(Color.parseColor("#FF0000"));
+                //configuration.set...
 
-                mrzCameraConfiguration.setCameraOverlayColor(Color.parseColor("#80F0F000"));
-                mrzCameraConfiguration.setFinderLineColor(Color.parseColor("#00F0F0"));
-                mrzCameraConfiguration.setFinderHeight(300);
-                mrzCameraConfiguration.setFinderWidth(800);
-                mrzCameraConfiguration.setFinderLineWidth(10);
-
-                mrzCameraConfiguration.setFlashEnabled(false);
-
-
-                Intent intent = MRZScannerActivity.newIntent(MainActivity.this, mrzCameraConfiguration);
+                Intent intent = MRZScannerActivity.newIntent(MainActivity.this, configuration);
                 startActivityForResult(intent, MRZ_UI_REQUEST_CODE);
             }
         });
@@ -147,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
         barcode_scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BarcodeScannerConfiguration barcodeCameraConfiguration = new BarcodeScannerConfiguration();
-                barcodeCameraConfiguration.setFinderLineColor(Color.parseColor("#FF0000"));
-                barcodeCameraConfiguration.setFinderLineWidth(10);
-                barcodeCameraConfiguration.setFlashEnabled(false);
+                BarcodeScannerConfiguration configuration = new BarcodeScannerConfiguration();
+                // Customize colors, text resources, etc via configuration:
+                //configuration.setFinderLineColor(Color.parseColor("#FF0000"));
+                //configuration.set...
 
-                Intent intent = BarcodeScannerActivity.newIntent(MainActivity.this, barcodeCameraConfiguration);
+                Intent intent = BarcodeScannerActivity.newIntent(MainActivity.this, configuration);
                 startActivityForResult(intent, BARCODE_UI_REQUEST_CODE);
             }
         });
@@ -248,15 +240,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Page page) {
             progressBar.setVisibility(View.GONE);
-            CroppingConfiguration editPolygonConfiguration = new CroppingConfiguration();
+            CroppingConfiguration configuration = new CroppingConfiguration();
+            // Customize colors, text resources, etc via configuration:
+            //configuration.set...
 
-            editPolygonConfiguration.setPage(
-                    page
-            );
-            Intent intent = CroppingActivity.newIntent(
-                    getApplicationContext(),
-                    editPolygonConfiguration
-            );
+            configuration.setPage(page);
+
+            Intent intent = CroppingActivity.newIntent(getApplicationContext(), configuration);
             startActivityForResult(intent, CROP_UI_REQUEST_CODE);
         }
     }
