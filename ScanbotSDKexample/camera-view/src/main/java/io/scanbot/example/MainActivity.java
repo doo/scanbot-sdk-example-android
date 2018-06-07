@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
+        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
+        autoSnappingController.setSensitivity(0);
+
         cameraView.addPictureCallback(this);
 
         userGuidanceToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);

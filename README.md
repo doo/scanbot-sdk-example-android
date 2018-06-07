@@ -40,10 +40,25 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.28.3**
+The current version of the Scanbot SDK for Android is **1.28.7**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.28.7
+* Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
+* Improved `AutoSnappingController` precision.
+
+##### 1.28.6
+* Updated Google Mobile Vision library version to 12.0.1.
+* Optimized `ScanbotCameraView` performance.
+
+##### 1.28.5
+* Added new attribute `magnifierEnableBounding` to `MagnifierView`, which allowing to enable/disable bounding of `MagnifierView` to the edge of screen. 
+* Fixed issue with paddings on a `MagnifierView`
+
+##### 1.28.4
+* `DCScanner` detection quality improvements. 
 
 ##### 1.28.3
 * Scanbot SDK could be reinitialised with the new SDK license.
