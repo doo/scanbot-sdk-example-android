@@ -30,6 +30,10 @@ android {
     }
 }
 
+configurations {
+    compile.exclude group: 'org.jetbrains', module: 'annotations'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -42,8 +46,8 @@ dependencies {
     compile 'com.android.support:support-v13:27.1.0'
     compile 'com.android.support:support-v4:27.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'io.scanbot:sdk-package-ui:1.28.3.15-SNAPSHOT'
-    implementation "io.scanbot:sdk-package-1:1.28.3.15-SNAPSHOT"
+    implementation "io.scanbot:sdk-package-ui:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
     implementation 'com.android.support:multidex:1.0.1'
 
 }

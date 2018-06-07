@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
+import net.doo.snap.camera.CameraPreviewMode;
 import net.doo.snap.lib.detector.DetectionResult;
 
 import java.io.ByteArrayOutputStream;
@@ -27,22 +28,25 @@ import java.util.List;
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
-import io.scanbot.sdk.persistance.Page;
-import io.scanbot.sdk.persistance.PageFileStorage;
-import io.scanbot.sdk.persistance.PolygonHelper;
-import io.scanbot.sdk.ui.view.barcode.BarcodeCameraActivity;
-import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeCameraConfiguration;
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode;
-import io.scanbot.sdk.ui.view.edit.configuration.EditPolygonConfiguration;
-import io.scanbot.sdk.ui.view.mrz.MRZCameraActivity;
-import io.scanbot.sdk.ui.view.mrz.configuration.MRZCameraConfiguration;
+import io.scanbot.sdk.persistence.Page;
+import io.scanbot.sdk.persistence.PageFileStorage;
+import io.scanbot.sdk.persistence.PolygonHelper;
+import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity;
+import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration;
+import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity;
+import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration;
+import io.scanbot.sdk.ui.view.edit.CroppingActivity;
+import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
+import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity;
+import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int MRZ_DEFAULT_UI_REQUEST_CODE = 909;
-    private static final int BARCODE_DEFAULT_UI_REQUEST_CODE = 910;
-    private static final int CROP_DEFAULT_UI_REQUEST_CODE = 9999;
+    private static final int MRZ_UI_REQUEST_CODE = 909;
+    private static final int BARCODE_UI_REQUEST_CODE = 910;
+    private static final int CROP_UI_REQUEST_CODE = 9999;
     private static final int SELECT_PICTURE_REQUEST = 8888;
+    private static final int CAMERA_UI_REQUEST_CODE = 1111;
 
     private ScanbotSDK scanbotSDK;
     private BlobManager blobManager;
@@ -52,22 +56,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            MRZRecognitionResult mrzRecognitionResult = data.getParcelableExtra(MRZCameraActivity.EXTRACTED_FIELDS_EXTRA);
+        if (requestCode == MRZ_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            MRZRecognitionResult mrzRecognitionResult = data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA);
             Toast.makeText(MainActivity.this,
                     extractData(mrzRecognitionResult), Toast.LENGTH_LONG).show();
-        } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == CROP_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Page page = data.getParcelableExtra
-                    (io.scanbot.sdk.ui.view.edit.EditPolygonActivity.EDITED_PAGE_EXTRA);
-        } else if (requestCode == BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                    (io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA);
+        } else if (requestCode == BARCODE_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             BarcodeScanningResult barcodeData = data.getParcelableExtra
-                    (BarcodeCameraActivity.SCANNED_BARCODE_EXTRA);
+                    (BarcodeScannerActivity.SCANNED_BARCODE_EXTRA);
             Toast.makeText(MainActivity.this,
                     barcodeData.toString(), Toast.LENGTH_LONG).show();
         } else if (requestCode == SELECT_PICTURE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 new ProcessImage(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             }
+        } else if (requestCode == CAMERA_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Intent intent = new Intent(MainActivity.this, PagePreviewActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -79,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         initDependencies();
 
         progressBar = findViewById(R.id.progressBar);
-        Button crop_ui = findViewById(R.id.crop_default_ui);
+        Button crop_ui = findViewById(R.id.crop_ui);
         crop_ui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,68 +98,62 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button camera_default_ui = findViewById(R.id.camera_default_ui);
-        camera_default_ui.setOnClickListener(new View.OnClickListener() {
+        Button camera_ui = findViewById(R.id.camera_ui);
+        camera_ui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PagePreviewActivity.class);
-                startActivity(intent);
+
+                DocumentScannerConfiguration cameraConfiguration = new DocumentScannerConfiguration();
+
+                cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
+                cameraConfiguration.setIgnoreBadAspectRatio(true);
+                cameraConfiguration.setImageScale(0.5f);
+
+                Intent intent = DocumentScannerActivity.newIntent(MainActivity.this, cameraConfiguration);
+                startActivityForResult(intent, CAMERA_UI_REQUEST_CODE);
             }
         });
 
-        Button mrz_camera_default_ui = findViewById(R.id.mrz_camera_default_ui);
-        mrz_camera_default_ui.setOnClickListener(new View.OnClickListener() {
+        Button mrz_camera_ui = findViewById(R.id.mrz_camera_ui);
+        mrz_camera_ui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MRZCameraConfiguration mrzCameraConfiguration = new MRZCameraConfiguration();
+                MRZScannerConfiguration mrzCameraConfiguration = new MRZScannerConfiguration();
                 mrzCameraConfiguration.setTopBarBackgroundColor(Color.parseColor("#00FFFF"));
                 mrzCameraConfiguration.setTopBarButtonsColor(Color.parseColor("#FF0000"));
-
-                mrzCameraConfiguration.setTextCancel("закончить");
-                mrzCameraConfiguration.setTextUserGuidance("Помести код сюда");
 
                 mrzCameraConfiguration.setCameraOverlayColor(Color.parseColor("#80F0F000"));
                 mrzCameraConfiguration.setFinderLineColor(Color.parseColor("#00F0F0"));
                 mrzCameraConfiguration.setFinderHeight(300);
                 mrzCameraConfiguration.setFinderWidth(800);
                 mrzCameraConfiguration.setFinderLineWidth(10);
-                mrzCameraConfiguration.setTextPermissionDescription("Дай пермишн, ну пазязя!");
-                mrzCameraConfiguration.setTextPermissionButton("На пермишн");
 
                 mrzCameraConfiguration.setFlashEnabled(false);
 
-                mrzCameraConfiguration.setOrientationMode(CameraOrientationMode.PORTRAIT);
 
-                Intent intent = MRZCameraActivity.newIntent(MainActivity.this, mrzCameraConfiguration);
-                startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE);
+                Intent intent = MRZScannerActivity.newIntent(MainActivity.this, mrzCameraConfiguration);
+                startActivityForResult(intent, MRZ_UI_REQUEST_CODE);
             }
         });
 
-        Button barcode_camera_default_ui = findViewById(R.id.barcode_camera_default_ui);
-        barcode_camera_default_ui.setOnClickListener(new View.OnClickListener() {
+        Button barcode_camera_ui = findViewById(R.id.barcode_camera_ui);
+        barcode_camera_ui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BarcodeCameraConfiguration barcodeCameraConfiguration = new BarcodeCameraConfiguration();
+                BarcodeScannerConfiguration barcodeCameraConfiguration = new BarcodeScannerConfiguration();
                 barcodeCameraConfiguration.setTopBarBackgroundColor(Color.parseColor("#00FFFF"));
                 barcodeCameraConfiguration.setTopBarButtonsColor(Color.parseColor("#FF0000"));
-
-                barcodeCameraConfiguration.setTextCancel("закончить");
-                barcodeCameraConfiguration.setTextUserGuidance("Помести код сюда");
 
                 barcodeCameraConfiguration.setCameraOverlayColor(Color.parseColor("#80F0F000"));
                 barcodeCameraConfiguration.setFinderLineColor(Color.parseColor("#00F0F0"));
                 barcodeCameraConfiguration.setFinderHeight(800);
                 barcodeCameraConfiguration.setFinderWidth(800);
                 barcodeCameraConfiguration.setFinderLineWidth(10);
-                barcodeCameraConfiguration.setTextPermissionDescription("Дай пермишн, ну пазязя!");
-                barcodeCameraConfiguration.setTextPermissionButton("На пермишн");
 
                 barcodeCameraConfiguration.setFlashEnabled(false);
 
-                barcodeCameraConfiguration.setOrientationMode(CameraOrientationMode.PORTRAIT);
-
-                Intent intent = BarcodeCameraActivity.newIntent(MainActivity.this, barcodeCameraConfiguration);
-                startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE);
+                Intent intent = BarcodeScannerActivity.newIntent(MainActivity.this, barcodeCameraConfiguration);
+                startActivityForResult(intent, BARCODE_UI_REQUEST_CODE);
             }
         });
 
@@ -240,23 +241,23 @@ public class MainActivity extends AppCompatActivity {
             picture.recycle();
 
             String pageId = pageFileStorage.add(byteArray);
-            return new Page(pageId, PolygonHelper.Companion.getFulPolygon(), DetectionResult.OK);
+            return new Page(pageId, PolygonHelper.getFulPolygon(), DetectionResult.OK);
         }
 
 
         @Override
         protected void onPostExecute(Page page) {
             progressBar.setVisibility(View.GONE);
-            EditPolygonConfiguration editPolygonConfiguration = new EditPolygonConfiguration();
+            CroppingConfiguration editPolygonConfiguration = new CroppingConfiguration();
 
             editPolygonConfiguration.setPage(
                     page
             );
-            Intent intent = io.scanbot.sdk.ui.view.edit.EditPolygonActivity.newIntent(
+            Intent intent = CroppingActivity.newIntent(
                     getApplicationContext(),
                     editPolygonConfiguration
             );
-            startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE);
+            startActivityForResult(intent, CROP_UI_REQUEST_CODE);
         }
     }
 }

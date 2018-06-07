@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,25 +15,23 @@ import android.widget.ImageView;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
-import net.doo.snap.camera.CameraPreviewMode;
+import net.doo.snap.lib.detector.DetectionResult;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.persistance.Page;
-import io.scanbot.sdk.persistance.PageFileStorage;
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode;
-import io.scanbot.sdk.ui.view.camera.CameraActivity;
-import io.scanbot.sdk.ui.view.camera.configuration.CameraConfiguration;
-import io.scanbot.sdk.ui.view.edit.EditPolygonActivity;
-import io.scanbot.sdk.ui.view.edit.configuration.EditPolygonConfiguration;
+import io.scanbot.sdk.persistence.Page;
+import io.scanbot.sdk.persistence.PageFileStorage;
+import io.scanbot.sdk.persistence.PolygonHelper;
+import io.scanbot.sdk.ui.view.edit.CroppingActivity;
+import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
 
 public class PagePreviewActivity extends AppCompatActivity {
 
-    private int CAMERA_DEFAULT_UI_REQUEST_CODE = 1111;
-    private int CROP_DEFAULT_UI_REQUEST_CODE = 9999;
+    private int CROP_UI_REQUEST_CODE = 9999;
 
     private PagesAdapter adapter;
     private RecyclerView recycleView;
@@ -54,42 +51,28 @@ public class PagePreviewActivity extends AppCompatActivity {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         recycleView.setLayoutManager(layoutManager);
 
-        if (isRelaunchedAfterStateRestore()) {
-            return;
-        } else {
-            CameraConfiguration cameraConfiguration = new CameraConfiguration();
+        List<Page> pages = new ArrayList<>();
+        try {
+            List<String> storedPages = new ScanbotSDK(this).getPageFileStorage().getStoredPages();
 
-            cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
-            cameraConfiguration.setOrientationMode(CameraOrientationMode.PORTRAIT);
-            cameraConfiguration.setIgnoreBadAspectRatio(true);
-            cameraConfiguration.setAutoSnappingEnabled(false);
+            for (String storedPage : storedPages) {
+                pages.add(new Page(storedPage, PolygonHelper.getFulPolygon(), DetectionResult.OK));
+            }
 
-            Intent intent = io.scanbot.sdk.ui.view.camera.CameraActivity.newIntent(this, cameraConfiguration);
-            startActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE);
+            adapter.setItems(pages);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Parcelable[] parcelableArrayExtra = data.getParcelableArrayExtra(CameraActivity.SNAPPED_PAGE_EXTRA);
-            List<Page> pages = new ArrayList<>();
-            for (Parcelable parcelable : parcelableArrayExtra) {
-                pages.add((Page) parcelable);
-            }
-            adapter.setItems(pages);
-        } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Page page = data.getParcelableExtra(EditPolygonActivity.EDITED_PAGE_EXTRA);
+        if (requestCode == CROP_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Page page = data.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA);
             adapter.updateItem(page);
         }
-    }
-
-
-    private boolean isRelaunchedAfterStateRestore() {
-        return getLastNonConfigurationInstance() != null;
     }
 
     class PagesAdapter extends RecyclerView.Adapter<PageViewHolder> {
@@ -113,8 +96,13 @@ public class PagePreviewActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(PageViewHolder holder, int position) {
             Page page = items.get(position);
+
+            String imagePath = new ScanbotSDK(getApplication()).getPageFileStorage().getPreviewImageURI(page.getPageId(), PageFileStorage.PageFileType.DOCUMENT).getPath();
+            String originalImagePath = new ScanbotSDK(getApplication()).getPageFileStorage().getPreviewImageURI(page.getPageId(), PageFileStorage.PageFileType.ORIGINAL).getPath();
+            File fileToShow = (new File(imagePath).exists()) ? new File(imagePath) : new File(originalImagePath);
+
             Picasso.with(getApplicationContext())
-                    .load(new File(new ScanbotSDK(PagePreviewActivity.this).getPageFileStorage().getPreviewImageURI(page.getPageId(), PageFileStorage.PageFileType.DOCUMENT)))
+                    .load(fileToShow)
                     .memoryPolicy(MemoryPolicy.NO_CACHE)
                     .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                     .centerInside()
@@ -150,17 +138,17 @@ public class PagePreviewActivity extends AppCompatActivity {
         public void onClick(View v) {
             int itemPosition = recycleView.getChildLayoutPosition(v);
             Page item = adapter.items.get(itemPosition);
-            EditPolygonConfiguration editPolygonConfiguration = new EditPolygonConfiguration();
+            CroppingConfiguration editPolygonConfiguration = new CroppingConfiguration();
 
             editPolygonConfiguration.setPage(
                     item
             );
 
-            Intent intent = io.scanbot.sdk.ui.view.edit.EditPolygonActivity.newIntent(
+            Intent intent = CroppingActivity.newIntent(
                     getApplicationContext(),
                     editPolygonConfiguration
             );
-            startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE);
+            startActivityForResult(intent, CROP_UI_REQUEST_CODE);
         }
     }
 

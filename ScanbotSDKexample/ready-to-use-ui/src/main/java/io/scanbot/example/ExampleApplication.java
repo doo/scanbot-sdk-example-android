@@ -3,7 +3,7 @@ package io.scanbot.example;
 import android.support.multidex.MultiDexApplication;
 
 import io.scanbot.sdk.ScanbotSDKInitializer;
-import io.scanbot.sdk.persistance.PageStorageSettings;
+import io.scanbot.sdk.persistence.PageStorageSettings;
 
 
 /**
