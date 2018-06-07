@@ -40,10 +40,15 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.28.7**
+The current version of the Scanbot SDK for Android is **1.30.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.30.0
+* Added `io.scanbot:sdk-package-ui` package containing ready to use UI components.
+* Usage example could be find in `ready-to-use-ui` example project.
+* Contains: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`
 
 ##### 1.28.7
 * Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
