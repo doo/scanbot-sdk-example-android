@@ -15,6 +15,7 @@ For more details visit our website https://scanbot.io/sdk.html
 - [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
 - [API Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/)
 - [API Core Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/Core/)
+- [API Ready to use UI Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/RTU_UI/)
 
 
 ## License key
@@ -40,10 +41,13 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.30.0**
+The current version of the Scanbot SDK for Android is **1.31.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.31.0
+* TODO
 
 ##### 1.30.0
 * Added **Ready-To-Use UI** components: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`. A set of easy to integrate and customize high-level UI components for the most common tasks in Scanbot SDK.
