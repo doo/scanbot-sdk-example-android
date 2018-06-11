@@ -26,12 +26,13 @@
         android:layout_height="100dp"
         android:layout_gravity="bottom|right" />
 
-    <Button
+    <io.scanbot.sdk.ui.camera.ShutterButton
         android:id="@+id/snap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:text="Snap" />
+        android:elevation="6dp"
+        />
 
     <Button
         android:id="@+id/flash"

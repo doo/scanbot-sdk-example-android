@@ -1,14 +1,13 @@
 package io.scanbot.example;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
 import net.doo.snap.entity.Blob;
@@ -16,6 +15,8 @@ import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
 import java.io.IOException;
+
+import io.scanbot.sdk.ScanbotSDK;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
@@ -21,6 +20,7 @@ import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.mrzscanner.MRZScanner;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
+import io.scanbot.sdk.ScanbotSDK;
 
 
 public class MRZStillImageDetectionActivity extends AppCompatActivity implements PictureCallback {

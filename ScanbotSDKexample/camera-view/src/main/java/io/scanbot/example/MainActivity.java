@@ -22,6 +22,8 @@ import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
+import io.scanbot.sdk.ui.camera.ShutterButton;
+
 
 public class MainActivity extends AppCompatActivity implements PictureCallback,
         ContourDetectorFrameHandler.ResultHandler {
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
                 cameraView.takePicture(false);
             }
         });
+        findViewById(R.id.snap).setVisibility(View.VISIBLE);
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +114,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             }
         });
 
-        setAutoSnapEnabled(autoSnappingEnabled);
+        autoSnappingToggleButton.post(new Runnable() {
+            @Override
+            public void run() {
+                setAutoSnapEnabled(autoSnappingEnabled);
+            }
+        });
+
     }
 
     @Override
@@ -215,6 +224,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         contourDetectorFrameHandler.setEnabled(enabled);
         polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
         autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON":"OFF"));
+        if (enabled){
+            ((ShutterButton)findViewById(R.id.snap)).showAutoButton();
+        } else{
+            ((ShutterButton)findViewById(R.id.snap)).showManualButton();
+        }
+
     }
 
 }

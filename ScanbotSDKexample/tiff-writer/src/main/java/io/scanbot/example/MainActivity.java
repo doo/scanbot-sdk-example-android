@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import net.doo.snap.ScanbotSDK;
+import io.scanbot.sdk.ScanbotSDK;
 import net.doo.snap.util.FileChooserUtils;
 
 import java.io.File;

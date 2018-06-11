@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.dcscanner.DCScanner;
@@ -17,6 +16,7 @@ import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
+import io.scanbot.sdk.ScanbotSDK;
 
 public class DCScannerActivity extends AppCompatActivity {
 

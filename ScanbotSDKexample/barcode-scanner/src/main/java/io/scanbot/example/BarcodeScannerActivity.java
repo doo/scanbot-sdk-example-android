@@ -11,7 +11,7 @@ import android.view.View;
 
 import com.google.zxing.Result;
 
-import net.doo.snap.ScanbotSDK;
+import io.scanbot.sdk.ScanbotSDK;
 import net.doo.snap.camera.BarcodeDetectorFrameHandler;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
