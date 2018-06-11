@@ -7,10 +7,10 @@ android {
     defaultConfig {
         applicationId "io.scanbot.example"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -24,6 +24,6 @@ android {
 
 dependencies {
     compile "com.android.support:appcompat-v7:$project.ext.androidSupportVersion"
-
+    compile 'com.android.support:multidex:1.0.2'
     compile "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
 }

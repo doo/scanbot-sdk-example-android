@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +20,8 @@ import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
+
+import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
 public class MainActivity extends AppCompatActivity implements PictureCallback,
@@ -54,10 +55,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
                     @Override
                     public void run() {
                         cameraView.setAutoFocusSound(false);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        // Shutter sound is ON by default. You can disable it:
+                        /*
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
                             cameraView.setShutterSound(false);
                         }
-
+                        */
                         cameraView.continuousFocus();
                         cameraView.useFlash(flashEnabled);
                     }
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
                 cameraView.takePicture(false);
             }
         });
+        findViewById(R.id.snap).setVisibility(View.VISIBLE);
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +115,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             }
         });
 
-        setAutoSnapEnabled(autoSnappingEnabled);
+        autoSnappingToggleButton.post(new Runnable() {
+            @Override
+            public void run() {
+                setAutoSnapEnabled(autoSnappingEnabled);
+            }
+        });
+
     }
 
     @Override
@@ -215,6 +225,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         contourDetectorFrameHandler.setEnabled(enabled);
         polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
         autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON":"OFF"));
+        if (enabled){
+            ((ShutterButton)findViewById(R.id.snap)).showAutoButton();
+        } else{
+            ((ShutterButton)findViewById(R.id.snap)).showManualButton();
+        }
+
     }
 
 }

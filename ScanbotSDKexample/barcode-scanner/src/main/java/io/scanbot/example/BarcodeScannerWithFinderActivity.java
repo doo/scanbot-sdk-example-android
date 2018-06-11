@@ -12,15 +12,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.google.zxing.Result;
-
-import net.doo.snap.ScanbotSDK;
-import net.doo.snap.camera.BarcodeDetectorFrameHandler;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+
+import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
+import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
 
 public class BarcodeScannerWithFinderActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler, AdapterView.OnItemSelectedListener {
 
@@ -95,29 +95,37 @@ public class BarcodeScannerWithFinderActivity extends AppCompatActivity implemen
         cameraView.onPause();
     }
 
+    public void onItemSelected(final AdapterView<?> parent, final View view, final int pos, final long id) {
+        encoding = (pos == 0 ? null : parent.getItemAtPosition(pos).toString());
+    }
+
+    public void onNothingSelected(final AdapterView<?> parent) {
+        //
+    }
+
     @Override
-    public boolean handleResult(final Result rawResult) {
+    public boolean handleResult(final BarcodeScanningResult detectedBarcode) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (rawResult != null) {
+                if (detectedBarcode != null) {
 
                     cameraView.stopPreview();
 
                     final String value;
                     if (encoding != null) {
-                        value = Charset.forName(encoding).decode(ByteBuffer.wrap(rawResult.getText().getBytes())).toString();
+                        value = Charset.forName(encoding).decode(ByteBuffer.wrap(detectedBarcode.getText().getBytes())).toString();
                     }
                     else {
-                        value = rawResult.getText();
+                        value = detectedBarcode.getText();
                     }
 
                     final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerWithFinderActivity.this);
 
                     builder.setTitle("Result")
                             .setMessage(
-                                    "FORMAT: " + rawResult.getBarcodeFormat().toString() +
-                                    "\n\nVALUE: " + value
+                                    "FORMAT: " + detectedBarcode.getBarcodeFormat().toString() +
+                                            "\n\nVALUE: " + value
                             );
 
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -147,13 +155,5 @@ public class BarcodeScannerWithFinderActivity extends AppCompatActivity implemen
             }
         });
         return false;
-    }
-
-    public void onItemSelected(final AdapterView<?> parent, final View view, final int pos, final long id) {
-        encoding = (pos == 0 ? null : parent.getItemAtPosition(pos).toString());
-    }
-
-    public void onNothingSelected(final AdapterView<?> parent) {
-        //
     }
 }
