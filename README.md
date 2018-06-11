@@ -44,12 +44,21 @@ The current version of the Scanbot SDK for Android is **1.30.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+##### 1.31.0
+* Added native libs for `arm64-v8a`.
+  * ⚠️ **Please note:** In August 2019, Google Play Store will require that new apps and app updates with native libraries provide 64-bit versions in addition to their 32-bit versions. (https://android-developers.googleblog.com/2017/12/improving-app-security-and-performance.html)
+  * We strongly recommend to upgrade the Scanbot SDK for Android to the latest version to benefit from the full support of `arm64-v8a` libs.
+* Upgraded Dagger to version 2.16. It is recommended to upgrade the Dagger version in your App to 2.14.x or higher.
 
 ##### 1.30.0
-* Added **Ready-To-Use UI** components: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`. A set of easy to integrate and customize high-level UI components for the most common tasks in Scanbot SDK.
-* Published a new package `io.scanbot:sdk-package-ui` containing the Ready-To-Use UI components.
-* Added a new demo project `ready-to-use-ui` containing example code for the Ready-To-Use UI components.
+* 🎉 NEW! Added **Ready-To-Use UI** Components: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`. A set of easy to integrate and customize high-level UI components for the most common tasks in Scanbot SDK.
+  * Published a new package `io.scanbot:sdk-package-ui` containing the new **Ready-To-Use UI** Components.
+  * Added a new demo project `ready-to-use-ui` containing example code for the new **Ready-To-Use UI** Components.
+* Added a beautiful, animated ShutterButton component (`io.scanbot.sdk.ui.camera.ShutterButton`) which can also be used with our **Classical UI Components**. Check out the [camera-view](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/camera-view) example app. 
 * Minor bug fixes and improvements.
+* Internal refactorings and improvements:
+  * Deprecated some classes in the `net.doo.snap` Java package. Please use the equivalent classes from the new Java package `io.scanbot.sdk`. 
+    (e.g. `net.doo.snap.ScanbotSDKInitializer` => `io.scanbot.sdk.ScanbotSDKInitializer`,  `net.doo.snap.ScanbotSDK` => `io.scanbot.sdk.ScanbotSDK`, etc.)
 
 ##### 1.28.7
 * Added `setIgnoreBadAspectRatio(boolean ignoreBadAspectRatio)` method for the `AutoSnappingController`.
