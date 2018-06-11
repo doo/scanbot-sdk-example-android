@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
 import net.doo.snap.entity.Blob;
@@ -40,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
 
 
 public class MainActivity extends AppCompatActivity {

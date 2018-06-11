@@ -2,7 +2,7 @@ package io.scanbot.example;
 
 import android.app.Application;
 
-import net.doo.snap.ScanbotSDKInitializer;
+import io.scanbot.sdk.ScanbotSDKInitializer;
 
 /**
  * {@link ScanbotSDKInitializer} should be called

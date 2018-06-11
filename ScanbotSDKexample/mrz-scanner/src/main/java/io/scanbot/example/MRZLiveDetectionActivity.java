@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.mrzscanner.MRZScanner;
@@ -18,6 +17,7 @@ import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
+import io.scanbot.sdk.ScanbotSDK;
 
 public class MRZLiveDetectionActivity extends AppCompatActivity {
 

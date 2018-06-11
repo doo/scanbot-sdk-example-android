@@ -11,7 +11,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.ScanbotSDK;
 import net.doo.snap.entity.Document;
 import net.doo.snap.entity.Page;
 import net.doo.snap.entity.SnappingDraft;
@@ -30,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
 
 
 public class MainActivity extends AppCompatActivity {
