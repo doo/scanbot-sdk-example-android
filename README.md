@@ -46,9 +46,6 @@ The current version of the Scanbot SDK for Android is **1.31.0**
 
 ## Changelog of the Scanbot SDK for Android
 
-##### 1.31.0
-* TODO
-
 ##### 1.30.0
 * Added **Ready-To-Use UI** components: `DocumentScannerActivity`, `CroppingActivity`, `MRZScannerActivity`, `BarcodeScannerActivity`. A set of easy to integrate and customize high-level UI components for the most common tasks in Scanbot SDK.
 * Published a new package `io.scanbot:sdk-package-ui` containing the Ready-To-Use UI components.
