@@ -9,10 +9,10 @@ import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.google.zxing.Result;
-
 import io.scanbot.sdk.ScanbotSDK;
-import net.doo.snap.camera.BarcodeDetectorFrameHandler;
+import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
+import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
+
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 
@@ -80,18 +80,18 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     }
 
     @Override
-    public boolean handleResult(final Result rawResult) {
+    public boolean handleResult(final BarcodeScanningResult detectedBarcode) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (rawResult != null) {
+                if (detectedBarcode != null) {
 
                     cameraView.stopPreview();
 
                     final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerActivity.this);
 
                     builder.setTitle("Result")
-                            .setMessage(rawResult.getBarcodeFormat().toString() + "\n\n" + rawResult.getText());
+                            .setMessage(detectedBarcode.getBarcodeFormat().toString() + "\n\n" + detectedBarcode.getText());
 
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
