@@ -6,11 +6,10 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.CameraOpenCallback;
@@ -32,8 +31,10 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private ImageView resultView;
     private ContourDetectorFrameHandler contourDetectorFrameHandler;
     private AutoSnappingController autoSnappingController;
-    private Toast userGuidanceToast;
+    private TextView userGuidanceHint;
+    private long lastUserGuidanceHintTs = 0L;
     private Button autoSnappingToggleButton;
+    private ShutterButton shutterButton;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
@@ -87,18 +88,18 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         cameraView.addPictureCallback(this);
 
-        userGuidanceToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        userGuidanceToast.setGravity(Gravity.CENTER, 0, 0);
+        userGuidanceHint = findViewById(R.id.userGuidanceHint);
 
-        findViewById(R.id.snap).setOnClickListener(new View.OnClickListener() {
+        shutterButton = findViewById(R.id.shutterButton);
+        shutterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cameraView.takePicture(false);
             }
         });
-        findViewById(R.id.snap).setVisibility(View.VISIBLE);
+        shutterButton.setVisibility(View.VISIBLE);
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.flashToggle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 flashEnabled = !flashEnabled;
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     public boolean handleResult(final ContourDetectorFrameHandler.DetectedFrame detectedFrame) {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
-        this.runOnUiThread(new Runnable() {
+        userGuidanceHint.post(new Runnable() {
             @Override
             public void run() {
                 showUserGuidance(detectedFrame.detectionResult);
@@ -155,35 +156,45 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             return;
         }
 
+        if (System.currentTimeMillis() - lastUserGuidanceHintTs < 400) {
+            return;
+        }
+
         switch (result) {
             case OK:
-                userGuidanceToast.setText("Don't move");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("Don't move");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case OK_BUT_TOO_SMALL:
-                userGuidanceToast.setText("Move closer");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("Move closer");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case OK_BUT_BAD_ANGLES:
-                userGuidanceToast.setText("Perspective");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("Perspective");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case ERROR_NOTHING_DETECTED:
-                userGuidanceToast.setText("No Document");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("No Document");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case ERROR_TOO_NOISY:
-                userGuidanceToast.setText("Background too noisy");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("Background too noisy");
+                userGuidanceHint.setVisibility(View.VISIBLE);
+                break;
+            case OK_BUT_BAD_ASPECT_RATIO:
+                userGuidanceHint.setText("Wrong aspect ratio.\n Rotate your device.");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case ERROR_TOO_DARK:
-                userGuidanceToast.setText("Poor light");
-                userGuidanceToast.show();
+                userGuidanceHint.setText("Poor light");
+                userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             default:
-                userGuidanceToast.cancel();
+                userGuidanceHint.setVisibility(View.GONE);
                 break;
         }
+
+        lastUserGuidanceHintTs = System.currentTimeMillis();
     }
 
     @Override
@@ -226,11 +237,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
         autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON":"OFF"));
         if (enabled){
-            ((ShutterButton)findViewById(R.id.snap)).showAutoButton();
-        } else{
-            ((ShutterButton)findViewById(R.id.snap)).showManualButton();
+            shutterButton.showAutoButton();
         }
-
+        else {
+            shutterButton.showManualButton();
+            userGuidanceHint.setVisibility(View.GONE);
+        }
     }
 
 }

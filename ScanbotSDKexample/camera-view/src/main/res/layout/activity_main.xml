@@ -20,24 +20,8 @@
 
     </net.doo.snap.camera.ScanbotCameraView>
 
-    <ImageView
-        android:id="@+id/result"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="15dp" />
-
-    <io.scanbot.sdk.ui.camera.ShutterButton
-        android:id="@+id/snap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="15dp"
-        android:elevation="6dp"
-        />
-
     <Button
-        android:id="@+id/flash"
+        android:id="@+id/flashToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
@@ -49,5 +33,37 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|left"
         android:text="Automatic" />
+
+    <TextView
+        android:id="@+id/userGuidanceHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:animateLayoutChanges="true"
+        android:background="#cccccc"
+        android:gravity="center"
+        android:paddingBottom="6dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="6dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/result"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="15dp" />
+
+    <io.scanbot.sdk.ui.camera.ShutterButton
+        android:id="@+id/shutterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="15dp"
+        android:elevation="6dp"
+        />
 
 </FrameLayout>
