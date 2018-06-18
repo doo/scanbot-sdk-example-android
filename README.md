@@ -14,7 +14,7 @@ For more details visit our website https://scanbot.io/sdk.html
 
 - [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
 - [API Docs net.doo.snap](http://doo.github.io/Scanbot-SDK-Documentation/Android/javadoc-api)
-- [API Core io.scanbot.sdk](http://doo.github.io/Scanbot-SDK-Documentation/Android/kdoc-api)
+- [API Docs io.scanbot.sdk](http://doo.github.io/Scanbot-SDK-Documentation/Android/kdoc-api)
 - [API Core Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/Core/)
 - [API Ready to use UI Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/RTU_UI/)
 
