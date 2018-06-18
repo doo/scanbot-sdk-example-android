@@ -14,9 +14,11 @@
             android:id="@+id/polygonView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:polygonStrokeWidth="8dp"
-            app:polygonStrokeColor="@color/material_deep_teal_200"
-            app:polygonFillColor="#55009688"/>
+            app:polygonStrokeWidth="5dp"
+            app:polygonStrokeColor="#cccccc"
+            app:polygonStrokeColorOK="#00ff00"
+            app:polygonFillColor="#55ff0000"
+            app:polygonFillColorOK="#4400ff00" />
 
     </net.doo.snap.camera.ScanbotCameraView>
 
