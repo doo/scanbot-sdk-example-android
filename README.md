@@ -13,7 +13,8 @@ For more details visit our website https://scanbot.io/sdk.html
 ## Documentation
 
 - [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
-- [API Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/)
+- [API Docs net.doo.snap](http://doo.github.io/Scanbot-SDK-Documentation/Android/javadoc-api)
+- [API Docs io.scanbot.sdk](http://doo.github.io/Scanbot-SDK-Documentation/Android/kdoc-api)
 - [API Core Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/Core/)
 - [API Ready to use UI Docs](http://doo.github.io/Scanbot-SDK-Documentation/Android/RTU_UI/)
 
@@ -41,10 +42,14 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.31.0**
+The current version of the Scanbot SDK for Android is **1.31.1**
 
 
 ## Changelog of the Scanbot SDK for Android
+##### 1.31.1
+* Fixed shutter sound for the camera. 
+* Fixed camera bug with Huawei P20 lite
+
 ##### 1.31.0
 * Added native libs for `arm64-v8a`.
   * ⚠️ **Please note:** In August 2019, Google Play Store will require that new apps and app updates with native libraries provide 64-bit versions in addition to their 32-bit versions. (https://android-developers.googleblog.com/2017/12/improving-app-security-and-performance.html)
