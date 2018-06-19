@@ -44,8 +44,9 @@ The current version of the Scanbot SDK for Android is **1.31.1**
 
 ## Changelog of the Scanbot SDK for Android
 ##### 1.31.1
-* Fixed shutter sound for the camera. 
-* Fixed camera bug with Huawei P20 lite
+* Added functionality to apply a real orientation lock in `ScanbotCameraView`. Use the new methods `cameraView.lockToLandscape(boolean lockPicture)` or `cameraView.lockToPortrait(boolean lockPicture)` to lock the UI as well as the taken picture to a desired orientation.
+* Fixed a bug with shutter sound in `ScanbotCameraView` on some Android devices (e.g. Xiaomi).
+* Fixed a bug with freezing camera on Huawei P20 Lite.
 
 ##### 1.31.0
 * Added native libs for `arm64-v8a`.
