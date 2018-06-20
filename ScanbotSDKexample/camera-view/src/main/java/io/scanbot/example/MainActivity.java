@@ -49,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         getSupportActionBar().hide();
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
+
+        // In this example we demonstrate how to lock the orientation of the UI (Activity)
+        // as well as the orientation of the taken picture to portrait.
+        cameraView.lockToPortrait(true);
+
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override
             public void onCameraOpened() {
@@ -84,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
-        autoSnappingController.setSensitivity(0);
+        autoSnappingController.setSensitivity(0.4f);
 
         cameraView.addPictureCallback(this);
 
@@ -200,16 +205,19 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     @Override
     public void onPictureTaken(byte[] image, int imageOrientation) {
         // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
-        // This is just a demo showing detected image as downscaled preview image.
+        // Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Handling-camera-picture
+        // This is just a demo showing the detected document image as a downscaled(!) preview image.
 
         // Decode Bitmap from bytes of original image:
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8; // use 1 for original size (if you want no downscale)!
-                                  // in this demo we downscale the image to 1/8 for the preview.
+        // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
+        options.inSampleSize = 8;
+        // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
+        //options.inSampleSize = 1;
         Bitmap originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length, options);
 
-        // rotate original image if required:
+        // Rotate the original image based on the imageOrientation value.
+        // Required for some Android devices like Samsung!
         if (imageOrientation > 0) {
             final Matrix matrix = new Matrix();
             matrix.setRotate(imageOrientation, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f);
