@@ -39,10 +39,14 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.31.1**
+The current version of the Scanbot SDK for Android is **1.31.2**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.31.2
+* Several fixes in io.scanbot.sdk.ScanbotSDKInitializer and io.scanbot.sdk.ScanbotSDK
+
 ##### 1.31.1
 * Added functionality to apply a real orientation lock in `ScanbotCameraView`. Use the new methods `cameraView.lockToLandscape(boolean lockPicture)` or `cameraView.lockToPortrait(boolean lockPicture)` to lock the UI as well as the taken picture to a desired orientation.
 * Fixed a bug with shutter sound in `ScanbotCameraView` on some Android devices (e.g. Xiaomi).
