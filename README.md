@@ -39,10 +39,13 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.31.2**
+The current version of the Scanbot SDK for Android is **1.31.3**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.31.3
+* Several fixes in io.scanbot.sdk.ScanbotSDKInitializer and io.scanbot.sdk.ScanbotSDK
 
 ##### 1.31.2
 * Several fixes in io.scanbot.sdk.ScanbotSDKInitializer and io.scanbot.sdk.ScanbotSDK
