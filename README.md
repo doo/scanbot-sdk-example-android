@@ -39,16 +39,23 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.31.3**
+The current version of the Scanbot SDK for Android is **1.33.0**
 
 
 ## Changelog of the Scanbot SDK for Android
 
+##### 1.33.0
+* Extended and improved the API to apply image filter on pages coming from the Ready-To-Use UI.
+* Added new image filters:
+  - `IMAGE_FILTER_BACKGROUND_CLEAN` - Cleans up the background and tries to preserve photos within the image.
+  - `IMAGE_FILTER_BLACK_AND_WHITE` - Black and white filter with background cleaning. Creates a grayscaled 8-bit image with mostly black or white pixels.
+* Minor bug fixes and improvements.
+
 ##### 1.31.3
-* Several fixes in io.scanbot.sdk.ScanbotSDKInitializer and io.scanbot.sdk.ScanbotSDK
+* Several fixes in `io.scanbot.sdk.ScanbotSDKInitializer` and `io.scanbot.sdk.ScanbotSDK`
 
 ##### 1.31.2
-* Several fixes in io.scanbot.sdk.ScanbotSDKInitializer and io.scanbot.sdk.ScanbotSDK
+* Several fixes in `io.scanbot.sdk.ScanbotSDKInitializer` and `io.scanbot.sdk.ScanbotSDK`
 
 ##### 1.31.1
 * Added functionality to apply a real orientation lock in `ScanbotCameraView`. Use the new methods `cameraView.lockToLandscape(boolean lockPicture)` or `cameraView.lockToPortrait(boolean lockPicture)` to lock the UI as well as the taken picture to a desired orientation.
