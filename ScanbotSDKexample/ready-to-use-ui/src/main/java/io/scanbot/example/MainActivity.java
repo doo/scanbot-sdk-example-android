@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             BarcodeScanningResult barcodeData = data.getParcelableExtra
                     (BarcodeScannerActivity.SCANNED_BARCODE_EXTRA);
             Toast.makeText(MainActivity.this,
-                    barcodeData.toString(), Toast.LENGTH_LONG).show();
+                    barcodeData.getBarcodeFormat() + "\n" + barcodeData.getText(), Toast.LENGTH_LONG).show();
         } else if (requestCode == SELECT_PICTURE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 new ProcessImage(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
