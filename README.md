@@ -39,13 +39,16 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.33.2**
+The current version of the Scanbot SDK for Android is **1.33.3**
 
 
 ## Changelog of the Scanbot SDK for Android
 
+##### 1.33.3
+* Removed `allowBackup` flag in AndroidManifest.xml in `io.scanbot:sdk-package-ui` library
+
 ##### 1.33.2
-* minor fixes and improvements in `EditPolygonImageView`
+* Minor fixes and improvements in `EditPolygonImageView`
 
 ##### 1.33.1
 * DC scanner: improved date recognition in cases where the date text overlaps the date field's grid
