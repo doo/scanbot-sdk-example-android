@@ -46,7 +46,7 @@ The current version of the Scanbot SDK for Android is **1.34.0**
 
 ##### 1.34.0
 * Updated OpenCV version to 3.4.2
-* DC scanner: minor bug fixes and improvements
+* DC scanner: improved recognition of low-constrast scans
 
 ##### 1.33.3
 * Removed `allowBackup` flag in AndroidManifest.xml in `io.scanbot:sdk-package-ui` library
