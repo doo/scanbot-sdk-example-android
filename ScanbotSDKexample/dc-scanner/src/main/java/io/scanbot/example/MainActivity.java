@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private void downloadOcrAndBanksData() {
         Collection<Blob> blobs = null;
         try {
-            blobs = blobFactory.ocrLanguageBlobs(Language.DEU);
+            blobs = blobFactory.ocrLanguageBlobs(Language.ENG);
 
             for (Blob blob : blobs) {
                 if (!blobManager.isBlobAvailable(blob)) {
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Collection<Blob> blobs = blobFactory.ocrLanguageBlobs(Language.DEU);
+                Collection<Blob> blobs = blobFactory.ocrLanguageBlobs(Language.ENG);
 
                 for (Blob blob : blobs) {
                     blobManager.fetch(blob, false);
