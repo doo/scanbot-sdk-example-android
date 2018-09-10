@@ -1,1 +1,1 @@
-include ':ocr', ':edit-polygon-view', ':manual-processing', ':camera-view', ':edit-polygon-view', ':camera-fragment', ':payform-scanner', ':barcode-scanner', ':mrz-scanner', ':dc-scanner', ':tiff-writer', ':ready-to-use-ui'
+include ':ocr', ':edit-polygon-view', ':manual-processing', ':camera-view', ':edit-polygon-view', ':camera-fragment', ':payform-scanner', ':barcode-scanner', ':mrz-scanner', ':dc-scanner', ':tiff-writer', ':ready-to-use-ui', ':cheque-scanner'
