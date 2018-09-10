@@ -39,10 +39,20 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.34.0**
+The current version of the Scanbot SDK for Android is **1.35.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.35.0
+* 🎉 NEW! Cheque Scanner - Real-time extraction of account & routing number (check out the [cheque-scanner](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/cheque-scanner) example app)
+* ⚠️ Breaking change: Added file format extension (.jpg or .png) for **RTU UI** `Page` images: 
+  - Affects the image files created by all **RTU UI** components, like `DocumentScannerActivity`, `CroppingActivity`, etc).
+  - If you need backwards compatibility, you can disable the file format extensions via `PageStorageSettings.addImageFileFormatExtension(false)` on initialization of the SDK (`new ScanbotSDKInitializer().usePageStorageSettings(new PageStorageSettings.Builder().addImageFileFormatExtension(false).build())...`).
+* Added a new config parameter `rotateButtonHidden` for the **RTU UI** `CroppingActivity`
+* Updated Google Vision lib version to 15.0.2
+* Bugfix in MRZ Recognizer (`dateOfBirth` field was not extracted on some French ID cards)
+* Improvements and potential fixes in SDK license manager
 
 ##### 1.34.0
 * Updated OpenCV version to 3.4.2
