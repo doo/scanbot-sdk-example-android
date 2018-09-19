@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +17,10 @@ import android.widget.Toast;
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
 import net.doo.snap.camera.CameraPreviewMode;
+import net.doo.snap.entity.Blob;
 import net.doo.snap.lib.detector.DetectionResult;
+import net.doo.snap.util.log.Logger;
+import net.doo.snap.util.log.LoggerProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,6 +43,8 @@ import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final Logger logger = LoggerProvider.getLogger();
+
     private static final int MRZ_UI_REQUEST_CODE = 909;
     private static final int BARCODE_UI_REQUEST_CODE = 910;
     private static final int CROP_UI_REQUEST_CODE = 9999;
@@ -50,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private ScanbotSDK scanbotSDK;
     private BlobManager blobManager;
     private BlobFactory blobFactory;
-    ProgressBar progressBar;
+    private List<Blob> requiredTraineddataBlobs;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -82,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initDependencies();
+        checkPrepareTrainedDataBlobs();
 
         progressBar = findViewById(R.id.progressBar);
         Button cropping_ui_btn = findViewById(R.id.cropping_ui_btn);
@@ -185,6 +193,20 @@ public class MainActivity extends AppCompatActivity {
         blobFactory = scanbotSDK.blobFactory();
     }
 
+    private void checkPrepareTrainedDataBlobs() {
+        try {
+            requiredTraineddataBlobs = new ArrayList<Blob>();
+            requiredTraineddataBlobs.add(blobFactory.mrzTraineddataBlob());
+            requiredTraineddataBlobs.add(blobFactory.mrzCascadeBlob());
+            // add further blobs here (e.g. OCR blobs, etc.)
+
+            new PrepareTraineddataBlobsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        } catch (final IOException e) {
+            logger.logException(e);
+            return;
+        }
+    }
+
     private String extractData(MRZRecognitionResult result) {
         return new StringBuilder()
                 .append("documentCode: ").append(result.documentCodeField().value).append("\n")
@@ -250,4 +272,27 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, CROP_UI_REQUEST_CODE);
         }
     }
+
+
+    private class PrepareTraineddataBlobsTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                for (final Blob blob: requiredTraineddataBlobs) {
+                    if (!blobManager.isBlobAvailable(blob)) {
+                        blobManager.fetch(blob, false);
+                    }
+                }
+            } catch (final IOException e) {
+                logger.logException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
 }

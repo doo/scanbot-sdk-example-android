@@ -44,6 +44,11 @@ The current version of the Scanbot SDK for Android is **1.35.0**
 
 ## Changelog of the Scanbot SDK for Android
 
+##### 1.36.0
+- Improvements in MRZ Recognizer (improved detection on still images, improved parsing of some optional MRZ fields).
+- ⚠️ Breaking change: All MRZ Scanner and Recognizer components (`MRZScanner`, `MRZScannerActivity`) now require an additional trained data blob file (MRZ cascade blob file `mrz.xml`), which is included in the SDK `io.scanbot:sdk-package-3` and can be fetched via `blobManager.fetch(blobFactory.mrzCascadeBlob(), false)`!
+- Check out the updated [mrz-scanner](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/mrz-scanner) and [ready-to-use-ui](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/ready-to-use-ui) example apps.
+
 ##### 1.35.0
 * 🎉 NEW! Cheque Scanner - Real-time extraction of account & routing number (check out the [cheque-scanner](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/cheque-scanner) example app)
 * ⚠️ Breaking change: Added file format extension (.jpg or .png) for **RTU UI** `Page` images: 

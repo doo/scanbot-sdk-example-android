@@ -1,170 +1,232 @@
 package io.scanbot.example;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
+import net.doo.snap.camera.CameraPreviewMode;
+import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.mrzscanner.MRZScanner;
+import net.doo.snap.util.FileChooserUtils;
+import net.doo.snap.util.bitmap.BitmapUtils;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.persistence.Page;
+import io.scanbot.sdk.persistence.PageFileStorage;
+import io.scanbot.sdk.process.ImageFilterType;
+import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode;
+import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity;
+import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration;
+import io.scanbot.sdk.ui.view.edit.CroppingActivity;
+import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
 
 
-public class MRZStillImageDetectionActivity extends AppCompatActivity implements PictureCallback {
+public class MRZStillImageDetectionActivity extends AppCompatActivity {
 
-    private ScanbotCameraView cameraView;
+    private static final int DOCUMENT_SCANNER_REQUEST_CODE = 4711;
+    private static final int PHOTOLIB_REQUEST_CODE = 5711;
+    private static final int CROP_REQUEST_CODE = 6711;
+
     private ImageView resultImageView;
+    private Button cropBtn;
+    private Button runRecognitionBtn;
+    private View progressView;
 
-    boolean flashEnabled = false;
+    private Page page;
 
+    private ScanbotSDK scanbotSDK;
     private MRZScanner mrzScanner;
 
 
-    public static Intent newIntent(Context context) {
-        return new Intent(context, MRZStillImageDetectionActivity.class);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mrz_still_image_scanner);
-
-        getSupportActionBar().hide();
-
-        cameraView = findViewById(R.id.cameraView);
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
-        cameraView.addPictureCallback(this);
+        setContentView(R.layout.activity_mrz_still_image_detection);
 
         resultImageView = findViewById(R.id.resultImageView);
+        progressView = findViewById(R.id.progressBar);
 
-        findViewById(R.id.flashButton).setOnClickListener(new View.OnClickListener() {
+        scanbotSDK = new ScanbotSDK(this);
+        mrzScanner = scanbotSDK.mrzScanner();
 
+        findViewById(R.id.start_scanner_btn).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
+            public void onClick(View view) {
+                final DocumentScannerConfiguration configuration = new DocumentScannerConfiguration();
+                configuration.setMultiPageEnabled(false);
+                configuration.setMultiPageButtonHidden(true);
+                configuration.setAutoSnappingEnabled(false);
+                configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
+                configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT);
+                configuration.setIgnoreBadAspectRatio(true);
+
+                final Intent intent = DocumentScannerActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
+                startActivityForResult(intent, DOCUMENT_SCANNER_REQUEST_CODE);
             }
         });
 
-        findViewById(R.id.snapButton).setOnClickListener(new View.OnClickListener() {
-
+        findViewById(R.id.import_from_lib_btn).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                cameraView.takePicture(false);
+            public void onClick(View view) {
+                openGallery();
             }
         });
 
-        mrzScanner = new ScanbotSDK(this).mrzScanner();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        cameraView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        cameraView.onPause();
-    }
-
-
-    @Override
-    public void onPictureTaken(byte[] image, int imageOrientation) {
-        // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
-
-        // Decode Bitmap from bytes of original image:
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2; // use 1 for full, no downscaled image.
-        Bitmap originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length, options);
-
-        // rotate original image if required:
-        if (imageOrientation > 0) {
-            final Matrix matrix = new Matrix();
-            matrix.setRotate(imageOrientation, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f);
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, false);
-        }
-
-        // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
-        detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
-
-        // Show the cropped image as thumbnail preview
-        final Bitmap thumbnailImage = resizeImage(documentImage, 600, 600);
-        runOnUiThread(new Runnable() {
+        cropBtn = findViewById(R.id.crop_btn);
+        cropBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                resultImageView.setImageBitmap(thumbnailImage);
-                // continue with camera preview
-                cameraView.continuousFocus();
-                cameraView.startPreview();
+            public void onClick(View view) {
+                final CroppingConfiguration configuration = new CroppingConfiguration();
+                configuration.setPage(page);
+                final Intent intent = CroppingActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
+                startActivityForResult(intent, CROP_REQUEST_CODE);
             }
         });
 
-        // Run MRZ recognition on cropped document image:
-        final MRZRecognitionResult mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(documentImage, 0);
-        if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
-            // Show MRZ recognition result
-            startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult));
-        }
-        else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final Toast toast = Toast.makeText(MRZStillImageDetectionActivity.this, "No MRZ data was recognized.", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
-            });
-        }
-
-        // reset preview image
-        resultImageView.postDelayed(new Runnable() {
+        runRecognitionBtn = findViewById(R.id.run_recognition_btn);
+        runRecognitionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                resultImageView.setImageBitmap(null);
+            public void onClick(View view) {
+                runRecognition();
             }
-        }, 1000);
+        });
     }
 
-    private Bitmap resizeImage(final Bitmap bitmap, final float width, final float height) {
-        final float oldWidth = bitmap.getWidth();
-        final float oldHeight = bitmap.getHeight();
-        final float scaleFactor = (oldWidth > oldHeight ? (width / oldWidth) : (height / oldHeight));
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        final int scaledWidth = Math.round(oldWidth * scaleFactor);
-        final int scaledHeight = Math.round(oldHeight * scaleFactor);
+        if (requestCode == DOCUMENT_SCANNER_REQUEST_CODE && resultCode == RESULT_OK) {
+            final Parcelable[] parcelablePages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA);
+            this.page = (Page) parcelablePages[0];
+            displayPreviewImage();
+            cropBtn.setVisibility(View.VISIBLE);
+            runRecognitionBtn.setVisibility(View.VISIBLE);
+            return;
+        }
 
-        return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false);
+        if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == RESULT_OK) {
+            final Uri imageUri = data.getData();
+            new ImportImageToPageTask(imageUri).execute();
+            progressView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (requestCode == CROP_REQUEST_CODE && resultCode == RESULT_OK) {
+            this.page = data.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA);
+            displayPreviewImage();
+            return;
+        }
+    }
+
+    private void openGallery() {
+        final Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        startActivityForResult(Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE);
+    }
+
+    private void displayPreviewImage() {
+        final Uri imageUri = scanbotSDK.pageFileStorage().getPreviewImageURI(page.getPageId(), PageFileStorage.PageFileType.DOCUMENT);
+        resultImageView.setImageBitmap(loadImage(imageUri));
+    }
+
+    private Bitmap loadImage(final Uri imageUri) {
+        final String filePath = FileChooserUtils.getPath(this, imageUri);
+        return BitmapUtils.decodeQuietly(filePath, null);
+    }
+
+    private void runRecognition() {
+        new RecognizeMrzTask(page).execute();
+        progressView.setVisibility(View.VISIBLE);
+    }
+
+
+
+    private class RecognizeMrzTask extends AsyncTask {
+        private final Page page;
+
+        private RecognizeMrzTask(final Page page) {
+            this.page = page;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            final Uri imageUri = scanbotSDK.pageFileStorage().getImageURI(page.getPageId(), PageFileStorage.PageFileType.DOCUMENT);
+            final Bitmap documentImage = loadImage(imageUri);
+            return mrzScanner.recognizeMRZBitmap(documentImage, 0);
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            progressView.setVisibility(View.GONE);
+
+            final MRZRecognitionResult mrzRecognitionResult = (MRZRecognitionResult) o;
+            if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
+                startActivity(MRZResultActivity.newIntent(MRZStillImageDetectionActivity.this, mrzRecognitionResult));
+            }
+            else {
+                Toast.makeText(MRZStillImageDetectionActivity.this,
+                        "No MRZ data recognized!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+    private class ImportImageToPageTask extends AsyncTask {
+        private final Uri imageUri;
+
+        private ImportImageToPageTask(final Uri imageUri) {
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            final String pageId = scanbotSDK.pageFileStorage().add(loadImage(imageUri));
+            final List<PointF> emptyPolygon = Collections.emptyList();
+            final Page newPage = new Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE);
+
+            try {
+                return scanbotSDK.pageProcessor().detectDocument(newPage);
+            }
+            catch (final IOException ex) {
+                Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.getPageId());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Object result) {
+            super.onPostExecute(result);
+
+            progressView.setVisibility(View.GONE);
+
+            if (result != null) {
+                page = (Page) result;
+                displayPreviewImage();
+                cropBtn.setVisibility(View.VISIBLE);
+                runRecognitionBtn.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package io.scanbot.example;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,6 @@ import android.widget.Toast;
 
 import net.doo.snap.blob.BlobFactory;
 import net.doo.snap.blob.BlobManager;
-import net.doo.snap.entity.Blob;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
 
         initDependencies();
 
-        Button downloadBtn = findViewById(R.id.download_btn);
+        Button downloadBtn = findViewById(R.id.prepare_traineddata_btn);
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                downloadMRZTraineddata();
+                prepareMRZTraineddata();
             }
         });
 
@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!checkMRZTraineddata()) { return; }
-                startActivity(MRZStillImageDetectionActivity.newIntent(MainActivity.this));
+                final Intent intent = new Intent(getApplicationContext(), MRZStillImageDetectionActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -66,49 +67,51 @@ public class MainActivity extends AppCompatActivity {
         blobFactory = scanbotSDK.blobFactory();
     }
 
-    private void downloadMRZTraineddata() {
+    private void prepareMRZTraineddata() {
         try {
-            final Blob mrzBlob = blobFactory.mrzTraineddataBlob();
-
-            if (!blobManager.isBlobAvailable(mrzBlob)) {
-                new DownloadOCRDataTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            if (!blobManager.isBlobAvailable(blobFactory.mrzTraineddataBlob()) ||
+                    !blobManager.isBlobAvailable(blobFactory.mrzCascadeBlob())) {
+                new PrepareTraineddataBlobsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                 return;
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.logException(e);
+            return;
         }
 
-        final Toast toast = Toast.makeText(this, "OCR data already downloaded. Try to scan a document with MRZ.", Toast.LENGTH_LONG);
+        final Toast toast = Toast.makeText(this, "MRZ trained data prepared. Try to scan an ID card with MRZ now.", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
     private boolean checkMRZTraineddata() {
         try {
-            final Blob mrzBlob = blobFactory.mrzTraineddataBlob();
-            if (blobManager.isBlobAvailable(mrzBlob)) {
+            if (blobManager.isBlobAvailable(blobFactory.mrzTraineddataBlob()) &&
+                    blobManager.isBlobAvailable(blobFactory.mrzCascadeBlob())) {
                 return true;
             }
         } catch (IOException e) {
             logger.logException(e);
         }
 
-        final Toast toast = Toast.makeText(MainActivity.this, "Please download the OCR data first!", Toast.LENGTH_LONG);
+        final Toast toast = Toast.makeText(MainActivity.this, "Please fetch/prepare the MRZ trained data first!", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
         return false;
     }
 
+
     /*
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
      */
-    private class DownloadOCRDataTask extends AsyncTask<Void, Void, Void> {
+    private class PrepareTraineddataBlobsTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
                 blobManager.fetch(blobFactory.mrzTraineddataBlob(), false);
+                blobManager.fetch(blobFactory.mrzCascadeBlob(), false);
             } catch (IOException e) {
                 logger.logException(e);
             }
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(MainActivity.this, "OCR data is downloading! Try to scan some MRZ when data will be downloaded...", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Fetching/preparing MRZ trained data... \nTry to scan an ID card with MRZ when trained data is ready.", Toast.LENGTH_LONG).show();
         }
     }
 }

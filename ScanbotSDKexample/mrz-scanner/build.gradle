@@ -20,10 +20,15 @@ android {
     }
 }
 
+configurations {
+    compile.exclude group: 'org.jetbrains', module: 'annotations'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:$project.ext.androidSupportVersion"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:multidex:1.0.2'
     compile "io.scanbot:sdk-package-3:$project.ext.scanbotSdkVersion"
+    compile "io.scanbot:sdk-package-ui:$project.ext.scanbotSdkVersion"
 }
