@@ -39,10 +39,19 @@ Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Pitfalls-and-issues
 
 ## What is the latest version of the SDK?
 
-The current version of the Scanbot SDK for Android is **1.35.0**
+The current version of the Scanbot SDK for Android is **1.37.0**
 
 
 ## Changelog of the Scanbot SDK for Android
+
+##### 1.37.0
+- 🎉 NEW:
+  * Reset/Detect functionality in RTU Cropping UI
+  * Added support for `orientationLockMode` in RTU Cropping UI
+- ⚠️ Breaking changes:
+  * The config parameter `pageCounterButtonTitle` in RTU Document Scanner UI now requires a placeholder "%d" for the number of pages (e.g. `pageCounterButtonTitle: "%d Page(s)"`)
+- 🐞 Bug fixes:
+  * Android: Fixed an issue with camera on "Xiaomi Redmi 5 Plus" devices with MIUI Chinese ROM ([#72](https://github.com/doo/Scanbot-SDK-Examples/issues/72))
 
 ##### 1.36.0
 - Improvements in MRZ Recognizer (improved detection on still images, improved parsing of some optional MRZ fields).
@@ -53,6 +62,8 @@ The current version of the Scanbot SDK for Android is **1.35.0**
 * 🎉 NEW! Cheque Scanner - Real-time extraction of account & routing number (check out the [cheque-scanner](https://github.com/doo/Scanbot-SDK-Examples/tree/master/ScanbotSDKexample/cheque-scanner) example app)
 * ⚠️ Breaking change: Added file format extension (.jpg or .png) for **RTU UI** `Page` images: 
   - Affects the image files created by all **RTU UI** components, like `DocumentScannerActivity`, `CroppingActivity`, etc).
+  - Please note that only the **new created** image files will contain extensions. The **currently available** image files in the temporary storage of the Scanbot SDK 
+    **will not get** file extensions and may become inaccessible. So please make sure to implement a suitable migration mechanism.
   - If you need backwards compatibility, you can disable the file format extensions via `PageStorageSettings.addImageFileFormatExtension(false)` on initialization of the SDK (`new ScanbotSDKInitializer().usePageStorageSettings(new PageStorageSettings.Builder().addImageFileFormatExtension(false).build())...`).
 * Added a new config parameter `rotateButtonHidden` for the **RTU UI** `CroppingActivity`
 * Updated Google Vision lib version to 15.0.2
