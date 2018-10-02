@@ -12,7 +12,7 @@ For more details visit our website https://scanbot.io/sdk.html
 
 ## Documentation of the Scanbot SDK
 
-- [Developer Guide](https://github.com/doo/Scanbot-SDK-Examples/wiki)
+- [Developer Guide](https://github.com/doo/scanbot-sdk-example-android/wiki)
 - [API Docs (net.doo.snap, io.scanbot)](https://scanbotsdk.github.io/documentation/android/api/net.doo.snap/)
 - [API Docs (io.scanbot.sdk)](https://scanbotsdk.github.io/documentation/android/api/io.scanbot.sdk/)
 
