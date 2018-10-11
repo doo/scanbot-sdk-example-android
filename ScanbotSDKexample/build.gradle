@@ -17,10 +17,10 @@ allprojects {
 
     project.ext {
         compileSdkVersion=27
-        buildToolsVersion='27.0.3'
+        buildToolsVersion='28.0.2'
         androidSupportVersion='27.0.2'
 
-        scanbotSdkVersion = "1.37.0"
+        scanbotSdkVersion = "1.38.0"
     }
 
     repositories {

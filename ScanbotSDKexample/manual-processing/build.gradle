@@ -2,11 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "io.scanbot.example"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -24,7 +25,6 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/DEPENDENCIES'
     }
-    buildToolsVersion '28.0.2'
 }
 
 dependencies {
