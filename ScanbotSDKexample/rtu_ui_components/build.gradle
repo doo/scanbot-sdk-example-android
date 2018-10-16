@@ -1,0 +1,78 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion compileVersion
+    buildToolsVersion buildToolsVersion
+
+    defaultConfig {
+        applicationId "io.scanbot.sdk"
+        targetSdkVersion targetVersion
+        minSdkVersion minVersion
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86"
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile file("sdk-test-release-key.keystore")
+            storePassword "qwerty"
+            keyAlias "test-key"
+            keyPassword "qwerty"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+        keepRuntimeAnnotatedClasses false
+    }
+}
+
+kapt {
+    generateStubs = true
+}
+
+configurations {
+    compile.exclude group: 'org.jetbrains', module: 'annotations'
+}
+
+dependencies {
+
+    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
+    implementation 'com.android.support:multidex:1.0.1'
+
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'io.scanbot:iqm:1.0.0-SNAPSHOT'
+    implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
+    implementation "io.scanbot:sdk-package-4:$scanbotSdkVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+}
+repositories {
+    mavenCentral()
+}
