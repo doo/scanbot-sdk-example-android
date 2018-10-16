@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion compileVersion
+    buildToolsVersion buildToolsVersion
 
     defaultConfig {
         applicationId "io.scanbot.example"
-        minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion targetVersion
+        minSdkVersion minVersion
         versionCode 1
         versionName "1.0"
 
@@ -29,13 +30,11 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
-
-    buildToolsVersion '28.0.2'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:$project.ext.androidSupportVersion"
+    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
     implementation 'com.android.support:multidex:1.0.2'
-    implementation "io.scanbot:sdk-package-2:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-package-2:$scanbotSdkVersion"
 }

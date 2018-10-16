@@ -1,27 +1,33 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.compileVersion=27
+    ext.targetVersion=27
+    ext.minVersion=16
+    ext.buildToolsVersion='28.0.3'
+    ext.androidSupportVersion='27.0.2'
+    ext.kotlin_ktx_version = "0.3"
+    ext.kotlin_version = '1.2.71'
+
+    ext.scanbotSdkVersion = "1.38.0"
+
     repositories {
         google()
         jcenter()
+        maven {
+            url 'http://nexus.scanbot.io/nexus/content/repositories/snapshots/'
+        }
+        maven {
+            url 'http://nexus.scanbot.io/nexus/content/repositories/releases/'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
-
-    project.ext {
-        compileSdkVersion=27
-        buildToolsVersion='27.0.3'
-        androidSupportVersion='27.0.2'
-
-        scanbotSdkVersion = "1.37.0"
-    }
 
     repositories {
         google()
