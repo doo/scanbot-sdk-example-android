@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="alertDialogTheme">@style/Scanbot.Demo.Dialog</item>
     </style>
 
     <style name="Scanbot.Demo.MaterialTwoButtonTeaser.Button" parent="Base.Widget.AppCompat.Button.Borderless">
@@ -28,10 +29,51 @@
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Scanbot.Demo.Dialog" parent="Theme.AppCompat.Dialog.MinWidth">
+    <style name="Scanbot.Demo.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:panelBackground">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:windowTitleStyle">@style/Scanbot.Demo.Dialog.Title</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/greyColor</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/greyColor</item>
+    </style>
+
+    <style name="Scanbot.Demo.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:backgroundStacked">@color/colorPrimaryDark</item>
+        <item name="android:backgroundSplit">@color/colorPrimaryDark</item>
+        <item name="android:displayOptions">showTitle|showHome</item>
+        <item name="android:panelBackground">@color/colorPrimaryDark</item>
+        <item name="android:icon">@android:color/white</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:theme">@style/Scanbot.Demo.ActionBarThemeOverlay</item>
+    </style>
+
+    <style name="Scanbot.Demo.ActionBarThemeOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+    </style>
+
+    <style name="BottomSheetMenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:background">@color/sheetColor</item>
     </style>
 
 </resources>

@@ -14,4 +14,15 @@
     <string name="scan_bar_code">Scan Bar Code</string>
     <string name="scan_dc_form">Scan DC Form</string>
     <string name="_2018_by_doo_gmbh_all_rights_reserved">© 2018 by doo GmbH. All rights reserved.</string>
+    <string name="add_page">ADD PAGE</string>
+    <string name="filter">FILTER</string>
+    <string name="delete_all">DELETE ALL</string>
+    <string name="clean_background_filter">Clean Background Filter</string>
+    <string name="color_document_filter">Color Document Filter</string>
+    <string name="color_filter">Color Filter</string>
+    <string name="grayscale_filter">Grayscale Filter</string>
+    <string name="binarizedfilter">Binarized Filter</string>
+    <string name="pure_binarized_filter">Pure Binarized Filter</string>
+    <string name="black_amp_white_filter"><![CDATA[Black & White Filter]]></string>
+    <string name="none">None</string>
 </resources>

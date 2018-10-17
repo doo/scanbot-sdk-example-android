@@ -20,6 +20,7 @@ import android.widget.TextView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
@@ -30,6 +31,7 @@ class PageFiltersActivity : AppCompatActivity() {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
+        private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
 
         @JvmStatic
         fun newIntent(context: Context, page: Page): Intent {
@@ -39,8 +41,9 @@ class PageFiltersActivity : AppCompatActivity() {
         }
     }
 
-    var selectedPage : Page? = null
-    var selectedFilter : ImageFilterType = ImageFilterType.NONE
+    var selectedPage: Page? = null
+    var selectedFilter: ImageFilterType = ImageFilterType.NONE
+    lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,8 @@ class PageFiltersActivity : AppCompatActivity() {
             selectedFilter = it.filter
         }
 
+
+
         chooseFiltersBtn.setOnClickListener {
             OptionsDialogFragment().show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
@@ -62,18 +67,31 @@ class PageFiltersActivity : AppCompatActivity() {
         cancel.setOnClickListener { finish() }
 
         initPagePreview()
+        initMenu()
+    }
+
+    private fun initMenu() {
+        val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
+        if (fragment != null) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .remove(fragment)
+                    .commitNow()
+        }
+
+        filtersSheetFragment = FiltersBottomSheetMenuFragment()
     }
 
     private fun initPagePreview() {
         GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
     }
 
-    private fun updateFilteredPreview(filter : ImageFilterType) {
+    private fun updateFilteredPreview(filter: ImageFilterType) {
         this.selectedFilter = filter
         GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
     }
 
-    inner class ApplyFilterTask: AsyncTask<Void, Void, Void>() {
+    inner class ApplyFilterTask : AsyncTask<Void, Void, Void>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -100,7 +118,7 @@ class PageFiltersActivity : AppCompatActivity() {
         }
     }
 
-    inner class GenerateFilterPreviewTask: AsyncTask<Void, Void, String>() {
+    inner class GenerateFilterPreviewTask : AsyncTask<Void, Void, String>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -151,7 +169,7 @@ class PageFiltersActivity : AppCompatActivity() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             val view = inflater.inflate(R.layout.options_dialog, null, false)
-            optionsList = view.findViewById (R.id.options_list)
+            optionsList = view.findViewById(R.id.options_list)
             optionsList.layoutManager = LinearLayoutManager(context)
 
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE)
@@ -165,7 +183,7 @@ class PageFiltersActivity : AppCompatActivity() {
             activity?.let { optionsList.adapter = OptionsAdapter(options, it) }
         }
 
-        inner class OptionsAdapter(val items : Array<ImageFilterType>, val context: Context) : RecyclerView.Adapter<OptionsViewHolder>() {
+        inner class OptionsAdapter(val items: Array<ImageFilterType>, val context: Context) : RecyclerView.Adapter<OptionsViewHolder>() {
 
             override fun getItemCount(): Int {
                 return items.size
@@ -185,7 +203,7 @@ class PageFiltersActivity : AppCompatActivity() {
         }
     }
 
-    class OptionsViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+    class OptionsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val option = view.findViewById<TextView>(android.R.id.text1)
     }
 }

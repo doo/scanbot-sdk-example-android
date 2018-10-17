@@ -3,6 +3,7 @@ package io.scanbot.example.fragments
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult
 class MRZDialogFragment : DialogFragment() {
 
     companion object {
-        const val MRZ_DATA = "QR_DATA"
+        const val MRZ_DATA = "BARCODE_DATA"
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
@@ -27,7 +28,7 @@ class MRZDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    fun addContentView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val mrzRecognitionResult = arguments!!.getParcelable<MRZRecognitionResult>(MRZ_DATA)
 
         val view = inflater.inflate(R.layout.fragment_mrz_dialog, container)
@@ -35,12 +36,27 @@ class MRZDialogFragment : DialogFragment() {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState)
+        val builder = AlertDialog.Builder(this.activity!!)
+
+        val inflater = LayoutInflater.from(activity)
+
+        val contentContainer = inflater.inflate(R.layout.holo_dialog_frame, null, false) as ViewGroup
+        addContentView(inflater, contentContainer, savedInstanceState)
+
+        builder.setView(contentContainer)
+
+
+        builder.setNegativeButton(
+                "Cancel") { _, _ ->
+            run {
+                dismiss()
+            }
+        }
+        val dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(true)
+
+        return dialog
     }
 
     private fun extractData(result: MRZRecognitionResult): String {

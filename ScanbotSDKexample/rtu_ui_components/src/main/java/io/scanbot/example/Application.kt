@@ -9,6 +9,11 @@ import io.scanbot.sdk.persistence.PageStorageSettings
 
 class Application : MultiDexApplication() {
 
+    companion object {
+        //TODO add your license here
+        val LICENSE = ""
+    }
+
     override fun onCreate() {
         super.onCreate()
         ScanbotSDKInitializer()
@@ -22,6 +27,9 @@ class Application : MultiDexApplication() {
                                 .previewTargetMax(600)
                                 .build()
                 )
+                .license(this, LICENSE)
                 .initialize(this)
     }
+
+
 }

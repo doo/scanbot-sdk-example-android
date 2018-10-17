@@ -5,5 +5,6 @@
     <color name="colorAccent">#00b92e</color>
     <color name="backgroundColor">#4b4f52</color>
     <color name="greyColor">#c4c4c4</color>
+    <color name="sheetColor">#7f8487</color>
     <color name="сolorWarningBackground">#c8193c</color>
 </resources>

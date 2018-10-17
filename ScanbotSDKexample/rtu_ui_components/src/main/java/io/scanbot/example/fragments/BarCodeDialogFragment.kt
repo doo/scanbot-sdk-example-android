@@ -11,25 +11,25 @@ import android.widget.TextView
 import io.scanbot.example.R
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 
-class QRCodeDialogFragment : DialogFragment() {
+class BarCodeDialogFragment : DialogFragment() {
 
     companion object {
-        const val QR_DATA = "BARCODE_DATA"
-        const val NAME = "QRCodeDialogFragment"
+        const val BARCODE_DATA = "BarCodeDialogFragment"
+        const val NAME = "BarCodeDialogFragment"
 
         @JvmStatic
-        fun newInstanse(data: BarcodeScanningResult): QRCodeDialogFragment {
-            val frag = QRCodeDialogFragment()
+        fun newInstanse(data: BarcodeScanningResult): BarCodeDialogFragment {
+            val frag = BarCodeDialogFragment()
             val args = Bundle()
-            args.putParcelable(QR_DATA, data)
+            args.putParcelable(BARCODE_DATA, data)
             frag.arguments = args
             return frag
         }
     }
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        val qrCodeData = arguments!!.getParcelable<BarcodeScanningResult>(QRCodeDialogFragment.QR_DATA)
-        val view = inflater.inflate(R.layout.fragment_qr_code_dialog, container)
+        val qrCodeData = arguments!!.getParcelable<BarcodeScanningResult>(BarCodeDialogFragment.BARCODE_DATA)
+        val view = inflater.inflate(R.layout.fragment_barcode_dialog, container)
 
         view.findViewById<TextView>(R.id.tv_data).text = qrCodeData.text
 

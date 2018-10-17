@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/sheetColor"
+    android:paddingStart="16dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+
+    <Button
+        android:id="@+id/cleanBackgroundFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/clean_background_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cleanBackgroundFilter" />
+
+    <Button
+        android:id="@+id/colorDocumentFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/color_document_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cleanBackgroundFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorDocumentFilter" />
+
+    <Button
+        android:id="@+id/colorFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/color_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorDocumentFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorFilter" />
+
+    <Button
+        android:id="@+id/grayscaleFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/grayscale_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
+
+    <Button
+        android:id="@+id/binarizedFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/binarizedfilter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/binarizedFilter" />
+
+    <Button
+        android:id="@+id/pureBinarizedFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/pure_binarized_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/binarizedFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pureBinarizedFilter" />
+
+    <Button
+        android:id="@+id/blackAndWhiteFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/black_amp_white_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pureBinarizedFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />
+
+    <Button
+        android:id="@+id/none"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />
+
+</android.support.constraint.ConstraintLayout>

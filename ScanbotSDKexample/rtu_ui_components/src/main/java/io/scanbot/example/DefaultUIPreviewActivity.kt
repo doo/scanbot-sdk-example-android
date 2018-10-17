@@ -1,7 +1,6 @@
 package io.scanbot.example
 
 import android.app.Activity
-import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.AsyncTask
@@ -12,6 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import io.scanbot.example.fragments.BarCodeDialogFragment
 import io.scanbot.example.fragments.MRZDialogFragment
 import io.scanbot.example.fragments.QRCodeDialogFragment
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
@@ -32,14 +32,13 @@ import net.doo.snap.blob.BlobManager
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
-import java.io.InputStream
-import java.util.*
 
 
 class DefaultUIPreviewActivity : AppCompatActivity() {
 
     private val MRZ_DEFAULT_UI_REQUEST_CODE = 909
     private val BARCODE_DEFAULT_UI_REQUEST_CODE = 910
+    private val QR_CODE_DEFAULT_UI_REQUEST_CODE = 911
     private val CROP_DEFAULT_UI_REQUEST_CODE = 9999
     private val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
     private val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -60,7 +59,10 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             page.pageId
         } else if (requestCode == BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-            showQrDialog(barcodeData)
+            showBarcodeDialog(barcodeData)
+        } else if (requestCode == QR_CODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val qrCode = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+            showQrDialog(qrCode)
         } else if (requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
@@ -81,6 +83,12 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         dialogFragment.show(fm, MRZDialogFragment.NAME)
     }
 
+    private fun showBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
+        val fm = supportFragmentManager
+        val dialogFragment = BarCodeDialogFragment.newInstanse(barcodeRecognitionResult)
+        dialogFragment.show(fm, BarCodeDialogFragment.NAME)
+    }
+
     private fun showQrDialog(barcodeRecognitionResult: BarcodeScanningResult) {
         val fm = supportFragmentManager
         val dialogFragment = QRCodeDialogFragment.newInstanse(barcodeRecognitionResult)
@@ -92,7 +100,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         initDependencies()
         setContentView(R.layout.activity_default_preview)
 
-        warning_view.visibility = if (scanbotSDK.isLicenseValid) View.GONE else View.VISIBLE
+        warning_view.visibility = if (!Application.LICENSE.isEmpty()) View.GONE else View.VISIBLE
 
         // select an image from photo library and run document detection on it:
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
@@ -154,7 +162,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, qrcodeCameraConfiguration)
 
-            startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE)
+            startActivityForResult(intent, QR_CODE_DEFAULT_UI_REQUEST_CODE)
         }
 
     }
@@ -169,35 +177,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             }
         }
         return bitmap
-    }
-
-    private fun getImageUris(clipData: ClipData): List<String> {
-        val itemsCount = clipData.itemCount
-        val imageUris = ArrayList<String>()
-        for (i in 0 until itemsCount) {
-            val item = clipData.getItemAt(i)
-            val uri = item.uri
-            if (uri != null) {
-                imageUris.add(uri.toString())
-            }
-        }
-
-        return imageUris
-    }
-
-    private fun getImageAssert(): ByteArray {
-        val stream: InputStream
-        var fileBytes = ByteArray(0)
-        try {
-            stream = assets.open("test2.jpg")
-            fileBytes = ByteArray(stream.available())
-            stream.read(fileBytes)
-            stream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        return fileBytes
     }
 
     private fun initDependencies() {

@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="alertDialogTheme">@style/Scanbot.Demo.Dialog</item>
     </style>
 
     <style name="Scanbot.Demo.MaterialTwoButtonTeaser.Button" parent="Base.Widget.AppCompat.Button.Borderless">
@@ -28,9 +29,20 @@
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Scanbot.Demo.Dialog" parent="Theme.AppCompat.Dialog.MinWidth">
+    <style name="Scanbot.Demo.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:panelBackground">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:windowTitleStyle">@style/Scanbot.Demo.Dialog.Title</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/greyColor</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/greyColor</item>
     </style>
 </resources>

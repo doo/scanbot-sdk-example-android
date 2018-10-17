@@ -9,15 +9,14 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
+import android.support.v7.widget.Toolbar
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -32,13 +31,19 @@ class PagePreviewActivity : AppCompatActivity() {
     companion object {
         val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         val FILTER_UI_REQUEST_CODE = 7777
+        private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
 
         var selectedPage: Page? = null
     }
 
+    lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_page_preview)
+        initActionBar()
+        initMenu()
 
         adapter = PagesAdapter()
         adapter.setHasStableIds(true)
@@ -52,6 +57,41 @@ class PagePreviewActivity : AppCompatActivity() {
 
         // initialize items only once, so we can update items from onActivityResult
         adapter.setItems(ScanbotSDK(this).pageFileStorage().getStoredPages().map { id -> Page(id) })
+
+        findViewById<View>(R.id.action_add_page).setOnClickListener {}
+        findViewById<View>(R.id.action_delete_all).setOnClickListener {
+            ScanbotSDK(this).pageFileStorage().removeAll()
+            adapter.notifyDataSetChanged()
+        }
+        findViewById<View>(R.id.action_filter).setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
+            if (fragment == null) {
+                filtersSheetFragment.show(supportFragmentManager, FILTERS_MENU_TAG)
+            }
+        }
+
+    }
+
+    private fun initMenu() {
+        val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
+        if (fragment != null) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .remove(fragment)
+                    .commitNow()
+        }
+
+        filtersSheetFragment = FiltersBottomSheetMenuFragment()
+    }
+
+
+    fun initActionBar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar!!.title = "Scan Results"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -69,6 +109,26 @@ class PagePreviewActivity : AppCompatActivity() {
             return
         }
     }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                super.onBackPressed()
+                return true
+            }
+//            R.id.rate_app -> {
+//                RateAppFragment
+//                        .newInstance()
+//                        .showAllowingStateLoss(supportFragmentManager, RateAppFragment.TAG)
+//                analytics.thumbsUpAlertIconClicked()
+//                return true
+//            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
 
     private inner class PagesAdapter : RecyclerView.Adapter<PageViewHolder>() {
 
@@ -184,7 +244,7 @@ class PagePreviewActivity : AppCompatActivity() {
             holder.option?.text = items[position]
             holder.option.setOnClickListener {
                 selectedPage?.let {
-                    when(position) {
+                    when (position) {
                         0 -> {
                             val croppingConfig = CroppingConfiguration()
                             croppingConfig.setPage(it)
@@ -202,7 +262,7 @@ class PagePreviewActivity : AppCompatActivity() {
                         2, 3 -> {
                             if (context != null) {
                                 // TODO perform as a task and refresh images view when done.
-                                val times = if(position == 2) 1 else -1
+                                val times = if (position == 2) 1 else -1
                                 ScanbotSDK(context).pageProcessor().rotate(it, times)
                             }
                         }
