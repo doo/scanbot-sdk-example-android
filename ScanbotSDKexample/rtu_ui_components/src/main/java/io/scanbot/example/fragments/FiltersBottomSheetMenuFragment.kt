@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import io.scanbot.example.FiltersListener
 
 import io.scanbot.example.R
 
@@ -20,27 +21,35 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         val view = inflater.inflate(R.layout.filters_bottom_sheet, container, false)
 
         view.findViewById<Button>(R.id.cleanBackgroundFilter).setOnClickListener {
+            (activity as FiltersListener).cleanBackgroundFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.colorDocumentFilter).setOnClickListener {
+            (activity as FiltersListener).colorDocumentFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.colorFilter).setOnClickListener {
+            (activity as FiltersListener).colorFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.grayscaleFilter).setOnClickListener {
+            (activity as FiltersListener).grayscaleFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.binarizedFilter).setOnClickListener {
+            (activity as FiltersListener).binarizedFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.pureBinarizedFilter).setOnClickListener {
+            (activity as FiltersListener).pureBinarizedFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.blackAndWhiteFilter).setOnClickListener {
+            (activity as FiltersListener).blackAndWhiteFilter()
             dismissAllowingStateLoss()
         }
         view.findViewById<Button>(R.id.none).setOnClickListener {
+            (activity as FiltersListener).noneFilter()
             dismissAllowingStateLoss()
         }
         return view

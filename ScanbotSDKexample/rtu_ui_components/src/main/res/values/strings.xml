@@ -25,4 +25,7 @@
     <string name="pure_binarized_filter">Pure Binarized Filter</string>
     <string name="black_amp_white_filter"><![CDATA[Black & White Filter]]></string>
     <string name="none">None</string>
+    <string name="crop_amp_rotate"><![CDATA[CROP & ROTATE]]></string>
+    <string name="delete">DELETE</string>
+    <string name="page_title">Page</string>
 </resources>

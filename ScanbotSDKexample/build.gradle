@@ -8,6 +8,7 @@ buildscript {
     ext.androidSupportVersion='27.0.2'
     ext.kotlin_ktx_version = "0.3"
     ext.kotlin_version = '1.2.71'
+    ext.corutines_version = "0.30.2"
 
     ext.scanbotSdkVersion = "1.38.0"
 

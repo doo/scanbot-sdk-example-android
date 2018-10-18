@@ -71,8 +71,15 @@ dependencies {
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-4:$scanbotSdkVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$corutines_version"
 
 }
 repositories {
     mavenCentral()
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

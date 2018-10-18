@@ -1,49 +1,59 @@
 package io.scanbot.example
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import android.os.Handler
+import android.os.Looper
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.ProgressBar
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
+import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.launch
+import net.doo.snap.camera.CameraPreviewMode
 import java.io.File
 
 
-class PagePreviewActivity : AppCompatActivity() {
+class PagePreviewActivity : AppCompatActivity(), FiltersListener {
     private lateinit var adapter: PagesAdapter
     private lateinit var recycleView: RecyclerView
 
     companion object {
-        val CROP_DEFAULT_UI_REQUEST_CODE = 9999
-        val FILTER_UI_REQUEST_CODE = 7777
+        const val FILTER_UI_REQUEST_CODE = 7777
+        private const val CAMERA_ACTIVITY: Int = 8888
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
 
         var selectedPage: Page? = null
     }
 
-    lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
-
+    private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
+    private lateinit var scanbotSDK: ScanbotSDK
+    lateinit var progress: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_page_preview)
         initActionBar()
         initMenu()
+        scanbotSDK = ScanbotSDK(application)
 
         adapter = PagesAdapter()
         adapter.setHasStableIds(true)
@@ -56,9 +66,25 @@ class PagePreviewActivity : AppCompatActivity() {
         recycleView.layoutManager = layoutManager
 
         // initialize items only once, so we can update items from onActivityResult
-        adapter.setItems(ScanbotSDK(this).pageFileStorage().getStoredPages().map { id -> Page(id) })
+        adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
 
-        findViewById<View>(R.id.action_add_page).setOnClickListener {}
+        progress = findViewById(R.id.progressBar)
+        findViewById<View>(R.id.action_add_page).setOnClickListener {
+            val cameraConfiguration = DocumentScannerConfiguration()
+            cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FILL_IN)
+            cameraConfiguration.setIgnoreBadAspectRatio(true)
+            cameraConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            cameraConfiguration.setBottomBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            cameraConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
+            cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+
+            val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@PagePreviewActivity,
+                    cameraConfiguration
+            )
+            startActivityForResult(intent, CAMERA_ACTIVITY)
+        }
         findViewById<View>(R.id.action_delete_all).setOnClickListener {
             ScanbotSDK(this).pageFileStorage().removeAll()
             adapter.notifyDataSetChanged()
@@ -94,19 +120,66 @@ class PagePreviewActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
+    override fun cleanBackgroundFilter() {
+        applyFilter(ImageFilterType.BACKGROUND_CLEAN)
+    }
+
+    override fun colorDocumentFilter() {
+        applyFilter(ImageFilterType.COLOR_DOCUMENT)
+    }
+
+    override fun colorFilter() {
+        applyFilter(ImageFilterType.COLOR_ENHANCED)
+    }
+
+    override fun grayscaleFilter() {
+        applyFilter(ImageFilterType.GRAYSCALE)
+    }
+
+    override fun binarizedFilter() {
+        applyFilter(ImageFilterType.BINARIZED)
+    }
+
+    override fun pureBinarizedFilter() {
+        applyFilter(ImageFilterType.PURE_BINARIZED)
+    }
+
+    override fun blackAndWhiteFilter() {
+        applyFilter(ImageFilterType.BLACK_AND_WHITE)
+    }
+
+    override fun noneFilter() {
+        applyFilter(ImageFilterType.NONE)
+    }
+
+    private fun applyFilter(imageFilterType: ImageFilterType) {
+        progress.visibility = View.VISIBLE
+        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
+            adapter.items.forEach {
+                scanbotSDK.pageProcessor().applyFilter(it, imageFilterType)
+            }
+            Handler(Looper.getMainLooper()).post {
+                adapter.notifyDataSetChanged()
+                progress.visibility = View.GONE
+            }
+        })
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
-            adapter.updateItem(page)
-            return
-        }
 
         if (requestCode == FILTER_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(PageFiltersActivity.PAGE_DATA)
             adapter.updateItem(page)
             return
+        }
+
+        if (requestCode == CAMERA_ACTIVITY) {
+            adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
+        }
+
+        if (requestCode == FILTER_UI_REQUEST_CODE) {
+            adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
         }
     }
 
@@ -133,7 +206,7 @@ class PagePreviewActivity : AppCompatActivity() {
     private inner class PagesAdapter : RecyclerView.Adapter<PageViewHolder>() {
 
         val items: MutableList<Page> = mutableListOf()
-        private val mOnClickListener: View.OnClickListener = MyOnClickListener()
+        private val mOnClickListener: View.OnClickListener = PageClickListener()
         fun setItems(pages: List<Page>) {
             items.clear()
             items.addAll(pages)
@@ -181,11 +254,13 @@ class PagePreviewActivity : AppCompatActivity() {
         }
     }
 
-    inner class MyOnClickListener : View.OnClickListener {
+    inner class PageClickListener : View.OnClickListener {
         override fun onClick(v: View?) {
             val itemPosition = recycleView.getChildLayoutPosition(v)
             selectedPage = adapter.items[itemPosition]
-            OptionsDialogFragment().show(supportFragmentManager, "OPTIONS_DIALOG_TAG")
+
+            val intent = PageFiltersActivity.newIntent(this@PagePreviewActivity, selectedPage!!)
+            startActivityForResult(intent, FILTER_UI_REQUEST_CODE)
         }
     }
 
@@ -194,99 +269,7 @@ class PagePreviewActivity : AppCompatActivity() {
      */
     private inner class PageViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        internal val imageView: ImageView
+        internal val imageView: ImageView = itemView.findViewById<View>(R.id.page) as ImageView
 
-        init {
-            imageView = itemView.findViewById<View>(R.id.page) as ImageView
-        }
-    }
-
-    class OptionsDialogFragment : DialogFragment() {
-        private val options: List<String> = arrayListOf<String>(
-                "Open Cropping UI",
-                "Open Filter UI",
-                "Rotate page left",
-                "Rotate page right",
-                "Delete page"
-        )
-
-        private lateinit var optionsList: RecyclerView
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            val view = inflater.inflate(R.layout.options_dialog, null, false)
-            optionsList = view.findViewById(R.id.options_list)
-            optionsList.layoutManager = LinearLayoutManager(context)
-
-            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE)
-            return view
-        }
-
-
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            super.onActivityCreated(savedInstanceState)
-
-            optionsList.adapter = OptionsAdapter(options, context, this)
-        }
-    }
-
-    class OptionsAdapter(private val items: List<String>, val context: Context?,
-                         private val dialogFragment: OptionsDialogFragment) : RecyclerView.Adapter<OptionsViewHolder>() {
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionsViewHolder {
-            return OptionsViewHolder(LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: OptionsViewHolder, position: Int) {
-            holder.option?.text = items[position]
-            holder.option.setOnClickListener {
-                selectedPage?.let {
-                    when (position) {
-                        0 -> {
-                            val croppingConfig = CroppingConfiguration()
-                            croppingConfig.setPage(it)
-                            if (context != null) {
-                                val intent = io.scanbot.sdk.ui.view.edit.CroppingActivity.newIntent(context, croppingConfig)
-                                (context as Activity).startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
-                            }
-                        }
-                        1 -> {
-                            if (context != null) {
-                                val intent = PageFiltersActivity.newIntent(context, it)
-                                (context as Activity).startActivityForResult(intent, FILTER_UI_REQUEST_CODE)
-                            }
-                        }
-                        2, 3 -> {
-                            if (context != null) {
-                                // TODO perform as a task and refresh images view when done.
-                                val times = if (position == 2) 1 else -1
-                                ScanbotSDK(context).pageProcessor().rotate(it, times)
-                            }
-                        }
-                        4 -> {
-                            if (context != null) {
-                                ScanbotSDK(context).pageFileStorage().remove(it.pageId)
-                                // TODO refresh images view
-                            }
-                        }
-                        else -> {
-                            //
-                            if (context != null) {
-                                Toast.makeText(context, "Option not implemented!", Toast.LENGTH_LONG).show()
-                            }
-                        }
-
-                    }
-                }
-                dialogFragment.dismiss()
-            }
-        }
-    }
-
-    class OptionsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val option = view.findViewById<TextView>(android.R.id.text1)
     }
 }
