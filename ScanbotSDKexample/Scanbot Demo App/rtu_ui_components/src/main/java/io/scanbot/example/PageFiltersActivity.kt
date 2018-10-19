@@ -85,12 +85,16 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
         initMenu()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-            showLicenseDialog()
-        }
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
             selectedPage = page

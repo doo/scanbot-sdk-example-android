@@ -40,7 +40,7 @@ class ErrorFragment : DialogFragment() {
         builder.setNegativeButton(
                 "close") { _, _ ->
             run {
-                activity?.finishAffinity()
+                dismiss()
             }
         }
         builder.setPositiveButton(

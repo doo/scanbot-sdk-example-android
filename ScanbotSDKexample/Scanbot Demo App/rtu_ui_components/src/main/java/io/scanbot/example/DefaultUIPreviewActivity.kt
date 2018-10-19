@@ -53,9 +53,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-            showLicenseDialog()
-        }
         if (requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
         } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -102,6 +99,13 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         dialogFragment.show(fm, QRCodeDialogFragment.NAME)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
@@ -145,6 +149,9 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.mrz_camera_default_ui).setOnClickListener {
             val mrzCameraConfiguration = MRZScannerConfiguration()
+
+            mrzCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            mrzCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
 
             val intent = MRZScannerActivity.newIntent(this@DefaultUIPreviewActivity, mrzCameraConfiguration)
             startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)

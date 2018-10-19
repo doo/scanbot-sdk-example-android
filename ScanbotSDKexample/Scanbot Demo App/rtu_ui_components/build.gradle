@@ -8,7 +8,7 @@ android {
     buildToolsVersion buildToolsVersion
 
     defaultConfig {
-        applicationId "io.scanbot.sdk"
+        applicationId "io.scanbot.sdkdemo"
         targetSdkVersion targetVersion
         minSdkVersion minVersion
         versionCode 1

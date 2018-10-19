@@ -166,11 +166,15 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_CANCELED) {
+    override fun onResume() {
+        super.onResume()
+        if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILTER_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(PageFiltersActivity.PAGE_DATA)
             adapter.updateItem(page)
