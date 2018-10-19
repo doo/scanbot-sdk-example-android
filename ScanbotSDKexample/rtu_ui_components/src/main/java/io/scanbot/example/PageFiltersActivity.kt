@@ -13,6 +13,7 @@ import android.view.View.VISIBLE
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
@@ -87,12 +88,20 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        if (resultCode == Activity.RESULT_CANCELED) {
+            showLicenseDialog()
+        }
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
             selectedPage = page
             initPagePreview()
             return
         }
+    }
+
+    private fun showLicenseDialog() {
+        val dialogFragment = ErrorFragment.newInstanse()
+        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
     }
 
     fun initActionBar() {

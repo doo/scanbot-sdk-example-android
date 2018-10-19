@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import io.scanbot.example.fragments.BarCodeDialogFragment
+import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.MRZDialogFragment
 import io.scanbot.example.fragments.QRCodeDialogFragment
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
@@ -52,6 +53,9 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        if (resultCode == Activity.RESULT_CANCELED) {
+            showLicenseDialog()
+        }
         if (requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
         } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -77,16 +81,19 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         }
     }
 
+    private fun showLicenseDialog() {
+        val dialogFragment = ErrorFragment.newInstanse()
+        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+    }
+
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
-        val fm = supportFragmentManager
         val dialogFragment = MRZDialogFragment.newInstanse(mrzRecognitionResult)
-        dialogFragment.show(fm, MRZDialogFragment.NAME)
+        dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
     private fun showBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val fm = supportFragmentManager
         val dialogFragment = BarCodeDialogFragment.newInstanse(barcodeRecognitionResult)
-        dialogFragment.show(fm, BarCodeDialogFragment.NAME)
+        dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
     }
 
     private fun showQrDialog(barcodeRecognitionResult: BarcodeScanningResult) {

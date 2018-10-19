@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
@@ -167,7 +168,9 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
+        if (resultCode == Activity.RESULT_CANCELED) {
+            showLicenseDialog()
+        }
         if (requestCode == FILTER_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(PageFiltersActivity.PAGE_DATA)
             adapter.updateItem(page)
@@ -183,6 +186,10 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         }
     }
 
+    private fun showLicenseDialog() {
+        val dialogFragment = ErrorFragment.newInstanse()
+        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
