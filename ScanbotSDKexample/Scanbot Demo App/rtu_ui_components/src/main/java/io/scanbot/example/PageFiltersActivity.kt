@@ -104,8 +104,10 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun showLicenseDialog() {
-        val dialogFragment = ErrorFragment.newInstanse()
-        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
+            val dialogFragment = ErrorFragment.newInstanse()
+            dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        }
     }
 
     fun initActionBar() {
@@ -220,21 +222,25 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-        progress.visibility = VISIBLE
-        selectedFilter = imageFilterType
-        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
-            scanbotSDK.pageProcessor().applyFilter(this@PageFiltersActivity.selectedPage, imageFilterType)
-            scanbotSDK.pageProcessor().generateFilteredPreview(this@PageFiltersActivity.selectedPage, selectedFilter)
-            Handler(Looper.getMainLooper()).post {
-                Picasso.with(applicationContext)
-                        .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
-                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-                        .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                        .centerInside()
-                        .into(image, ImageCallback())
-                progress.visibility = GONE
-            }
-        })
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        } else {
+            progress.visibility = VISIBLE
+            selectedFilter = imageFilterType
+            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
+                scanbotSDK.pageProcessor().applyFilter(this@PageFiltersActivity.selectedPage, imageFilterType)
+                scanbotSDK.pageProcessor().generateFilteredPreview(this@PageFiltersActivity.selectedPage, selectedFilter)
+                Handler(Looper.getMainLooper()).post {
+                    Picasso.with(applicationContext)
+                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                    progress.visibility = GONE
+                }
+            })
+        }
     }
 
 }

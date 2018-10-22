@@ -10,7 +10,7 @@ buildscript {
     ext.kotlin_version = '1.2.71'
     ext.corutines_version = "0.30.2"
 
-    ext.scanbotSdkVersion = "1.38.2.4-SNAPSHOT"
+    ext.scanbotSdkVersion = "1.38.2.7-SNAPSHOT"
 
     repositories {
         google()

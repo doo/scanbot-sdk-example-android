@@ -79,8 +79,10 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     }
 
     private fun showLicenseDialog() {
-        val dialogFragment = ErrorFragment.newInstanse()
-        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
+            val dialogFragment = ErrorFragment.newInstanse()
+            dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        }
     }
 
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {

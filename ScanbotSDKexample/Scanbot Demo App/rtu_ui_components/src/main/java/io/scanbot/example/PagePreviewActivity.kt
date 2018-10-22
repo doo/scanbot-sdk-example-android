@@ -154,16 +154,20 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-        progress.visibility = View.VISIBLE
-        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
-            adapter.items.forEach {
-                scanbotSDK.pageProcessor().applyFilter(it, imageFilterType)
-            }
-            Handler(Looper.getMainLooper()).post {
-                adapter.notifyDataSetChanged()
-                progress.visibility = View.GONE
-            }
-        })
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        } else {
+            progress.visibility = View.VISIBLE
+            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
+                adapter.items.forEach {
+                    scanbotSDK.pageProcessor().applyFilter(it, imageFilterType)
+                }
+                Handler(Looper.getMainLooper()).post {
+                    adapter.notifyDataSetChanged()
+                    progress.visibility = View.GONE
+                }
+            })
+        }
     }
 
     override fun onResume() {
@@ -191,8 +195,10 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun showLicenseDialog() {
-        val dialogFragment = ErrorFragment.newInstanse()
-        dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
+            val dialogFragment = ErrorFragment.newInstanse()
+            dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
