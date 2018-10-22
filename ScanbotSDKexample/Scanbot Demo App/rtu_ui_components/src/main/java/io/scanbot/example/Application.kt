@@ -21,6 +21,7 @@ class Application : MultiDexApplication() {
                 .ocrBlobsPath(this, "http://download.scanbot.io/di/tessdata")
                 .languageClassifierBlobPath(this, "http://download.scanbot.io/di/android")
                 .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.ZXing)
+
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
                                 .imageFormat(CameraImageFormat.JPG)
