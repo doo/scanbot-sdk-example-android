@@ -70,7 +70,11 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             }
         } else if (requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST) {
             if (resultCode == RESULT_OK) {
-                ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+                if (!scanbotSDK.isLicenseValid) {
+                    showLicenseDialog()
+                } else {
+                    ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+                }
             }
         } else if (requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val intent = Intent(this@DefaultUIPreviewActivity, PagePreviewActivity::class.java)
@@ -164,6 +168,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setFinderTextHint("Please align the Barcode in the frame above to scan it")
 
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE)
@@ -175,7 +180,8 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             qrcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             qrcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             qrcodeCameraConfiguration.setBarcodeFormatsFilter(arrayListOf(BarcodeFormat.QR_CODE))
-
+            qrcodeCameraConfiguration.setFinderTextHint("Please align the QR code in the frame above to scan it")
+            
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, qrcodeCameraConfiguration)
 
             startActivityForResult(intent, QR_CODE_DEFAULT_UI_REQUEST_CODE)

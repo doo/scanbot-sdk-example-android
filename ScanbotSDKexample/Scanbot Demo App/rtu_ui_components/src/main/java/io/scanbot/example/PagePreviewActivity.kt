@@ -36,7 +36,6 @@ import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.entity.SnappingDraft
-import net.doo.snap.lib.detector.ContourDetector
 import net.doo.snap.persistence.PageFactory
 import net.doo.snap.persistence.cleanup.Cleaner
 import net.doo.snap.process.DocumentProcessingResult
@@ -244,9 +243,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
                 adapter.items.forEach {
                     try {
                         val bitmap = loadImage(it)
-                        val result = applyFilters(bitmap)
 
-                        val page = pageFactory.buildPage(result, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels).page
+                        val page = pageFactory.buildPage(bitmap, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels).page
                         pages.add(pages.size, page)
                     } catch (e: IOException) {
                         throw RuntimeException(e)
@@ -352,21 +350,9 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         }
     }
 
-    private fun applyFilters(bitmap: Bitmap): Bitmap {
-        val detector = ContourDetector()
-        detector.detect(bitmap)
-        val polygon = detector.polygonF
-
-        /*
-         * This operation crops original bitmap and creates a new one. Old bitmap is recycled
-         * and can't be used anymore. If that's not what you need, use processImageF() instead
-         */
-        return detector.processImageAndRelease(bitmap, polygon, ContourDetector.IMAGE_FILTER_GRAY)
-    }
-
     @Throws(IOException::class)
     private fun loadImage(page: Page): Bitmap {
-        val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path
+        val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
 
         return BitmapUtils.decodeQuietly(imagePath, null) ?: throw IOException("Bitmap is null")
     }
