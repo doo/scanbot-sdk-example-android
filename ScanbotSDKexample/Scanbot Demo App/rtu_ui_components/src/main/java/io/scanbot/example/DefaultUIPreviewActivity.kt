@@ -181,7 +181,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             qrcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             qrcodeCameraConfiguration.setBarcodeFormatsFilter(arrayListOf(BarcodeFormat.QR_CODE))
             qrcodeCameraConfiguration.setFinderTextHint("Please align the QR code in the frame above to scan it")
-            
+
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, qrcodeCameraConfiguration)
 
             startActivityForResult(intent, QR_CODE_DEFAULT_UI_REQUEST_CODE)

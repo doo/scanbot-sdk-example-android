@@ -143,7 +143,11 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun initPagePreview() {
-        GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        } else {
+            GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+        }
     }
 
     inner class GenerateFilterPreviewTask : AsyncTask<Void, Void, String>() {
