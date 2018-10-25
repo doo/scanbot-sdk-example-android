@@ -20,7 +20,7 @@ allprojects {
         buildToolsVersion='28.0.2'
         androidSupportVersion='27.0.2'
 
-        scanbotSdkVersion = "1.38.1"
+        scanbotSdkVersion = "1.38.2"
     }
 
     repositories {
