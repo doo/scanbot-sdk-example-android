@@ -64,7 +64,7 @@ configurations {
 dependencies {
 
     implementation "com.android.support:appcompat-v7:$androidSupportVersion"
-    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'io.scanbot:iqm:1.0.0-SNAPSHOT'
@@ -76,10 +76,4 @@ dependencies {
 }
 repositories {
     mavenCentral()
-}
-
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
 }
