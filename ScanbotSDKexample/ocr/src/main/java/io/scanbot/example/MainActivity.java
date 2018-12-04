@@ -39,7 +39,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initDependencies() {
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
-        opticalCharacterRecognizer = scanbotSDK.ocrRecogniser();
+        opticalCharacterRecognizer = scanbotSDK.ocrRecognizer();
         pageFileStorage = scanbotSDK.getPageFileStorage();
         pageProcessor = scanbotSDK.pageProcessor();
     }
@@ -141,7 +143,10 @@ public class MainActivity extends AppCompatActivity {
                 List<io.scanbot.sdk.persistence.Page> pages = new ArrayList<>();
                 pages.add(processedPage);
 
-                return opticalCharacterRecognizer.recognizeTextFromPages(pages);
+                Set<Language> languages = new HashSet<>();
+                languages.add(Language.ENG);
+
+                return opticalCharacterRecognizer.recognizeTextFromPages(pages, languages);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -190,7 +195,11 @@ public class MainActivity extends AppCompatActivity {
                 List<io.scanbot.sdk.persistence.Page> pages = new ArrayList<>();
                 pages.add(processedPage);
 
-                return opticalCharacterRecognizer.recognizeTextWithPdfFromPages(pages, PDFPageSize.A4);
+                Set<Language> languages = new HashSet<>();
+                languages.add(Language.ENG);
+                languages.add(Language.CHS);
+
+                return opticalCharacterRecognizer.recognizeTextWithPdfFromPages(pages, PDFPageSize.A4, languages);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

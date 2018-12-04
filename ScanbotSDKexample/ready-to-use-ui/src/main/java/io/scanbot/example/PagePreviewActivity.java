@@ -69,7 +69,7 @@ public class PagePreviewActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CROP_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Page page = data.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA);
+            Page page = Page.fromBundle(data.getExtras());
             adapter.updateItem(page);
         }
     }
