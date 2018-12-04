@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         editPolygonView = (EditPolygonImageView) findViewById(R.id.polygonView);
-        editPolygonView.setImageResource(R.drawable.ios16bit);
+        editPolygonView.setImageResource(R.drawable.test_receipt);
         originalBitmap = ((BitmapDrawable) editPolygonView.getDrawable()).getBitmap();
 
         magnifierView = (MagnifierView) findViewById(R.id.magnifier);
