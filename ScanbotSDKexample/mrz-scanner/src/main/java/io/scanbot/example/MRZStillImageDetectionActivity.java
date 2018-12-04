@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.persistence.Page;

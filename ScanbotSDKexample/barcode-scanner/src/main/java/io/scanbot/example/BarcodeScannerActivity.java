@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;

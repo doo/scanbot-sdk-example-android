@@ -16,11 +16,11 @@ buildscript {
 allprojects {
 
     project.ext {
-        compileSdkVersion=27
-        buildToolsVersion='28.0.2'
-        androidSupportVersion='27.0.2'
+        compileSdkVersion=28
+        buildToolsVersion='28.0.3'
+        androidxSupportVersion='1.0.1'
 
-        scanbotSdkVersion = "1.38.3"
+        scanbotSdkVersion = "1.40.0.8.4-SNAPSHOT"
     }
 
     repositories {

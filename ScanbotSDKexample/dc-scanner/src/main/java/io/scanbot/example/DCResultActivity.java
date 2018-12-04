@@ -3,10 +3,10 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import io.scanbot.dcscanner.model.DateRecord;
 import io.scanbot.dcscanner.model.DisabilityCertificateInfoBox;
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
