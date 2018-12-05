@@ -1,7 +1,7 @@
 package io.scanbot.example;
 
-import android.support.multidex.MultiDexApplication;
 
+import androidx.multidex.MultiDexApplication;
 import io.scanbot.sdk.ScanbotSDKInitializer;
 import io.scanbot.sdk.persistence.PageStorageSettings;
 
@@ -21,6 +21,7 @@ public class ExampleApplication extends MultiDexApplication {
                         new PageStorageSettings.Builder()
                                 .previewTargetMax(600)
                                 .build())
+                .prepareMRZBlobs(true)
                 .initialize(this);
         super.onCreate();
     }

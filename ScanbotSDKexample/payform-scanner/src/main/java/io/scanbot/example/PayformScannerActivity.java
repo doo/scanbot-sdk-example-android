@@ -3,12 +3,12 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,8 @@ import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.ui.PolygonView;
+
+import androidx.fragment.app.DialogFragment;
 
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example

@@ -18,8 +18,8 @@
         android:id="@+id/scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
         android:text="Load image + Run OCR"
-        android:layout_below="@+id/downloadOcrData"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -32,14 +32,5 @@
         android:layout_centerHorizontal="true"
         android:indeterminate="true"
         android:visibility="gone"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download OCR data"
-        android:id="@+id/downloadOcrData"
-        android:layout_below="@+id/title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

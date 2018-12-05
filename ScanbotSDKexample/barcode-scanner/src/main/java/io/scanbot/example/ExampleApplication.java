@@ -2,13 +2,13 @@ package io.scanbot.example;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 
+import androidx.multidex.MultiDex;
 import io.scanbot.sdk.ScanbotSDKInitializer;
 
 /**
  * {@link ScanbotSDKInitializer} should be called
- * in {@code Application.onCreate()} method for RoboGuice modules initialization
+ * in {@code Application.onCreate()} method for modules initialization
  */
 public class ExampleApplication extends Application {
 

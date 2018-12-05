@@ -3,8 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +13,8 @@ import net.doo.snap.dcscanner.DCScannerFrameHandler;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
 

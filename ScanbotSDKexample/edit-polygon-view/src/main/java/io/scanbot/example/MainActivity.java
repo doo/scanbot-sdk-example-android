@@ -6,8 +6,6 @@ import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +20,9 @@ import net.doo.snap.ui.MagnifierView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 public class MainActivity extends AppCompatActivity {
 
