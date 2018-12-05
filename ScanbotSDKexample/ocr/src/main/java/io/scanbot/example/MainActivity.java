@@ -197,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Set<Language> languages = new HashSet<>();
                 languages.add(Language.ENG);
-                languages.add(Language.CHS);
 
                 return opticalCharacterRecognizer.recognizeTextWithPdfFromPages(pages, PDFPageSize.A4, languages);
             } catch (IOException e) {
