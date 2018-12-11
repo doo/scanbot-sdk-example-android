@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion compileVersion
-    buildToolsVersion buildToolsVersion
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "io.scanbot.example"
-        targetSdkVersion targetVersion
-        minSdkVersion minVersion
+        minSdkVersion 15
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
-    implementation 'com.android.support:multidex:1.0.2'
-    implementation "io.scanbot:sdk-package-1:$scanbotSdkVersion"
+    implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
+    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
 }

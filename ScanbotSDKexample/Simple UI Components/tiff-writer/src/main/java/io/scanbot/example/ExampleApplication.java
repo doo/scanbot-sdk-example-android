@@ -15,6 +15,7 @@ public class ExampleApplication extends Application {
         new ScanbotSDKInitializer()
                 // TODO add your license
                 // .license(this, "YOUR_SCANBOT_SDK_LICENSE_KEY")
+                .sdkFilesDirectory(this, getExternalFilesDir(null))
                 .initialize(this);
         super.onCreate();
     }

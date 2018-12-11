@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +18,8 @@ import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 

@@ -3,10 +3,6 @@ package io.scanbot.example;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
@@ -69,7 +69,7 @@ public class PagePreviewActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CROP_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Page page = data.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA);
+            Page page = data.getParcelableExtra(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA);
             adapter.updateItem(page);
         }
     }

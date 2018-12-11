@@ -1,26 +1,18 @@
 package io.scanbot.example;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.entity.Document;
-import net.doo.snap.entity.Page;
-import net.doo.snap.entity.SnappingDraft;
 import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.persistence.PageFactory;
-import net.doo.snap.persistence.cleanup.Cleaner;
-import net.doo.snap.process.DocumentProcessingResult;
-import net.doo.snap.process.DocumentProcessor;
-import net.doo.snap.process.draft.DocumentDraftExtractor;
-import net.doo.snap.process.util.DocumentDraft;
+import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.util.FileChooserUtils;
 import net.doo.snap.util.bitmap.BitmapUtils;
 import net.doo.snap.util.thread.MimeUtils;
@@ -28,9 +20,19 @@ import net.doo.snap.util.thread.MimeUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.persistence.Page;
+import io.scanbot.sdk.persistence.PageFileStorage;
+import io.scanbot.sdk.persistence.PageStorageProcessor;
+import io.scanbot.sdk.process.ImageFilterType;
+import io.scanbot.sdk.process.PDFPageSize;
+import io.scanbot.sdk.process.PDFRenderer;
+import io.scanbot.sdk.process.PageProcessor;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,12 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE_REQUEST = 100;
     private static final String IMAGE_TYPE = "image/*";
 
-    private PageFactory pageFactory;
-    private DocumentDraftExtractor documentDraftExtractor;
-    private DocumentProcessor documentProcessor;
-    private Cleaner cleaner;
+    private PDFRenderer pdfRenderer;
 
     private View progressView;
+    private PageFileStorage pageFileStorage;
+    private PageProcessor pageProcessor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeDependencies() {
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
-        pageFactory = scanbotSDK.pageFactory();
-        documentDraftExtractor = scanbotSDK.documentDraftExtractor();
-        documentProcessor = scanbotSDK.documentProcessor();
-        cleaner = scanbotSDK.cleaner();
+        pdfRenderer = scanbotSDK.pdfRenderer();
+        pageFileStorage = scanbotSDK.pageFileStorage();
+        pageProcessor = scanbotSDK.pageProcessor();
     }
 
     private void openGallery() {
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         intent.setType(IMAGE_TYPE);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         startActivityForResult(
                 Intent.createChooser(intent, "Select picture"),
@@ -83,31 +84,38 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-
         if (requestCode != SELECT_PICTURE_REQUEST || resultCode != RESULT_OK) {
             return;
         }
 
-        Uri imageUri = intent.getData();
+        ArrayList<Uri> imageUris = new ArrayList<>();
 
-        if (imageUri == null) {
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (intent.getClipData() != null) {
+                ClipData mClipData = intent.getClipData();
+                for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                    ClipData.Item item = mClipData.getItemAt(i);
+                    Uri uri = item.getUri();
+                    imageUris.add(uri);
+                }
+            } else if (intent.getData() != null) {
+                imageUris.add(intent.getData());
+            }
         }
 
-        new ProcessDocumentTask(imageUri).execute();
+        new ProcessDocumentTask(imageUris).execute();
         progressView.setVisibility(View.VISIBLE);
     }
 
-    private void openDocument(DocumentProcessingResult documentProcessingResult) {
-        Document document = documentProcessingResult.getDocument();
-        File documentFile = documentProcessingResult.getDocumentFile();
+    private void openDocument(File processedDocument) {
 
         Intent openIntent = new Intent();
         openIntent.setAction(Intent.ACTION_VIEW);
+        openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         openIntent.setDataAndType(
-                Uri.fromFile(documentFile),
-                MimeUtils.getMimeByName(document.getName())
+                FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", processedDocument),
+                MimeUtils.getMimeByName(processedDocument.getName())
         );
 
         if (openIntent.resolveActivity(getPackageManager()) != null) {
@@ -121,61 +129,36 @@ public class MainActivity extends AppCompatActivity {
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
      */
-    private class ProcessDocumentTask extends AsyncTask<Void, Void, List<DocumentProcessingResult>> {
+    private class ProcessDocumentTask extends AsyncTask<Void, Void, File> {
 
-        private final Uri imageUri;
-        private final int screenWidth;
-        private final int screenHeight;
+        private final ArrayList<Uri> imageUris;
 
-        private ProcessDocumentTask(Uri imageUri) {
-            this.imageUri = imageUri;
-
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            screenWidth = displayMetrics.widthPixels;
-            screenHeight = displayMetrics.heightPixels;
+        private ProcessDocumentTask(ArrayList<Uri> imageUris) {
+            this.imageUris = imageUris;
         }
 
         @Override
-        protected List<DocumentProcessingResult> doInBackground(Void... voids) {
-            List<DocumentProcessingResult> results = new ArrayList<>();
-
+        protected File doInBackground(Void... voids) {
             try {
-                Bitmap bitmap = loadImage();
-                Bitmap result = applyFilters(bitmap);
+                List<Page> pages = new ArrayList<>();
+                for (Uri imageUri : imageUris) {
+                    Bitmap bitmap = loadImage(imageUri);
 
-                Page page = pageFactory.buildPage(result, screenWidth, screenHeight).page;
-                SnappingDraft snappingDraft = new SnappingDraft(page);
-                DocumentDraft[] drafts = documentDraftExtractor.extract(snappingDraft);
-
-                for (DocumentDraft draft : drafts) {
-                    try {
-                        results.add(documentProcessor.processDocument(draft));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    String newPageId = pageFileStorage.add(bitmap);
+                    Page page = new Page(newPageId, Collections.<PointF>emptyList(), DetectionResult.OK, ImageFilterType.GRAYSCALE);
+                    pageProcessor.detectDocument(page);
+                    pages.add(page);
                 }
 
-                cleaner.cleanUp();
+                return pdfRenderer.renderDocumentFromPages(pages, PDFPageSize.FIXED_A4);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
 
-            return results;
+            return null;
         }
 
-        private Bitmap applyFilters(Bitmap bitmap) {
-            ContourDetector detector = new ContourDetector();
-            detector.detect(bitmap);
-            List<PointF> polygon = detector.getPolygonF();
-
-            /*
-             * This operation crops original bitmap and creates a new one. Old bitmap is recycled
-             * and can't be used anymore. If that's not what you need, use processImageF() instead
-             */
-            return detector.processImageAndRelease(bitmap, polygon, ContourDetector.IMAGE_FILTER_GRAY);
-        }
-
-        private Bitmap loadImage() throws IOException {
+        private Bitmap loadImage(Uri imageUri) throws IOException {
             String imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
             Bitmap bitmap = BitmapUtils.decodeQuietly(imagePath, null);
 
@@ -186,12 +169,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<DocumentProcessingResult> documentProcessingResults) {
+        protected void onPostExecute(File processedDocument) {
             progressView.setVisibility(View.GONE);
 
             //open first document
-            if (documentProcessingResults.size() > 0) {
-                openDocument(documentProcessingResults.get(0));
+            if (processedDocument != null) {
+                openDocument(processedDocument);
             }
         }
 

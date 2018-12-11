@@ -15,6 +15,8 @@ public class ExampleApplication extends Application {
         new ScanbotSDKInitializer()
                 // TODO add your license
                 // .license(this, "YOUR_SCANBOT_SDK_LICENSE_KEY")
+                .prepareOCRLanguagesBlobs(true)
+                .preparePayFormBlobs(true)
                 .initialize(this);
         super.onCreate();
     }

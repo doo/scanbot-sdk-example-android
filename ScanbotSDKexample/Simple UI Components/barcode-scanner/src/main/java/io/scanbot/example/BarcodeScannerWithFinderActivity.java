@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +16,8 @@ import net.doo.snap.camera.ScanbotCameraView;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
