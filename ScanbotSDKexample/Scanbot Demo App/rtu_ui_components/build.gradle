@@ -20,10 +20,6 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("../sdk-test-release-key.keystore")
-            storePassword "qwerty"
-            keyAlias "test-key"
-            keyPassword "qwerty"
         }
     }
     buildTypes {
