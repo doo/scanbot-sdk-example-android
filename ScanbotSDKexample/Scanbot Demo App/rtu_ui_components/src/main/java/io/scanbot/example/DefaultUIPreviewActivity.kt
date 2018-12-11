@@ -124,15 +124,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         initDependencies()
         setContentView(R.layout.activity_default_preview)
 
-//        val spannable = SpannableString(getString(R.string.scanbot_sdk_title))
-//        spannable.setSpan(
-//                FontSpan(Typeface.SANS_SERIF),
-//                0, 4,
-//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//
-//        textViewtitle.text = spannable
-
-        // select an image from photo library and run document detection on it:
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
             val imageIntent = Intent()
             imageIntent.type = "image/*"

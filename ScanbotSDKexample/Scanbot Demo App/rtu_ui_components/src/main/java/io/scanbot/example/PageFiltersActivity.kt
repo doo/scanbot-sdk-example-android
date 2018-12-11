@@ -70,7 +70,7 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         scanbotSDK = ScanbotSDK(application)
 
         action_filter.setOnClickListener {
-            filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
+            filtersSheetFragment.show(supportFragmentManager, FILTERS_MENU_TAG)
         }
         action_delete.setOnClickListener {
             PageRepository.removePage(this, selectedPage)

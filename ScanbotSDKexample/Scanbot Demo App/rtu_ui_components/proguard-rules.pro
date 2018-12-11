@@ -55,12 +55,6 @@
 
 -keepattributes Exceptions
 
--keep interface android.support.v7.** { *; }
--keep class !android.support.v7.internal.view.menu.**, android.support.** {*;}
-
--keep public class * extends android.support.v7.app.ActionBarActivity { *; }
--keep class android.support.v7.widget.** { *; }
-
 # Scanbot SDK
 
 -keep public class net.doo.snap.ScanbotSDKInitializer {
