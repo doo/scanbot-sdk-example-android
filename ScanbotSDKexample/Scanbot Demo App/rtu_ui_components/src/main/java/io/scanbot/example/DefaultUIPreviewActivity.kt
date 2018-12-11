@@ -7,22 +7,23 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import io.scanbot.example.fragments.BarCodeDialogFragment
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.MRZDialogFragment
 import io.scanbot.example.fragments.QRCodeDialogFragment
+import io.scanbot.example.repository.PageRepository
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeFormat
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
+import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
@@ -37,14 +38,15 @@ import java.io.IOException
 
 class DefaultUIPreviewActivity : AppCompatActivity() {
 
-    private val MRZ_DEFAULT_UI_REQUEST_CODE = 909
-    private val BARCODE_DEFAULT_UI_REQUEST_CODE = 910
-    private val QR_CODE_DEFAULT_UI_REQUEST_CODE = 911
-    private val CROP_DEFAULT_UI_REQUEST_CODE = 9999
-    private val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
-    private val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
-
-    private val CAMERA_DEFAULT_UI_REQUEST_CODE = 1111
+    companion object {
+        private const val MRZ_DEFAULT_UI_REQUEST_CODE = 909
+        private const val BARCODE_DEFAULT_UI_REQUEST_CODE = 910
+        private const val QR_CODE_DEFAULT_UI_REQUEST_CODE = 911
+        private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
+        private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
+        private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
+        private const val CAMERA_DEFAULT_UI_REQUEST_CODE = 1111
+    }
 
     private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var blobManager: BlobManager
@@ -77,6 +79,12 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
                 }
             }
         } else if (requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+                it as Page
+            }
+
+            PageRepository.addPages(pages)
+
             val intent = Intent(this@DefaultUIPreviewActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
@@ -111,13 +119,18 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             showLicenseDialog()
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
         setContentView(R.layout.activity_default_preview)
 
-        warning_view.visibility = if (!Application.LICENSE.isEmpty()) View.GONE else View.VISIBLE
+//        val spannable = SpannableString(getString(R.string.scanbot_sdk_title))
+//        spannable.setSpan(
+//                FontSpan(Typeface.SANS_SERIF),
+//                0, 4,
+//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//
+//        textViewtitle.text = spannable
 
         // select an image from photo library and run document detection on it:
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
@@ -128,12 +141,12 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             }
-            startActivityForResult(Intent.createChooser(imageIntent, "Select Image"), SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST)
+            startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.share_title)), SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST)
         }
 
         findViewById<View>(R.id.camera_default_ui).setOnClickListener {
             val cameraConfiguration = DocumentScannerConfiguration()
-            cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FILL_IN)
+            cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
             cameraConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             cameraConfiguration.setBottomBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
@@ -163,7 +176,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)
         }
 
-        findViewById<View>(R.id.barcode_camera_default_ui).setOnClickListener {
+        findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
@@ -172,19 +185,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE)
-        }
-
-        findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
-            val qrcodeCameraConfiguration = BarcodeScannerConfiguration()
-
-            qrcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
-            qrcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            qrcodeCameraConfiguration.setBarcodeFormatsFilter(arrayListOf(BarcodeFormat.QR_CODE))
-            qrcodeCameraConfiguration.setFinderTextHint("Please align the QR code in the frame above to scan it")
-
-            val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, qrcodeCameraConfiguration)
-
-            startActivityForResult(intent, QR_CODE_DEFAULT_UI_REQUEST_CODE)
         }
 
     }
@@ -205,27 +205,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         scanbotSDK = ScanbotSDK(this)
         blobManager = scanbotSDK.blobManager()
         blobFactory = scanbotSDK.blobFactory()
-    }
-
-    private fun extractData(result: MRZRecognitionResult): String {
-        return StringBuilder()
-                .append("documentCode: ").append(result.documentCodeField().value).append("\n")
-                .append("First name: ").append(result.firstNameField().value).append("\n")
-                .append("Last name: ").append(result.lastNameField().value).append("\n")
-                .append("issuingStateOrOrganization: ").append(result.issuingStateOrOrganizationField().value).append("\n")
-                .append("departmentOfIssuance: ").append(result.departmentOfIssuanceField().value).append("\n")
-                .append("nationality: ").append(result.nationalityField().value).append("\n")
-                .append("dateOfBirth: ").append(result.dateOfBirthField().value).append("\n")
-                .append("gender: ").append(result.genderField().value).append("\n")
-                .append("dateOfExpiry: ").append(result.dateOfExpiryField().value).append("\n")
-                .append("personalNumber: ").append(result.personalNumberField().value).append("\n")
-                .append("optional1: ").append(result.optional1Field().value).append("\n")
-                .append("optional2: ").append(result.optional2Field().value).append("\n")
-                .append("discreetIssuingStateOrOrganization: ").append(result.discreetIssuingStateOrOrganizationField().value).append("\n")
-                .append("validCheckDigitsCount: ").append(result.validCheckDigitsCount).append("\n")
-                .append("checkDigitsCount: ").append(result.checkDigitsCount).append("\n")
-                .append("travelDocType: ").append(result.travelDocTypeField().value).append("\n")
-                .toString()
     }
 
     /**
@@ -252,6 +231,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             val editPolygonConfiguration = CroppingConfiguration()
 
             editPolygonConfiguration.setPage(page)
+
             val intent = io.scanbot.sdk.ui.view.edit.CroppingActivity.newIntent(
                     applicationContext,
                     editPolygonConfiguration
@@ -270,7 +250,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             super.onPreExecute()
             progressBar.visibility = View.VISIBLE
             Toast.makeText(this@DefaultUIPreviewActivity,
-                    "Importing selected image and running auto document detection...", Toast.LENGTH_LONG).show()
+                    getString(R.string.importing_and_processing), Toast.LENGTH_LONG).show()
         }
 
         override fun doInBackground(vararg params: Void): Page {
@@ -285,6 +265,8 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             // run auto document detection on it:
             page = pageProcessor.detectDocument(page)
+
+            PageRepository.addPage(page)
 
             return page
         }

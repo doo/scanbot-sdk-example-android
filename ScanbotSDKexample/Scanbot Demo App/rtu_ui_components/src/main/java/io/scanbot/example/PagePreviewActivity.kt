@@ -6,49 +6,52 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
+import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
+import io.scanbot.example.repository.PageRepository
+import io.scanbot.example.util.SharingCopier
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.process.PDFPageSize
+import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import kotlinx.android.synthetic.main.activity_page_preview.*
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.doo.snap.camera.CameraPreviewMode
-import net.doo.snap.entity.SnappingDraft
 import net.doo.snap.persistence.PageFactory
 import net.doo.snap.persistence.cleanup.Cleaner
-import net.doo.snap.process.DocumentProcessingResult
 import net.doo.snap.process.DocumentProcessor
 import net.doo.snap.process.draft.DocumentDraftExtractor
 import net.doo.snap.util.bitmap.BitmapUtils
 import net.doo.snap.util.thread.MimeUtils
 import java.io.File
 import java.io.IOException
-import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 
-class PagePreviewActivity : AppCompatActivity(), FiltersListener {
+class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, CoroutineScope {
     private lateinit var adapter: PagesAdapter
     private lateinit var recycleView: RecyclerView
 
@@ -56,6 +59,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         const val FILTER_UI_REQUEST_CODE = 7777
         private const val CAMERA_ACTIVITY: Int = 8888
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
+        private const val SAVE_MENU_TAG = "SAVE_MENU_TAG"
 
         var selectedPage: Page? = null
     }
@@ -64,9 +68,16 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
     private lateinit var documentDraftExtractor: DocumentDraftExtractor
     private lateinit var documentProcessor: DocumentProcessor
     private lateinit var cleaner: Cleaner
+    private lateinit var textRecognition: OpticalCharacterRecognizer
+    private lateinit var pdfRenderer: PDFRenderer
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
+    private lateinit var saveSheetFragment: SaveBottomSheetMenuFragment
     private lateinit var scanbotSDK: ScanbotSDK
     lateinit var progress: ProgressBar
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +90,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         documentDraftExtractor = scanbotSDK.documentDraftExtractor()
         documentProcessor = scanbotSDK.documentProcessor()
         cleaner = scanbotSDK.cleaner()
+        textRecognition = scanbotSDK.ocrRecognizer()
+        pdfRenderer = scanbotSDK.pdfRenderer()
 
         adapter = PagesAdapter()
         adapter.setHasStableIds(true)
@@ -91,7 +104,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         recycleView.layoutManager = layoutManager
 
         // initialize items only once, so we can update items from onActivityResult
-        adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
+        adapter.setItems(PageRepository.getPages())
 
         progress = findViewById(R.id.progressBar)
         findViewById<View>(R.id.action_add_page).setOnClickListener {
@@ -110,22 +123,26 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
             )
             startActivityForResult(intent, CAMERA_ACTIVITY)
         }
-        findViewById<View>(R.id.action_delete_all).setOnClickListener {
-            ScanbotSDK(this).pageFileStorage().removeAll()
+        action_delete_all.setOnClickListener {
+            PageRepository.clearPages(this)
             adapter.notifyDataSetChanged()
             action_save_document.isEnabled = false
+            action_delete_all.isEnabled = false
+            action_filter.isEnabled = false
         }
-        findViewById<View>(R.id.action_filter).setOnClickListener {
+        action_filter.setOnClickListener {
             val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
             if (fragment == null) {
                 filtersSheetFragment.show(supportFragmentManager, FILTERS_MENU_TAG)
             }
         }
 
-        findViewById<Button>(R.id.action_save_document).setOnClickListener {
-            saveDocument()
+        action_save_document.setOnClickListener {
+            val fragment = supportFragmentManager.findFragmentByTag(SAVE_MENU_TAG)
+            if (fragment == null) {
+                saveSheetFragment.show(supportFragmentManager, SAVE_MENU_TAG)
+            }
         }
-
     }
 
     private fun initMenu() {
@@ -138,14 +155,23 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         }
 
         filtersSheetFragment = FiltersBottomSheetMenuFragment()
-    }
 
+        val fragment2 = supportFragmentManager.findFragmentByTag(SAVE_MENU_TAG)
+        if (fragment2 != null) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .remove(fragment2)
+                    .commitNow()
+        }
+
+        saveSheetFragment = SaveBottomSheetMenuFragment()
+    }
 
     private fun initActionBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        supportActionBar!!.title = "Scan Results"
+        supportActionBar!!.title = getString(R.string.scan_results)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
@@ -182,20 +208,26 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         applyFilter(ImageFilterType.NONE)
     }
 
+    override fun saveWithOcr() {
+        saveDocument(true)
+    }
+
+    override fun saveWithOutOcr() {
+        saveDocument(false)
+    }
+
     private fun applyFilter(imageFilterType: ImageFilterType) {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
-            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
-                adapter.items.forEach {
-                    scanbotSDK.pageProcessor().applyFilter(it, imageFilterType)
-                }
+            launch {
+                PageRepository.applyFilter(this@PagePreviewActivity, imageFilterType)
                 Handler(Looper.getMainLooper()).post {
                     adapter.notifyDataSetChanged()
                     progress.visibility = View.GONE
                 }
-            })
+            }
         }
     }
 
@@ -204,23 +236,27 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         }
+        checkVisibility()
+    }
+
+    private fun checkVisibility() {
         action_save_document.isEnabled = !adapter.items.isEmpty()
+        action_delete_all.isEnabled = !adapter.items.isEmpty()
+        action_filter.isEnabled = !adapter.items.isEmpty()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FILTER_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val page = data!!.getParcelableExtra<Page>(PageFiltersActivity.PAGE_DATA)
-            adapter.updateItem(page)
-            return
-        }
-
-        if (requestCode == CAMERA_ACTIVITY) {
-            adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
-        }
-
-        if (requestCode == FILTER_UI_REQUEST_CODE) {
-            adapter.setItems(scanbotSDK.pageFileStorage().getStoredPages().map { id -> Page(id) })
+        if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+                it as Page
+            }
+            PageRepository.addPages(pages)
+            adapter.setItems(PageRepository.getPages())
+            checkVisibility()
+        } else {
+            adapter.setItems(PageRepository.getPages())
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -231,49 +267,31 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         }
     }
 
-    private fun saveDocument() {
+    private fun saveDocument(withOcr: Boolean) {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
-            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
-                val results = ArrayList<DocumentProcessingResult>()
-
-                val pages = mutableListOf<net.doo.snap.entity.Page>()
-                adapter.items.forEach {
-                    try {
-                        val bitmap = loadImage(it)
-
-                        val page = pageFactory.buildPage(bitmap, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels).page
-                        pages.add(pages.size, page)
-                    } catch (e: IOException) {
-                        throw RuntimeException(e)
-                    }
+            launch {
+                var pdfFile: File? =
+                        if (withOcr) {
+                            textRecognition.recognizeTextWithPdfFromPages(adapter.items, PDFPageSize.AUTO, textRecognition.getInstalledLanguages()).sandwichedPdfDocumentFile
+                        } else {
+                            pdfRenderer.renderDocumentFromPages(adapter.items, PDFPageSize.AUTO)
+                        }
+                if (pdfFile != null) {
+                    pdfFile = SharingCopier.copyFile(this@PagePreviewActivity, pdfFile)
                 }
-
-                val snappingDraft = SnappingDraft(*pages.toTypedArray())
-                val drafts = documentDraftExtractor.extract(snappingDraft)
-
-                for (draft in drafts) {
-                    try {
-                        results.add(documentProcessor.processDocument(draft))
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-
-                }
-
-                cleaner.cleanUp()
 
                 Handler(Looper.getMainLooper()).post {
                     progress.visibility = View.GONE
 
                     //open first document
-                    if (results.isNotEmpty()) {
-                        openDocument(results[0])
+                    if (pdfFile != null) {
+                        openDocument(pdfFile)
                     }
                 }
-            })
+            }
         }
     }
 
@@ -287,7 +305,6 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
 
         return super.onOptionsItemSelected(item)
     }
-
 
     private inner class PagesAdapter : RecyclerView.Adapter<PageViewHolder>() {
 
@@ -327,21 +344,10 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
         override fun getItemCount(): Int {
             return items.size
         }
-
-        fun updateItem(page: Page) {
-            val renewedItems: MutableList<Page> = mutableListOf()
-            for (item in items) {
-                if (item.pageId != page.pageId) {
-                    renewedItems.add(item)
-                }
-            }
-            renewedItems.add(page)
-            setItems(renewedItems)
-        }
     }
 
     inner class PageClickListener : View.OnClickListener {
-        override fun onClick(v: View?) {
+        override fun onClick(v: View) {
             val itemPosition = recycleView.getChildLayoutPosition(v)
             selectedPage = adapter.items[itemPosition]
 
@@ -354,25 +360,23 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener {
     private fun loadImage(page: Page): Bitmap {
         val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
 
-        return BitmapUtils.decodeQuietly(imagePath, null) ?: throw IOException("Bitmap is null")
+        return BitmapUtils.decodeQuietly(imagePath, null)
+                ?: throw IOException(getString(R.string.bitmap_is_null_error))
     }
 
-    private fun openDocument(documentProcessingResult: DocumentProcessingResult) {
-        val document = documentProcessingResult.document
-        val documentFile = documentProcessingResult.documentFile
-
-        val openIntent = Intent()
-        openIntent.action = Intent.ACTION_VIEW
-        openIntent.setDataAndType(
-                FileProvider.getUriForFile(this, this.applicationContext.packageName + ".provider", documentFile),
-                MimeUtils.getMimeByName(document.name)
-        )
+    private fun openDocument(pdfFile: File) {
+        val openIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, androidx.core.content.FileProvider.getUriForFile(this@PagePreviewActivity,
+                    this@PagePreviewActivity.applicationContext.packageName + ".provider", pdfFile))
+            type = MimeUtils.getMimeByName(pdfFile.name)
+        }
         openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         if (openIntent.resolveActivity(packageManager) != null) {
-            startActivity(openIntent)
+            startActivity(Intent.createChooser(openIntent, pdfFile.name))
         } else {
-            Toast.makeText(this@PagePreviewActivity, "Error while opening the document", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@PagePreviewActivity, getString(R.string.error_openning_document), Toast.LENGTH_LONG).show()
         }
     }
 

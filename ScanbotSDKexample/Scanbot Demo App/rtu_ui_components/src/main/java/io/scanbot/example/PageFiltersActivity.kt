@@ -4,30 +4,32 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.*
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
+import io.scanbot.example.repository.PageRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity : AppCompatActivity(), FiltersListener {
+class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
@@ -42,17 +44,25 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
         }
     }
 
+
     lateinit var selectedPage: Page
     var selectedFilter: ImageFilterType = ImageFilterType.NONE
     lateinit var scanbotSDK: ScanbotSDK
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filters)
         initActionBar()
 
-        selectedPage = intent.getParcelableExtra(PAGE_DATA)
+        selectedPage = PageRepository.getPages().find {
+            it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
+        }!!
 
         selectedPage.let {
             selectedFilter = it.filter
@@ -63,9 +73,10 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
         action_delete.setOnClickListener {
-            scanbotSDK.pageFileStorage().remove(selectedPage.pageId)
+            PageRepository.removePage(this, selectedPage)
             finish()
         }
+
         action_crop_and_rotate.setOnClickListener {
             val croppingConfig = CroppingConfiguration()
             croppingConfig.setPage(this.selectedPage)
@@ -96,8 +107,7 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
-            selectedPage = page
+            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA))
             initPagePreview()
             return
         }
@@ -128,6 +138,13 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        val data = Intent()
+        data.putExtra(PAGE_DATA, selectedPage as Parcelable)
+        setResult(Activity.RESULT_OK, data)
+        super.onBackPressed()
     }
 
     private fun initMenu() {
@@ -231,9 +248,8 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
         } else {
             progress.visibility = VISIBLE
             selectedFilter = imageFilterType
-            GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, {
-                scanbotSDK.pageProcessor().applyFilter(this@PageFiltersActivity.selectedPage, imageFilterType)
-                scanbotSDK.pageProcessor().generateFilteredPreview(this@PageFiltersActivity.selectedPage, selectedFilter)
+            launch {
+                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedFilter, selectedPage)
                 Handler(Looper.getMainLooper()).post {
                     Picasso.with(applicationContext)
                             .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
@@ -243,8 +259,7 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener {
                             .into(image, ImageCallback())
                     progress.visibility = GONE
                 }
-            })
+            }
         }
     }
-
 }

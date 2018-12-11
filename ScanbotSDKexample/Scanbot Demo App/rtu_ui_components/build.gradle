@@ -20,7 +20,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("sdk-test-release-key.keystore")
+            storeFile file("../sdk-test-release-key.keystore")
             storePassword "qwerty"
             keyAlias "test-key"
             keyPassword "qwerty"
@@ -63,17 +63,19 @@ configurations {
 
 dependencies {
 
-    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'io.scanbot:iqm:1.0.0-SNAPSHOT'
+    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation "androidx.constraintlayout:constraintlayout-solver:1.1.3"
+    implementation "androidx.recyclerview:recyclerview:1.0.0"
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-4:$scanbotSdkVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$corutines_version"
-
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1'
 }
+
 repositories {
     mavenCentral()
 }
