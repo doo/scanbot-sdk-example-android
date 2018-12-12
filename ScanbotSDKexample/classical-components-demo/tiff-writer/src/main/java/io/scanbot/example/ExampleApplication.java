@@ -6,7 +6,7 @@ import io.scanbot.sdk.ScanbotSDKInitializer;
 
 /**
  * {@link ScanbotSDKInitializer} should be called
- * in {@code Application.onCreate()} method for Dagger modules initialization
+ * in {@code Application.onCreate()} method for modules initialization
  */
 public class ExampleApplication extends Application {
 
