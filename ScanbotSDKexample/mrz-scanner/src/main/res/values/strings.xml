@@ -1,4 +1,0 @@
-<resources>
-    <string name="app_name">Scanbot SDK Example</string>
-    <string name="mrz_finder_hint">Please hold your phone over the 2- or 3-line MRZ code at the front of your passport</string>
-</resources>

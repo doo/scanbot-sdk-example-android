@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.scanbot.example">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <application
+        android:name=".ExampleApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:largeHeap="true">
+
+        <!-- Insert OCR data folder path. It can be external url - "http://download.com/your_ocrdata",
+        or local assets folder - "your_folder_in_assets/"-->
+        <meta-data android:name="ocr_blobs_path" android:value="https://github.com/tesseract-ocr/tessdata/raw/3.04.00" />
+        <meta-data
+            android:name="language_classifier_blob_path"
+            android:value="http://download.scanbot.io/di/android" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PayformScannerActivity" />
+        <activity android:name=".PayformResultActivity" />
+    </application>
+
+</manifest>
