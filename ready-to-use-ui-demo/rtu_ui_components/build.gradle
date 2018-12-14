@@ -18,19 +18,10 @@ android {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
     }
-    signingConfigs {
-        release {
-            storeFile file("../sdk-test-release-key.keystore")
-            storePassword "qwerty"
-            keyAlias "test-key"
-            keyPassword "qwerty"
-        }
-    }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
     }
 

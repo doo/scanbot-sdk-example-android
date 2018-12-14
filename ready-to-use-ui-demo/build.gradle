@@ -16,10 +16,10 @@ buildscript {
         google()
         jcenter()
         maven {
-            url 'http://nexus.scanbot.io/nexus/content/repositories/snapshots/'
+            url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
         }
         maven {
-            url 'http://nexus.scanbot.io/nexus/content/repositories/releases/'
+            url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/'
         }
     }
     dependencies {

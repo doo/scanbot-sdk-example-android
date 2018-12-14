@@ -29,8 +29,6 @@ import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import kotlinx.android.synthetic.main.activity_default_preview.*
-import net.doo.snap.blob.BlobFactory
-import net.doo.snap.blob.BlobManager
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
@@ -49,8 +47,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     }
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var blobManager: BlobManager
-    private lateinit var blobFactory: BlobFactory
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -181,7 +177,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            barcodeCameraConfiguration.setFinderTextHint("Please align the Barcode in the frame above to scan it")
+            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
 
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE)
@@ -203,8 +199,6 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
     private fun initDependencies() {
         scanbotSDK = ScanbotSDK(this)
-        blobManager = scanbotSDK.blobManager()
-        blobFactory = scanbotSDK.blobFactory()
     }
 
     /**
