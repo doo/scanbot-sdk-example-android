@@ -1,8 +1,11 @@
 package io.scanbot.example;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +22,8 @@ import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+
+        askPermission();
 
         setContentView(R.layout.activity_main);
 
@@ -128,6 +135,16 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             }
         });
 
+    }
+
+    private void askPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        999);
+            }
+        }
     }
 
     @Override
@@ -243,11 +260,10 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         autoSnappingController.setEnabled(enabled);
         contourDetectorFrameHandler.setEnabled(enabled);
         polygonView.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON":"OFF"));
-        if (enabled){
+        autoSnappingToggleButton.setText("Automatic " + (enabled ? "ON" : "OFF"));
+        if (enabled) {
             shutterButton.showAutoButton();
-        }
-        else {
+        } else {
             shutterButton.showManualButton();
             userGuidanceHint.setVisibility(View.GONE);
         }

@@ -1,7 +1,9 @@
 package io.scanbot.example;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.net.Uri;
@@ -11,7 +13,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.util.FileChooserUtils;
 import net.doo.snap.util.bitmap.BitmapUtils;
@@ -24,11 +25,12 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
-import io.scanbot.sdk.persistence.PageStorageProcessor;
 import io.scanbot.sdk.process.ImageFilterType;
 import io.scanbot.sdk.process.PDFPageSize;
 import io.scanbot.sdk.process.PDFRenderer;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        askPermission();
+
         initializeDependencies();
 
         findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
@@ -60,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         progressView = findViewById(R.id.progressBar);
+    }
+
+    private void askPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        999);
+            }
+        }
     }
 
     private void initializeDependencies() {
