@@ -1,50 +1,33 @@
 package io.scanbot.example;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import net.doo.snap.blob.BlobFactory;
-import net.doo.snap.blob.BlobManager;
-import net.doo.snap.entity.Blob;
-import net.doo.snap.entity.Document;
 import net.doo.snap.entity.Language;
-import net.doo.snap.entity.OcrStatus;
-import net.doo.snap.entity.Page;
-import net.doo.snap.entity.SnappingDraft;
-import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.persistence.PageFactory;
-import net.doo.snap.persistence.cleanup.Cleaner;
-import net.doo.snap.process.DocumentProcessingResult;
-import net.doo.snap.process.DocumentProcessor;
 import net.doo.snap.process.OcrResult;
-import net.doo.snap.process.TextRecognition;
-import net.doo.snap.process.draft.DocumentDraftExtractor;
-import net.doo.snap.process.util.DocumentDraft;
 import net.doo.snap.util.FileChooserUtils;
 import net.doo.snap.util.bitmap.BitmapUtils;
-import net.doo.snap.util.thread.MimeUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer;
 import io.scanbot.sdk.persistence.PageFileStorage;
@@ -68,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        askPermission();
         initDependencies();
 
         findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
@@ -77,6 +61,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         progressView = findViewById(R.id.progressBar);
+    }
+
+    private void askPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        999);
+            }
+        }
     }
 
     private void openGallery() {
