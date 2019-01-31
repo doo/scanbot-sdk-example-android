@@ -10,4 +10,6 @@ include ':ocr',
         ':dc-scanner',
         ':tiff-writer',
         ':cheque-scanner',
-        ':manual-processing'
+        ':manual-processing',
+        ':camera-view-aspect-ratio-finder'
+
