@@ -9,7 +9,7 @@ These example apps show how to integrate the [Scanbot SDK](https://scanbot.io/sd
 
 The Scanbot SDK brings scanning and document creation capabilities to your mobile apps.
 It contains modules which are individually licensable as license packages.
-For more details visit our website https://scanbot.io/sdk.html
+For more details visit our website https://scanbot.io/sdk
 
 
 ## Documentation of the Scanbot SDK
