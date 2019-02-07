@@ -1,4 +1,6 @@
-# Scanbot SDK Example Apps for Android
+# Document Scanning SDK and Barcode, QR code and MRZ scanning
+
+## Scanbot SDK example apps for Android
 
 These example apps show how to integrate the [Scanbot SDK](https://scanbot.io/sdk.html) for Android.
 
