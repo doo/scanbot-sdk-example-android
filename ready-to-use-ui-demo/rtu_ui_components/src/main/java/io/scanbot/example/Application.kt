@@ -38,6 +38,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 )
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
+                .preparePayFormBlobs(true)
 //                .license(this, LICENSE) // TODO Add the Scanbot SDK license key here
                 .initialize(this)
 

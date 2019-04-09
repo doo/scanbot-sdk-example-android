@@ -11,16 +11,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import io.scanbot.example.fragments.BarCodeDialogFragment
-import io.scanbot.example.fragments.ErrorFragment
-import io.scanbot.example.fragments.MRZDialogFragment
-import io.scanbot.example.fragments.QRCodeDialogFragment
+import io.scanbot.example.fragments.*
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.ui.entity.workflow.Workflow
+import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
@@ -28,6 +27,8 @@ import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
+import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
+import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_default_preview.*
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
@@ -38,8 +39,13 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
     companion object {
         private const val MRZ_DEFAULT_UI_REQUEST_CODE = 909
-        private const val BARCODE_DEFAULT_UI_REQUEST_CODE = 910
+        private const val QR_BARCODE_DEFAULT_UI_REQUEST_CODE = 910
         private const val QR_CODE_DEFAULT_UI_REQUEST_CODE = 911
+        private const val MRZ_SNAP_WORKFLOW_REQUEST_CODE = 912
+        private const val MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE = 913
+        private const val DC_SCAN_WORKFLOW_REQUEST_CODE = 914
+        private const val BARCODE_SCAN_WORKFLOW_REQUEST_CODE = 915
+        private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -53,15 +59,30 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
         if (requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
+        } else if (requestCode == MRZ_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+        } else if (requestCode == MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showFrontBackMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
         } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
             page.pageId
-        } else if (requestCode == BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
             showBarcodeDialog(barcodeData)
+        } else if (requestCode == BARCODE_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showBarcodeWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+        } else if (requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
         } else if (requestCode == QR_CODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val qrCode = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
             showQrDialog(qrCode)
+        } else if (requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
         } else if (requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
@@ -96,6 +117,31 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
         val dialogFragment = MRZDialogFragment.newInstanse(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
+    }
+
+    private fun showMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+        val dialogFragment = MRZImageResultDialogFragment.newInstance(workflow, workflowStepResults)
+        dialogFragment.show(supportFragmentManager, MRZImageResultDialogFragment.NAME)
+    }
+
+    private fun showFrontBackMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+        val dialogFragment = MRZFrontBackImageResultDialogFragment.newInstance(workflow, workflowStepResults)
+        dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
+    }
+
+    private fun showBarcodeWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+        val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
+        dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
+    }
+
+    private fun showDCWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+        val dialogFragment = DCResultDialogFragment.newInstance(workflow, workflowStepResults)
+        dialogFragment.show(supportFragmentManager, DCResultDialogFragment.NAME)
+    }
+
+    private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+        val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
+        dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
     }
 
     private fun showBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
@@ -180,7 +226,84 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
 
             val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, barcodeCameraConfiguration)
-            startActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE)
+            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.mrz_image_default_ui).setOnClickListener {
+            val workflowScannerConfiguration = WorkflowScannerConfiguration()
+            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
+            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+
+            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+                    workflowScannerConfiguration,
+                    WorkflowFactory.scanMRZAndSnap()
+            )
+            startActivityForResult(intent, MRZ_SNAP_WORKFLOW_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.mrz_front_back_image_default_ui).setOnClickListener {
+            val workflowScannerConfiguration = WorkflowScannerConfiguration()
+            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
+            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+
+            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+                    workflowScannerConfiguration,
+                    WorkflowFactory.scanMRZAndFrontBackSnap()
+            )
+            startActivityForResult(intent, MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.barcode_default_ui).setOnClickListener {
+            val workflowScannerConfiguration = WorkflowScannerConfiguration()
+            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
+            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+
+            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+                    workflowScannerConfiguration,
+                    WorkflowFactory.barcodeCode()
+            )
+            startActivityForResult(intent, BARCODE_SCAN_WORKFLOW_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.dc_default_ui).setOnClickListener {
+            val workflowScannerConfiguration = WorkflowScannerConfiguration()
+            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
+            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
+
+            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+                    workflowScannerConfiguration,
+                    WorkflowFactory.disabilityCertificate()
+            )
+            startActivityForResult(intent, DC_SCAN_WORKFLOW_REQUEST_CODE)
+        }
+
+        payform_default_ui.setOnClickListener {
+            val workflowScannerConfiguration = WorkflowScannerConfiguration()
+            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
+            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
+
+            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+                    workflowScannerConfiguration,
+                    WorkflowFactory.payFormWithClassicalDocPolygonDetection()
+            )
+            startActivityForResult(intent, PAYFORM_SCAN_WORKFLOW_REQUEST_CODE)
         }
 
     }
