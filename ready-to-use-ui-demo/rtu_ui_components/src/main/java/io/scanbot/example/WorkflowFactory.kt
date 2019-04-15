@@ -17,10 +17,14 @@ class WorkflowFactory {
 
     companion object {
         fun scanMRZAndSnap(): Workflow {
-            val ratios = listOf(PageAspectRatio(85.60, 53.98))
+            val ratios = listOf(
+                    PageAspectRatio(85.0, 54.0), // ID card
+                    PageAspectRatio(125.0, 88.0) // Passport
+            )
             val steps = listOf(
                     ScanMachineReadableZoneWorkflowStep(
-                            message = "Please scan your id card or passport.",
+                            title = "Scan ID card or passport",
+                            message = "Please align your ID card or passport in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
                             workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
@@ -41,16 +45,16 @@ class WorkflowFactory {
         }
 
         fun scanMRZAndFrontBackSnap(): Workflow {
-            val ratios = listOf(PageAspectRatio(296.0, 202.0))
+            val ratios = listOf(PageAspectRatio(85.0, 54.0)) // ID card
             val steps = listOf(
                     ScanDocumentPageWorkflowStep(
                             "Scan 1/2",
-                            "Please scan the front of your id card or passport.",
+                            "Please scan the front of your ID card.",
                             ratios
                     ),
                     ScanMachineReadableZoneWorkflowStep(
                             title = "Scan 2/2",
-                            message = "Please scan the back of your id card or passport.",
+                            message = "Please scan the back of your ID card.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
                             workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
@@ -59,8 +63,8 @@ class WorkflowFactory {
                                         || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
                                     WorkflowStepError(
                                             1,
-                                            "This does not seem to be the correct page.",
-                                            WorkflowStepError.ShowMode.TOAST)
+                                            "This does not seem to be the correct side. Please scan the back with MRZ.",
+                                            WorkflowStepError.ShowMode.DIALOG)
                                 } else {
                                     null
                                 }
@@ -71,7 +75,10 @@ class WorkflowFactory {
         }
 
         fun disabilityCertificate(): Workflow {
-            val ratios = listOf(PageAspectRatio(296.0, 212.0))
+            val ratios = listOf(
+                    PageAspectRatio(148.0, 210.0), // DC form A5 portrait (e.g. white sheet, AUB Muster 1b/E (1/2018))
+                    PageAspectRatio(148.0, 105.0)  // DC form A6 landscape (e.g. yellow sheet, AUB Muster 1b (1.2018))
+            )
             val steps = listOf(
                     ScanDisabilityCertificateWorkflowStep(
                             message = "Please align the DC form in the frame.",
@@ -96,7 +103,7 @@ class WorkflowFactory {
         fun barcodeCode(): Workflow {
             val steps = listOf(
                     ScanBarCodeWorkflowStep(
-                            message = "Please align the bar code in the frame",
+                            message = "Please scan a bar code.",
                             acceptedCodeTypes = listOf(BarcodeFormat.ALL_FORMATS),
                             workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
                                 if (stepResult.barcodeResults == null
@@ -128,14 +135,14 @@ class WorkflowFactory {
         fun payFormWithClassicalDocPolygonDetection(): Workflow {
             val steps = listOf(
                     ScanPayFormWorkflowStep(
-                            message = "Please scan a SEPA Pay Form",
+                            message = "Please scan a SEPA PayForm",
                             wantsCapturedPage = true,
                             workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
                                 if (stepResult.payformResult == null
                                         || stepResult.payformResult?.payformFields.isNullOrEmpty()) {
                                     WorkflowStepError(
                                             1,
-                                            "No payform data detected. Please try again.",
+                                            "No PayForm data detected. Please try again.",
                                             WorkflowStepError.ShowMode.TOAST)
                                 } else {
                                     null
@@ -143,7 +150,7 @@ class WorkflowFactory {
                             }
                     )
             )
-            return Workflow(steps, "Pay Form - Polygon Doc")
+            return Workflow(steps, "PayForm - Polygon Doc")
         }
     }
 
