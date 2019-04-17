@@ -29,13 +29,13 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
-import kotlinx.android.synthetic.main.activity_default_preview.*
+import kotlinx.android.synthetic.main.activity_main.*
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
 
 
-class DefaultUIPreviewActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val MRZ_DEFAULT_UI_REQUEST_CODE = 909
@@ -102,7 +102,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
             PageRepository.addPages(pages)
 
-            val intent = Intent(this@DefaultUIPreviewActivity, PagePreviewActivity::class.java)
+            val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
     }
@@ -164,18 +164,10 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
-        setContentView(R.layout.activity_default_preview)
+        setContentView(R.layout.activity_main)
 
-//        val spannable = SpannableString(getString(R.string.scanbot_sdk_title))
-//        spannable.setSpan(
-//                FontSpan(Typeface.SANS_SERIF),
-//                0, 4,
-//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//
-//        textViewtitle.text = spannable
-
-        // select an image from photo library and run document detection on it:
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
+            // select an image from photo library and run document detection on it:
             val imageIntent = Intent()
             imageIntent.type = "image/*"
             imageIntent.action = Intent.ACTION_GET_CONTENT
@@ -197,14 +189,14 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
 
-            val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@MainActivity,
                     cameraConfiguration
             )
             startActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE)
         }
 
         findViewById<View>(R.id.page_preview_activity).setOnClickListener {
-            val intent = Intent(this@DefaultUIPreviewActivity, PagePreviewActivity::class.java)
+            val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
 
@@ -214,7 +206,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             mrzCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             mrzCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
 
-            val intent = MRZScannerActivity.newIntent(this@DefaultUIPreviewActivity, mrzCameraConfiguration)
+            val intent = MRZScannerActivity.newIntent(this@MainActivity, mrzCameraConfiguration)
             startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)
         }
 
@@ -225,7 +217,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
 
-            val intent = BarcodeScannerActivity.newIntent(this@DefaultUIPreviewActivity, barcodeCameraConfiguration)
+            val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
         }
 
@@ -237,7 +229,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
                     WorkflowFactory.scanMRZAndSnap()
             )
@@ -252,7 +244,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
                     WorkflowFactory.scanMRZAndFrontBackSnap()
             )
@@ -267,7 +259,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
                     WorkflowFactory.barcodeCode()
             )
@@ -283,7 +275,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
 
-            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
                     WorkflowFactory.disabilityCertificate()
             )
@@ -299,7 +291,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
 
-            val intent = WorkflowScannerActivity.newIntent(this@DefaultUIPreviewActivity,
+            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
                     WorkflowFactory.payFormWithClassicalDocPolygonDetection()
             )
@@ -337,7 +329,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void): Page {
             val processGalleryResult = processGalleryResult(data!!)
 
-            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@DefaultUIPreviewActivity).pageFileStorage()
+            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
             // create a new Page object with given image as original image:
             val pageId = pageFileStorage.add(processGalleryResult!!)
             return Page(pageId)
@@ -366,15 +358,15 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
         override fun onPreExecute() {
             super.onPreExecute()
             progressBar.visibility = View.VISIBLE
-            Toast.makeText(this@DefaultUIPreviewActivity,
+            Toast.makeText(this@MainActivity,
                     getString(R.string.importing_and_processing), Toast.LENGTH_LONG).show()
         }
 
         override fun doInBackground(vararg params: Void): Page {
             val processGalleryResult = processGalleryResult(data!!)
 
-            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@DefaultUIPreviewActivity).pageFileStorage()
-            val pageProcessor = io.scanbot.sdk.ScanbotSDK(this@DefaultUIPreviewActivity).pageProcessor()
+            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
+            val pageProcessor = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageProcessor()
 
             // create a new Page object with given image as original image:
             val pageId = pageFileStorage.add(processGalleryResult!!)
@@ -390,7 +382,7 @@ class DefaultUIPreviewActivity : AppCompatActivity() {
 
         override fun onPostExecute(page: Page) {
             progressBar.visibility = View.GONE
-            val intent = Intent(this@DefaultUIPreviewActivity, PagePreviewActivity::class.java)
+            val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
     }
