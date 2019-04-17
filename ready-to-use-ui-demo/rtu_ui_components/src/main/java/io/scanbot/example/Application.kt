@@ -22,7 +22,22 @@ class Application : MultiDexApplication(), CoroutineScope {
 
 
     companion object {
-        const val LICENSE = ""
+        // limited trial license key!
+        const val LICENSE =
+                "lXV9acGzkTYK7RL78doCr5Y1Nh23Un" +
+                "+Fpm4muCPEXItfLDHiO5YybtFLmHMM" +
+                "QoP5kOz2bHH7IwHUOJoO5H2WQtBStJ" +
+                "f27Q62rN3cJsRwmquDtZYoZp1nDP3f" +
+                "g/gPgU1/yRC7kXIpfbQNL/1gDmAXb6" +
+                "kQ6/6Q75vilgwINyiPqLbR7s475mRb" +
+                "hIIHMy1o1shbqlJj0mr3bUFDj59VSp" +
+                "OihIN1bIBwkBvzyRq3LFcDEqzYDSj9" +
+                "vnIwWDR9DrOiM0VOhjnkqr9lyxkAMy" +
+                "ZvSiqlj85F46gjPqbz2jegj25kS111" +
+                "wzuWaaiDkDimr5EGcNkMoQ/gwlCghY" +
+                "TitKLPEA9Nkg==\nU2NhbmJvdFNESw" +
+                "ppby5zY2FuYm90LnNka2RlbW8KMTU1" +
+                "ODEzNzU5OQoxMzEwNzEKMg==\n"
     }
 
     override fun onCreate() {
@@ -39,7 +54,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .preparePayFormBlobs(true)
-//                .license(this, LICENSE) // TODO Add the Scanbot SDK license key here
+                .license(this, LICENSE) // TODO Add the Scanbot SDK license key here
                 .initialize(this)
 
         launch {

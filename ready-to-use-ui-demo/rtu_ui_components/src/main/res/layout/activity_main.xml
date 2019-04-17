@@ -250,13 +250,13 @@
             app:layout_constraintTop_toBottomOf="@+id/mrz_front_back_image_default_ui" />
 
         <Button
-            android:id="@+id/barcode_default_ui"
+            android:id="@+id/barcode_and_doc_default_ui"
             style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="@string/scan_bar_code"
+            android:text="@string/scan_bar_code_and_doc_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/mrz_front_back_image_default_ui" />
@@ -269,7 +269,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/barcode_default_ui" />
+            app:layout_constraintTop_toBottomOf="@+id/barcode_and_doc_default_ui" />
 
         <Button
             android:id="@+id/dc_default_ui"
@@ -281,7 +281,7 @@
             android:text="@string/scan_dc_form"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/barcode_default_ui" />
+            app:layout_constraintTop_toBottomOf="@+id/barcode_and_doc_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -324,7 +324,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="0.03"
             android:lineSpacingExtra="4sp"
-            android:text="@string/_2018_by_doo_gmbh_all_rights_reserved"
+            android:text="@string/copyright_note"
             android:textColor="#99ffffff"
             android:textSize="12sp"
             android:textStyle="normal"

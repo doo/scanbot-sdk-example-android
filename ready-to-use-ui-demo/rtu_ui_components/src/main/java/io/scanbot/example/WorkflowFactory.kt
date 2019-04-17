@@ -27,16 +27,18 @@ class WorkflowFactory {
                             message = "Please align your ID card or passport in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
-                                if (stepResult.mrzResult == null
-                                        || !stepResult.mrzResult!!.recognitionSuccessful
-                                        || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
-                                    WorkflowStepError(
-                                            1,
-                                            "This does not seem to be the correct page.",
-                                            WorkflowStepError.ShowMode.TOAST)
-                                } else {
-                                    null
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
+                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                                    return if (stepResult.mrzResult == null
+                                            || !stepResult.mrzResult!!.recognitionSuccessful
+                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                        WorkflowStepError(
+                                                1,
+                                                "This does not seem to be the correct page.",
+                                                WorkflowStepError.ShowMode.TOAST)
+                                    } else {
+                                        null
+                                    }
                                 }
                             }
                     )
@@ -57,16 +59,18 @@ class WorkflowFactory {
                             message = "Please scan the back of your ID card.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
-                                if (stepResult.mrzResult == null
-                                        || !stepResult.mrzResult!!.recognitionSuccessful
-                                        || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
-                                    WorkflowStepError(
-                                            1,
-                                            "This does not seem to be the correct side. Please scan the back with MRZ.",
-                                            WorkflowStepError.ShowMode.DIALOG)
-                                } else {
-                                    null
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
+                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                                    return if (stepResult.mrzResult == null
+                                            || !stepResult.mrzResult!!.recognitionSuccessful
+                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                        WorkflowStepError(
+                                                1,
+                                                "This does not seem to be the correct side. Please scan the back with MRZ.",
+                                                WorkflowStepError.ShowMode.DIALOG)
+                                    } else {
+                                        null
+                                    }
                                 }
                             }
                     )
@@ -84,15 +88,17 @@ class WorkflowFactory {
                             message = "Please align the DC form in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
-                                if (stepResult.disabilityCertificateResult == null
-                                        || !stepResult.disabilityCertificateResult!!.recognitionSuccessful) {
-                                    WorkflowStepError(
-                                            1,
-                                            "This does not seem to be the correct page.",
-                                            WorkflowStepError.ShowMode.TOAST)
-                                } else {
-                                    null
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
+                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                                    return if (stepResult.disabilityCertificateResult == null
+                                            || !stepResult.disabilityCertificateResult!!.recognitionSuccessful) {
+                                        WorkflowStepError(
+                                                1,
+                                                "This does not seem to be the correct page.",
+                                                WorkflowStepError.ShowMode.TOAST)
+                                    } else {
+                                        null
+                                    }
                                 }
                             }
                     )
@@ -100,36 +106,45 @@ class WorkflowFactory {
             return Workflow(steps, "Disability Certificate")
         }
 
-        fun barcodeCode(): Workflow {
+        fun barcodeAndDocumentImage(): Workflow {
             val steps = listOf(
                     ScanBarCodeWorkflowStep(
-                            message = "Please scan a bar code.",
+                            title = "Step 1/2 - QR-/Barcode",
+                            message = "Please scan a barcode or a QR code.",
                             acceptedCodeTypes = listOf(BarcodeFormat.ALL_FORMATS),
-                            workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
-                                if (stepResult.barcodeResults == null
-                                        || stepResult.barcodeResults!!.isEmpty()
-                                        || stepResult.barcodeResults!!.none { barcodeScanningResult -> barcodeScanningResult.errorCode == MRZRecognitionResult.NO_ERROR }) {
-                                    WorkflowStepError(
-                                            1,
-                                            "No barcode detected.",
-                                            WorkflowStepError.ShowMode.TOAST)
-                                } else if (stepResult.barcodeResults!!.none { barcodeScanningResult ->
-                                            barcodeScanningResult!!.barcodeFormat != BarcodeFormat.QR_CODE
-                                                    && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.DATA_MATRIX
-                                                    && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.AZTEC
-                                                    && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.UNKNOWN
-                                        }) {
-                                    WorkflowStepError(
-                                            2,
-                                            "No valid barcode detected.",
-                                            WorkflowStepError.ShowMode.TOAST)
-                                } else {
-                                    null
+                            finderViewSize = FinderViewSize(1.0, 0.6),
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
+                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                                    return if (stepResult.barcodeResults == null
+                                            || stepResult.barcodeResults!!.isEmpty()
+                                            || stepResult.barcodeResults!!.none { barcodeScanningResult -> barcodeScanningResult.errorCode == MRZRecognitionResult.NO_ERROR }) {
+                                        WorkflowStepError(
+                                                1,
+                                                "No barcode detected.",
+                                                WorkflowStepError.ShowMode.TOAST)
+                                    } else if (stepResult.barcodeResults!!.none { barcodeScanningResult ->
+                                                barcodeScanningResult!!.barcodeFormat != BarcodeFormat.QR_CODE
+                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.DATA_MATRIX
+                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.AZTEC
+                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.UNKNOWN
+                                            }) {
+                                        WorkflowStepError(
+                                                2,
+                                                "No valid barcode detected.",
+                                                WorkflowStepError.ShowMode.TOAST)
+                                    } else {
+                                        null
+                                    }
                                 }
                             }
+                    ),
+                    ScanDocumentPageWorkflowStep(
+                            title = "Step 2/2 - A4 Document",
+                            message = "Please align an A4 document in the frame.",
+                            requiredAspectRatios = listOf(PageAspectRatio(210.0, 297.0))
                     )
             )
-            return Workflow(steps, "Scanning Bar Code")
+            return Workflow(steps, "Barcode + Document Image")
         }
 
         fun payFormWithClassicalDocPolygonDetection(): Workflow {
@@ -137,15 +152,17 @@ class WorkflowFactory {
                     ScanPayFormWorkflowStep(
                             message = "Please scan a SEPA PayForm",
                             wantsCapturedPage = true,
-                            workflowStepValidation = WorkflowStep.WorkflowStepValidationHandler { stepResult: WorkflowStepResult ->
-                                if (stepResult.payformResult == null
-                                        || stepResult.payformResult?.payformFields.isNullOrEmpty()) {
-                                    WorkflowStepError(
-                                            1,
-                                            "No PayForm data detected. Please try again.",
-                                            WorkflowStepError.ShowMode.TOAST)
-                                } else {
-                                    null
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
+                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                                    return if (stepResult.payformResult == null
+                                            || stepResult.payformResult?.payformFields.isNullOrEmpty()) {
+                                        WorkflowStepError(
+                                                1,
+                                                "No PayForm data detected. Please try again.",
+                                                WorkflowStepError.ShowMode.TOAST)
+                                    } else {
+                                        null
+                                    }
                                 }
                             }
                     )
@@ -183,15 +200,24 @@ class WorkflowFactory {
                    override val requiredAspectRatios: List<PageAspectRatio> = emptyList(),
                    override val wantsCapturedPage: Boolean = false,
                    override val wantsVideoFramePage: Boolean = false,
-                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler = WorkflowStepValidationHandler { null })
-        : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation) {
+                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler = object : WorkflowStep.WorkflowStepValidationHandler {
+                       override fun invoke(result: WorkflowStepResult): WorkflowStepError? {
+                           return null
+                       }
+                   }
+    ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation) {
         constructor(parcel: Parcel) : this(
                 "",
                 "",
                 emptyList(),
                 false,
                 false,
-                WorkflowStepValidationHandler { null })
+                object : WorkflowStep.WorkflowStepValidationHandler {
+                    override fun invoke(result: WorkflowStepResult): WorkflowStepError? {
+                        return null
+                    }
+                }
+        )
 
         override fun writeToParcel(dest: Parcel?, flags: Int) { }
 

@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         private const val MRZ_SNAP_WORKFLOW_REQUEST_CODE = 912
         private const val MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE = 913
         private const val DC_SCAN_WORKFLOW_REQUEST_CODE = 914
-        private const val BARCODE_SCAN_WORKFLOW_REQUEST_CODE = 915
+        private const val BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE = 915
         private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         } else if (requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
             showBarcodeDialog(barcodeData)
-        } else if (requestCode == BARCODE_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showBarcodeWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
         } else if (requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -251,7 +251,7 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE)
         }
 
-        findViewById<View>(R.id.barcode_default_ui).setOnClickListener {
+        findViewById<View>(R.id.barcode_and_doc_default_ui).setOnClickListener {
             val workflowScannerConfiguration = WorkflowScannerConfiguration()
             workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
             workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
@@ -261,9 +261,9 @@ class MainActivity : AppCompatActivity() {
 
             val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
                     workflowScannerConfiguration,
-                    WorkflowFactory.barcodeCode()
+                    WorkflowFactory.barcodeAndDocumentImage()
             )
-            startActivityForResult(intent, BARCODE_SCAN_WORKFLOW_REQUEST_CODE)
+            startActivityForResult(intent, BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE)
         }
 
         findViewById<View>(R.id.dc_default_ui).setOnClickListener {
