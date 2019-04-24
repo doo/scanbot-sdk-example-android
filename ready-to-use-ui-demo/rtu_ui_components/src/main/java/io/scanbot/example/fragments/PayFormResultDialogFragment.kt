@@ -13,9 +13,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
 import io.scanbot.payformscanner.model.PayFormRecognitionResult
-import io.scanbot.sdk.ui.entity.workflow.*
+import io.scanbot.sdk.ui.entity.workflow.PayFormWorkflowStepResult
+import io.scanbot.sdk.ui.entity.workflow.ScanPayFormWorkflowStep
+import io.scanbot.sdk.ui.entity.workflow.Workflow
+import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
-import java.util.ArrayList
+import java.util.*
 
 
 class PayFormResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -50,9 +53,9 @@ class PayFormResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
         view.title.text = "Detected SEPA Pay Form"
 
-        val payFormScanStepResult = workflowStepResults?.get(0)
-        if (payFormScanStepResult?.step is ScanPayFormWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = payFormScanStepResult?.payformResult?.let { extractData(it) }
+        val payFormScanStepResult = workflowStepResults?.get(0) as PayFormWorkflowStepResult
+        if (payFormScanStepResult.step is ScanPayFormWorkflowStep) {
+            view.findViewById<TextView>(R.id.tv_data).text = payFormScanStepResult.payformResult?.let { extractData(it) }
         }
 
         return view
@@ -81,8 +84,8 @@ class PayFormResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val payFormScanStepResult = workflowStepResults?.get(0)
-                if (payFormScanStepResult?.payformResult != null && payFormScanStepResult?.step is ScanPayFormWorkflowStep) {
+                val payFormScanStepResult = workflowStepResults?.get(0) as PayFormWorkflowStepResult
+                if (payFormScanStepResult.payformResult != null && payFormScanStepResult.step is ScanPayFormWorkflowStep) {
                     val data = extractData(payFormScanStepResult.payformResult!!)
 
                     val clip = ClipData.newPlainText(data, data)

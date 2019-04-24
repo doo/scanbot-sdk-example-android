@@ -17,10 +17,13 @@ import io.scanbot.example.R
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.ui.entity.workflow.*
+import io.scanbot.sdk.ui.entity.workflow.MachineReadableZoneWorkflowStepResult
+import io.scanbot.sdk.ui.entity.workflow.ScanMachineReadableZoneWorkflowStep
+import io.scanbot.sdk.ui.entity.workflow.Workflow
+import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
 import java.io.File
-import java.util.ArrayList
+import java.util.*
 
 
 class MRZImageResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -55,9 +58,9 @@ class MRZImageResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
         view.title.text = "Result"
 
-        val mrzScanStepResult = workflowStepResults?.get(0)
-        if (mrzScanStepResult?.step is ScanMachineReadableZoneWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = mrzScanStepResult?.mrzResult?.let { extractData(it) }
+        val mrzScanStepResult = workflowStepResults?.get(0) as MachineReadableZoneWorkflowStepResult
+        if (mrzScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
+            view.findViewById<TextView>(R.id.tv_data).text = mrzScanStepResult.mrzResult?.let { extractData(it) }
 
             val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
             mrzScanStepResult.capturedPage?.let {
@@ -101,9 +104,9 @@ class MRZImageResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val mrzScanStepResult = workflowStepResults?.get(0)
-                if (mrzScanStepResult?.mrzResult != null && mrzScanStepResult?.step is ScanMachineReadableZoneWorkflowStep) {
-                    val data = extractData(mrzScanStepResult?.mrzResult!!)
+                val mrzScanStepResult = workflowStepResults?.get(0) as MachineReadableZoneWorkflowStepResult
+                if (mrzScanStepResult.mrzResult != null && mrzScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
+                    val data = extractData(mrzScanStepResult.mrzResult!!)
 
                     val clip = ClipData.newPlainText(data, data)
 

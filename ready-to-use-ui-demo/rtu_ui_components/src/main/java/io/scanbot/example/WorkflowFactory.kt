@@ -6,6 +6,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.barcode.entity.BarcodeFormat
+import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.entity.workflow.*
 import net.doo.snap.camera.PreviewBuffer
 import net.doo.snap.lib.detector.PageAspectRatio
@@ -27,8 +28,8 @@ class WorkflowFactory {
                             message = "Please align your ID card or passport in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
-                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
+                                override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
                                             || !stepResult.mrzResult!!.recognitionSuccessful
                                             || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
@@ -59,8 +60,8 @@ class WorkflowFactory {
                             message = "Please scan the back of your ID card.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
-                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
+                                override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
                                             || !stepResult.mrzResult!!.recognitionSuccessful
                                             || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
@@ -88,8 +89,8 @@ class WorkflowFactory {
                             message = "Please align the DC form in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
-                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
-                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<DisabilityCertificateWorkflowStepResult> {
+                                override fun invoke(stepResult: DisabilityCertificateWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.disabilityCertificateResult == null
                                             || !stepResult.disabilityCertificateResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
@@ -113,27 +114,23 @@ class WorkflowFactory {
                             message = "Please scan a barcode or a QR code.",
                             acceptedCodeTypes = listOf(BarcodeFormat.ALL_FORMATS),
                             finderViewSize = FinderViewSize(1.0, 0.6),
-                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
-                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
-                                    return if (stepResult.barcodeResults == null
-                                            || stepResult.barcodeResults!!.isEmpty()
-                                            || stepResult.barcodeResults!!.none { barcodeScanningResult -> barcodeScanningResult.errorCode == MRZRecognitionResult.NO_ERROR }) {
-                                        WorkflowStepError(
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<BarCodeWorkflowStepResult> {
+                                override fun invoke(stepResult: BarCodeWorkflowStepResult): WorkflowStepError? {
+                                    return when {
+                                        stepResult.barcodeResults.isEmpty() -> WorkflowStepError(
                                                 1,
                                                 "No barcode detected.",
                                                 WorkflowStepError.ShowMode.TOAST)
-                                    } else if (stepResult.barcodeResults!!.none { barcodeScanningResult ->
-                                                barcodeScanningResult!!.barcodeFormat != BarcodeFormat.QR_CODE
-                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.DATA_MATRIX
-                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.AZTEC
-                                                        && barcodeScanningResult!!.barcodeFormat != BarcodeFormat.UNKNOWN
-                                            }) {
-                                        WorkflowStepError(
+                                        stepResult.barcodeResults.none { barcodeScanningResult ->
+                                            barcodeScanningResult.barcodeFormat != BarcodeFormat.QR_CODE
+                                                    && barcodeScanningResult.barcodeFormat != BarcodeFormat.DATA_MATRIX
+                                                    && barcodeScanningResult.barcodeFormat != BarcodeFormat.AZTEC
+                                                    && barcodeScanningResult.barcodeFormat != BarcodeFormat.UNKNOWN
+                                        } -> WorkflowStepError(
                                                 2,
                                                 "No valid barcode detected.",
                                                 WorkflowStepError.ShowMode.TOAST)
-                                    } else {
-                                        null
+                                        else -> null
                                     }
                                 }
                             }
@@ -152,10 +149,10 @@ class WorkflowFactory {
                     ScanPayFormWorkflowStep(
                             message = "Please scan a SEPA PayForm",
                             wantsCapturedPage = true,
-                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler {
-                                override fun invoke(stepResult: WorkflowStepResult): WorkflowStepError? {
+                            workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<PayFormWorkflowStepResult> {
+                                override fun invoke(stepResult: PayFormWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.payformResult == null
-                                            || stepResult.payformResult?.payformFields.isNullOrEmpty()) {
+                                            || stepResult.payformResult?.payformFields?.size == 0) {
                                         WorkflowStepError(
                                                 1,
                                                 "No PayForm data detected. Please try again.",
@@ -170,6 +167,43 @@ class WorkflowFactory {
             return Workflow(steps, "PayForm - Polygon Doc")
         }
     }
+
+    data class TestWorkflowStepResult(
+            override val step: WorkflowStep,
+            override var capturedPage: Page? = null,
+            override var videoFramePage: Page? = null,
+            val customTestValue: Int = 1
+    ) : BasicWorkflowStepResult(step), Parcelable {
+        constructor(parcel: Parcel) : this(
+                parcel.readParcelable(WorkflowStep::class.java.classLoader),
+                parcel.readParcelable(Page::class.java.classLoader),
+                parcel.readParcelable(Page::class.java.classLoader),
+                parcel.readInt()) {
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            super.writeToParcel(parcel, flags)
+            parcel.writeParcelable(step, flags)
+            parcel.writeParcelable(capturedPage, flags)
+            parcel.writeParcelable(videoFramePage, flags)
+            parcel.writeInt(customTestValue)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<TestWorkflowStepResult> {
+            override fun createFromParcel(parcel: Parcel): TestWorkflowStepResult {
+                return TestWorkflowStepResult(parcel)
+            }
+
+            override fun newArray(size: Int): Array<TestWorkflowStepResult?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
 
     /**
      * Your own custom [Workflow] with custom [TestStep]s and [TestScanner]
@@ -186,12 +220,12 @@ class WorkflowFactory {
     class TestScanner(context: Context, step: WorkflowStep) : WorkflowScanner(context, step) {
         override fun scanOnCameraFrame(previewFrame: PreviewBuffer.FrameHandler.Frame): WorkflowStepResult {
             // implement scanning logic here
-            return WorkflowStepResult(step)
+            return TestWorkflowStepResult(step)
         }
 
         override fun scanOnCapturedImage(image: ByteArray, imageOrientation: Int, finderRectF: RectF?): WorkflowStepResult {
             // implement scanning logic here
-            return WorkflowStepResult(step)
+            return TestWorkflowStepResult(step)
         }
     }
 
@@ -200,26 +234,28 @@ class WorkflowFactory {
                    override val requiredAspectRatios: List<PageAspectRatio> = emptyList(),
                    override val wantsCapturedPage: Boolean = false,
                    override val wantsVideoFramePage: Boolean = false,
-                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler = object : WorkflowStep.WorkflowStepValidationHandler {
-                       override fun invoke(result: WorkflowStepResult): WorkflowStepError? {
+                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> = object : WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> {
+                       override fun invoke(result: TestWorkflowStepResult): WorkflowStepError? {
                            return null
                        }
                    }
     ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation) {
         constructor(parcel: Parcel) : this(
-                "",
-                "",
-                emptyList(),
-                false,
-                false,
-                object : WorkflowStep.WorkflowStepValidationHandler {
-                    override fun invoke(result: WorkflowStepResult): WorkflowStepError? {
-                        return null
-                    }
-                }
-        )
+                parcel.readString(),
+                parcel.readString(),
+                parcel.createTypedArrayList(PageAspectRatio.CREATOR),
+                parcel.readByte() != 0.toByte(),
+                parcel.readByte() != 0.toByte(),
+                parcel.readSerializable() as WorkflowStepValidationHandler<TestWorkflowStepResult>)
 
-        override fun writeToParcel(dest: Parcel?, flags: Int) { }
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(title)
+            parcel.writeString(message)
+            parcel.writeTypedList(requiredAspectRatios)
+            parcel.writeByte(if (wantsCapturedPage) 1 else 0)
+            parcel.writeByte(if (wantsVideoFramePage) 1 else 0)
+            parcel.writeSerializable(workflowStepValidation)
+        }
 
         override fun describeContents(): Int {
             return 0

@@ -15,9 +15,12 @@ import io.scanbot.dcscanner.model.DCInfoBoxSubtype
 import io.scanbot.dcscanner.model.DateRecordType
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.R
-import io.scanbot.sdk.ui.entity.workflow.*
+import io.scanbot.sdk.ui.entity.workflow.DisabilityCertificateWorkflowStepResult
+import io.scanbot.sdk.ui.entity.workflow.ScanDisabilityCertificateWorkflowStep
+import io.scanbot.sdk.ui.entity.workflow.Workflow
+import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
-import java.util.ArrayList
+import java.util.*
 
 
 class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -52,9 +55,9 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
         view.title.text = "Detected DC Form"
 
-        val dcScanStepResult = workflowStepResults?.get(0)
-        if (dcScanStepResult?.step is ScanDisabilityCertificateWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = dcScanStepResult?.disabilityCertificateResult?.let { extractData(it) }
+        val dcScanStepResult = workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
+        if (dcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
+            view.findViewById<TextView>(R.id.tv_data).text = dcScanStepResult.disabilityCertificateResult?.let { extractData(it) }
         }
 
         return view
@@ -83,8 +86,8 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val dcScanStepResult = workflowStepResults?.get(0)
-                if (dcScanStepResult?.disabilityCertificateResult != null && dcScanStepResult?.step is ScanDisabilityCertificateWorkflowStep) {
+                val dcScanStepResult = workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
+                if (dcScanStepResult.disabilityCertificateResult != null && dcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
                     val data = extractData(dcScanStepResult.disabilityCertificateResult!!)
 
                     val clip = ClipData.newPlainText(data, data)

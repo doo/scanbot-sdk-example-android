@@ -17,10 +17,13 @@ import io.scanbot.example.R
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.ui.entity.workflow.*
+import io.scanbot.sdk.ui.entity.workflow.BarCodeWorkflowStepResult
+import io.scanbot.sdk.ui.entity.workflow.ScanBarCodeWorkflowStep
+import io.scanbot.sdk.ui.entity.workflow.Workflow
+import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
 import java.io.File
-import java.util.ArrayList
+import java.util.*
 
 
 class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -55,9 +58,9 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
         view.title.text = "Detected Bar Code"
 
-        val barcodeScanStepResult = workflowStepResults?.get(0)
-        if (barcodeScanStepResult?.step is ScanBarCodeWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = barcodeScanStepResult?.barcodeResults?.firstOrNull()?.let { extractData(it) }
+        val barcodeScanStepResult = workflowStepResults?.get(0) as BarCodeWorkflowStepResult
+        if (barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
+            view.findViewById<TextView>(R.id.tv_data).text = barcodeScanStepResult.barcodeResults.firstOrNull()?.let { extractData(it) }
 
             val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
             barcodeScanStepResult.capturedPage?.let {
@@ -101,9 +104,9 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val barcodeScanStepResult = workflowStepResults?.get(0)
-                val barcodeScanningResult = barcodeScanStepResult?.barcodeResults?.firstOrNull()
-                if (barcodeScanningResult != null && barcodeScanStepResult?.step is ScanBarCodeWorkflowStep) {
+                val barcodeScanStepResult = workflowStepResults?.get(0) as BarCodeWorkflowStepResult
+                val barcodeScanningResult = barcodeScanStepResult.barcodeResults.firstOrNull()
+                if (barcodeScanningResult != null && barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
                     val data = extractData(barcodeScanningResult)
 
                     val clip = ClipData.newPlainText(data, data)
