@@ -118,7 +118,7 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val mrzScanStepResult = workflowStepResults?.get(0) as MachineReadableZoneWorkflowStepResult
+                val mrzScanStepResult = workflowStepResults?.get(1) as MachineReadableZoneWorkflowStepResult
                 if (mrzScanStepResult.mrzResult != null && mrzScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
                     val data = extractData(mrzScanStepResult.mrzResult!!)
 
