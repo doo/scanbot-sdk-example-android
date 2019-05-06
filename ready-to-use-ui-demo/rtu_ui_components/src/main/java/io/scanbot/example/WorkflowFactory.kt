@@ -111,11 +111,14 @@ class WorkflowFactory {
             val steps = listOf(
                     ScanBarCodeWorkflowStep(
                             title = "Step 1/2 - QR-/Barcode",
-                            message = "Please scan a barcode or a QR code.",
+                            message = "Please scan a QR or barcode.",
                             acceptedCodeTypes = listOf(BarcodeFormat.ALL_FORMATS),
                             finderViewSize = FinderViewSize(1.0, 0.6),
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<BarCodeWorkflowStepResult> {
                                 override fun invoke(stepResult: BarCodeWorkflowStepResult): WorkflowStepError? {
+                                    return null
+                                    /*
+                                    // alternatively you can perform some validations on detected QR-/barcode format or value here.
                                     return when {
                                         stepResult.barcodeResults.isEmpty() -> WorkflowStepError(
                                                 1,
@@ -132,6 +135,7 @@ class WorkflowFactory {
                                                 WorkflowStepError.ShowMode.TOAST)
                                         else -> null
                                     }
+                                    */
                                 }
                             }
                     ),

@@ -9,17 +9,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.Picasso
 import io.scanbot.dcscanner.model.DCInfoBoxSubtype
 import io.scanbot.dcscanner.model.DateRecordType
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.R
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.DisabilityCertificateWorkflowStepResult
 import io.scanbot.sdk.ui.entity.workflow.ScanDisabilityCertificateWorkflowStep
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
+import java.io.File
 import java.util.*
 
 
@@ -58,10 +65,30 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
         val dcScanStepResult = workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
         if (dcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
             view.findViewById<TextView>(R.id.tv_data).text = dcScanStepResult.disabilityCertificateResult?.let { extractData(it) }
+
+            dcScanStepResult.capturedPage?.let {
+                view.images_container.visibility = View.VISIBLE
+                showPageImage(it, view.front_snap_result)
+            }
         }
 
         return view
     }
+
+    private fun showPageImage(page: Page, imageView: ImageView) {
+        val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
+        imageView.visibility = View.VISIBLE
+        val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
+        val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
+        val fileToShow = if (docImageFile.exists()) docImageFile else origImageFile
+        Picasso.with(context)
+                .load(fileToShow)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                .centerInside()
+                .into(imageView)
+    }
+
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

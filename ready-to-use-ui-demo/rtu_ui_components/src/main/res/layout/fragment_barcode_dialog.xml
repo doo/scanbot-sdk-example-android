@@ -15,7 +15,7 @@
         android:layout_marginTop="24dp"
         android:fontFamily="sans-serif-medium"
         android:letterSpacing="0.01"
-        android:text="Detected Bar Code"
+        android:text="Detected QR-/Barcode"
         android:textColor="#ffffff"
         android:textSize="20sp"
         android:textStyle="normal"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_data"
+        android:id="@+id/qr_barcode_format"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -37,6 +37,22 @@
         android:textStyle="normal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/qr_barcode_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="8sp"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_barcode_format" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

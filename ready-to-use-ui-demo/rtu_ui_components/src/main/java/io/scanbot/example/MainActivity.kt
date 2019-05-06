@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val MRZ_DEFAULT_UI_REQUEST_CODE = 909
         private const val QR_BARCODE_DEFAULT_UI_REQUEST_CODE = 910
-        private const val QR_CODE_DEFAULT_UI_REQUEST_CODE = 911
         private const val MRZ_SNAP_WORKFLOW_REQUEST_CODE = 912
         private const val MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE = 913
         private const val DC_SCAN_WORKFLOW_REQUEST_CODE = 914
@@ -70,16 +69,13 @@ class MainActivity : AppCompatActivity() {
             page.pageId
         } else if (requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-            showBarcodeDialog(barcodeData)
+            showQrBarcodeDialog(barcodeData)
         } else if (requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showBarcodeWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+            showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
         } else if (requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == QR_CODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val qrCode = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-            showQrDialog(qrCode)
         } else if (requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
@@ -114,6 +110,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showQrBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
+        val dialogFragment = BarCodeDialogFragment.newInstanse(barcodeRecognitionResult)
+        dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
+    }
+
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
         val dialogFragment = MRZDialogFragment.newInstanse(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
     }
 
-    private fun showBarcodeWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
         val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
         dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
     }
@@ -144,23 +145,13 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
     }
 
-    private fun showBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val dialogFragment = BarCodeDialogFragment.newInstanse(barcodeRecognitionResult)
-        dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
-    }
-
-    private fun showQrDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val fm = supportFragmentManager
-        val dialogFragment = QRCodeDialogFragment.newInstanse(barcodeRecognitionResult)
-        dialogFragment.show(fm, QRCodeDialogFragment.NAME)
-    }
-
     override fun onResume() {
         super.onResume()
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
