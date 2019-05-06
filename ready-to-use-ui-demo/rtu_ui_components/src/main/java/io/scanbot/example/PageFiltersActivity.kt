@@ -210,6 +210,22 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     }
 
+    override fun lowLightBinarizationFilter() {
+        applyFilter(ImageFilterType.LOW_LIGHT_BINARIZATION)
+    }
+
+    override fun edgeHighlightFilter() {
+        applyFilter(ImageFilterType.EDGE_HIGHLIGHT)
+    }
+
+    override fun deepBinarizationFilter() {
+        applyFilter(ImageFilterType.DEEP_BINARIZATION)
+    }
+
+    override fun otsuBinarizationFilter() {
+        applyFilter(ImageFilterType.OTSU_BINARIZATION)
+    }
+
     override fun cleanBackgroundFilter() {
         applyFilter(ImageFilterType.BACKGROUND_CLEAN)
     }

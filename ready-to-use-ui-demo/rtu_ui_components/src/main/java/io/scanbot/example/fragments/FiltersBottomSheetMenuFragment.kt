@@ -19,6 +19,22 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.filters_bottom_sheet, container, false)
 
+        view.findViewById<Button>(R.id.lowLightBinarizationFilter).setOnClickListener {
+            (activity as FiltersListener).lowLightBinarizationFilter()
+            dismissAllowingStateLoss()
+        }
+        view.findViewById<Button>(R.id.edgeHighlightFilter).setOnClickListener {
+            (activity as FiltersListener).edgeHighlightFilter()
+            dismissAllowingStateLoss()
+        }
+        view.findViewById<Button>(R.id.deepBinarizationFilter).setOnClickListener {
+            (activity as FiltersListener).deepBinarizationFilter()
+            dismissAllowingStateLoss()
+        }
+        view.findViewById<Button>(R.id.otsuBinarizationFilter).setOnClickListener {
+            (activity as FiltersListener).otsuBinarizationFilter()
+            dismissAllowingStateLoss()
+        }
         view.findViewById<Button>(R.id.cleanBackgroundFilter).setOnClickListener {
             (activity as FiltersListener).cleanBackgroundFilter()
             dismissAllowingStateLoss()

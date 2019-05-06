@@ -18,6 +18,10 @@
     <string name="add_page">ADD PAGE</string>
     <string name="filter">FILTER</string>
     <string name="delete_all">DELETE ALL</string>
+    <string name="low_light_binarization_filter">Low Light Binarization Filter</string>
+    <string name="edge_highlight_filter">Edge Highlight Filter</string>
+    <string name="deep_binarization_filter">Deep Binarization Filter</string>
+    <string name="otsu_binarization_filter">Otsu Binarization Filter</string>
     <string name="clean_background_filter">Clean Background Filter</string>
     <string name="color_document_filter">Color Document Filter</string>
     <string name="color_filter">Color Filter</string>
