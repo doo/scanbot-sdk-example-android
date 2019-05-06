@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (ocrResult != null) {
-                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.recognizedText);
+                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.getRecognizedText());
             }
         }
 
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (ocrResult != null) {
-                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.recognizedText);
+                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.getRecognizedText());
                 Log.i("Scanbot SDK OCR example", "Generated document path:\n" + ocrResult.sandwichedPdfDocumentFile.getPath());
             }
         }

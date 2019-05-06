@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import io.scanbot.payformscanner.model.PayFormRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
@@ -74,8 +76,8 @@ public class PayformScannerActivity extends AppCompatActivity {
                     long a = System.currentTimeMillis();
 
                     try {
-                        List<RecognizedField> fields = payFormScanner.recognizeForm(detectionResult.lastFrame, detectionResult.frameWidth, detectionResult.frameHeight, 0);
-                        startActivity(PayformResultActivity.newIntent(PayformScannerActivity.this, fields));
+                        final PayFormRecognitionResult result = payFormScanner.recognizeForm(detectionResult.lastFrame, detectionResult.frameWidth, detectionResult.frameHeight, 0);
+                        startActivity(PayformResultActivity.newIntent(PayformScannerActivity.this, result.payformFields));
                     } finally {
                         long b = System.currentTimeMillis();
                         logger.d("PayFormScanner", "Total scanning (sec): " + (b - a) / 1000f);
