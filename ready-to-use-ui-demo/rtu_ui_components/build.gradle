@@ -15,7 +15,9 @@ android {
         versionName "1.0"
         multiDexEnabled true
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86"
+            abiFilters "armeabi-v7a", "arm64-v8a"
+            // Please add "x86" and "x86_64" if you would like to test on an emulator
+            // or if you need to support some rare devices with the Intel Atom architecture.
         }
     }
     buildTypes {

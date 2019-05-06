@@ -18,7 +18,7 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult
 class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
-        const val MRZ_DATA = "BARCODE_DATA"
+        const val MRZ_DATA = "MRZ_DATA"
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
@@ -96,7 +96,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
                 .append(getString(R.string.mrz_optional2)).append(result.optional2Field().value).append("\n")
                 .append(getString(R.string.mrz_discreet_issuing_organization)).append(result.discreetIssuingStateOrOrganizationField().value).append("\n")
                 .append(getString(R.string.mrz_valid_check_digits_count)).append(result.validCheckDigitsCount).append("\n")
-                .append(getString(R.string.mrz_chack_digits_count)).append(result.checkDigitsCount).append("\n")
+                .append(getString(R.string.mrz_check_digits_count)).append(result.checkDigitsCount).append("\n")
                 .append(getString(R.string.travel_doc_type)).append(result.travelDocTypeField().value).append("\n")
                 .toString()
     }

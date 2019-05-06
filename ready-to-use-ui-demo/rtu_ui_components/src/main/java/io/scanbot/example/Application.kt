@@ -22,7 +22,7 @@ class Application : MultiDexApplication(), CoroutineScope {
 
 
     companion object {
-        const val LICENSE = ""
+        const val LICENSE_KEY = ""
     }
 
     override fun onCreate() {
@@ -38,7 +38,8 @@ class Application : MultiDexApplication(), CoroutineScope {
                 )
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
-//                .license(this, LICENSE) // TODO Add the Scanbot SDK license key here
+                .preparePayFormBlobs(true)
+                //.license(this, LICENSE_KEY) // TODO Add the Scanbot SDK license key
                 .initialize(this)
 
         launch {

@@ -30,13 +30,14 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
         }
     }
 
-    private var qrCodeData: BarcodeScanningResult? = null
+    private var qrBarcodeData: BarcodeScanningResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup): View {
-        qrCodeData = arguments!!.getParcelable(BarCodeDialogFragment.BARCODE_DATA)
+        qrBarcodeData = arguments!!.getParcelable(BarCodeDialogFragment.BARCODE_DATA)
         val view = inflater.inflate(R.layout.fragment_barcode_dialog, container)
 
-        view.findViewById<TextView>(R.id.tv_data).text = qrCodeData?.text
+        view.findViewById<TextView>(R.id.qr_barcode_format).text = qrBarcodeData?.barcodeFormat?.name
+        view.findViewById<TextView>(R.id.qr_barcode_value).text = qrBarcodeData?.text
 
         return view
     }
@@ -64,8 +65,13 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText(qrCodeData?.text, qrCodeData?.text)
-                clipboard.primaryClip = clip
+
+                qrBarcodeData?.let {
+                    val data = extractData(it)
+                    val clip = ClipData.newPlainText(data, data)
+                    clipboard.primaryClip = clip
+                }
+
                 dismiss()
             }
         }
@@ -74,4 +80,12 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
 
         return dialog
     }
+
+    private fun extractData(result: BarcodeScanningResult): String {
+        return StringBuilder()
+                .append("Format: ").append(result.barcodeFormat.name).append("\n")
+                .append("Value: ").append(result.text).append("\n")
+                .toString()
+    }
+
 }
