@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.50.0:
+Open Source libraries used in the Scanbot SDK for Android version 1.52.0:
 
 Android PDF Writer version 1.0.8
 Copyright (c) 2010 - 2013, Javier Santo Domingo (j-a-s-d@coderesearchlabs.com).
