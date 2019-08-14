@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">rtu-ui-components</string>
-    <string name="scanbot_sdk_demo">Scanbot SDK Demo</string>
+    <string name="app_name">Scanbot SDK RTU UI Example</string>
+    <string name="scanbot_sdk_demo">Scanbot SDK RTU UI Example</string>
     <string name="no_license_found_the_app_will_terminate_after_one_minute">No license found. The app will terminate after one minute.</string>
     <string name="document_scanner">Document Scanner</string>
     <string name="scan_document">Scan Document</string>

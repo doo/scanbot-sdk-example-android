@@ -16,6 +16,8 @@ buildscript {
 allprojects {
 
     project.ext {
+        exampleAppId = "io.scanbot.example.sdk.android"
+
         compileSdkVersion=28
         buildToolsVersion='28.0.3'
         androidxSupportVersion='1.0.1'
