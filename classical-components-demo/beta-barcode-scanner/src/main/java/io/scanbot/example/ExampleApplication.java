@@ -27,7 +27,7 @@ public class ExampleApplication extends Application {
     public void onCreate() {
         new ScanbotSDKInitializer()
                 // TODO 2/2: Enable the Scanbot SDK license key
-                .license(this, LICENSE_KEY)
+                //.license(this, LICENSE_KEY)
                 /*
                  * Please note: BarcodeDetectorType.Scanbot enables the new BETA Barcode Detector of Scanbot SDK.
                  *

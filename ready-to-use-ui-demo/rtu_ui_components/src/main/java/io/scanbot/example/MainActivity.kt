@@ -3,6 +3,7 @@ package io.scanbot.example
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -304,7 +305,10 @@ class MainActivity : AppCompatActivity() {
 
         ehic_default_ui.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
-            ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
+            ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
+            // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
+            // ehicScannerConfig.setFinderTextHint("custom text")
+            // ...
 
             val intent = HealthInsuranceCardScannerActivity.newIntent(this@MainActivity, ehicScannerConfig)
             startActivityForResult(intent, EHIC_SCAN_REQUEST_CODE)
