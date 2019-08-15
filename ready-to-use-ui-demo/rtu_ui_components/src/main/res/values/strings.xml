@@ -14,6 +14,7 @@
     <string name="scan_bar_code_and_doc_image">Scan QR-/Barcode + Document Image</string>
     <string name="scan_dc_form">Scan DC Form</string>
     <string name="scan_pay_form">Scan SEPA Pay Form</string>
+    <string name="scan_ehic">Scan European Health Insurance Card</string>
     <string name="copyright_note">© 2019 by doo GmbH. All rights reserved.</string>
     <string name="add_page">ADD PAGE</string>
     <string name="filter">FILTER</string>

@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
+import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
 
 public class BarcodeScannerWithFinderActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler, AdapterView.OnItemSelectedListener {
@@ -104,56 +105,67 @@ public class BarcodeScannerWithFinderActivity extends AppCompatActivity implemen
     }
 
     @Override
-    public boolean handleResult(final BarcodeScanningResult detectedBarcode) {
+    public boolean handleResult(final BarcodeScanningResult result) {
+        if (result != null) {
+            showBarcodeResult(result);
+        }
+        return false;
+    }
+
+    private void showBarcodeResult(final BarcodeScanningResult result) {
+        if (result.getBarcodeItems() == null || result.getBarcodeItems().size() == 0) {
+            return;
+        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (detectedBarcode != null) {
+                cameraView.stopPreview();
 
-                    cameraView.stopPreview();
+                // The current Barcode Detector of this app supports only one barcode item as result!
+                // For multiple barcode results see the beta-barcode-scanner example project.
+                final BarcodeItem barcodeItem = result.getBarcodeItems().get(0);
 
-                    final String value;
-                    if (encoding != null) {
-                        value = Charset.forName(encoding).decode(ByteBuffer.wrap(detectedBarcode.getText().getBytes())).toString();
-                    }
-                    else {
-                        value = detectedBarcode.getText();
-                    }
-
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerWithFinderActivity.this);
-
-                    builder.setTitle("Result")
-                            .setMessage(
-                                    "FORMAT: " + detectedBarcode.getBarcodeFormat().toString() +
-                                            "\n\nVALUE: " + value
-                            );
-
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            cameraView.continuousFocus();
-                            cameraView.startPreview();
-                        }
-                    });
-
-                    final AlertDialog dialog = builder.create();
-                    dialog.show();
-
-
-                    /* You can implement a suitable result handler, like create a contact, open URL, etc.
-                    final ParsedResult parsedResult = ResultParser.parseResult(rawResult);
-                    switch (parsedResult.getType()) {
-                        case ADDRESSBOOK:
-                            // ...
-                            break;
-                        case URI:
-                            // ...
-                            break;
-                        // ...
-                    }
-                    */
+                final String value;
+                if (encoding != null) {
+                    value = Charset.forName(encoding).decode(ByteBuffer.wrap(barcodeItem.getText().getBytes())).toString();
                 }
+                else {
+                    value = barcodeItem.getText();
+                }
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerWithFinderActivity.this);
+
+                builder.setTitle("Result")
+                        .setMessage(
+                                "FORMAT: " + barcodeItem.getBarcodeFormat().toString() +
+                                "\n\nVALUE: " + value
+                        );
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        cameraView.continuousFocus();
+                        cameraView.startPreview();
+                    }
+                });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+
+                /* You can implement a suitable result handler, like create a contact, open URL, etc.
+                final ParsedResult parsedResult = ResultParser.parseResult(rawResult);
+                switch (parsedResult.getType()) {
+                    case ADDRESSBOOK:
+                        // ...
+                        break;
+                    case URI:
+                        // ...
+                        break;
+                    // ...
+                }
+                */
             }
         });
-        return false;
     }
 }

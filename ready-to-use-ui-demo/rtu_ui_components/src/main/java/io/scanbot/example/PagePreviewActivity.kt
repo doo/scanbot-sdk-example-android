@@ -278,7 +278,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
     private fun showLicenseDialog() {
         if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
-            val dialogFragment = ErrorFragment.newInstanse()
+            val dialogFragment = ErrorFragment.newInstance()
             dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
         }
     }
