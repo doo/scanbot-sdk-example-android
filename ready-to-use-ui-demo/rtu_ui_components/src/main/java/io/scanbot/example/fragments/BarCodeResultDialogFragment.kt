@@ -16,7 +16,7 @@ import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import io.scanbot.example.R
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.*
@@ -59,7 +59,7 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
         val barcodeScanStepResult = workflowStepResults?.get(0) as BarCodeWorkflowStepResult
         if (barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = barcodeScanStepResult.barcodeResults.firstOrNull()?.let { extractData(it) }
+            view.findViewById<TextView>(R.id.tv_data).text = barcodeScanStepResult.barcodeResults?.barcodeItems?.firstOrNull()?.let { extractData(it) }
         }
 
         val documentScanStepResult = workflowStepResults?.get(1)
@@ -111,9 +111,9 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val barcodeScanStepResult = workflowStepResults?.get(0) as BarCodeWorkflowStepResult
-                val barcodeScanningResult = barcodeScanStepResult.barcodeResults.firstOrNull()
-                if (barcodeScanningResult != null && barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
-                    val data = extractData(barcodeScanningResult)
+                val barcodeItem = barcodeScanStepResult.barcodeResults?.barcodeItems?.firstOrNull()
+                if (barcodeItem != null && barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
+                    val data = extractData(barcodeItem)
                     val clip = ClipData.newPlainText(data, data)
                     clipboard.primaryClip = clip
                 }
@@ -126,11 +126,11 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: BarcodeScanningResult): String {
+    private fun extractData(barcodeItem: BarcodeItem): String {
         return StringBuilder()
                 .append("QR-/Barcode Result:").append("\n")
-                .append("Format: ").append(result.barcodeFormat.name).append("\n")
-                .append("Value: ").append(result.text).append("\n")
+                .append("Format: ").append(barcodeItem.barcodeFormat.name).append("\n")
+                .append("Value: ").append(barcodeItem.text).append("\n")
                 .toString()
     }
 }

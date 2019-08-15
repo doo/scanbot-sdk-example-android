@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.fragments.*
 import io.scanbot.example.repository.PageRepository
+import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
@@ -25,6 +26,8 @@ import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
+import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         private const val DC_SCAN_WORKFLOW_REQUEST_CODE = 914
         private const val BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE = 915
         private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
+        private const val EHIC_SCAN_REQUEST_CODE = 917
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -100,23 +104,26 @@ class MainActivity : AppCompatActivity() {
 
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
+        } else if (requestCode == EHIC_SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val hicRecognitionResult = data!!.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
+            showEHICResultDialog(hicRecognitionResult)
         }
     }
 
     private fun showLicenseDialog() {
         if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
-            val dialogFragment = ErrorFragment.newInstanse()
+            val dialogFragment = ErrorFragment.newInstance()
             dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
         }
     }
 
     private fun showQrBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val dialogFragment = BarCodeDialogFragment.newInstanse(barcodeRecognitionResult)
+        val dialogFragment = BarCodeDialogFragment.newInstance(barcodeRecognitionResult)
         dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
     }
 
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
-        val dialogFragment = MRZDialogFragment.newInstanse(mrzRecognitionResult)
+        val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
@@ -143,6 +150,11 @@ class MainActivity : AppCompatActivity() {
     private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
         val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
         dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
+    }
+
+    private fun showEHICResultDialog(recognitionResult: HealthInsuranceCardRecognitionResult) {
+        val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
+        dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
     }
 
     override fun onResume() {
@@ -196,6 +208,7 @@ class MainActivity : AppCompatActivity() {
 
             mrzCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             mrzCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
             val intent = MRZScannerActivity.newIntent(this@MainActivity, mrzCameraConfiguration)
             startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)
@@ -289,6 +302,13 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, PAYFORM_SCAN_WORKFLOW_REQUEST_CODE)
         }
 
+        ehic_default_ui.setOnClickListener {
+            val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
+            ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
+
+            val intent = HealthInsuranceCardScannerActivity.newIntent(this@MainActivity, ehicScannerConfig)
+            startActivityForResult(intent, EHIC_SCAN_REQUEST_CODE)
+        }
     }
 
     private fun processGalleryResult(data: Intent): Bitmap? {

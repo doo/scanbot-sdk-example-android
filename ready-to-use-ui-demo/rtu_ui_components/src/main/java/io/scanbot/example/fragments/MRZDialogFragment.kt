@@ -22,7 +22,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
-        fun newInstanse(data: MRZRecognitionResult): MRZDialogFragment {
+        fun newInstance(data: MRZRecognitionResult): MRZDialogFragment {
             val frag = MRZDialogFragment()
             val args = Bundle()
             args.putParcelable(MRZ_DATA, data)

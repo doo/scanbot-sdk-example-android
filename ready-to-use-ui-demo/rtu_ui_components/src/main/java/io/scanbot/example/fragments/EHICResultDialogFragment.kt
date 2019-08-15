@@ -12,35 +12,32 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 
-class QRCodeDialogFragment : androidx.fragment.app.DialogFragment() {
+
+class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
-        const val QR_DATA = "BARCODE_DATA"
-        const val NAME = "QRCodeDialogFragment"
+        const val EHIC_DATA = "EHIC_DATA"
+        const val NAME = "EHICResultDialogFragment"
 
         @JvmStatic
-        fun newInstanse(data: BarcodeScanningResult): QRCodeDialogFragment {
-            val frag = QRCodeDialogFragment()
+        fun newInstance(recognitionResult: HealthInsuranceCardRecognitionResult): EHICResultDialogFragment {
+            val frag = EHICResultDialogFragment()
             val args = Bundle()
-            args.putParcelable(QR_DATA, data)
+            args.putParcelable(EHIC_DATA, recognitionResult)
             frag.arguments = args
             return frag
         }
     }
 
-    private var qrCodeData: BarcodeScanningResult? = null
+    private var ehicRecognitionResult: HealthInsuranceCardRecognitionResult? = null
 
-    private fun addContentView(inflater: LayoutInflater, container: ViewGroup): View {
-        qrCodeData = arguments!!.getParcelable(QRCodeDialogFragment.QR_DATA)
-        val view = inflater.inflate(R.layout.fragment_qr_code_dialog, container)
+    private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
+        ehicRecognitionResult = arguments!!.getParcelable(EHIC_DATA)
 
-        val barcodeItem = qrCodeData?.barcodeItems?.firstOrNull()
-        barcodeItem?.let {
-            view.findViewById<TextView>(R.id.tv_data).text = it.text
-        }
-
+        val view = inflater.inflate(R.layout.fragment_ehic_result_dialog, container)
+        view.findViewById<TextView>(R.id.ehic_data).text = extractData(ehicRecognitionResult!!)
         return view
     }
 
@@ -68,9 +65,9 @@ class QRCodeDialogFragment : androidx.fragment.app.DialogFragment() {
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-                val barcodeItem = qrCodeData?.barcodeItems?.firstOrNull()
-                barcodeItem?.let {
-                    val clip = ClipData.newPlainText(it.text, it.text)
+                ehicRecognitionResult?.let {
+                    val data = extractData(it)
+                    val clip = ClipData.newPlainText(data, data)
                     clipboard.primaryClip = clip
                 }
 
@@ -81,5 +78,13 @@ class QRCodeDialogFragment : androidx.fragment.app.DialogFragment() {
         dialog.setCanceledOnTouchOutside(true)
 
         return dialog
+    }
+
+    private fun extractData(result: HealthInsuranceCardRecognitionResult): String {
+        val builder = StringBuilder()
+        for (field in result.fields) {
+            builder.append(field.type.name).append(": ").append(field.value).append("\n\n")
+        }
+        return builder.toString()
     }
 }

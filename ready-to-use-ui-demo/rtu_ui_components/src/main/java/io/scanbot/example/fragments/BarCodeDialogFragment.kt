@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
+import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 
 class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -21,7 +22,7 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "BarCodeDialogFragment"
 
         @JvmStatic
-        fun newInstanse(data: BarcodeScanningResult): BarCodeDialogFragment {
+        fun newInstance(data: BarcodeScanningResult): BarCodeDialogFragment {
             val frag = BarCodeDialogFragment()
             val args = Bundle()
             args.putParcelable(BARCODE_DATA, data)
@@ -36,8 +37,11 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
         qrBarcodeData = arguments!!.getParcelable(BarCodeDialogFragment.BARCODE_DATA)
         val view = inflater.inflate(R.layout.fragment_barcode_dialog, container)
 
-        view.findViewById<TextView>(R.id.qr_barcode_format).text = qrBarcodeData?.barcodeFormat?.name
-        view.findViewById<TextView>(R.id.qr_barcode_value).text = qrBarcodeData?.text
+        val barcodeItem = qrBarcodeData?.barcodeItems?.firstOrNull()
+        barcodeItem?.let {
+            view.findViewById<TextView>(R.id.qr_barcode_format).text = it.barcodeFormat.name
+            view.findViewById<TextView>(R.id.qr_barcode_value).text = it.text
+        }
 
         return view
     }
@@ -67,9 +71,12 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
                 qrBarcodeData?.let {
-                    val data = extractData(it)
-                    val clip = ClipData.newPlainText(data, data)
-                    clipboard.primaryClip = clip
+                    val barcodeItem = qrBarcodeData?.barcodeItems?.firstOrNull()
+                    barcodeItem?.let {
+                        val data = extractData(it)
+                        val clip = ClipData.newPlainText(data, data)
+                        clipboard.primaryClip = clip
+                    }
                 }
 
                 dismiss()
@@ -81,10 +88,10 @@ class BarCodeDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: BarcodeScanningResult): String {
+    private fun extractData(barcodeItem: BarcodeItem): String {
         return StringBuilder()
-                .append("Format: ").append(result.barcodeFormat.name).append("\n")
-                .append("Value: ").append(result.text).append("\n")
+                .append("Format: ").append(barcodeItem.barcodeFormat.name).append("\n")
+                .append("Value: ").append(barcodeItem.text).append("\n")
                 .toString()
     }
 

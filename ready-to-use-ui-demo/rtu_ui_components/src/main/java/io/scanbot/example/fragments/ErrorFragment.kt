@@ -18,7 +18,7 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "ErrorFragment"
 
         @JvmStatic
-        fun newInstanse(): ErrorFragment {
+        fun newInstance(): ErrorFragment {
             return ErrorFragment()
         }
     }
