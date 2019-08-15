@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
+import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
 
 import net.doo.snap.camera.CameraOpenCallback;
@@ -80,44 +81,54 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     }
 
     @Override
-    public boolean handleResult(final BarcodeScanningResult detectedBarcode) {
+    public boolean handleResult(final BarcodeScanningResult result) {
+        if (result != null) {
+            showBarcodeResult(result);
+        }
+        return false;
+    }
+
+    private void showBarcodeResult(final BarcodeScanningResult result) {
+        if (result.getBarcodeItems() == null || result.getBarcodeItems().size() == 0) {
+            return;
+        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (detectedBarcode != null) {
+                cameraView.stopPreview();
 
-                    cameraView.stopPreview();
+                // The current Barcode Detector of this app supports only one barcode item as result!
+                // For multiple barcode results see the beta-barcode-scanner example project.
+                final BarcodeItem barcodeItem = result.getBarcodeItems().get(0);
 
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerActivity.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(BarcodeScannerActivity.this);
+                builder.setTitle("Result")
+                        .setMessage(barcodeItem.getBarcodeFormat().toString() + "\n\n" + barcodeItem.getText());
 
-                    builder.setTitle("Result")
-                            .setMessage(detectedBarcode.getBarcodeFormat().toString() + "\n\n" + detectedBarcode.getText());
-
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            cameraView.continuousFocus();
-                            cameraView.startPreview();
-                        }
-                    });
-
-                    final AlertDialog dialog = builder.create();
-                    dialog.show();
-
-                    /* You can implement a suitable result handler, like create a contact, open URL, etc.
-                    final ParsedResult parsedResult = ResultParser.parseResult(rawResult);
-                    switch (parsedResult.getType()) {
-                        case ADDRESSBOOK:
-                            // ...
-                            break;
-                        case URI:
-                            // ...
-                            break;
-                        // ...
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        cameraView.continuousFocus();
+                        cameraView.startPreview();
                     }
-                    */
+                });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                /* You can implement a suitable result handler, like create a contact, open URL, etc.
+                final ParsedResult parsedResult = ResultParser.parseResult(rawResult);
+                switch (parsedResult.getType()) {
+                    case ADDRESSBOOK:
+                        // ...
+                        break;
+                    case URI:
+                        // ...
+                        break;
+                    // ...
                 }
+                */
             }
         });
-        return false;
     }
 }
