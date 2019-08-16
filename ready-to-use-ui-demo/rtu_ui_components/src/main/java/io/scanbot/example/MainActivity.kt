@@ -192,6 +192,9 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setPageCounterButtonTitle("%d Page(s)")
+            //cameraConfiguration.setTextHintOK("Dont move...")
+            //cameraConfiguration.set ...
 
             val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@MainActivity,
                     cameraConfiguration
