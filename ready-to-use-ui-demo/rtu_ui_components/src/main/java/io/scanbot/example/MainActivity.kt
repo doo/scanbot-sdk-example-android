@@ -183,6 +183,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.camera_default_ui).setOnClickListener {
+            // Customize text resources, behavior and UI:
             val cameraConfiguration = DocumentScannerConfiguration()
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
@@ -192,9 +193,10 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setMultiPageEnabled(true)
             cameraConfiguration.setPageCounterButtonTitle("%d Page(s)")
-            //cameraConfiguration.setTextHintOK("Dont move...")
-            //cameraConfiguration.set ...
+            cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
+            //cameraConfiguration.set...
 
             val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@MainActivity,
                     cameraConfiguration
