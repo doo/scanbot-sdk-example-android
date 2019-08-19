@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import net.doo.snap.entity.Language;
 import net.doo.snap.lib.detector.DetectionResult;
@@ -100,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        new RecognizeTextWithPDFTask(imageUri).execute();
+        new RecognizeTextWithoutPDFTask(imageUri).execute();
 
-// Alternative OCR examples:
-//        new RecognizeTextWithoutPDFTask(imageUri).execute();
+        // Alternative OCR examples - PDF + OCR (sandwiched PDF):
+        //new RecognizeTextWithPDFTask(imageUri).execute();
 
         progressView.setVisibility(View.VISIBLE);
     }
@@ -162,7 +163,9 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (ocrResult != null) {
-                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.getRecognizedText());
+                Toast.makeText(MainActivity.this,
+                        "Recognized page content:\n" + ocrResult.getRecognizedText(),
+                        Toast.LENGTH_LONG).show();
             }
         }
 
@@ -214,8 +217,10 @@ public class MainActivity extends AppCompatActivity {
             progressView.setVisibility(View.GONE);
 
             if (ocrResult != null) {
-                Log.i("Scanbot SDK OCR example", "Recognized page content:\n" + ocrResult.getRecognizedText());
-                Log.i("Scanbot SDK OCR example", "Generated document path:\n" + ocrResult.sandwichedPdfDocumentFile.getPath());
+                Toast.makeText(MainActivity.this,
+                        "See PDF file:\n" + ocrResult.sandwichedPdfDocumentFile.getPath(),
+                        Toast.LENGTH_LONG).show();
+
             }
         }
 
