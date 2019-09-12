@@ -10,36 +10,17 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scanbot SDK Example" />
+        android:text="Scanbot SDK TIFFWriter Example" />
 
     <Button
-        android:id="@+id/scanButton"
+        android:id="@+id/selectImagesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/title"
-        android:layout_marginTop="16dp"
-        android:text="Load image + Run TIFF generation" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/scanButton"
-        android:layout_centerHorizontal="true"
-        android:indeterminate="true"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/binarizationCheckBox"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:textIsSelectable="true"/>
+        android:text="Select image(s) + Create TIFF" />
 
     <CheckBox
         android:id="@+id/binarizationCheckBox"
@@ -47,7 +28,38 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/scanButton"
-        android:text="Perform binarization" />
+        android:layout_below="@+id/selectImagesButton"
+        android:layout_marginTop="20dp"
+        android:checked="true"
+        android:text="Perform binarization (1-bit black &amp; white images)" />
+
+    <CheckBox
+        android:id="@+id/customFieldsCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/binarizationCheckBox"
+        android:layout_marginTop="20dp"
+        android:text="Add custom fields" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/customFieldsCheckBox"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textIsSelectable="true"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/resultTextView"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

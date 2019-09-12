@@ -8,10 +8,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.doo.snap.util.FileChooserUtils;
 
@@ -24,6 +24,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.tiffwriter.TIFFWriter;
+import io.scanbot.tiffwriter.model.TIFFImageWriterCompressionOptions;
+import io.scanbot.tiffwriter.model.TIFFImageWriterParameters;
+import io.scanbot.tiffwriter.model.TIFFImageWriterUserDefinedField;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private View progressView;
     private TextView resultTextView;
     private CheckBox binarizationCheckBox;
+    private CheckBox customFieldsCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
         askPermission();
 
-        initDependencies();
+        tiffWriter = new ScanbotSDK(this).tiffWriter();
 
-        resultTextView = findViewById(R.id.result);
+        resultTextView = findViewById(R.id.resultTextView);
         binarizationCheckBox = findViewById(R.id.binarizationCheckBox);
-        findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
+        customFieldsCheckBox = findViewById(R.id.customFieldsCheckBox);
+
+        findViewById(R.id.selectImagesButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                resultTextView.setText("");
                 openGallery();
             }
         });
@@ -68,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent();
+        final Intent intent = new Intent();
         intent.setType(IMAGE_TYPE);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
@@ -90,40 +97,45 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        processGalleryResult(intent);
+        if (!new ScanbotSDK(this).isLicenseValid()) {
+            Toast.makeText(this,
+                    "Scanbot SDK license is not valid or the trial minute has expired.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
 
         progressView.setVisibility(View.VISIBLE);
+        processGalleryResult(intent);
     }
 
-    private void processGalleryResult(Intent data) {
-        ClipData clipData = data.getClipData();
-        Uri imageUri = data.getData();
+    private void processGalleryResult(final Intent data) {
+        final ClipData clipData = data.getClipData();
+        final Uri singleImageUri = data.getData();
+
+        final List<Uri> imageUris = new ArrayList<>();
+
         if (clipData != null && clipData.getItemCount() > 0) {
-            List<Uri> imageUris = getImageUris(clipData);
-            new WriteMultiPageTIFFImageTask(imageUris).execute();
-        } else if (imageUri != null) {
-            new WriteTIFFImageTask(imageUri).execute();
+            // multiple images were selected
+            imageUris.addAll(getImageUris(clipData));
+        } else if (singleImageUri != null) {
+            // a single image was selected
+            imageUris.add(singleImageUri);
         }
+
+        new WriteTIFFImageTask(imageUris, binarizationCheckBox.isChecked(), customFieldsCheckBox.isChecked()).execute();
     }
 
-    private List<Uri> getImageUris(ClipData clipData) {
-        int itemsCount = clipData.getItemCount();
-        List<Uri> imageUris = new ArrayList<>();
-        for (int i = 0; i < itemsCount; i++) {
-            ClipData.Item item = clipData.getItemAt(i);
-            Uri uri = item.getUri();
+    private List<Uri> getImageUris(final ClipData clipData) {
+        final List<Uri> imageUris = new ArrayList<>();
+        for (int i = 0; i < clipData.getItemCount(); i++) {
+            final Uri uri = clipData.getItemAt(i).getUri();
             if (uri != null) {
                 imageUris.add(uri);
             }
         }
-
         return imageUris;
     }
 
-    private void initDependencies() {
-        ScanbotSDK scanbotSDK = new ScanbotSDK(this);
-        tiffWriter = scanbotSDK.tiffWriter();
-    }
 
     /*
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
@@ -131,73 +143,51 @@ public class MainActivity extends AppCompatActivity {
      */
     private class WriteTIFFImageTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final File imageFile;
-        private final File resultFile;
-
-        private WriteTIFFImageTask(Uri imageUri) {
-            String imagePath = FileChooserUtils.getPath(MainActivity.this, imageUri);
-            this.imageFile = new File(imagePath);
-            resultFile = new File(getExternalFilesDir(null).getPath() + "/tiff_result_" + System.currentTimeMillis() + ".tiff");
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            if (binarizationCheckBox.isChecked()) {
-                return tiffWriter.writeBinarizedSinglePageTIFFFromFile(imageFile, resultFile);
-            } else {
-                return tiffWriter.writeSinglePageTIFFFromFile(imageFile, resultFile);
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            progressView.setVisibility(View.GONE);
-
-            if (result) {
-                Log.i("TIFF example", "Generated TIFF image path:\n" + resultFile.getPath());
-                resultTextView.setText("Result TIFF path:\n" + resultFile.getPath());
-            }
-        }
-
-    }
-
-    /*
-    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
-    AsyncTasks in your application
-     */
-    private class WriteMultiPageTIFFImageTask extends AsyncTask<Void, Void, Boolean> {
-
         private final List<File> images = new ArrayList<>();
         private final File resultFile;
+        private final TIFFImageWriterParameters parameters;
+        private final int dpi = 200;
 
-        private WriteMultiPageTIFFImageTask(List<Uri> imageUris) {
-            for (Uri uri : imageUris) {
-                String imagePath = FileChooserUtils.getPath(MainActivity.this, uri);
-                images.add(new File(imagePath));
+        private WriteTIFFImageTask(final List<Uri> imageUris, final boolean binarize, final boolean addCustomFields) {
+            for (final Uri uri : imageUris) {
+                final String imageFilePath = FileChooserUtils.getPath(MainActivity.this, uri);
+                images.add(new File(imageFilePath));
             }
 
-            String resultFilePath = getExternalFilesDir(null).getPath() + "/multi_page_tiff_result_" + System.currentTimeMillis() + ".tiff";
-            resultFile = new File(resultFilePath);
+            resultFile = new File(getExternalFilesDir(null).getPath() + "/tiff_result_" + System.currentTimeMillis() + ".tiff");
+
+            // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
+            final TIFFImageWriterCompressionOptions compression = (binarize ?
+                    TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4 : TIFFImageWriterCompressionOptions.COMPRESSION_ADOBE_DEFLATE);
+
+            // Optional custom fields as custom meta data (please refer to TIFF and EXIF specifications):
+            final ArrayList<TIFFImageWriterUserDefinedField> customFields = new ArrayList<>();
+            if (addCustomFields) {
+                customFields.add(TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 600));
+                customFields.add(TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 601));
+                customFields.add(TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 602));
+            }
+
+            parameters = new TIFFImageWriterParameters(binarize, dpi, compression, customFields);
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            if (binarizationCheckBox.isChecked()) {
-                return tiffWriter.writeBinarizedMultiPageTIFFFromFileList(images, resultFile);
-            } else {
-                return tiffWriter.writeMultiPageTIFFFromFileList(images, resultFile);
-            }
+            return tiffWriter.writeTIFFFromFiles(images, resultFile, parameters);
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(final Boolean result) {
             progressView.setVisibility(View.GONE);
 
             if (result) {
-                Log.i("TIFF example", "Generated multi page TIFF path:\n" + resultFile.getPath());
-                resultTextView.setText("Result TIFF path:\n" + resultFile.getPath());
+                resultTextView.setText("TIFF file created:\n" + resultFile.getPath());
+            } else {
+                Toast.makeText(MainActivity.this,
+                        "ERROR: Could not create TIFF file.",
+                        Toast.LENGTH_LONG).show();
             }
         }
-
     }
+
 }
