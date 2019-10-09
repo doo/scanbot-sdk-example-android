@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,11 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
+    private final boolean ignoreBadAspectRatio = true;
+
+    private static final int POLYGON_FILL_COLOR = Color.parseColor("#55ff0000");
+    private static final int POLYGON_FILL_COLOR_OK = Color.parseColor("#4400ff00");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         // In this example we demonstrate how to lock the orientation of the UI (Activity)
         // as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true);
+
+        // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
+        //cameraView.setPreviewMode(net.doo.snap.camera.CameraPreviewMode.FIT_IN);
 
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override
@@ -83,20 +92,22 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        polygonView = (PolygonView) findViewById(R.id.polygonView);
+        polygonView.setFillColor(POLYGON_FILL_COLOR);
+        polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK);
 
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60);
-        contourDetectorFrameHandler.setAcceptedSizeScore(70);
-
-        polygonView = (PolygonView) findViewById(R.id.polygonView);
+        contourDetectorFrameHandler.setAcceptedSizeScore(75);
         contourDetectorFrameHandler.addResultHandler(polygonView);
         contourDetectorFrameHandler.addResultHandler(this);
 
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
+        autoSnappingController.setIgnoreBadAspectRatio(ignoreBadAspectRatio);
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
-        autoSnappingController.setSensitivity(0.4f);
+        autoSnappingController.setSensitivity(0.85f);
 
         cameraView.addPictureCallback(this);
 
@@ -182,6 +193,9 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             return;
         }
 
+        // Make sure to reset the default polygon fill color (see the ignoreBadAspectRatio case).
+        polygonView.setFillColor(POLYGON_FILL_COLOR);
+
         switch (result) {
             case OK:
                 userGuidanceHint.setText("Don't move");
@@ -204,7 +218,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
                 userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case OK_BUT_BAD_ASPECT_RATIO:
-                userGuidanceHint.setText("Wrong aspect ratio.\n Rotate your device.");
+                if (ignoreBadAspectRatio) {
+                    userGuidanceHint.setText("Don't move");
+                    // change polygon color to "OK"
+                    polygonView.setFillColor(POLYGON_FILL_COLOR_OK);
+                } else {
+                    userGuidanceHint.setText("Wrong aspect ratio.\n Rotate your device.");
+                }
                 userGuidanceHint.setVisibility(View.VISIBLE);
                 break;
             case ERROR_TOO_DARK:
@@ -250,10 +270,17 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             @Override
             public void run() {
                 resultView.setImageBitmap(documentImage);
+            }
+        });
+
+        // continue scanning
+        cameraView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
                 cameraView.continuousFocus();
                 cameraView.startPreview();
             }
-        });
+        }, 1000);
     }
 
     private void setAutoSnapEnabled(boolean enabled) {
