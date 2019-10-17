@@ -1,9 +1,9 @@
 package io.scanbot.example;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
@@ -17,6 +17,8 @@ import net.doo.snap.lib.detector.Line2D;
 import net.doo.snap.ui.EditPolygonImageView;
 import net.doo.snap.ui.MagnifierView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -44,18 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
 
-        editPolygonView = (EditPolygonImageView) findViewById(R.id.polygonView);
-        editPolygonView.setImageResource(R.drawable.test_receipt);
-        originalBitmap = ((BitmapDrawable) editPolygonView.getDrawable()).getBitmap();
+        editPolygonView = findViewById(R.id.polygonView);
 
-        magnifierView = (MagnifierView) findViewById(R.id.magnifier);
-        // MagifierView should be set up every time when editPolygonView is set with new image
-        magnifierView.setupMagnifier(editPolygonView);
+        magnifierView = findViewById(R.id.magnifier);
 
-        resultImageView = (ImageView) findViewById(R.id.resultImageView);
+        resultImageView = findViewById(R.id.resultImageView);
         resultImageView.setVisibility(View.GONE);
 
-        cropButton = (Button) findViewById(R.id.cropButton);
+        cropButton = findViewById(R.id.cropButton);
         cropButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        rotateButton = (Button) findViewById(R.id.rotateButton);
+        rotateButton = findViewById(R.id.rotateButton);
         rotateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        backButton = (Button) findViewById(R.id.backButton);
+        backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +82,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        new InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor(), originalBitmap);
+        new InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor());
+    }
+
+    private Bitmap loadBitmapFromAssets(final String filePath) {
+        try {
+            final InputStream is = this.getAssets().open(filePath);
+            return BitmapFactory.decodeStream(is);
+        } catch (final IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Bitmap resizeForPreview(final Bitmap bitmap) {
+        final float maxW = 1000, maxH = 1000;
+        final float oldWidth = bitmap.getWidth();
+        final float oldHeight = bitmap.getHeight();
+        final float scaleFactor = (oldWidth > oldHeight ? (maxW / oldWidth) : (maxH / oldHeight));
+        final int scaledWidth = Math.round(oldWidth * scaleFactor);
+        final int scaledHeight = Math.round(oldHeight * scaleFactor);
+        return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false);
     }
 
     private void rotatePreview() {
@@ -92,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         rotationDegrees += 90;
-        editPolygonView.rotateClockwise(); // only rotates the preview image (animated)
+        editPolygonView.rotateClockwise(); // rotates only the preview image
         lastRotationEventTs = System.currentTimeMillis();
     }
 
@@ -112,22 +130,23 @@ public class MainActivity extends AppCompatActivity {
         cropButton.setVisibility(View.GONE);
         rotateButton.setVisibility(View.GONE);
 
-        resultImageView.setImageBitmap(documentImage);
+        resultImageView.setImageBitmap(resizeForPreview(documentImage));
         resultImageView.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Detects horizontal and vertical lines and polygon of the given bitmap image.
-     * Initializes EditPolygonImageView with detected lines and polygon.
-     */
-    class InitImageViewTask extends AsyncTask<Bitmap, Void, InitImageResult> {
+
+    // We use AsyncTask only for simplicity here. Avoid using it in your production app due to memory leaks, etc!
+    class InitImageViewTask extends AsyncTask<Void, Void, InitImageResult> {
+        private Bitmap previewBitmap;
 
         @Override
-        protected InitImageResult doInBackground(Bitmap... params) {
-            Bitmap image = params[0];
-            ContourDetector detector = new ContourDetector();
-            final DetectionResult detectionResult = detector.detect(image);
+        protected InitImageResult doInBackground(Void... params) {
+            originalBitmap = loadBitmapFromAssets("demo_image.jpg");
+            previewBitmap = resizeForPreview(originalBitmap);
+
+            final ContourDetector detector = new ContourDetector();
+            final DetectionResult detectionResult = detector.detect(originalBitmap);
             Pair<List<Line2D>, List<Line2D>> linesPair = null;
             List<PointF> polygon = new ArrayList<>(EditPolygonImageView.DEFAULT_POLYGON);
             switch (detectionResult) {
@@ -145,6 +164,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final InitImageResult initImageResult) {
+            editPolygonView.setImageBitmap(previewBitmap);
+            magnifierView.setupMagnifier(editPolygonView);
+
             // set detected polygon and lines into EditPolygonImageView
             editPolygonView.setPolygon(initImageResult.polygon);
             if (initImageResult.linesPair != null) {

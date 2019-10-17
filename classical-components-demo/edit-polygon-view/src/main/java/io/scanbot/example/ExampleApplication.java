@@ -22,11 +22,12 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
+
         new ScanbotSDKInitializer()
                 // TODO 2/2: Enable the Scanbot SDK license key
                 // .license(this, LICENSE_KEY)
                 .sdkFilesDirectory(this, getExternalFilesDir(null))
                 .initialize(this);
-        super.onCreate();
     }
 }
