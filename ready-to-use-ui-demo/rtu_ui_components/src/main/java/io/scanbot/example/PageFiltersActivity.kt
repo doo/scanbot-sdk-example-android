@@ -3,6 +3,7 @@ package io.scanbot.example
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.*
 import android.view.MenuItem
 import android.view.View.GONE
@@ -82,11 +83,14 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             croppingConfig.setPage(this.selectedPage)
             croppingConfig.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             croppingConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-
             croppingConfig.setBottomBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
             croppingConfig.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
-
             croppingConfig.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            croppingConfig.setPolygonColor(Color.RED)
+            croppingConfig.setPolygonColorMagnetic(Color.BLUE)
+            //croppingConfig.setCancelButtonTitle("Cancel")
+            //croppingConfig.setDetectResetButtonHidden(true)
+            // Customize further colors, text resources, behavior flags ...
 
             val intent = CroppingActivity.newIntent(this, croppingConfig)
             startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
