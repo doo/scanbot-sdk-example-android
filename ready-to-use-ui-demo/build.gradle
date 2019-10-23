@@ -4,22 +4,18 @@ buildscript {
     ext.compileVersion=28
     ext.targetVersion=28
     ext.minVersion=16
-    ext.buildToolsVersion='28.0.3'
-    ext.kotlin_ktx_version = "0.3"
-    ext.kotlin_version = '1.3.30'
-    ext.corutines_version = "0.30.2"
 
-    ext.scanbotSdkVersion = "1.55.0"
+    ext.buildToolsVersion = '28.0.3'
+    ext.kotlin_version = '1.3.30'
+
+    ext.scanbotSdkVersion = '1.55.0'
 
     repositories {
         google()
         jcenter()
-        maven {
-            url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
-        }
-        maven {
-            url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/'
-        }
+
+        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
+        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
@@ -28,26 +24,17 @@ buildscript {
 }
 
 allprojects {
-
     repositories {
         google()
         jcenter()
         mavenCentral()
 
-
-        maven {
-            url 'https://nexus.scanbot.io/nexus/content/repositories/releases/'
-        }
-        maven {
-            url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/'
-        }
+        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
+        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
     }
 
     configurations.all {
-
         // Hack to let Gradle pickup latest SNAPSHOTS
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-
     }
-
 }
