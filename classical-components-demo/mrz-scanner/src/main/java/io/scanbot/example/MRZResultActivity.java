@@ -7,26 +7,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import io.scanbot.mrzscanner.model.MRZCheckDigit;
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 
 public class MRZResultActivity extends AppCompatActivity {
-    public static final String EXTRA_documentCode = "documentCode";
-    public static final String EXTRA_firstName = "firstName";
-    public static final String EXTRA_lastName = "lastName";
-    public static final String EXTRA_issuingStateOrOrganization = "issuingStateOrOrganization";
-    public static final String EXTRA_departmentOfIssuance = "departmentOfIssuance";
-    public static final String EXTRA_nationality = "nationality";
-    public static final String EXTRA_dateOfBirth = "dateOfBirth";
-    public static final String EXTRA_gender = "gender";
-    public static final String EXTRA_dateOfExpiry = "dateOfExpiry";
-    public static final String EXTRA_personalNumber = "personalNumber";
-    public static final String EXTRA_optional1 = "optional1";
-    public static final String EXTRA_optional2 = "optional2";
-    public static final String EXTRA_discreetIssuingStateOrOrganization = "discreetIssuingStateOrOrganization";
-    public static final String EXTRA_validCheckDigitsCount = "validCheckDigitsCount";
-    public static final String EXTRA_checkDigitsCount = "checkDigitsCount";
-    public static final String EXTRA_travelDocTyp = "travelDocType";
 
+    private static final String EXTRA_MRZ_RESULT = "MRZ_RESULT";
+
+    private TextView travelDocType;
     private TextView documentCode;
     private TextView firstName;
     private TextView lastName;
@@ -42,67 +31,63 @@ public class MRZResultActivity extends AppCompatActivity {
     private TextView discreetIssuingStateOrOrganization;
     private TextView validCheckDigitsCount;
     private TextView checkDigitsCount;
-    private TextView travelDocType;
+    private TextView checkDigits;
 
-    public static Intent newIntent(Context context, MRZRecognitionResult result) {
-        Intent intent = new Intent(context, MRZResultActivity.class);
-        intent.putExtra(EXTRA_documentCode, result.documentCode);
-        intent.putExtra(EXTRA_firstName, result.firstName);
-        intent.putExtra(EXTRA_lastName, result.lastName);
-        intent.putExtra(EXTRA_issuingStateOrOrganization, result.issuingStateOrOrganization);
-        intent.putExtra(EXTRA_departmentOfIssuance, result.departmentOfIssuance);
-        intent.putExtra(EXTRA_nationality, result.nationality);
-        intent.putExtra(EXTRA_dateOfBirth, result.dateOfBirth);
-        intent.putExtra(EXTRA_gender, result.gender);
-        intent.putExtra(EXTRA_dateOfExpiry, result.dateOfExpiry);
-        intent.putExtra(EXTRA_personalNumber, result.personalNumber);
-        intent.putExtra(EXTRA_optional1, result.optional1);
-        intent.putExtra(EXTRA_optional2, result.optional2);
-        intent.putExtra(EXTRA_discreetIssuingStateOrOrganization, result.discreetIssuingStateOrOrganization);
-        intent.putExtra(EXTRA_validCheckDigitsCount, result.validCheckDigitsCount);
-        intent.putExtra(EXTRA_checkDigitsCount, result.checkDigitsCount);
-        intent.putExtra(EXTRA_travelDocTyp, result.travelDocType.name());
-
+    public static Intent newIntent(final Context context, final MRZRecognitionResult result) {
+        final Intent intent = new Intent(context, MRZResultActivity.class);
+        intent.putExtra(EXTRA_MRZ_RESULT, result);
         return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mrz_result);
-        documentCode = (TextView) findViewById(R.id.document_code);
-        firstName = (TextView) findViewById(R.id.first_name);
-        lastName = (TextView) findViewById(R.id.last_name);
-        issuingStateOrOrganization = (TextView) findViewById(R.id.issuingStateOrOrganization);
-        departmentOfIssuance = (TextView) findViewById(R.id.departmentOfIssuance);
-        nationality = (TextView) findViewById(R.id.nationality);
-        dateOfBirth = (TextView) findViewById(R.id.dateOfBirth);
-        gender = (TextView) findViewById(R.id.gender);
-        dateOfExpiry = (TextView) findViewById(R.id.dateOfExpiry);
-        personalNumber = (TextView) findViewById(R.id.personalNumber);
-        optional1 = (TextView) findViewById(R.id.optional1);
-        optional2 = (TextView) findViewById(R.id.optional2);
-        discreetIssuingStateOrOrganization = (TextView) findViewById(R.id.discreetIssuingStateOrOrganization);
-        validCheckDigitsCount = (TextView) findViewById(R.id.validCheckDigitsCount);
-        checkDigitsCount = (TextView) findViewById(R.id.checkDigitsCount);
-        travelDocType = (TextView) findViewById(R.id.travelDocType);
 
-        documentCode.setText(getIntent().getStringExtra(EXTRA_documentCode));
-        firstName.setText(getIntent().getStringExtra(EXTRA_firstName));
-        lastName.setText(getIntent().getStringExtra(EXTRA_lastName));
-        issuingStateOrOrganization.setText(getIntent().getStringExtra(EXTRA_issuingStateOrOrganization));
-        departmentOfIssuance.setText(getIntent().getStringExtra(EXTRA_departmentOfIssuance));
-        nationality.setText(getIntent().getStringExtra(EXTRA_nationality));
-        dateOfBirth.setText(getIntent().getStringExtra(EXTRA_dateOfBirth));
-        gender.setText(getIntent().getStringExtra(EXTRA_gender));
-        dateOfExpiry.setText(getIntent().getStringExtra(EXTRA_dateOfExpiry));
-        personalNumber.setText(getIntent().getStringExtra(EXTRA_personalNumber));
-        optional1.setText(getIntent().getStringExtra(EXTRA_optional1));
-        optional2.setText(getIntent().getStringExtra(EXTRA_optional2));
-        discreetIssuingStateOrOrganization.setText(getIntent().getStringExtra(EXTRA_discreetIssuingStateOrOrganization));
-        validCheckDigitsCount.setText("Value: " + getIntent().getIntExtra(EXTRA_validCheckDigitsCount, -1));
-        checkDigitsCount.setText("Value: " + getIntent().getIntExtra(EXTRA_checkDigitsCount, -1));
-        travelDocType.setText(getIntent().getStringExtra(EXTRA_travelDocTyp));
+        setContentView(R.layout.activity_mrz_result);
+
+        travelDocType = findViewById(R.id.travelDocType);
+        documentCode = findViewById(R.id.document_code);
+        firstName = findViewById(R.id.first_name);
+        lastName = findViewById(R.id.last_name);
+        issuingStateOrOrganization = findViewById(R.id.issuingStateOrOrganization);
+        departmentOfIssuance = findViewById(R.id.departmentOfIssuance);
+        nationality = findViewById(R.id.nationality);
+        dateOfBirth = findViewById(R.id.dateOfBirth);
+        gender = findViewById(R.id.gender);
+        dateOfExpiry = findViewById(R.id.dateOfExpiry);
+        personalNumber = findViewById(R.id.personalNumber);
+        optional1 = findViewById(R.id.optional1);
+        optional2 = findViewById(R.id.optional2);
+        discreetIssuingStateOrOrganization = findViewById(R.id.discreetIssuingStateOrOrganization);
+        validCheckDigitsCount = findViewById(R.id.validCheckDigitsCount);
+        checkDigitsCount = findViewById(R.id.checkDigitsCount);
+        checkDigits = findViewById(R.id.checkDigits);
+
+        final MRZRecognitionResult result = getIntent().getParcelableExtra(EXTRA_MRZ_RESULT);
+
+        travelDocType.setText(result.travelDocType.name());
+        documentCode.setText(result.documentCodeField().value);
+        firstName.setText(result.firstNameField().value);
+        lastName.setText(result.lastNameField().value);
+        issuingStateOrOrganization.setText(result.issuingStateOrOrganizationField().value);
+        departmentOfIssuance.setText(result.departmentOfIssuanceField().value);
+        nationality.setText(result.nationalityField().value);
+        dateOfBirth.setText(result.dateOfBirthField().value);
+        gender.setText(result.genderField().value);
+        dateOfExpiry.setText(result.dateOfExpiryField().value);
+        personalNumber.setText(result.personalNumberField().value);
+        optional1.setText(result.optional1Field().value);
+        optional2.setText(result.optional2Field().value);
+        discreetIssuingStateOrOrganization.setText(result.discreetIssuingStateOrOrganizationField().value);
+        validCheckDigitsCount.setText("" + result.validCheckDigitsCount);
+        checkDigitsCount.setText("" + result.checkDigitsCount);
+
+        String checkDigitsOutput = "";
+        for (final MRZCheckDigit cd: result.checkDigits) {
+            checkDigitsOutput += cd.type.name() + ": " + (char)cd.checkDigitCharacter + " (" + cd.successfullyValidated + ")";
+            checkDigitsOutput += "\n";
+        }
+        checkDigits.setText(checkDigitsOutput);
 
         findViewById(R.id.retry).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +95,5 @@ public class MRZResultActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 }
