@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".BarcodeScannerWithFinderActivity">
 
     <net.doo.snap.camera.ScanbotCameraView
@@ -27,9 +26,9 @@
 
     <View
         android:id="@+id/finder_overlay"
-        android:layout_width="250dp"
-        android:layout_height="150dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:background="@drawable/crosshair"/>
+        android:background="@drawable/finder_shape"/>
 
 </FrameLayout>
