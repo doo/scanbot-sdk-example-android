@@ -60,23 +60,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .initialize(this)
 
         //you can check status here
-        when (licenseStatus.status) {
-            StatusOkay -> {
-                licenseStatus.expirationDate
-            }
-            StatusTrial -> {
-            }
-            StatusFailureNotSet -> {
-            }
-            StatusFailureCorrupted -> {
-            }
-            StatusFailureWrongOS -> {
-            }
-            StatusFailureAppIDMismatch -> {
-            }
-            StatusFailureExpired -> {
-            }
-        }
+        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.status.name)
 
         launch {
             PageRepository.clearPages(this@Application)
