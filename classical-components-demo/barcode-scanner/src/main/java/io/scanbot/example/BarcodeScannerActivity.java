@@ -10,12 +10,16 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
+
+import org.jetbrains.annotations.NotNull;
 
 public class BarcodeScannerActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler {
 
@@ -80,14 +84,6 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
         cameraView.onPause();
     }
 
-    @Override
-    public boolean handleResult(final BarcodeScanningResult result) {
-        if (result != null) {
-            showBarcodeResult(result);
-        }
-        return false;
-    }
-
     private void showBarcodeResult(final BarcodeScanningResult result) {
         if (result.getBarcodeItems() == null || result.getBarcodeItems().size() == 0) {
             return;
@@ -130,5 +126,17 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
                 */
             }
         });
+    }
+
+
+    @Override
+    public boolean handleResult(@NotNull FrameHandlerResult<BarcodeScanningResult, SdkLicenseError> result) {
+        if (result instanceof FrameHandlerResult.Success) {
+            BarcodeScanningResult recognitionResult = (BarcodeScanningResult) ((FrameHandlerResult.Success) result).getValue();
+            if (recognitionResult != null) {
+                showBarcodeResult(recognitionResult);
+            }
+        }
+        return false;
     }
 }

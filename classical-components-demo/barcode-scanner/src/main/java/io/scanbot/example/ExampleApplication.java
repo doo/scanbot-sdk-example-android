@@ -36,12 +36,14 @@ public class ExampleApplication extends Application {
                     @Override
                     public void handleLicenceStatusError(Status status, SdkFeature feature) {
                         //handle license problem
-                        Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")
+                        Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
                     }
                 })
                 // TODO 2/2: Enable the Scanbot SDK license key
                 // .license(this, LICENSE_KEY)
                 .initialize(this);
+
+        //check scanbot sdk status here
         Log.d("ScanbotExample", "Status " + sdkLicenseInfo.getStatus().name());
 
         super.onCreate();
