@@ -55,7 +55,6 @@ class Application : MultiDexApplication(), CoroutineScope {
                     //handle license problem
                     Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")
                 })
-                .license(this, "awdadaaw")
                 // TODO 2/2: Enable the Scanbot SDK license key
                 // .license(this, LICENSE_KEY)
                 .initialize(this)
