@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (!new ScanbotSDK(this).isLicenseValid()) {
+       /* if (!new ScanbotSDK(this).isLicenseValid()) {
             Toast.makeText(this,
                     "Scanbot SDK license is not valid or the trial minute has expired.",
                     Toast.LENGTH_LONG).show();
             return;
-        }
+        }*/
 
         progressView.setVisibility(View.VISIBLE);
         processGalleryResult(intent);
