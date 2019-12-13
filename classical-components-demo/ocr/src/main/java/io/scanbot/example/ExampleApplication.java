@@ -36,6 +36,7 @@ public class ExampleApplication extends Application {
                         Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
                     }
                 })
+                .sdkFilesDirectory(this, getExternalFilesDir(null))
                 .prepareOCRLanguagesBlobs(true)
                 // TODO 2/2: Enable the Scanbot SDK license key
                 //.license(this, LICENSE_KEY)
