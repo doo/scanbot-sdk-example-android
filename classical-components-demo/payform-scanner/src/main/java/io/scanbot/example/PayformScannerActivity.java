@@ -20,6 +20,8 @@ import net.doo.snap.payformscanner.PayFormScannerFrameHandler;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import io.scanbot.payformscanner.model.RecognizedField;
@@ -73,8 +75,9 @@ public class PayformScannerActivity extends AppCompatActivity {
         PayFormScannerFrameHandler payFormScannerFrameHandler = PayFormScannerFrameHandler.attach(cameraView, payFormScanner);
 
         payFormScannerFrameHandler.addResultHandler(new PayFormScannerFrameHandler.ResultHandler() {
+
             @Override
-            public boolean handleResult(FrameHandlerResult<DetectionResult, SdkLicenseError> frameHandlerResult) {
+            public boolean handle(@NotNull FrameHandlerResult<? extends DetectionResult, ? extends SdkLicenseError> frameHandlerResult) {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
                     DetectionResult detectionResult = (DetectionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
                     if (detectionResult != null && detectionResult.form.isValid()) {

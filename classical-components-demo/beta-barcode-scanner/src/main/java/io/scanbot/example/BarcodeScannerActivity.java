@@ -125,7 +125,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
 
 
     @Override
-    public boolean handleResult(@NotNull FrameHandlerResult<BarcodeScanningResult, SdkLicenseError> result) {
+    public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> result) {
         if (result instanceof FrameHandlerResult.Success) {
             BarcodeScanningResult recognitionResult = (BarcodeScanningResult) ((FrameHandlerResult.Success) result).getValue();
             if (recognitionResult != null && recognitionResult.getBarcodeItems().size() > 0) {

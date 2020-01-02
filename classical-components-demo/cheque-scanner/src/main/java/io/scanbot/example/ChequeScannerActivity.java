@@ -13,8 +13,13 @@ import net.doo.snap.chequescanner.ChequeScannerFrameHandler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import org.jetbrains.annotations.NotNull;
+
 import io.scanbot.chequescanner.model.Result;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class ChequeScannerActivity extends AppCompatActivity {
 
@@ -55,18 +60,22 @@ public class ChequeScannerActivity extends AppCompatActivity {
         ChequeScannerFrameHandler chequeScannerFrameHandler = ChequeScannerFrameHandler.attach(cameraView, chequeScanner);
 
         chequeScannerFrameHandler.addResultHandler(new ChequeScannerFrameHandler.ResultHandler() {
+
             @Override
-            public boolean handleResult(final Result result) {
-                if (result != null
-                        && ((result.accountNumber != null && !result.accountNumber.isEmpty())
-                        || (result.routingNumber != null && !result.routingNumber.isEmpty()))) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(ChequeScannerActivity.this,
-                                    extractData(result), Toast.LENGTH_LONG).show();
-                        }
-                    });
+            public boolean handle(@NotNull FrameHandlerResult<? extends Result, ? extends SdkLicenseError> frameHandlerResult) {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    final Result result = (Result) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                    if (result != null
+                            && ((result.accountNumber != null && !result.accountNumber.isEmpty())
+                            || (result.routingNumber != null && !result.routingNumber.isEmpty()))) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ChequeScannerActivity.this,
+                                        extractData(result), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
                 return false;
             }

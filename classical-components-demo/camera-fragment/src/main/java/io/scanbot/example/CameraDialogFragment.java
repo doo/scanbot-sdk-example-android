@@ -66,7 +66,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
 
         PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
-        contourDetectorFrameHandler.addResultHandler(polygonView);
+        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
 
         AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
