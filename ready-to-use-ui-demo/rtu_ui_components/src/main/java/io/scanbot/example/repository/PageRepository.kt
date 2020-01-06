@@ -72,7 +72,7 @@ class PageRepository {
             pages.removeAll {
                 it.pageId == page.pageId
             }
-            pages.add(index,page)
+            pages.add(index, page)
             return page
         }
 
