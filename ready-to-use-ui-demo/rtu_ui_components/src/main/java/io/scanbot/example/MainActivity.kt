@@ -169,7 +169,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initDependencies()
         setContentView(R.layout.activity_main)
-        importImageWithDetect()
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
             // select an image from photo library and run document detection on it:
             importImageWithDetect()
