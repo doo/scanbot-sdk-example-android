@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             }
         } else if (requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST) {
             if (resultCode == RESULT_OK) {
-                if (!scanbotSDK.isLicenseValid) {
+                if (!scanbotSDK.licenseInfo.isValid) {
                     showLicenseDialog()
                 } else {
                     ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
     }
@@ -169,17 +169,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initDependencies()
         setContentView(R.layout.activity_main)
-
+        importImageWithDetect()
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
             // select an image from photo library and run document detection on it:
-            val imageIntent = Intent()
-            imageIntent.type = "image/*"
-            imageIntent.action = Intent.ACTION_GET_CONTENT
-            imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-            }
-            startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.share_title)), SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST)
+            importImageWithDetect()
         }
 
         findViewById<View>(R.id.camera_default_ui).setOnClickListener {
@@ -320,16 +313,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun processGalleryResult(data: Intent): Bitmap? {
-        val imageUri = data.data
-        var bitmap: Bitmap? = null
-        if (imageUri != null) {
+    private fun importImageWithDetect() {
+        val imageIntent = Intent()
+        imageIntent.type = "image/*"
+        imageIntent.action = Intent.ACTION_GET_CONTENT
+        imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
+        startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.share_title)), SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST)
+    }
+
+    private fun processGalleryResult(data: Intent): List<Bitmap> {
+        val imageUris = data.data?.let { listOf(it) }
+                ?: (0 until data.clipData.itemCount).toList().map { data.clipData.getItemAt(it).uri }
+
+        return imageUris.mapNotNull {
+            var bitmap: Bitmap? = null
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, it)
             } catch (e: IOException) {
             }
+            bitmap
         }
-        return bitmap
     }
 
     private fun initDependencies() {
@@ -339,33 +345,39 @@ class MainActivity : AppCompatActivity() {
     /**
      * Imports a selected image as original image, creates a new page and opens the Cropping UI on it.
      */
-    internal inner class ProcessImageForCroppingUI(private var data: Intent?) : AsyncTask<Void, Void, Page>() {
+    internal inner class ProcessImageForCroppingUI(private var data: Intent?) : AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             progressBar.visibility = View.VISIBLE
         }
 
-        override fun doInBackground(vararg params: Void): Page {
+        override fun doInBackground(vararg params: Void): List<Page> {
             val processGalleryResult = processGalleryResult(data!!)
 
             val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
+
             // create a new Page object with given image as original image:
-            val pageId = pageFileStorage.add(processGalleryResult!!)
-            return Page(pageId)
+
+            return processGalleryResult.map {
+                val pageId = pageFileStorage.add(it)
+                Page(pageId)
+            }
         }
 
-        override fun onPostExecute(page: Page) {
+        override fun onPostExecute(pages: List<Page>) {
             progressBar.visibility = View.GONE
-            val editPolygonConfiguration = CroppingConfiguration()
+            pages.first().also { page ->
+                val editPolygonConfiguration = CroppingConfiguration()
 
-            editPolygonConfiguration.setPage(page)
+                editPolygonConfiguration.setPage(page)
 
-            val intent = io.scanbot.sdk.ui.view.edit.CroppingActivity.newIntent(
-                    applicationContext,
-                    editPolygonConfiguration
-            )
-            startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
+                val intent = io.scanbot.sdk.ui.view.edit.CroppingActivity.newIntent(
+                        applicationContext,
+                        editPolygonConfiguration
+                )
+                startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
+            }
         }
     }
 
@@ -373,7 +385,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Imports a selected image as original image and performs auto document detection on it.
      */
-    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent?) : AsyncTask<Void, Void, Page>() {
+    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent?) : AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -382,25 +394,27 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.importing_and_processing), Toast.LENGTH_LONG).show()
         }
 
-        override fun doInBackground(vararg params: Void): Page {
+        override fun doInBackground(vararg params: Void): List<Page> {
             val processGalleryResult = processGalleryResult(data!!)
 
             val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
             val pageProcessor = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageProcessor()
 
             // create a new Page object with given image as original image:
-            val pageId = pageFileStorage.add(processGalleryResult!!)
-            var page = Page(pageId, emptyList(), DetectionResult.OK, ImageFilterType.NONE)
 
-            // run auto document detection on it:
-            page = pageProcessor.detectDocument(page)
+            return processGalleryResult.map {
+                val pageId = pageFileStorage.add(it)
+                var page = Page(pageId, emptyList(), DetectionResult.OK, ImageFilterType.NONE)
 
-            PageRepository.addPage(page)
+                // run auto document detection on it:
+                page = pageProcessor.detectDocument(page)
 
-            return page
+                PageRepository.addPage(page)
+                page
+            }
         }
 
-        override fun onPostExecute(page: Page) {
+        override fun onPostExecute(pages: List<Page>) {
             progressBar.visibility = View.GONE
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
