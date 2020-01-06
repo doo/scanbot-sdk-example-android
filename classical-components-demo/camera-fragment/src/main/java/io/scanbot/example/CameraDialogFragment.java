@@ -16,6 +16,7 @@ import net.doo.snap.camera.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.lib.detector.ContourDetector;
+import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
 import androidx.fragment.app.DialogFragment;
@@ -44,7 +45,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View baseView =  getActivity().getLayoutInflater().inflate(R.layout.scanbot_camera_view, container, false);
+        View baseView = getActivity().getLayoutInflater().inflate(R.layout.scanbot_camera_view, container, false);
 
         cameraView = (ScanbotCameraView) baseView.findViewById(R.id.camera);
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
@@ -65,7 +66,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
 
         PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
-        contourDetectorFrameHandler.addResultHandler(polygonView);
+        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
 
         AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
 
@@ -91,8 +92,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -135,17 +135,21 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         // Run document detection on original image:
         final ContourDetector detector = new ContourDetector();
-        detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        DetectionResult detectionResult = detector.detect(originalBitmap);
+        if(detectionResult!=null){
+            final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
 
-        resultView.post(new Runnable() {
-            @Override
-            public void run() {
-                resultView.setImageBitmap(documentImage);
-                cameraView.continuousFocus();
-                cameraView.startPreview();
-            }
-        });
+            if (documentImage != null)
+                resultView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultView.setImageBitmap(documentImage);
+                        cameraView.continuousFocus();
+                        cameraView.startPreview();
+                    }
+                });
+        }
+
     }
 }
 

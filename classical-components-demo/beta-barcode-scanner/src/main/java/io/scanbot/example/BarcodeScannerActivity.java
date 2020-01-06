@@ -13,6 +13,8 @@ import android.widget.Toast;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDoctorField;
@@ -25,10 +27,12 @@ import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument;
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassLeg;
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassLegField;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeFormat;
 import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class BarcodeScannerActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler {
 
@@ -119,10 +123,14 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
         cameraView.onPause();
     }
 
+
     @Override
-    public boolean handleResult(final BarcodeScanningResult result) {
-        if (result != null && result.getBarcodeItems().size() > 0) {
-            showBarcodeResults(result);
+    public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> result) {
+        if (result instanceof FrameHandlerResult.Success) {
+            BarcodeScanningResult recognitionResult = (BarcodeScanningResult) ((FrameHandlerResult.Success) result).getValue();
+            if (recognitionResult != null && recognitionResult.getBarcodeItems().size() > 0) {
+                showBarcodeResults(recognitionResult);
+            }
         }
         return false;
     }

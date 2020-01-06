@@ -1,8 +1,12 @@
 package io.scanbot.example
 
+import android.util.Log
 import androidx.multidex.MultiDexApplication
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
+import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
+import io.scanbot.sap.Status
+import io.scanbot.sap.Status.*
 
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.barcode.ScanbotBarcodeDetector
@@ -35,7 +39,7 @@ class Application : MultiDexApplication(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
-        ScanbotSDKInitializer()
+        val sdkLicenseInfo = ScanbotSDKInitializer()
                 .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.ZXing)
                 .withLogging(BuildConfig.DEBUG)
                 .usePageStorageSettings(
@@ -47,9 +51,16 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .preparePayFormBlobs(true)
+                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
+                    //handle license problem
+                    Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")
+                })
                 // TODO 2/2: Enable the Scanbot SDK license key
                 // .license(this, LICENSE_KEY)
                 .initialize(this)
+
+        //you can check status here
+        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.status.name)
 
         launch {
             PageRepository.clearPages(this@Application)
