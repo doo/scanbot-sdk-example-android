@@ -123,7 +123,6 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
         cameraView.onPause();
     }
 
-
     @Override
     public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> result) {
         if (result instanceof FrameHandlerResult.Success) {
