@@ -162,6 +162,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
+            warning_view.visibility = View.VISIBLE
+        } else {
+            warning_view.visibility = View.GONE
         }
     }
 

@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.*
+import android.os.AsyncTask
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -19,23 +21,22 @@ import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
+class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
         const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
+        const val FILTER_TUNES_UI_REQUEST_CODE = 9998
 
         @JvmStatic
         fun newIntent(context: Context, page: Page): Intent {
@@ -47,7 +48,6 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
 
     lateinit var selectedPage: Page
-    var selectedFilter: ImageFilterType = ImageFilterType.NONE
     lateinit var scanbotSDK: ScanbotSDK
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
@@ -65,13 +65,11 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
         }!!
 
-        selectedPage.let {
-            selectedFilter = it.filter
-        }
         scanbotSDK = ScanbotSDK(application)
 
         action_filter.setOnClickListener {
-            filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
+            val intent = FilterTunesActivity.newIntent(this, selectedPage)
+            startActivityForResult(intent, FILTER_TUNES_UI_REQUEST_CODE)
         }
         action_delete.setOnClickListener {
             PageRepository.removePage(this, selectedPage)
@@ -111,7 +109,11 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA))
+            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA))
+            initPagePreview()
+            return
+        } else if (requestCode == FILTER_TUNES_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(FilterTunesActivity.PAGE_DATA))
             initPagePreview()
             return
         }
@@ -181,9 +183,9 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         override fun doInBackground(vararg p0: Void?): String? {
             selectedPage.let {
 
-                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, selectedFilter).path
+                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter)
+                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter, it.tunes, it.filterOrder)
                 }
                 return filteredPreviewFilePath
             }
@@ -214,72 +216,4 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     }
 
-    override fun lowLightBinarizationFilter() {
-        applyFilter(ImageFilterType.LOW_LIGHT_BINARIZATION)
-    }
-
-    override fun edgeHighlightFilter() {
-        applyFilter(ImageFilterType.EDGE_HIGHLIGHT)
-    }
-
-    override fun deepBinarizationFilter() {
-        applyFilter(ImageFilterType.DEEP_BINARIZATION)
-    }
-
-    override fun otsuBinarizationFilter() {
-        applyFilter(ImageFilterType.OTSU_BINARIZATION)
-    }
-
-    override fun cleanBackgroundFilter() {
-        applyFilter(ImageFilterType.BACKGROUND_CLEAN)
-    }
-
-    override fun colorDocumentFilter() {
-        applyFilter(ImageFilterType.COLOR_DOCUMENT)
-    }
-
-    override fun colorFilter() {
-        applyFilter(ImageFilterType.COLOR_ENHANCED)
-    }
-
-    override fun grayscaleFilter() {
-        applyFilter(ImageFilterType.GRAYSCALE)
-    }
-
-    override fun binarizedFilter() {
-        applyFilter(ImageFilterType.BINARIZED)
-    }
-
-    override fun pureBinarizedFilter() {
-        applyFilter(ImageFilterType.PURE_BINARIZED)
-    }
-
-    override fun blackAndWhiteFilter() {
-        applyFilter(ImageFilterType.BLACK_AND_WHITE)
-    }
-
-    override fun noneFilter() {
-        applyFilter(ImageFilterType.NONE)
-    }
-
-    private fun applyFilter(imageFilterType: ImageFilterType) {
-        if (!scanbotSDK.isLicenseValid) {
-            showLicenseDialog()
-        } else {
-            progress.visibility = VISIBLE
-            selectedFilter = imageFilterType
-            launch {
-                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedFilter, selectedPage)
-                Handler(Looper.getMainLooper()).post {
-                    Picasso.with(applicationContext)
-                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
-                            .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                            .centerInside()
-                            .into(image, ImageCallback())
-                    progress.visibility = GONE
-                }
-            }
-        }
-    }
 }
