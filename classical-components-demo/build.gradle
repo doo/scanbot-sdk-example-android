@@ -23,7 +23,6 @@ allprojects {
         androidxSupportVersion='1.0.1'
 
         scanbotSdkVersion = '1.57.1.11-SNAPSHOT'
-    }
 
     repositories {
         google()
