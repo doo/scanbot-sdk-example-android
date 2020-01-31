@@ -40,7 +40,6 @@ public class ExampleApplication extends Application {
                         Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
                     }
                 })
-                .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.Scanbot)
                 // TODO 2/2: Enable the Scanbot SDK license key
                 // .license(this, LICENSE_KEY)
                 .initialize(this);
