@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.56.1:
+Open Source libraries used in the Scanbot SDK for Android version 1.56.2:
 
 Android PDF Writer version 1.0.8
 Copyright (c) 2010 - 2013, Javier Santo Domingo (j-a-s-d@coderesearchlabs.com).
@@ -311,8 +311,8 @@ J2ObjC Annotations version 1.1
 Kotlin Standard Library JDK 7
 (https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-jdk7)
 
-Kotlin Standard Library version 1.2.50
-(https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib/1.2.50)
+Kotlin Standard Library version 1.3.61
+(https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib/1.3.61)
 
 Picasso version 2.5.2
 Copyright (c) 2013 Square, Inc.

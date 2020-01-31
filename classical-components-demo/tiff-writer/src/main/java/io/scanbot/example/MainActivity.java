@@ -160,15 +160,16 @@ public class MainActivity extends AppCompatActivity {
             final TIFFImageWriterCompressionOptions compression = (binarize ?
                     TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4 : TIFFImageWriterCompressionOptions.COMPRESSION_ADOBE_DEFLATE);
 
-            // Optional custom fields as custom meta data (please refer to TIFF and EXIF specifications):
-            final ArrayList<TIFFImageWriterUserDefinedField> customFields = new ArrayList<>();
+            // Example for custom tags (fields) as userDefinedFields.
+            // Please note the range for custom tag IDs and refer to TIFF specifications.
+            final ArrayList<TIFFImageWriterUserDefinedField> userDefinedFields = new ArrayList<>();
             if (addCustomFields) {
-                customFields.add(TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 600));
-                customFields.add(TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 601));
-                customFields.add(TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 602));
+                userDefinedFields.add(TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 65000));
+                userDefinedFields.add(TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 65001));
+                userDefinedFields.add(TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 65535));
             }
 
-            parameters = new TIFFImageWriterParameters(binarize, dpi, compression, customFields);
+            parameters = new TIFFImageWriterParameters(binarize, dpi, compression, userDefinedFields);
         }
 
         @Override
