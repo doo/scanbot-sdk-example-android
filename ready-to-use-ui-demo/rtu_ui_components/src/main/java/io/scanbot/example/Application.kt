@@ -40,7 +40,6 @@ class Application : MultiDexApplication(), CoroutineScope {
     override fun onCreate() {
         super.onCreate()
         val sdkLicenseInfo = ScanbotSDKInitializer()
-                .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.ZXing)
                 .withLogging(BuildConfig.DEBUG)
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
