@@ -16,6 +16,7 @@ import io.scanbot.example.fragments.*
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
+import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.persistence.Page
@@ -162,10 +163,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
-            warning_view.visibility = View.VISIBLE
-        } else {
-            warning_view.visibility = View.GONE
         }
+        warning_view.visibility = if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
