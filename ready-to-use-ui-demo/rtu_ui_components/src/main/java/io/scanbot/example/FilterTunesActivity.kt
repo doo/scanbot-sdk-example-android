@@ -76,7 +76,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
 
         cancel.setOnClickListener {
-            scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
+            removeFilteredPreview()
             finish()
         }
 
@@ -99,13 +99,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         initPagePreview()
         initMenu()
         initTunes()
-    }
-
-    private fun getFilterName() = selectedFilter.filterName.replace("_", " ").capitalize()
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
     }
 
     private fun initTunes() {
@@ -169,11 +162,11 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
-            generateFilteredPrview()
+            generateFilteredPreview()
         }
     }
 
-    private fun generateFilteredPrview() {
+    private fun generateFilteredPreview() {
         progress.visibility = View.VISIBLE
         launch {
             val path = selectedPage.let {
@@ -254,6 +247,17 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     override fun noneFilter() {
         applyFilter(ImageFilterType.NONE)
+    }
+
+    private fun getFilterName() = selectedFilter.filterName.replace("_", " ").capitalize()
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        removeFilteredPreview()
+    }
+
+    private fun removeFilteredPreview() {
+        scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
