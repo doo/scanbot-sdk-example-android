@@ -67,7 +67,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             tunes = LinkedHashMap(it.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
         }
 
-        filter_value.text = selectedFilter.filterName
+        filter_value.text = getFilterName()
 
         scanbotSDK = ScanbotSDK(application)
 
@@ -76,6 +76,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
 
         cancel.setOnClickListener {
+            scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
             finish()
         }
 
@@ -98,6 +99,13 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         initPagePreview()
         initMenu()
         initTunes()
+    }
+
+    private fun getFilterName() = selectedFilter.filterName.replace("_", " ").capitalize()
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
     }
 
     private fun initTunes() {
@@ -161,41 +169,34 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
-            GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            generateFilteredPrview()
         }
     }
 
-    inner class GenerateFilterPreviewTask : AsyncTask<Void, Void, String>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progress.visibility = View.VISIBLE
-        }
-
-        override fun doInBackground(vararg p0: Void?): String? {
-            selectedPage.let {
+    private fun generateFilteredPrview() {
+        progress.visibility = View.VISIBLE
+        launch {
+            val path = selectedPage.let {
 
                 val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, selectedFilter).path
                 if (!File(filteredPreviewFilePath).exists()) {
                     scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter)
                 }
-                return filteredPreviewFilePath
+                filteredPreviewFilePath
             }
-        }
-
-        override fun onPostExecute(filteredPreviewFilePath: String?) {
-            super.onPostExecute(filteredPreviewFilePath)
-
-            filteredPreviewFilePath?.let {
-                Picasso.with(applicationContext)
-                        .load(File(filteredPreviewFilePath))
-                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-                        .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                        .centerInside()
-                        .into(image, ImageCallback())
+            Handler(Looper.getMainLooper()).post {
+                path?.let {
+                    Picasso.with(applicationContext)
+                            .load(File(it))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                }
             }
         }
     }
+
 
     inner class ImageCallback : Callback {
         override fun onSuccess() {
@@ -261,7 +262,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         } else {
             progress.visibility = View.VISIBLE
             selectedFilter = imageFilterType
-            filter_value.text = selectedFilter.filterName
+            filter_value.text = getFilterName()
             launch {
                 PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
                 Handler(Looper.getMainLooper()).post {

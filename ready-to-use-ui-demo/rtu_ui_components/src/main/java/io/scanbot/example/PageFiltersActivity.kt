@@ -4,12 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -27,10 +28,11 @@ import kotlinx.android.synthetic.main.activity_filters.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
+class PageFiltersActivity :  AppCompatActivity(), CoroutineScope {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
@@ -169,38 +171,30 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
-            GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            generateFilteredPrview()
         }
     }
 
-    inner class GenerateFilterPreviewTask : AsyncTask<Void, Void, String>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progress.visibility = VISIBLE
-        }
-
-        override fun doInBackground(vararg p0: Void?): String? {
-            selectedPage.let {
+    private fun generateFilteredPrview() {
+        progress.visibility = View.VISIBLE
+        launch {
+            val path = selectedPage.let {
 
                 val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter, it.tunes, it.filterOrder)
+                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter)
                 }
-                return filteredPreviewFilePath
+                filteredPreviewFilePath
             }
-        }
-
-        override fun onPostExecute(filteredPreviewFilePath: String?) {
-            super.onPostExecute(filteredPreviewFilePath)
-
-            filteredPreviewFilePath?.let {
-                Picasso.with(applicationContext)
-                        .load(File(filteredPreviewFilePath))
-                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-                        .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                        .centerInside()
-                        .into(image, ImageCallback())
+            Handler(Looper.getMainLooper()).post {
+                path?.let {
+                    Picasso.with(applicationContext)
+                            .load(File(it))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                }
             }
         }
     }
@@ -213,7 +207,5 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
         override fun onError() {
             progress.visibility = GONE
         }
-
     }
-
 }
