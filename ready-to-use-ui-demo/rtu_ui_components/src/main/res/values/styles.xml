@@ -46,6 +46,25 @@
         <item name="android:textColor">@color/greyColor</item>
     </style>
 
+    <style name="SettingHeader">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#99ffffff</item>
+    </style>
+
+    <style name="SettingItem">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <style name="SettingValue">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#99ffffff</item>
+    </style>
+
     <style name="Scanbot.Demo.ActionBar" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/colorPrimaryDark</item>
         <item name="android:backgroundStacked">@color/colorPrimaryDark</item>
