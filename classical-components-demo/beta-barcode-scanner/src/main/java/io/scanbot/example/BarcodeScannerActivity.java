@@ -89,7 +89,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
             startActivityForResult(intent, BARCODE_TYPES_REQUEST);
         });
 
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this));
+        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this).barcodeDetector());
         barcodeDetectorFrameHandler.setDetectionInterval(1000);
         barcodeDetectorFrameHandler.addResultHandler(this);
 
@@ -122,7 +122,6 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
         super.onPause();
         cameraView.onPause();
     }
-
 
     @Override
     public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> result) {
@@ -162,14 +161,14 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     }
 
     private String printParsedFormat(final BarcodeItem item) {
-        if (item.getBarcodDocumentFormat() == null) {
+        if (item.getBarcodeDocumentFormat() == null) {
             // not supported by current barcode detector implementation
             return "";
         }
 
         final StringBuilder barcodesResult = new StringBuilder();
-        if (item.getBarcodDocumentFormat() instanceof BoardingPassDocument) {
-            final BoardingPassDocument barcodDocumentFormat = (BoardingPassDocument) item.getBarcodDocumentFormat();
+        if (item.getBarcodeDocumentFormat() instanceof BoardingPassDocument) {
+            final BoardingPassDocument barcodDocumentFormat = (BoardingPassDocument) item.getBarcodeDocumentFormat();
             barcodesResult.append("\n")
                     .append("Boarding Pass Document").append("\n")
                     .append(barcodDocumentFormat.name).append("\n");
@@ -178,8 +177,8 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
                     barcodesResult.append(field.type.name()).append(": ").append(field.value).append("\n");
                 }
             }
-        } else if (item.getBarcodDocumentFormat() instanceof DEMedicalPlanDocument) {
-            final DEMedicalPlanDocument medicalPlanDocFormat = (DEMedicalPlanDocument) item.getBarcodDocumentFormat();
+        } else if (item.getBarcodeDocumentFormat() instanceof DEMedicalPlanDocument) {
+            final DEMedicalPlanDocument medicalPlanDocFormat = (DEMedicalPlanDocument) item.getBarcodeDocumentFormat();
             barcodesResult.append("\n").append("DE Medical Plan Document").append("\n");
 
             barcodesResult.append("Doctor Fields:").append("\n");

@@ -66,8 +66,8 @@ public class ChequeScannerActivity extends AppCompatActivity {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
                     final Result result = (Result) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
                     if (result != null
-                            && ((result.accountNumber != null && !result.accountNumber.isEmpty())
-                            || (result.routingNumber != null && !result.routingNumber.isEmpty()))) {
+                            && ((result.accountNumber != null && !result.accountNumber.value.isEmpty()
+                            || (result.routingNumber != null && !result.routingNumber.value.isEmpty())))) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

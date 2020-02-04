@@ -18,26 +18,24 @@ allprojects {
     project.ext {
         exampleAppId = 'io.scanbot.example.sdk.android'
 
-        compileSdkVersion=28
-        buildToolsVersion='28.0.3'
-        androidxSupportVersion='1.0.1'
+        compileSdkVersion = 28
+        buildToolsVersion = '28.0.3'
+        androidxSupportVersion = '1.0.1'
 
-        scanbotSdkVersion = '1.57.1.11-SNAPSHOT'
+        scanbotSdkVersion = '1.57.1.13-SNAPSHOT'
 
+        repositories {
+            google()
+            jcenter()
+            mavenCentral()
+
+            maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
+            maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
+        }
+
+        configurations.all {
+            // Hack to let Gradle pickup latest SNAPSHOTS
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        }
     }
-
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
-    }
-
-    configurations.all {
-        // Hack to let Gradle pickup latest SNAPSHOTS
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-
 }
