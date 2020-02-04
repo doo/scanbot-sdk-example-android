@@ -31,8 +31,7 @@ class WorkflowFactory {
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
                                 override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
-                                            || !stepResult.mrzResult!!.recognitionSuccessful
-                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                            || !stepResult.mrzResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
                                                 1,
                                                 "This does not seem to be the correct page.",
@@ -63,8 +62,7 @@ class WorkflowFactory {
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
                                 override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
-                                            || !stepResult.mrzResult!!.recognitionSuccessful
-                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                            || !stepResult.mrzResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
                                                 1,
                                                 "This does not seem to be the correct side. Please scan the back with MRZ.",
