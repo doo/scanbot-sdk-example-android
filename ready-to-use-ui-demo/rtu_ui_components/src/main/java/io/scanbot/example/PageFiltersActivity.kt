@@ -95,6 +95,11 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
         initMenu()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
     override fun onResume() {
         super.onResume()
         if (!scanbotSDK.isLicenseValid) {

@@ -98,6 +98,11 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         initTunes()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
     private fun initTunes() {
         val listener = object : TuneValueChangedListener {
             override fun tuneValueChanged(tuneType: ImageFilterTuneType, value: Float) {
