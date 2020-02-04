@@ -43,7 +43,6 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-
     lateinit var selectedPage: Page
     lateinit var scanbotSDK: ScanbotSDK
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
@@ -51,8 +50,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
-
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filters)

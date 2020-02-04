@@ -38,7 +38,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
     }
 
-
     lateinit var selectedPage: Page
     var selectedFilter: ImageFilterType = ImageFilterType.NONE
     var tunes: LinkedHashMap<ImageFilterTuneType, TuneOperation> = linkedMapOf()
@@ -48,7 +47,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,7 +189,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             }
         }
     }
-
 
     inner class ImageCallback : Callback {
         override fun onSuccess() {
