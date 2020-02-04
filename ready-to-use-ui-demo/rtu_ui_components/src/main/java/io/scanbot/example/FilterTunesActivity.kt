@@ -47,7 +47,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
+        get() = Dispatchers.Default + job
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
