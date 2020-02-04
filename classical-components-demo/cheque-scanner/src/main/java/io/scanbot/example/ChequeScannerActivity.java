@@ -13,8 +13,13 @@ import net.doo.snap.chequescanner.ChequeScannerFrameHandler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import org.jetbrains.annotations.NotNull;
+
 import io.scanbot.chequescanner.model.Result;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class ChequeScannerActivity extends AppCompatActivity {
 
@@ -56,17 +61,20 @@ public class ChequeScannerActivity extends AppCompatActivity {
 
         chequeScannerFrameHandler.addResultHandler(new ChequeScannerFrameHandler.ResultHandler() {
             @Override
-            public boolean handleResult(final Result result) {
-                if (result != null
-                        && ((result.accountNumber != null && !result.accountNumber.isEmpty())
-                        || (result.routingNumber != null && !result.routingNumber.isEmpty()))) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(ChequeScannerActivity.this,
-                                    extractData(result), Toast.LENGTH_LONG).show();
-                        }
-                    });
+            public boolean handle(@NotNull FrameHandlerResult<? extends Result, ? extends SdkLicenseError> frameHandlerResult) {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    final Result result = ((FrameHandlerResult.Success<Result>) frameHandlerResult).getValue();
+                    if (result != null
+                            && ((result.accountNumber != null && !result.accountNumber.value.isEmpty())
+                            || (result.routingNumber != null && !result.routingNumber.value.isEmpty()))) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ChequeScannerActivity.this,
+                                        extractData(result), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
                 return false;
             }
@@ -92,8 +100,8 @@ public class ChequeScannerActivity extends AppCompatActivity {
 
     private String extractData(Result result) {
         return new StringBuilder()
-                .append("accountNumber: ").append(result.accountNumber).append("\n")
-                .append("routingNumber: ").append(result.routingNumber).append("\n")
+                .append("accountNumber: ").append(result.accountNumber.value).append("\n")
+                .append("routingNumber: ").append(result.routingNumber.value).append("\n")
                 .append("Polygon detection result: ").append(result.polygon.detectionResult.toString()).append("\n")
                 .append("Polygon : ").append(result.polygon.points.toString()).append("\n")
                 .toString();

@@ -1,34 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent" tools:context=".MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="50dp"
-        android:text="Choose a Barcode/QR-Code Scanner Example"/>
 
-    <Button
-        android:id="@+id/start_barcode_scanner_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Simple Barcode Scanner"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="15dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/start_barcode_scanner_with_finder_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Barcode Scanner with Finder View"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            tools:context=".ui.MainActivity">
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingLeft="16dp"
+                android:text="@string/scanbot_sdk_demo"
+                android:textColor="#ffffff"
+                android:layout_marginBottom="32dp"
+                android:textSize="34sp"
+                android:textStyle="normal" />
+
+            <LinearLayout
+                android:id="@+id/warning_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/warning_shape"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:fontFamily="sans-serif"
+                    android:text="@string/no_license_found_the_app_will_terminate_after_one_minute"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/qr_demo"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:text="Classic Component"
+                android:layout_marginLeft="16dp"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#50000000" />
+
+            <TextView
+                android:id="@+id/import_image"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                android:text="Pick image from library" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#50000000" />
+
+            <TextView
+                android:id="@+id/settings"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                android:text="Set accepted barcodes" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#50000000" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

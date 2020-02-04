@@ -26,6 +26,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
+
+import org.jetbrains.annotations.NotNull;
+
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
@@ -100,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60);
         contourDetectorFrameHandler.setAcceptedSizeScore(75);
-        contourDetectorFrameHandler.addResultHandler(polygonView);
+        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
         contourDetectorFrameHandler.addResultHandler(this);
 
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
@@ -171,13 +176,15 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     }
 
     @Override
-    public boolean handleResult(final ContourDetectorFrameHandler.DetectedFrame detectedFrame) {
+    public boolean handle(@NotNull final FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post(new Runnable() {
             @Override
             public void run() {
-                showUserGuidance(detectedFrame.detectionResult);
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
+                }
             }
         });
 
@@ -295,5 +302,4 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             userGuidanceHint.setVisibility(View.GONE);
         }
     }
-
 }

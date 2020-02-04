@@ -1,12 +1,13 @@
 <resources>
-    <string name="app_name">barcode-scanner</string>
-
-    <string-array name="encoding_array">
-        <item>DEFAULT Encoding</item>
-        <item>UTF-8</item>
-        <item>ISO-8859-1</item>
-        <item>Cp437</item>
-        <item>Cp850</item>
-    </string-array>
-
+    <string name="app_name">Scanbot SDK Example</string>
+    <string name="title_activity_barcode_result">BarcodeResultActivity</string>
+    <string name="title_activity_detailed_item_data">DetailedItemDataActivity</string>
+    <string name="share_title">Select Image</string>
+    <string name="the_demo_expired">The demo app will terminate because of the missing license key. Get your free 30-day license today!</string>
+    <string name="demo_expired">Demo Expired</string>
+    <string name="choose_browser">Choose Browser</string>
+    <string name="scanbot_sdk_demo">@string/app_name</string>
+    <string name="no_license_found_the_app_will_terminate_after_one_minute">No license key found. The SDK features will stop working after the trial period.</string>
+    <string name="get_license">Get license</string>
+    <string name="cancel_dialog_button">Cancel</string>
 </resources>

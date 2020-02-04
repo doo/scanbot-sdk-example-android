@@ -2,13 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".BarcodeScannerActivity">
+    tools:context=".ui.BarcodeScannerActivity">
 
     <net.doo.snap.camera.ScanbotCameraView
         android:id="@+id/camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/finder_overlay"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/container_bg" />
+
+    <TextView
+        android:id="@+id/snapped_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:contentDescription="snapped_message" />
 
     <Button
         android:id="@+id/flash"
@@ -16,5 +29,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
         android:text="Flash" />
+
+    <ImageView
+        android:id="@+id/result"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom|right"
+        android:contentDescription="snap_result"/>
 
 </FrameLayout>
