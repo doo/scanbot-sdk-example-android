@@ -18,16 +18,16 @@ class TuneView(context: Context) : FrameLayout(context) {
     fun initForTune(newTuneType: ImageFilterTuneType, listener: TuneValueChangedListener, operation: TuneOperation?) {
         tuneType = newTuneType
         tune_name.text = tuneType.filterName
-        tune_seek_bar.max = 100
-        val pr =
+        tune_seek_bar.max = SEEK_BAR_MAX_VALUE
+        val progress =
                 if (operation != null) {
-                    ((operation.numValue - tuneType.minValue) / (tuneType.maxValue - tuneType.minValue) * 100).toInt()
+                    ((operation.numValue - tuneType.minValue) / (tuneType.maxValue - tuneType.minValue) * SEEK_BAR_MAX_VALUE).toInt()
                 } else {
-                    50
+                    SEEK_BAR_MAX_VALUE / 2
                 }
 
-        tune_seek_bar.progress = pr
-        tune_value.text = pr.toString()
+        tune_seek_bar.progress = progress
+        tune_value.text = progress.toString()
 
         tune_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -38,13 +38,15 @@ class TuneView(context: Context) : FrameLayout(context) {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 val progress = seekBar!!.progress
-                val res = tuneType.minValue + (tuneType.maxValue - tuneType.minValue) * progress / 100
+                val res = tuneType.minValue + (tuneType.maxValue - tuneType.minValue) * progress / SEEK_BAR_MAX_VALUE
                 listener.tuneValueChanged(tuneType, res)
                 tune_value.text = progress.toString()
             }
         })
+    }
 
-
+    companion object {
+        private const val SEEK_BAR_MAX_VALUE = 100
     }
 }
 

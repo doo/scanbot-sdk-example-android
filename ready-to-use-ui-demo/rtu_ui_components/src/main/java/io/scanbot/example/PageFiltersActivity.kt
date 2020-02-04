@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcelable
 import android.view.MenuItem
 import android.view.View
@@ -25,14 +23,11 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity :  AppCompatActivity(), CoroutineScope {
+class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
@@ -55,7 +50,7 @@ class PageFiltersActivity :  AppCompatActivity(), CoroutineScope {
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
+        get() = Dispatchers.Default + job
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,11 +166,11 @@ class PageFiltersActivity :  AppCompatActivity(), CoroutineScope {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
-            generateFilteredPrview()
+            generateFilteredPreview()
         }
     }
 
-    private fun generateFilteredPrview() {
+    private fun generateFilteredPreview() {
         progress.visibility = View.VISIBLE
         launch {
             val path = selectedPage.let {
@@ -186,7 +181,7 @@ class PageFiltersActivity :  AppCompatActivity(), CoroutineScope {
                 }
                 filteredPreviewFilePath
             }
-            Handler(Looper.getMainLooper()).post {
+            withContext(Dispatchers.Main) {
                 path?.let {
                     Picasso.with(applicationContext)
                             .load(File(it))

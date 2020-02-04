@@ -21,10 +21,7 @@ import io.scanbot.sdk.process.TuneOperation
 import kotlinx.android.synthetic.main.activity_filters.image
 import kotlinx.android.synthetic.main.activity_filters.progress
 import kotlinx.android.synthetic.main.activity_filters_tunes.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
@@ -62,9 +59,9 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
         }!!
 
-        selectedPage.let {
-            selectedFilter = it.filter
-            tunes = LinkedHashMap(it.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
+        selectedPage.let { page ->
+            selectedFilter = page.filter
+            tunes = LinkedHashMap(page.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
         }
 
         filter_value.text = getFilterName()
@@ -85,7 +82,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             launch {
                 selectedPage = PageRepository.applyFilter(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
                 PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
-                Handler(Looper.getMainLooper()).post {
+                withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
                     val data = Intent()
                     data.putExtra(PAGE_DATA, selectedPage as Parcelable)
@@ -123,7 +120,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         color_tunes.addView(initTuneView(listener, ImageFilterTuneType.TEMPERATURE))
     }
 
-    private fun initTuneView(listener: TuneValueChangedListener, filter: ImageFilterTuneType) : View {
+    private fun initTuneView(listener: TuneValueChangedListener, filter: ImageFilterTuneType): View {
         return TuneView(this).also { it.initForTune(filter, listener, tunes.get(filter)) }
     }
 
@@ -177,7 +174,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                 }
                 filteredPreviewFilePath
             }
-            Handler(Looper.getMainLooper()).post {
+            withContext(Dispatchers.Main) {
                 path?.let {
                     Picasso.with(applicationContext)
                             .load(File(it))
@@ -269,7 +266,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             filter_value.text = getFilterName()
             launch {
                 PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
-                Handler(Looper.getMainLooper()).post {
+                withContext(Dispatchers.Main) {
                     Picasso.with(applicationContext)
                             .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
