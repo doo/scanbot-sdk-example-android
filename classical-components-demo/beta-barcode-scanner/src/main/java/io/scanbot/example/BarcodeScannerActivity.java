@@ -13,6 +13,8 @@ import android.widget.Toast;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDoctorField;
@@ -25,10 +27,12 @@ import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument;
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassLeg;
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassLegField;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeFormat;
 import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class BarcodeScannerActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler {
 
@@ -85,7 +89,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
             startActivityForResult(intent, BARCODE_TYPES_REQUEST);
         });
 
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this));
+        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this).barcodeDetector());
         barcodeDetectorFrameHandler.setDetectionInterval(1000);
         barcodeDetectorFrameHandler.addResultHandler(this);
 
@@ -120,9 +124,12 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     }
 
     @Override
-    public boolean handleResult(final BarcodeScanningResult result) {
-        if (result != null && result.getBarcodeItems().size() > 0) {
-            showBarcodeResults(result);
+    public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> result) {
+        if (result instanceof FrameHandlerResult.Success) {
+            BarcodeScanningResult recognitionResult = (BarcodeScanningResult) ((FrameHandlerResult.Success) result).getValue();
+            if (recognitionResult != null && recognitionResult.getBarcodeItems().size() > 0) {
+                showBarcodeResults(recognitionResult);
+            }
         }
         return false;
     }
@@ -154,14 +161,14 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     }
 
     private String printParsedFormat(final BarcodeItem item) {
-        if (item.getBarcodDocumentFormat() == null) {
+        if (item.getBarcodeDocumentFormat() == null) {
             // not supported by current barcode detector implementation
             return "";
         }
 
         final StringBuilder barcodesResult = new StringBuilder();
-        if (item.getBarcodDocumentFormat() instanceof BoardingPassDocument) {
-            final BoardingPassDocument barcodDocumentFormat = (BoardingPassDocument) item.getBarcodDocumentFormat();
+        if (item.getBarcodeDocumentFormat() instanceof BoardingPassDocument) {
+            final BoardingPassDocument barcodDocumentFormat = (BoardingPassDocument) item.getBarcodeDocumentFormat();
             barcodesResult.append("\n")
                     .append("Boarding Pass Document").append("\n")
                     .append(barcodDocumentFormat.name).append("\n");
@@ -170,8 +177,8 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
                     barcodesResult.append(field.type.name()).append(": ").append(field.value).append("\n");
                 }
             }
-        } else if (item.getBarcodDocumentFormat() instanceof DEMedicalPlanDocument) {
-            final DEMedicalPlanDocument medicalPlanDocFormat = (DEMedicalPlanDocument) item.getBarcodDocumentFormat();
+        } else if (item.getBarcodeDocumentFormat() instanceof DEMedicalPlanDocument) {
+            final DEMedicalPlanDocument medicalPlanDocFormat = (DEMedicalPlanDocument) item.getBarcodeDocumentFormat();
             barcodesResult.append("\n").append("DE Medical Plan Document").append("\n");
 
             barcodesResult.append("Doctor Fields:").append("\n");

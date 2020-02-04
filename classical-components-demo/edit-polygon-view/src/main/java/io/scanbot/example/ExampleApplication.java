@@ -1,7 +1,12 @@
 package io.scanbot.example;
 
 import android.app.Application;
+import android.util.Log;
 
+import io.scanbot.sap.IScanbotSDKLicenseErrorHandler;
+import io.scanbot.sap.SdkFeature;
+import io.scanbot.sap.SdkLicenseInfo;
+import io.scanbot.sap.Status;
 import io.scanbot.sdk.ScanbotSDKInitializer;
 
 /**
@@ -24,10 +29,23 @@ public class ExampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        new ScanbotSDKInitializer()
+        SdkLicenseInfo sdkLicenseInfo = new ScanbotSDKInitializer()
+                .licenceErrorHandler(new IScanbotSDKLicenseErrorHandler() {
+
+                    @Override
+                    public void handleLicenceStatusError(Status status, SdkFeature feature) {
+                        //handle license problem
+                        Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
+                    }
+                })
+                .prepareOCRLanguagesBlobs(true)
                 // TODO 2/2: Enable the Scanbot SDK license key
-                // .license(this, LICENSE_KEY)
                 .sdkFilesDirectory(this, getExternalFilesDir(null))
+                //.license(this, LICENSE_KEY)
                 .initialize(this);
+
+        //check scanbot sdk status here
+        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.getStatus().name());
+
     }
 }

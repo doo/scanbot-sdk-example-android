@@ -2,8 +2,14 @@ package io.scanbot.example;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.multidex.MultiDex;
+
+import io.scanbot.sap.IScanbotSDKLicenseErrorHandler;
+import io.scanbot.sap.SdkFeature;
+import io.scanbot.sap.SdkLicenseInfo;
+import io.scanbot.sap.Status;
 import io.scanbot.sdk.ScanbotSDKInitializer;
 import io.scanbot.sdk.barcode.ScanbotBarcodeDetector;
 
@@ -25,22 +31,22 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
-        new ScanbotSDKInitializer()
+        SdkLicenseInfo sdkLicenseInfo = new ScanbotSDKInitializer()
+                .licenceErrorHandler(new IScanbotSDKLicenseErrorHandler() {
+
+                    @Override
+                    public void handleLicenceStatusError(Status status, SdkFeature feature) {
+                        //handle license problem
+                        Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
+                    }
+                })
                 // TODO 2/2: Enable the Scanbot SDK license key
-                //.license(this, LICENSE_KEY)
-                /*
-                 * Please note: BarcodeDetectorType.Scanbot enables the new BETA Barcode Detector of Scanbot SDK.
-                 *
-                 * - It supports multiple barcode detection.
-                 * - Provides better detection and extraction of 1D and 2D barcodes, especially Data Matrix and PDF 417 codes.
-                 * - Provides out-of-the-box parsers, like German Medical Plans (Medikationsplan) based on Data Matrix,
-                 *   ID Cards or US Driver Licenses, both based on PDF 417, etc.
-                 *
-                 * As this Barcode Detector is a BETA feature, it is still under active development and improvement.
-                 * We will try to keep the API as stable as possible. However, please note that we can't guarantee that.
-                 */
-                .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.Scanbot)
+                // .license(this, LICENSE_KEY)
                 .initialize(this);
+
+        //check scanbot sdk status here
+        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.getStatus().name());
+
         super.onCreate();
     }
 
