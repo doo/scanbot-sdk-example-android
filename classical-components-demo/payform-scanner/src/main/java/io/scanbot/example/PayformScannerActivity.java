@@ -12,6 +12,7 @@ import androidx.core.view.WindowCompat;
 
 import io.scanbot.payformscanner.model.PayFormRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
+
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
 import net.doo.snap.payformscanner.PayFormScanner;
@@ -19,9 +20,13 @@ import net.doo.snap.payformscanner.PayFormScannerFrameHandler;
 import net.doo.snap.util.log.Logger;
 import net.doo.snap.util.log.LoggerProvider;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import io.scanbot.payformscanner.model.RecognizedField;
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 import static io.scanbot.payformscanner.PayFormScanner.*;
 
@@ -70,17 +75,21 @@ public class PayformScannerActivity extends AppCompatActivity {
         PayFormScannerFrameHandler payFormScannerFrameHandler = PayFormScannerFrameHandler.attach(cameraView, payFormScanner);
 
         payFormScannerFrameHandler.addResultHandler(new PayFormScannerFrameHandler.ResultHandler() {
-            @Override
-            public boolean handleResult(DetectionResult detectionResult) {
-                if (detectionResult != null && detectionResult.form.isValid()) {
-                    long a = System.currentTimeMillis();
 
-                    try {
-                        final PayFormRecognitionResult result = payFormScanner.recognizeForm(detectionResult.lastFrame, detectionResult.frameWidth, detectionResult.frameHeight, 0);
-                        startActivity(PayformResultActivity.newIntent(PayformScannerActivity.this, result.payformFields));
-                    } finally {
-                        long b = System.currentTimeMillis();
-                        logger.d("PayFormScanner", "Total scanning (sec): " + (b - a) / 1000f);
+            @Override
+            public boolean handle(@NotNull FrameHandlerResult<? extends DetectionResult, ? extends SdkLicenseError> frameHandlerResult) {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    DetectionResult detectionResult = (DetectionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                    if (detectionResult != null && detectionResult.form.isValid()) {
+                        long a = System.currentTimeMillis();
+
+                        try {
+                            final PayFormRecognitionResult result = payFormScanner.recognizeForm(detectionResult.lastFrame, detectionResult.frameWidth, detectionResult.frameHeight, 0);
+                            startActivity(PayformResultActivity.newIntent(PayformScannerActivity.this, result.payformFields));
+                        } finally {
+                            long b = System.currentTimeMillis();
+                            logger.d("PayFormScanner", "Total scanning (sec): " + (b - a) / 1000f);
+                        }
                     }
                 }
                 return false;

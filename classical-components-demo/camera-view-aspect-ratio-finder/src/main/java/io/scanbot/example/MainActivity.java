@@ -27,6 +27,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
+
+import org.jetbrains.annotations.NotNull;
+
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.ui.camera.FinderOverlayView;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
@@ -97,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         finderOverlayView.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
 
         contourDetectorFrameHandler.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
-        contourDetectorFrameHandler.addResultHandler(finderOverlayView);
+        contourDetectorFrameHandler.addResultHandler(finderOverlayView.getContourDetectorFrameHandler());
         contourDetectorFrameHandler.addResultHandler(this);
 
         autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
@@ -155,17 +160,20 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     }
 
     @Override
-    public boolean handleResult(final ContourDetectorFrameHandler.DetectedFrame detectedFrame) {
-        // Here you are continuously notified about contour detection results.
-        // For example, you can show a user guidance text depending on the current detection status.
-        userGuidanceHint.post(new Runnable() {
-            @Override
-            public void run() {
-                showUserGuidance(detectedFrame.detectionResult);
-            }
-        });
+    public boolean handle(@NotNull FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
+        if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+            final ContourDetectorFrameHandler.DetectedFrame detectedFrame = (ContourDetectorFrameHandler.DetectedFrame) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+            // Here you are continuously notified about contour detection results.
+            // For example, you can show a user guidance text depending on the current detection status.
+            userGuidanceHint.post(new Runnable() {
+                @Override
+                public void run() {
+                    showUserGuidance(detectedFrame.detectionResult);
+                }
+            });
 
-        return false; // typically you need to return false
+        }
+        return false;
     }
 
     private void showUserGuidance(final DetectionResult result) {

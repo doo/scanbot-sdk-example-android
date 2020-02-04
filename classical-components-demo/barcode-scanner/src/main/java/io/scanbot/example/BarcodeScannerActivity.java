@@ -10,12 +10,16 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler;
 import io.scanbot.sdk.barcode.entity.BarcodeItem;
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ScanbotCameraView;
+
+import org.jetbrains.annotations.NotNull;
 
 public class BarcodeScannerActivity extends AppCompatActivity implements BarcodeDetectorFrameHandler.ResultHandler {
 
@@ -52,7 +56,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
             }
         });
 
-        BarcodeDetectorFrameHandler barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this));
+        BarcodeDetectorFrameHandler barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this).barcodeDetector());
 
         // Default detection interval is 10000 ms
         barcodeDetectorFrameHandler.setDetectionInterval(2000);
@@ -78,14 +82,6 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
     protected void onPause() {
         super.onPause();
         cameraView.onPause();
-    }
-
-    @Override
-    public boolean handleResult(final BarcodeScanningResult result) {
-        if (result != null) {
-            showBarcodeResult(result);
-        }
-        return false;
     }
 
     private void showBarcodeResult(final BarcodeScanningResult result) {
@@ -130,5 +126,16 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
                 */
             }
         });
+    }
+
+    @Override
+    public boolean handle(@NotNull FrameHandlerResult<? extends BarcodeScanningResult, ? extends SdkLicenseError> frameHandlerResult) {
+        if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+            BarcodeScanningResult recognitionResult = (BarcodeScanningResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+            if (recognitionResult != null) {
+                showBarcodeResult(recognitionResult);
+            }
+        }
+        return false;
     }
 }
