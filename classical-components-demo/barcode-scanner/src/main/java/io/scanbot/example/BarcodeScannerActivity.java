@@ -56,7 +56,7 @@ public class BarcodeScannerActivity extends AppCompatActivity implements Barcode
             }
         });
 
-        BarcodeDetectorFrameHandler barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this));
+        BarcodeDetectorFrameHandler barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this).barcodeDetector());
 
         // Default detection interval is 10000 ms
         barcodeDetectorFrameHandler.setDetectionInterval(2000);
