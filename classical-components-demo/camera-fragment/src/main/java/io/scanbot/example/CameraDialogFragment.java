@@ -136,7 +136,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         // Run document detection on original image:
         final ContourDetector detector = new ContourDetector();
         DetectionResult detectionResult = detector.detect(originalBitmap);
-        if(detectionResult!=null){
+        if (detectionResult != null) {
             final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
 
             if (documentImage != null)
