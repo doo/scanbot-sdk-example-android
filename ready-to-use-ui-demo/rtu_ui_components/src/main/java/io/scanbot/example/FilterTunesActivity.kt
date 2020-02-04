@@ -198,52 +198,8 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
     }
 
-    override fun lowLightBinarizationFilter() {
-        applyFilter(ImageFilterType.LOW_LIGHT_BINARIZATION)
-    }
-
-    override fun edgeHighlightFilter() {
-        applyFilter(ImageFilterType.EDGE_HIGHLIGHT)
-    }
-
-    override fun deepBinarizationFilter() {
-        applyFilter(ImageFilterType.DEEP_BINARIZATION)
-    }
-
-    override fun otsuBinarizationFilter() {
-        applyFilter(ImageFilterType.OTSU_BINARIZATION)
-    }
-
-    override fun cleanBackgroundFilter() {
-        applyFilter(ImageFilterType.BACKGROUND_CLEAN)
-    }
-
-    override fun colorDocumentFilter() {
-        applyFilter(ImageFilterType.COLOR_DOCUMENT)
-    }
-
-    override fun colorFilter() {
-        applyFilter(ImageFilterType.COLOR_ENHANCED)
-    }
-
-    override fun grayscaleFilter() {
-        applyFilter(ImageFilterType.GRAYSCALE)
-    }
-
-    override fun binarizedFilter() {
-        applyFilter(ImageFilterType.BINARIZED)
-    }
-
-    override fun pureBinarizedFilter() {
-        applyFilter(ImageFilterType.PURE_BINARIZED)
-    }
-
-    override fun blackAndWhiteFilter() {
-        applyFilter(ImageFilterType.BLACK_AND_WHITE)
-    }
-
-    override fun noneFilter() {
-        applyFilter(ImageFilterType.NONE)
+    override fun onFilterApplied(filterType: ImageFilterType) {
+        applyFilter(filterType)
     }
 
     private fun getFilterName() = selectedFilter.filterName.replace("_", " ").capitalize()
