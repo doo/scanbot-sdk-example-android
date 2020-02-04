@@ -8,6 +8,7 @@ import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.scanbot.example.FiltersListener
 import io.scanbot.example.R
+import io.scanbot.sdk.process.ImageFilterType
 
 /**
  * Represents bottom menu sheet for document screen
@@ -20,53 +21,46 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         val view = inflater.inflate(R.layout.filters_bottom_sheet, container, false)
 
         view.findViewById<Button>(R.id.lowLightBinarizationFilter).setOnClickListener {
-            (activity as FiltersListener).lowLightBinarizationFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.LOW_LIGHT_BINARIZATION)
         }
         view.findViewById<Button>(R.id.edgeHighlightFilter).setOnClickListener {
-            (activity as FiltersListener).edgeHighlightFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.EDGE_HIGHLIGHT)
         }
         view.findViewById<Button>(R.id.deepBinarizationFilter).setOnClickListener {
-            (activity as FiltersListener).deepBinarizationFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.DEEP_BINARIZATION)
         }
         view.findViewById<Button>(R.id.otsuBinarizationFilter).setOnClickListener {
-            (activity as FiltersListener).otsuBinarizationFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.OTSU_BINARIZATION)
         }
         view.findViewById<Button>(R.id.cleanBackgroundFilter).setOnClickListener {
-            (activity as FiltersListener).cleanBackgroundFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.BACKGROUND_CLEAN)
         }
         view.findViewById<Button>(R.id.colorDocumentFilter).setOnClickListener {
-            (activity as FiltersListener).colorDocumentFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.COLOR_ENHANCED)
         }
         view.findViewById<Button>(R.id.colorFilter).setOnClickListener {
-            (activity as FiltersListener).colorFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.COLOR_ENHANCED)
         }
         view.findViewById<Button>(R.id.grayscaleFilter).setOnClickListener {
-            (activity as FiltersListener).grayscaleFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.GRAYSCALE)
         }
         view.findViewById<Button>(R.id.binarizedFilter).setOnClickListener {
-            (activity as FiltersListener).binarizedFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.BINARIZED)
         }
         view.findViewById<Button>(R.id.pureBinarizedFilter).setOnClickListener {
-            (activity as FiltersListener).pureBinarizedFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.PURE_BINARIZED)
         }
         view.findViewById<Button>(R.id.blackAndWhiteFilter).setOnClickListener {
-            (activity as FiltersListener).blackAndWhiteFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.BLACK_AND_WHITE)
         }
         view.findViewById<Button>(R.id.none).setOnClickListener {
-            (activity as FiltersListener).noneFilter()
-            dismissAllowingStateLoss()
+            callListenerAndDismiss(ImageFilterType.NONE)
         }
         return view
+    }
+
+    private fun callListenerAndDismiss(imageFilterType: ImageFilterType) {
+        (activity as FiltersListener).onFilterApplied(imageFilterType)
+        dismissAllowingStateLoss()
     }
 }

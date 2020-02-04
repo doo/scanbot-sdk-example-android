@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PageFiltersActivity" />
+        <activity android:name=".FilterTunesActivity" />
         <activity android:name=".PagePreviewActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
