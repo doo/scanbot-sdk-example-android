@@ -50,6 +50,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .preparePayFormBlobs(true)
+                .prepareBarcodeScannerBlobs(true)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
                     //handle license problem
                     Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")

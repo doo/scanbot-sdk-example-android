@@ -23,6 +23,7 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.BaseBarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
             page.pageId
         } else if (requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+            val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
             showQrBarcodeDialog(barcodeData)
         } else if (requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
