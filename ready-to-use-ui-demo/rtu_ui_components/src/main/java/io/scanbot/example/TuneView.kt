@@ -19,15 +19,15 @@ class TuneView(context: Context) : FrameLayout(context) {
         tuneType = newTuneType
         tune_name.text = tuneType.filterName
         tune_seek_bar.max = SEEK_BAR_MAX_VALUE
-        val progress =
+        val progressVal =
                 if (operation != null) {
                     ((operation.numValue - tuneType.minValue) / (tuneType.maxValue - tuneType.minValue) * SEEK_BAR_MAX_VALUE).toInt()
                 } else {
                     SEEK_BAR_MAX_VALUE / 2
                 }
 
-        tune_seek_bar.progress = progress
-        tune_value.text = progress.toString()
+        tune_seek_bar.progress = progressVal
+        tune_value.text = progressVal.toString()
 
         tune_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
