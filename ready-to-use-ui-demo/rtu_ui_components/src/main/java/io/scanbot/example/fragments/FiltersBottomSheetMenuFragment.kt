@@ -36,7 +36,7 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
             callListenerAndDismiss(ImageFilterType.BACKGROUND_CLEAN)
         }
         view.findViewById<Button>(R.id.colorDocumentFilter).setOnClickListener {
-            callListenerAndDismiss(ImageFilterType.COLOR_ENHANCED)
+            callListenerAndDismiss(ImageFilterType.COLOR_DOCUMENT)
         }
         view.findViewById<Button>(R.id.colorFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.COLOR_ENHANCED)

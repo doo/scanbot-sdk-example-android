@@ -3,7 +3,8 @@ package io.scanbot.example
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.*
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -59,6 +60,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
         selectedPage.let { page ->
             selectedFilter = page.filter
+            updateCheckboxForType(page.filter)
             tunes = LinkedHashMap(page.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
         }
 
@@ -71,15 +73,21 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
 
         cancel.setOnClickListener {
-            removeFilteredPreview()
+            scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
             finish()
+        }
+
+        base_filter_first_switch.setOnCheckedChangeListener { _, _ ->
+            applyFilter(selectedFilter)
         }
 
         done.setOnClickListener {
             progress.visibility = View.VISIBLE
             launch {
-                selectedPage = PageRepository.applyFilter(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
-                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
+                val list = tunes.values.toList()
+                val filterOrder = if (base_filter_first_switch.isChecked) 0 else list.size
+                selectedPage = PageRepository.applyFilter(this@FilterTunesActivity, selectedPage, selectedFilter, list, filterOrder)
+                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, list, filterOrder)
                 withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
                     val data = Intent()
@@ -124,7 +132,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     private fun initTuneView(listener: TuneValueChangedListener, filter: ImageFilterTuneType): View {
-        return TuneView(this).also { it.initForTune(filter, listener, tunes.get(filter)) }
+        return TuneView(this).also { it.initForTune(filter, listener, tunes[filter]) }
     }
 
     override fun onResume() {
@@ -202,6 +210,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     override fun onFilterApplied(filterType: ImageFilterType) {
         applyFilter(filterType)
+        updateCheckboxForType(filterType)
     }
 
     private fun getFilterName() = selectedFilter.filterName.replace("_", " ").capitalize()
@@ -215,6 +224,21 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
     }
 
+
+    private fun updateCheckboxForType(filterType: ImageFilterType) {
+        base_filter_first_switch.setOnCheckedChangeListener(null)
+        base_filter_first_switch.isChecked =
+                when (filterType) {
+                    ImageFilterType.COLOR_DOCUMENT,
+                    ImageFilterType.COLOR_ENHANCED,
+                    ImageFilterType.GRAYSCALE -> true
+                    else -> false
+                }
+        base_filter_first_switch.setOnCheckedChangeListener { _, _ ->
+            applyFilter(selectedFilter)
+        }
+    }
+
     private fun applyFilter(imageFilterType: ImageFilterType) {
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
@@ -223,7 +247,8 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             selectedFilter = imageFilterType
             filter_value.text = getFilterName()
             launch {
-                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunes.values.toList())
+                val tunesList = tunes.values.toList()
+                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
                 withContext(Dispatchers.Main) {
                     Picasso.with(applicationContext)
                             .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))

@@ -65,7 +65,6 @@
 
     </FrameLayout>
 
-
     <ScrollView
         android:id="@+id/filters_inner"
         android:layout_width="match_parent"
@@ -90,7 +89,8 @@
                 android:id="@+id/filters_inner_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingTop="8dp">
 
                 <TextView
                     style="@style/SettingItem"
@@ -104,6 +104,14 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
+
+            <Switch
+                android:id="@+id/base_filter_first_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:text="Apply filter before tunes" />
 
             <TextView
                 style="@style/SettingHeader"
@@ -132,7 +140,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
         </LinearLayout>
-
 
     </ScrollView>
 

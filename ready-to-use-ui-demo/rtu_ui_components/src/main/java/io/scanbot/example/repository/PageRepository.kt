@@ -39,24 +39,24 @@ class PageRepository {
                         detectionStatus = it.detectionStatus,
                         filter = imageFilterType,
                         tunes = it.tunes,
-                        filterOrder = 0)
+                        filterOrder = it.filterOrder)
             }.toMutableList()
 
             pages.clear()
             pages.addAll(list)
         }
 
-        fun generatePreview(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>) {
+        fun generatePreview(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int) {
             pages.first { it.pageId == page.pageId }.apply {
-                ScanbotSDK(context).pageProcessor().generateFilteredPreview(this, imageFilterType, tunes, 0)
+                ScanbotSDK(context).pageProcessor().generateFilteredPreview(this, imageFilterType, tunes, filterOrder)
             }
         }
 
-        fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>): Page {
+        fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int): Page {
             pages.forEach {
                 if (it.pageId == page.pageId) {
-                    ScanbotSDK(context).pageProcessor().applyFilterTunes(it, imageFilterType, tunes, 0)
-                    ScanbotSDK(context).pageProcessor().generateFilteredPreview(it, imageFilterType, tunes, 0)
+                    ScanbotSDK(context).pageProcessor().applyFilterTunes(it, imageFilterType, tunes, filterOrder)
+                    ScanbotSDK(context).pageProcessor().generateFilteredPreview(it, imageFilterType, tunes, filterOrder)
                 }
             }
             val result = Page(pageId = page.pageId,
@@ -64,7 +64,7 @@ class PageRepository {
                     detectionStatus = page.detectionStatus,
                     filter = imageFilterType,
                     tunes = tunes,
-                    filterOrder = 0)
+                    filterOrder = page.filterOrder)
             val list = pages.map {
                 if (it.pageId == page.pageId) {
                     result
@@ -79,11 +79,10 @@ class PageRepository {
         }
 
         fun updatePage(page: Page): Page {
-            val index = pages.indexOfFirst { it.pageId == page.pageId }
             pages.removeAll {
                 it.pageId == page.pageId
             }
-            pages.add(index, page)
+            pages.add(page)
             return page
         }
 
