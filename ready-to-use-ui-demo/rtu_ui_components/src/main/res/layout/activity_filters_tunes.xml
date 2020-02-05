@@ -105,6 +105,13 @@
 
             </LinearLayout>
 
+            <Switch
+                android:id="@+id/base_filter_first_switch"
+                android:layout_width="match_parent"
+                android:text="Apply filter before tunes"
+                android:layout_height="wrap_content" />
+
+
             <TextView
                 style="@style/SettingHeader"
                 android:layout_width="match_parent"
