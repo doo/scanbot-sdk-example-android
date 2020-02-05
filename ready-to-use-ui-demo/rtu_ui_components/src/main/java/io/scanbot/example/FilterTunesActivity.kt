@@ -58,10 +58,10 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
         }!!
 
-        selectedPage.let {
-            selectedFilter = it.filter
-            updateCheckboxForType(it.filter)
-            tunes = LinkedHashMap(it.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
+        selectedPage.let { page ->
+            selectedFilter = page.filter
+            updateCheckboxForType(page.filter)
+            tunes = LinkedHashMap(page.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
         }
 
         filter_value.text = getFilterName()
