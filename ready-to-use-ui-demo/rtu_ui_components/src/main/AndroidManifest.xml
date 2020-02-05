@@ -25,6 +25,8 @@
         <activity android:name=".PageFiltersActivity" />
         <activity android:name=".FilterTunesActivity" />
         <activity android:name=".PagePreviewActivity" />
+        <activity android:name=".BarcodeResultActivity" />
+        <activity android:name=".DetailedItemDataActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
