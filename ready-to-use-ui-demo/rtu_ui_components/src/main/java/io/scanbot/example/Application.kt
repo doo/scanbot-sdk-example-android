@@ -5,11 +5,7 @@ import androidx.multidex.MultiDexApplication
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
-import io.scanbot.sap.Status
-import io.scanbot.sap.Status.*
-
 import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.barcode.ScanbotBarcodeDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import kotlinx.coroutines.CoroutineScope
