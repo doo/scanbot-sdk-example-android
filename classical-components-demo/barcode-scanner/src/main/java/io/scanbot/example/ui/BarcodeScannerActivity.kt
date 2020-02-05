@@ -15,8 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.R
 import io.scanbot.example.model.BarcodeResultBundle
-import io.scanbot.example.model.BarcodeResultRepository
-import io.scanbot.example.model.BarcodeTypeRepository
+import io.scanbot.example.repository.BarcodeResultRepository
+import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController

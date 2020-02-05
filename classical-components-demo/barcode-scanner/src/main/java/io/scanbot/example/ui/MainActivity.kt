@@ -12,11 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import io.scanbot.example.R
 import io.scanbot.example.model.BarcodeResultBundle
-import io.scanbot.example.model.BarcodeResultRepository
-import io.scanbot.example.model.BarcodeTypeRepository
+import io.scanbot.example.repository.BarcodeResultRepository
+import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 

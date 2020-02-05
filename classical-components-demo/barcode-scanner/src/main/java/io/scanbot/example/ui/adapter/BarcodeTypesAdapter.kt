@@ -7,7 +7,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.scanbot.example.R
-import io.scanbot.example.model.BarcodeTypeRepository
+import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.example.ui.adapter.BarcodeTypesAdapter.BarcodeTypesViewHolder
 import io.scanbot.sdk.barcode.entity.BarcodeFormat
 
