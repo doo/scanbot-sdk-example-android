@@ -42,7 +42,6 @@ class BarcodeResultActivity : AppCompatActivity() {
     }
 
     private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScanningResult?) {
-
         detectedBarcodes?.let {
             detectedBarcodes.barcodeItems.asSequence().map { item ->
                 layoutInflater.inflate(R.layout.barcode_item, recognisedItems, false)?.also {
@@ -62,9 +61,6 @@ class BarcodeResultActivity : AppCompatActivity() {
             }.forEach {
                 recognisedItems.addView(it)
             }
-
         }
-
     }
-
 }

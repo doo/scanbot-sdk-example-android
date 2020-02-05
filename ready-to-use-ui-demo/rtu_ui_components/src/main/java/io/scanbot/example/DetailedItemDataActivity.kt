@@ -45,7 +45,6 @@ class DetailedItemDataActivity : AppCompatActivity() {
                             .append("\n")
                     }
                 }
-
             }
             is DEMedicalPlanDocument -> {
                 barcodesResult.append("\n").append("DE Medical Plan Document").append("\n")
@@ -99,9 +98,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
                     barcodesResult.append(it.type.name).append(": ").append(it.rawText).append("\n")
                 }
             }
-
         }
-
         return barcodesResult.toString()
     }
 

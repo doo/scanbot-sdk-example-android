@@ -35,7 +35,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
     private var flashEnabled = false
     private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -68,7 +67,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
 
         ScanbotSDK(this).barcodeDetector()
             .setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
-
     }
 
     override fun onResume() {
@@ -85,7 +83,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         cameraView?.onPause()
     }
 
-
     private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {
         result.value?.let {
             BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
@@ -94,7 +91,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             finish()
         }
     }
-
 
     override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
@@ -110,7 +106,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             cameraView?.startPreview()
         }
     }
-
 
     override fun handle(result: FrameHandlerResult<BarcodeScanningResult?, SdkLicenseError>): Boolean {
         if (result is FrameHandlerResult.Success) {

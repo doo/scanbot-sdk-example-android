@@ -61,9 +61,6 @@ class BarcodeResultActivity : AppCompatActivity() {
             }.forEach {
                 recognisedItems.addView(it)
             }
-
         }
-
     }
-
 }

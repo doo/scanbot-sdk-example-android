@@ -20,7 +20,6 @@ class Application : MultiDexApplication(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
-
     companion object {
         /*
          * TODO 1/2: Add the Scanbot SDK license key here.
