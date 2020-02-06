@@ -3,7 +3,6 @@
     package="io.scanbot.example">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -14,9 +13,8 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true">
 
-        <!-- Insert OCR data folder path. It can be external url - "http://download.com/your_ocrdata",
-        or local assets folder - "your_folder_in_assets/"-->
-        <meta-data android:name="ocr_blobs_path" android:value="https://github.com/tesseract-ocr/tessdata/raw/3.04.00" />
+        <!-- Insert OCR data folder path. It can be local assets folder - "your_folder_in_assets/"-->
+        <meta-data android:name="ocr_blobs_path" android:value="your_folder_in_assets/" />
         <meta-data
             android:name="language_classifier_blob_path"
             android:value="http://download.scanbot.io/di/android" />

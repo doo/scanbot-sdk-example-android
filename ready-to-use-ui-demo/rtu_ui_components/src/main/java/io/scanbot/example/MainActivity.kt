@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.fragments.*
+import io.scanbot.example.model.BarcodeResultBundle
+import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
@@ -25,6 +27,7 @@ import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.BaseBarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
@@ -74,8 +77,19 @@ class MainActivity : AppCompatActivity() {
                 page.pageId
             }
             requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-                showQrBarcodeDialog(barcodeData)
+                data?.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+                        ?.let {
+                            val imagePath =
+                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
+                            val previewPath =
+                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
+
+                            BarcodeResultRepository.barcodeResultBundle =
+                                    BarcodeResultBundle(it, imagePath, previewPath)
+
+                            val intent = Intent(this, BarcodeResultActivity::class.java)
+                            startActivity(intent)
+                        }
             }
             requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
@@ -83,16 +97,12 @@ class MainActivity : AppCompatActivity() {
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
             requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST -> if (resultCode == RESULT_OK) {
-                ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-            }
-            requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST -> if (resultCode == RESULT_OK) {
-                if (resultCode == RESULT_OK) {
-                    if (!scanbotSDK.licenseInfo.isValid) {
-                        showLicenseDialog()
-                    } else {
-                        ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-                    }
+            requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST && resultCode == RESULT_OK -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST && resultCode == RESULT_OK -> {
+                if (!scanbotSDK.licenseInfo.isValid) {
+                    showLicenseDialog()
+                } else {
+                    ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                 }
             }
             requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
@@ -117,11 +127,6 @@ class MainActivity : AppCompatActivity() {
             val dialogFragment = ErrorFragment.newInstance()
             dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
         }
-    }
-
-    private fun showQrBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val dialogFragment = BarCodeDialogFragment.newInstance(barcodeRecognitionResult)
-        dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
     }
 
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
@@ -220,6 +225,21 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
+
+            val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
+            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.qr_camera_default_ui_with_image).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
+
+            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
 
             val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)

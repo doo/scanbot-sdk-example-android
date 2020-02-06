@@ -15,7 +15,6 @@ import net.doo.snap.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
-
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
@@ -65,7 +64,7 @@ public class DCScannerActivity extends AppCompatActivity {
             @Override
             public boolean handleResult(FrameHandlerResult<DisabilityCertificateRecognizerResultInfo, SdkLicenseError> frameHandlerResult) {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    DisabilityCertificateRecognizerResultInfo resultInfo = (DisabilityCertificateRecognizerResultInfo) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                    final DisabilityCertificateRecognizerResultInfo resultInfo = ((FrameHandlerResult.Success<DisabilityCertificateRecognizerResultInfo>) frameHandlerResult).getValue();
                     if (resultInfo != null && resultInfo.recognitionSuccessful) {
                         long a = System.currentTimeMillis();
 
@@ -77,7 +76,6 @@ public class DCScannerActivity extends AppCompatActivity {
                         }
                     }
                 }
-
                 return false;
             }
         });

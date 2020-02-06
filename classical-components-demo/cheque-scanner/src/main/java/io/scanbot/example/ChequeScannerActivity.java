@@ -60,14 +60,13 @@ public class ChequeScannerActivity extends AppCompatActivity {
         ChequeScannerFrameHandler chequeScannerFrameHandler = ChequeScannerFrameHandler.attach(cameraView, chequeScanner);
 
         chequeScannerFrameHandler.addResultHandler(new ChequeScannerFrameHandler.ResultHandler() {
-
             @Override
             public boolean handle(@NotNull FrameHandlerResult<? extends Result, ? extends SdkLicenseError> frameHandlerResult) {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    final Result result = (Result) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                    final Result result = ((FrameHandlerResult.Success<Result>) frameHandlerResult).getValue();
                     if (result != null
-                            && ((result.accountNumber != null && !result.accountNumber.value.isEmpty()
-                            || (result.routingNumber != null && !result.routingNumber.value.isEmpty())))) {
+                            && ((result.accountNumber != null && !result.accountNumber.value.isEmpty())
+                            || (result.routingNumber != null && !result.routingNumber.value.isEmpty()))) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -101,8 +100,8 @@ public class ChequeScannerActivity extends AppCompatActivity {
 
     private String extractData(Result result) {
         return new StringBuilder()
-                .append("accountNumber: ").append(result.accountNumber).append("\n")
-                .append("routingNumber: ").append(result.routingNumber).append("\n")
+                .append("accountNumber: ").append(result.accountNumber.value).append("\n")
+                .append("routingNumber: ").append(result.routingNumber.value).append("\n")
                 .append("Polygon detection result: ").append(result.polygon.detectionResult.toString()).append("\n")
                 .append("Polygon : ").append(result.polygon.points.toString()).append("\n")
                 .toString();
