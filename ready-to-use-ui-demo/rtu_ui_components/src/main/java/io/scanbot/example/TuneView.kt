@@ -17,7 +17,7 @@ class TuneView(context: Context) : FrameLayout(context) {
 
     fun initForTune(newTuneType: ImageFilterTuneType, listener: TuneValueChangedListener, operation: TuneOperation?) {
         tuneType = newTuneType
-        tune_name.text = tuneType.filterName
+        tune_name.text = tuneType.filterName.replace("_", " ").capitalize()
         tune_seek_bar.max = SEEK_BAR_MAX_VALUE
         val progressVal =
                 if (operation != null) {
@@ -27,10 +27,11 @@ class TuneView(context: Context) : FrameLayout(context) {
                 }
 
         tune_seek_bar.progress = progressVal
-        tune_value.text = progressVal.toString()
+        tune_value.text = "${progressVal * 2 - SEEK_BAR_MAX_VALUE}"
 
         tune_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                tune_value.text = "${progress * 2 - SEEK_BAR_MAX_VALUE}"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -40,7 +41,6 @@ class TuneView(context: Context) : FrameLayout(context) {
                 val progress = seekBar!!.progress
                 val res = tuneType.minValue + (tuneType.maxValue - tuneType.minValue) * progress / SEEK_BAR_MAX_VALUE
                 listener.tuneValueChanged(tuneType, res)
-                tune_value.text = progress.toString()
             }
         })
     }

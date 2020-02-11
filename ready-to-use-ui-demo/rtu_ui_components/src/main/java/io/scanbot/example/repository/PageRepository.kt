@@ -64,7 +64,7 @@ class PageRepository {
                     detectionStatus = page.detectionStatus,
                     filter = imageFilterType,
                     tunes = tunes,
-                    filterOrder = page.filterOrder)
+                    filterOrder = filterOrder)
             val list = pages.map {
                 if (it.pageId == page.pageId) {
                     result
