@@ -50,7 +50,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filters)
@@ -177,10 +177,9 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
         progress.visibility = View.VISIBLE
         launch {
             val path = selectedPage.let {
-
                 val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter)
+                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter, it.tunes, it.filterOrder)
                 }
                 filteredPreviewFilePath
             }
