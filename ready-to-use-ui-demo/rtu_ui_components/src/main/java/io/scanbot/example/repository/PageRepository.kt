@@ -4,6 +4,7 @@ import android.content.Context
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.process.TuneOperation
 
 class PageRepository {
 
@@ -30,30 +31,40 @@ class PageRepository {
 
         fun applyFilter(context: Context, imageFilterType: ImageFilterType) {
             pages.forEach {
-                ScanbotSDK(context).pageProcessor().applyFilter(it, imageFilterType)
+                ScanbotSDK(context).pageProcessor().applyFilterTunes(it, imageFilterType, it.tunes, it.filterOrder)
             }
             val list = pages.map {
                 Page(pageId = it.pageId,
                         polygon = it.polygon,
                         detectionStatus = it.detectionStatus,
-                        filter = imageFilterType)
+                        filter = imageFilterType,
+                        tunes = it.tunes,
+                        filterOrder = it.filterOrder)
             }.toMutableList()
 
             pages.clear()
             pages.addAll(list)
         }
 
-        fun applyFilter(context: Context, imageFilterType: ImageFilterType, page: Page): Page {
+        fun generatePreview(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int) {
+            pages.first { it.pageId == page.pageId }.apply {
+                ScanbotSDK(context).pageProcessor().generateFilteredPreview(this, imageFilterType, tunes, filterOrder)
+            }
+        }
+
+        fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int): Page {
             pages.forEach {
                 if (it.pageId == page.pageId) {
-                    ScanbotSDK(context).pageProcessor().applyFilter(it, imageFilterType)
-                    ScanbotSDK(context).pageProcessor().generateFilteredPreview(it, imageFilterType)
+                    ScanbotSDK(context).pageProcessor().applyFilterTunes(it, imageFilterType, tunes, filterOrder)
+                    ScanbotSDK(context).pageProcessor().generateFilteredPreview(it, imageFilterType, tunes, filterOrder)
                 }
             }
             val result = Page(pageId = page.pageId,
                     polygon = page.polygon,
                     detectionStatus = page.detectionStatus,
-                    filter = imageFilterType)
+                    filter = imageFilterType,
+                    tunes = tunes,
+                    filterOrder = filterOrder)
             val list = pages.map {
                 if (it.pageId == page.pageId) {
                     result

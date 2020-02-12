@@ -13,9 +13,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.fragments.*
+import io.scanbot.example.model.BarcodeResultBundle
+import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
+import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.persistence.Page
@@ -23,6 +26,8 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.BaseBarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
@@ -61,53 +66,59 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
-        } else if (requestCode == MRZ_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+        when {
+            requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
+            requestCode == MRZ_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showFrontBackMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+            requestCode == MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showFrontBackMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
-            page.pageId
-        } else if (requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val barcodeData = data!!.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-            showQrBarcodeDialog(barcodeData)
-        } else if (requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-        } else if (requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
+                val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
+                page.pageId
             }
-        } else if (requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST) {
-            if (resultCode == RESULT_OK) {
+            requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
+                data?.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+                        ?.let {
+                            val imagePath =
+                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
+                            val previewPath =
+                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
+
+                            BarcodeResultRepository.barcodeResultBundle =
+                                    BarcodeResultBundle(it, imagePath, previewPath)
+
+                            val intent = Intent(this, BarcodeResultActivity::class.java)
+                            startActivity(intent)
+                        }
+            }
+            requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST && resultCode == RESULT_OK -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST && resultCode == RESULT_OK -> {
                 if (!scanbotSDK.licenseInfo.isValid) {
                     showLicenseDialog()
                 } else {
                     ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                 }
             }
-        } else if (requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
-                it as Page
+            requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
+                val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+                    it as Page
+                }
+
+                PageRepository.addPages(pages)
+
+                val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
+                startActivity(intent)
             }
-
-            PageRepository.addPages(pages)
-
-            val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
-            startActivity(intent)
-        } else if (requestCode == EHIC_SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val hicRecognitionResult = data!!.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
-            showEHICResultDialog(hicRecognitionResult)
+            requestCode == EHIC_SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
+                val hicRecognitionResult = data!!.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
+                showEHICResultDialog(hicRecognitionResult)
+            }
         }
     }
 
@@ -116,11 +127,6 @@ class MainActivity : AppCompatActivity() {
             val dialogFragment = ErrorFragment.newInstance()
             dialogFragment.show(supportFragmentManager, ErrorFragment.NAME)
         }
-    }
-
-    private fun showQrBarcodeDialog(barcodeRecognitionResult: BarcodeScanningResult) {
-        val dialogFragment = BarCodeDialogFragment.newInstance(barcodeRecognitionResult)
-        dialogFragment.show(supportFragmentManager, BarCodeDialogFragment.NAME)
     }
 
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
@@ -163,6 +169,7 @@ class MainActivity : AppCompatActivity() {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
+        warning_view.visibility = if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -218,6 +225,21 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
+
+            val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
+            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.qr_camera_default_ui_with_image).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
+
+            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
 
             val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)

@@ -160,20 +160,19 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     }
 
     @Override
-    public boolean handle(@NotNull FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
-        if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-            final ContourDetectorFrameHandler.DetectedFrame detectedFrame = (ContourDetectorFrameHandler.DetectedFrame) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
-            // Here you are continuously notified about contour detection results.
-            // For example, you can show a user guidance text depending on the current detection status.
-            userGuidanceHint.post(new Runnable() {
-                @Override
-                public void run() {
-                    showUserGuidance(detectedFrame.detectionResult);
+    public boolean handle(@NotNull final FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
+        // Here you are continuously notified about contour detection results.
+        // For example, you can show a user guidance text depending on the current detection status.
+        userGuidanceHint.post(new Runnable() {
+            @Override
+            public void run() {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
                 }
-            });
+            }
+        });
 
-        }
-        return false;
+        return false; // typically you need to return false
     }
 
     private void showUserGuidance(final DetectionResult result) {

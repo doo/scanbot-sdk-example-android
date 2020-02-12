@@ -5,11 +5,7 @@ import androidx.multidex.MultiDexApplication
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
-import io.scanbot.sap.Status
-import io.scanbot.sap.Status.*
-
 import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.barcode.ScanbotBarcodeDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +19,6 @@ class Application : MultiDexApplication(), CoroutineScope {
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
-
 
     companion object {
         /*
@@ -40,7 +35,6 @@ class Application : MultiDexApplication(), CoroutineScope {
     override fun onCreate() {
         super.onCreate()
         val sdkLicenseInfo = ScanbotSDKInitializer()
-                .useBarcodeDetector(ScanbotBarcodeDetector.BarcodeDetectorType.ZXing)
                 .withLogging(BuildConfig.DEBUG)
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
@@ -51,6 +45,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .preparePayFormBlobs(true)
+                .prepareBarcodeScannerBlobs(true)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
                     //handle license problem
                     Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")

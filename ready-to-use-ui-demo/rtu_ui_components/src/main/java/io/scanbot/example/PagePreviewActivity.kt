@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -35,10 +33,7 @@ import io.scanbot.sdk.process.PDFRenderer
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import kotlinx.android.synthetic.main.activity_page_preview.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.persistence.PageFactory
 import net.doo.snap.persistence.cleanup.Cleaner
@@ -77,7 +72,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
+        get() = Dispatchers.Default + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,6 +140,11 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
     private fun initMenu() {
         val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
         if (fragment != null) {
@@ -176,52 +176,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
-    override fun lowLightBinarizationFilter() {
-        applyFilter(ImageFilterType.LOW_LIGHT_BINARIZATION)
-    }
-
-    override fun edgeHighlightFilter() {
-        applyFilter(ImageFilterType.EDGE_HIGHLIGHT)
-    }
-
-    override fun deepBinarizationFilter() {
-        applyFilter(ImageFilterType.DEEP_BINARIZATION)
-    }
-
-    override fun otsuBinarizationFilter() {
-        applyFilter(ImageFilterType.OTSU_BINARIZATION)
-    }
-
-    override fun cleanBackgroundFilter() {
-        applyFilter(ImageFilterType.BACKGROUND_CLEAN)
-    }
-
-    override fun colorDocumentFilter() {
-        applyFilter(ImageFilterType.COLOR_DOCUMENT)
-    }
-
-    override fun colorFilter() {
-        applyFilter(ImageFilterType.COLOR_ENHANCED)
-    }
-
-    override fun grayscaleFilter() {
-        applyFilter(ImageFilterType.GRAYSCALE)
-    }
-
-    override fun binarizedFilter() {
-        applyFilter(ImageFilterType.BINARIZED)
-    }
-
-    override fun pureBinarizedFilter() {
-        applyFilter(ImageFilterType.PURE_BINARIZED)
-    }
-
-    override fun blackAndWhiteFilter() {
-        applyFilter(ImageFilterType.BLACK_AND_WHITE)
-    }
-
-    override fun noneFilter() {
-        applyFilter(ImageFilterType.NONE)
+    override fun onFilterApplied(filterType: ImageFilterType) {
+        applyFilter(filterType)
     }
 
     override fun saveWithOcr() {
@@ -239,7 +195,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             progress.visibility = View.VISIBLE
             launch {
                 PageRepository.applyFilter(this@PagePreviewActivity, imageFilterType)
-                Handler(Looper.getMainLooper()).post {
+                withContext(Dispatchers.Main) {
                     adapter.notifyDataSetChanged()
                     progress.visibility = View.GONE
                 }
@@ -299,7 +255,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
                     pdfFile = SharingCopier.copyFile(this@PagePreviewActivity, pdfFile)
                 }
 
-                Handler(Looper.getMainLooper()).post {
+                withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
 
                     //open first document
