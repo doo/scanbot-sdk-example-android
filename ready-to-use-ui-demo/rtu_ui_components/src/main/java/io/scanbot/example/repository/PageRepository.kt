@@ -79,10 +79,11 @@ class PageRepository {
         }
 
         fun updatePage(page: Page): Page {
+            val index = pages.indexOfFirst { it.pageId == page.pageId }
             pages.removeAll {
                 it.pageId == page.pageId
             }
-            pages.add(page)
+            pages.add(index, page)
             return page
         }
 
