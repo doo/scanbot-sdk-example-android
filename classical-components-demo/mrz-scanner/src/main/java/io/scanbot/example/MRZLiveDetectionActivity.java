@@ -67,7 +67,7 @@ public class MRZLiveDetectionActivity extends AppCompatActivity {
 
         mrzScannerFrameHandler.addResultHandler(new MRZScannerFrameHandler.ResultHandler() {
             @Override
-            public boolean handleResult(FrameHandlerResult<MRZRecognitionResult, SdkLicenseError> frameHandlerResult) {
+            public boolean handle(FrameHandlerResult<? extends MRZRecognitionResult, ? extends SdkLicenseError> frameHandlerResult) {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
                     MRZRecognitionResult mrzRecognitionResult = (MRZRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
                     if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
