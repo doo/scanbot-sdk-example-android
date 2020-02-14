@@ -11,5 +11,6 @@ include ':ocr',
         ':tiff-writer',
         ':cheque-scanner',
         ':manual-processing',
-        ':camera-view-aspect-ratio-finder'
+        ':camera-view-aspect-ratio-finder',
+        ':ehic-scanner'
 
