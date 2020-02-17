@@ -201,7 +201,6 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
