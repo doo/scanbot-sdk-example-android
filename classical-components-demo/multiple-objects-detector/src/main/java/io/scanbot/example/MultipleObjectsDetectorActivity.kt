@@ -89,7 +89,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
         val businessCardsFrameHandler = MultipleObjectsFrameHandler.attach(cameraView, multipleObjectsDetector)
 
         val polygonView = findViewById<MultiplePolygonsView>(R.id.polygonView)
-        businessCardsFrameHandler.addResultHandler(polygonView)
+        businessCardsFrameHandler.addResultHandler(polygonView.multipleObjectDetectorHandler)
     }
 
     override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
