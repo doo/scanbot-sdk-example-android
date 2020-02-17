@@ -1,4 +1,5 @@
-include ':ocr',
+include(
+        ':ocr',
         ':edit-polygon-view',
         ':pdf-creation',
         ':camera-view',
@@ -12,5 +13,6 @@ include ':ocr',
         ':cheque-scanner',
         ':manual-processing',
         ':camera-view-aspect-ratio-finder',
-        ':ehic-scanner'
-
+        ':multiple-objects-detector',
+        ':ehic-scanner',
+)
