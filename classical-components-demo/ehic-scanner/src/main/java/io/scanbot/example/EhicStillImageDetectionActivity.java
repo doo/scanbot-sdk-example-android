@@ -37,7 +37,6 @@ import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration;
 import io.scanbot.sdk.ui.view.edit.CroppingActivity;
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
 
-
 public class EhicStillImageDetectionActivity extends AppCompatActivity {
 
     private static final int DOCUMENT_SCANNER_REQUEST_CODE = 4711;
@@ -53,8 +52,6 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
 
     private ScanbotSDK scanbotSDK;
     private HealthInsuranceCardScanner healthInsuranceCardScanner;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,8 +157,6 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
         progressView.setVisibility(View.VISIBLE);
     }
 
-
-
     private class RecognizeEhicTask extends AsyncTask {
         private final Page page;
 
@@ -192,7 +187,6 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private class ImportImageToPageTask extends AsyncTask {
         private final Uri imageUri;
@@ -230,5 +224,4 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
             }
         }
     }
-
 }
