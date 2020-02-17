@@ -40,6 +40,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     lateinit var selectedPage: Page
+    private var filteringState: FilteringState = FilteringState.IDLE
     var selectedFilter: ImageFilterType = ImageFilterType.NONE
     var tunes: LinkedHashMap<ImageFilterTuneType, TuneOperation> = linkedMapOf()
     lateinit var scanbotSDK: ScanbotSDK
@@ -73,7 +74,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
 
         cancel.setOnClickListener {
-            scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
+            removeFilteredPreview()
             finish()
         }
 
@@ -96,7 +97,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     finish()
                 }
             }
-
         }
 
         initPagePreview()
@@ -167,35 +167,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     private fun initPagePreview() {
-        if (!scanbotSDK.isLicenseValid) {
-            showLicenseDialog()
-        } else {
-            generateFilteredPreview()
-        }
-    }
-
-    private fun generateFilteredPreview() {
-        progress.visibility = View.VISIBLE
-        launch {
-            val path = selectedPage.let {
-
-                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, selectedFilter).path
-                if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter)
-                }
-                filteredPreviewFilePath
-            }
-            withContext(Dispatchers.Main) {
-                path?.let {
-                    Picasso.with(applicationContext)
-                            .load(File(it))
-                            .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                            .centerInside()
-                            .into(image, ImageCallback())
-                }
-            }
-        }
+        applyFilter(selectedFilter)
     }
 
     inner class ImageCallback : Callback {
@@ -224,7 +196,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
     }
 
-
     private fun updateCheckboxForType(filterType: ImageFilterType) {
         base_filter_first_switch.setOnCheckedChangeListener(null)
         base_filter_first_switch.isChecked =
@@ -246,19 +217,37 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             progress.visibility = View.VISIBLE
             selectedFilter = imageFilterType
             filter_value.text = getFilterName()
-            launch {
-                val tunesList = tunes.values.toList()
-                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
-                withContext(Dispatchers.Main) {
-                    Picasso.with(applicationContext)
-                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))
-                            .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                            .centerInside()
-                            .into(image, ImageCallback())
-                    progress.visibility = View.GONE
+            if (filteringState == FilteringState.IDLE) {
+                launch {
+                    filteringState = FilteringState.PROCESSING
+                    val tunesList = tunes.values.toList()
+                    PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter,
+                            tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
+                    withContext(Dispatchers.Main) {
+                        Picasso.with(applicationContext)
+                                .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(
+                                        this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))
+                                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                                .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                                .centerInside()
+                                .into(image, ImageCallback())
+                        progress.visibility = View.GONE
+                        val previousState = filteringState
+                        filteringState = FilteringState.IDLE
+                        if (previousState == FilteringState.PROCESSING_AND_SCHEDULED) {
+                            applyFilter(selectedFilter)
+                        }
+                    }
                 }
+            } else {
+                filteringState = FilteringState.PROCESSING_AND_SCHEDULED
             }
         }
     }
+}
+
+private enum class FilteringState {
+    IDLE,
+    PROCESSING,
+    PROCESSING_AND_SCHEDULED
 }

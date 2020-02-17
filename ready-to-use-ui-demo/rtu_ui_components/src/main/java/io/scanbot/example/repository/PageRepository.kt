@@ -64,7 +64,7 @@ class PageRepository {
                     detectionStatus = page.detectionStatus,
                     filter = imageFilterType,
                     tunes = tunes,
-                    filterOrder = page.filterOrder)
+                    filterOrder = filterOrder)
             val list = pages.map {
                 if (it.pageId == page.pageId) {
                     result
@@ -79,10 +79,11 @@ class PageRepository {
         }
 
         fun updatePage(page: Page): Page {
+            val index = pages.indexOfFirst { it.pageId == page.pageId }
             pages.removeAll {
                 it.pageId == page.pageId
             }
-            pages.add(page)
+            pages.add(index, page)
             return page
         }
 
