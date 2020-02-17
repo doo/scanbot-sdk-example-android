@@ -180,8 +180,7 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
             final HealthInsuranceCardRecognitionResult healthInsuranceCardRecognitionResult = (HealthInsuranceCardRecognitionResult) o;
             if (healthInsuranceCardRecognitionResult != null && healthInsuranceCardRecognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
                 startActivity(EhicResultActivity.newIntent(EhicStillImageDetectionActivity.this, healthInsuranceCardRecognitionResult));
-            }
-            else {
+            } else {
                 Toast.makeText(EhicStillImageDetectionActivity.this,
                         "No EHIC data recognized!", Toast.LENGTH_LONG).show();
             }
@@ -203,8 +202,7 @@ public class EhicStillImageDetectionActivity extends AppCompatActivity {
 
             try {
                 return scanbotSDK.pageProcessor().detectDocument(newPage);
-            }
-            catch (final IOException ex) {
+            } catch (final IOException ex) {
                 Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.getPageId());
                 return null;
             }
