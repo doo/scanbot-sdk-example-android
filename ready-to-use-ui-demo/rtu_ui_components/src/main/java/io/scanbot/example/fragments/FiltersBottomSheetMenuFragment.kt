@@ -23,6 +23,9 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         view.findViewById<Button>(R.id.lowLightBinarizationFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.LOW_LIGHT_BINARIZATION)
         }
+        view.findViewById<Button>(R.id.lowLightBinarizationFilter2).setOnClickListener {
+            callListenerAndDismiss(ImageFilterType.LOW_LIGHT_BINARIZATION_2)
+        }
         view.findViewById<Button>(R.id.edgeHighlightFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.EDGE_HIGHLIGHT)
         }

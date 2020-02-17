@@ -20,6 +20,7 @@ import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
@@ -27,13 +28,12 @@ import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
+class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
         const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
-        const val FILTER_TUNES_UI_REQUEST_CODE = 9998
 
         @JvmStatic
         fun newIntent(context: Context, page: Page): Intent {
@@ -45,6 +45,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
 
     lateinit var selectedPage: Page
     lateinit var scanbotSDK: ScanbotSDK
+    private var selectedFilter: ImageFilterType = ImageFilterType.NONE
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     private var job: Job = Job()
@@ -60,11 +61,14 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
             it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
         }!!
 
+        selectedPage.let {
+            selectedFilter = it.filter
+        }
+
         scanbotSDK = ScanbotSDK(application)
 
         action_filter.setOnClickListener {
-            val intent = FilterTunesActivity.newIntent(this, selectedPage)
-            startActivityForResult(intent, FILTER_TUNES_UI_REQUEST_CODE)
+            filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
         action_delete.setOnClickListener {
             PageRepository.removePage(this, selectedPage)
@@ -110,10 +114,6 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
 
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA))
-            initPagePreview()
-            return
-        } else if (requestCode == FILTER_TUNES_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(FilterTunesActivity.PAGE_DATA))
             initPagePreview()
             return
         }
@@ -179,7 +179,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
             val path = selectedPage.let {
                 val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, it.filter, it.tunes, it.filterOrder)
+                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
                 }
                 filteredPreviewFilePath
             }
@@ -191,6 +191,32 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope {
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
                             .into(image, ImageCallback())
+                }
+            }
+        }
+    }
+
+    override fun onFilterApplied(filterType: ImageFilterType) {
+        applyFilter(filterType)
+    }
+
+    private fun applyFilter(imageFilterType: ImageFilterType) {
+
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        } else {
+            progress.visibility = View.VISIBLE
+            selectedFilter = imageFilterType
+            launch {
+                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
+                withContext(Dispatchers.Main) {
+                    Picasso.with(applicationContext)
+                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                    progress.visibility = GONE
                 }
             }
         }
