@@ -8,8 +8,6 @@ import io.scanbot.sdk.process.TuneOperation
 
 class PageRepository {
     companion object {
-        private val pages = mutableListOf<Page>()
-
         fun generatePreview(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int) {
             ScanbotSDK(context).pageProcessor().generateFilteredPreview(page, imageFilterType, tunes, filterOrder)
         }
@@ -17,23 +15,12 @@ class PageRepository {
         fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int): Page {
             ScanbotSDK(context).pageProcessor().applyFilterTunes(page, imageFilterType, tunes, filterOrder)
             ScanbotSDK(context).pageProcessor().generateFilteredPreview(page, imageFilterType, tunes, filterOrder)
-            val result = Page(pageId = page.pageId,
+            return Page(pageId = page.pageId,
                     polygon = page.polygon,
                     detectionStatus = page.detectionStatus,
                     filter = imageFilterType,
                     tunes = tunes,
                     filterOrder = filterOrder)
-            val list = pages.map {
-                if (it.pageId == page.pageId) {
-                    result
-                } else {
-                    it
-                }
-            }.toMutableList()
-
-            pages.clear()
-            pages.addAll(list)
-            return result
         }
     }
 }

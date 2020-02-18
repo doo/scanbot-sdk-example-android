@@ -25,7 +25,7 @@ import kotlin.coroutines.CoroutineContext
 
 class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
     companion object {
-        const val PAGE_DATA = "PAGE_DATA"
+        private const val PAGE_DATA = "PAGE_DATA"
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
 
         @JvmStatic
@@ -36,11 +36,11 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
     }
 
-    lateinit var selectedPage: Page
+    private lateinit var selectedPage: Page
     private var filteringState: FilteringState = FilteringState.IDLE
-    var selectedFilter: ImageFilterType = ImageFilterType.NONE
-    var tunes: LinkedHashMap<ImageFilterTuneType, TuneOperation> = linkedMapOf()
-    lateinit var scanbotSDK: ScanbotSDK
+    private var selectedFilter: ImageFilterType = ImageFilterType.NONE
+    private var tunes: LinkedHashMap<ImageFilterTuneType, TuneOperation> = linkedMapOf()
+    private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     private var job: Job = Job()
@@ -83,7 +83,6 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                 val list = tunes.values.toList()
                 val filterOrder = if (base_filter_first_switch.isChecked) 0 else list.size
                 selectedPage = PageRepository.applyFilter(this@FilterTunesActivity, selectedPage, selectedFilter, list, filterOrder)
-                PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter, list, filterOrder)
                 withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
                     val data = Intent()
@@ -132,7 +131,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
     override fun onResume() {
         super.onResume()
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
     }
@@ -144,7 +143,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
     }
 
-    fun initActionBar() {
+    private fun initActionBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
     }
@@ -206,7 +205,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
@@ -216,8 +215,10 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                 launch {
                     filteringState = FilteringState.PROCESSING
                     val tunesList = tunes.values.toList()
+
                     PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter,
                             tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
+
                     withContext(Dispatchers.Main) {
                         Picasso.with(applicationContext)
                                 .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(
