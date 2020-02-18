@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/sheetColor"
@@ -22,8 +21,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lowLightBinarizationFilter" />
@@ -41,8 +40,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lowLightBinarizationFilter2" />
@@ -59,8 +58,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edgeHighlightFilter" />
@@ -77,8 +76,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deepBinarizationFilter" />
@@ -95,8 +94,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/otsuBinarizationFilter" />
@@ -113,8 +112,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cleanBackgroundFilter" />
@@ -131,8 +130,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/colorDocumentFilter" />
@@ -149,8 +148,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/colorFilter" />
@@ -167,8 +166,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
@@ -185,8 +184,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/binarizedFilter" />
@@ -203,8 +202,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pureBinarizedFilter" />
@@ -221,8 +220,8 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="#1effffff"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />

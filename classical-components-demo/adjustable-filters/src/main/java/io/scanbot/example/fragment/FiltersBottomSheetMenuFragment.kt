@@ -1,4 +1,4 @@
-package io.scanbot.example.fragments
+package io.scanbot.example.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

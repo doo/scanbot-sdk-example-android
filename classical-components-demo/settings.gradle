@@ -15,4 +15,5 @@ include(
         ':camera-view-aspect-ratio-finder',
         ':multiple-objects-detector',
         ':ehic-scanner',
+        ':adjustable-filters',
 )
