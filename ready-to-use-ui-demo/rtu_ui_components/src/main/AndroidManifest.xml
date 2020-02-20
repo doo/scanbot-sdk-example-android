@@ -23,7 +23,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".PageFiltersActivity" />
-        <activity android:name=".FilterTunesActivity" />
         <activity android:name=".PagePreviewActivity" />
         <activity android:name=".BarcodeResultActivity" />
         <activity android:name=".DetailedItemDataActivity" />
