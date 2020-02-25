@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 class Application : MultiDexApplication(), CoroutineScope {
@@ -22,10 +23,10 @@ class Application : MultiDexApplication(), CoroutineScope {
 
     companion object {
         /*
-         * TODO 1/2: Add the Scanbot SDK license key here.
+         * TODO Add the Scanbot SDK license key here.
          * Please note: The Scanbot SDK will run without a license key for one minute per session!
-         * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working
-         * or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
+         * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working.
+         * You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
          * Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
          * the app identifier "io.scanbot.example.sdk.rtu.android" of this example app.
          */
@@ -36,10 +37,13 @@ class Application : MultiDexApplication(), CoroutineScope {
         super.onCreate()
         val sdkLicenseInfo = ScanbotSDKInitializer()
                 .withLogging(BuildConfig.DEBUG)
+                // Optional, custom SDK files directory. Please see the comments below!
+                .sdkFilesDirectory(this, customStorageDirectory())
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
                                 .imageFormat(CameraImageFormat.JPG)
-                                .previewTargetMax(900)
+                                .imageQuality(80)
+                                .previewTargetMax(1500)
                                 .build()
                 )
                 .prepareOCRLanguagesBlobs(true)
@@ -47,20 +51,39 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .preparePayFormBlobs(true)
                 .prepareBarcodeScannerBlobs(true)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
-                    //handle license problem
-                    Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}")
+                    // Optional license failure handler implementation:
+                    Log.d("ScanbotSDKExample", "License issue: status=${status.name}, feature=${feature.name}")
                 })
-                // TODO 2/2: Enable the Scanbot SDK license key
-                // .license(this, LICENSE_KEY)
+                .license(this, LICENSE_KEY)
                 .initialize(this)
 
-        //you can check status here
-        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.status.name)
+        // Check the Scanbot SDK license status:
+        Log.d("ScanbotSDKExample", "Is license valid: " + sdkLicenseInfo.isValid)
+        Log.d("ScanbotSDKExample", "License status " + sdkLicenseInfo.status.name)
 
         launch {
             PageRepository.clearPages(this@Application)
             SharingCopier.clear(this@Application)
         }
+    }
+
+    private fun customStorageDirectory(): File {
+        // !! Please note !!
+        // It is strongly recommended to use the default (secure) storage directory of the Scanbot SDK.
+        // However, for demo purposes we use a custom external(!) storage directory here, which is a public(!) folder.
+        // All image files and export files (PDF, TIFF, etc) created by the Scanbot SDK in this demo app will be stored
+        // in this public storage directory and will be accessible for every(!) app having external storage permissions!
+        // Again, this is only for demo purposes, which allows us to easily fetch and check the generated files
+        // via Android "adb" CLI tools, Android File Transfer app, Android Studio, etc.
+        //
+        // For more details about the storage system of the Scanbot SDK please see our docs:
+        // https://github.com/doo/scanbot-sdk-example-android/wiki/Storage
+        //
+        // For more details about the file system on Android we also highly recommend to check out:
+        // - https://developer.android.com/guide/topics/data/data-storage
+        // - https://developer.android.com/training/data-storage/files
+
+        return File(this.getExternalFilesDir(null), "my-custom-storage-folder")
     }
 
 }

@@ -252,7 +252,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
                             pdfRenderer.renderDocumentFromPages(adapter.items, PDFPageSize.AUTO)
                         }
                 if (pdfFile != null) {
-                    pdfFile = SharingCopier.copyFile(this@PagePreviewActivity, pdfFile)
+                    pdfFile = SharingCopier.moveFile(this@PagePreviewActivity, pdfFile)
                 }
 
                 withContext(Dispatchers.Main) {
