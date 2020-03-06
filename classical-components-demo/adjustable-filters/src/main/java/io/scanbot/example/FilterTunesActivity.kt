@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -216,8 +217,14 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     filteringState = FilteringState.PROCESSING
                     val tunesList = tunes.values.toList()
 
-                    PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter,
-                            tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
+                    try {
+                        PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter,
+                                tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
+                    }
+                    catch (e: Exception) {
+                        Log.e("FilterTunesActivity", "Couldn't generate preview image.", e)
+                        finish()
+                    }
 
                     withContext(Dispatchers.Main) {
                         Picasso.with(applicationContext)
