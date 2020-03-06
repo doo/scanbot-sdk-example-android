@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Scanbot SDK Example</string>
+    <string name="app_name">Barcode Scanner Example</string>
     <string name="title_activity_barcode_result">BarcodeResultActivity</string>
     <string name="title_activity_detailed_item_data">DetailedItemDataActivity</string>
     <string name="share_title">Select Image</string>

@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:gravity="center_vertical"
-                android:text="Classic Component"
+                android:text="Start QR-/Barcode Scanner"
                 android:layout_marginLeft="16dp"
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button" />
 
