@@ -43,7 +43,6 @@ import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
 
-
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -66,18 +65,22 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when {
-            requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
-            requestCode == MRZ_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showFrontBackMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
+        if (resultCode != Activity.RESULT_OK) return
+
+        data!! // throw if null - we need data
+
+        when (requestCode) {
+            MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
+            MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            CROP_DEFAULT_UI_REQUEST_CODE -> {
+                val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
                 page.pageId
             }
-            requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                data?.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+            QR_BARCODE_DEFAULT_UI_REQUEST_CODE -> {
+                data.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
                         ?.let {
                             val imagePath =
                                     data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
@@ -91,22 +94,22 @@ class MainActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
             }
-            requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST && resultCode == RESULT_OK -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-            requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST && resultCode == RESULT_OK -> {
+            BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE -> showBarcodeAndDocumentWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            DC_SCAN_WORKFLOW_REQUEST_CODE -> showDCWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            PAYFORM_SCAN_WORKFLOW_REQUEST_CODE -> showPayFormWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            SELECT_PICTURE_FOR_CROPPING_UI_REQUEST -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST -> {
                 if (!scanbotSDK.licenseInfo.isValid) {
                     showLicenseDialog()
                 } else {
                     ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                 }
             }
-            requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+            CAMERA_DEFAULT_UI_REQUEST_CODE -> {
+                val pages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
                     it as Page
                 }
 
@@ -115,8 +118,8 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
                 startActivity(intent)
             }
-            requestCode == EHIC_SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val hicRecognitionResult = data!!.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
+            EHIC_SCAN_REQUEST_CODE -> {
+                val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
                 showEHICResultDialog(hicRecognitionResult)
             }
         }
