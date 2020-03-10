@@ -1,10 +1,12 @@
 package io.scanbot.example
 
 import android.util.Log
+import android.widget.Toast
 import androidx.multidex.MultiDexApplication
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
+import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
@@ -51,8 +53,17 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .preparePayFormBlobs(true)
                 .prepareBarcodeScannerBlobs(true)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
-                    // Optional license failure handler implementation:
-                    Log.d("ScanbotSDKExample", "License issue: status=${status.name}, feature=${feature.name}")
+                    // Optional license failure handler implementation. Handle license issues here.
+                    // A license issue can either be an invalid or expired license key
+                    // or missing SDK feature (see SDK feature packages on https://scanbot.io).
+                    val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
+                        "License Error! License status: ${status.name}"
+                    }
+                    else {
+                        "License Error! Missing SDK feature in license: ${feature.name}"
+                    }
+                    Log.d("ScanbotSDKExample", errorMsg)
+                    Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
                 })
                 .license(this, LICENSE_KEY)
                 .initialize(this)

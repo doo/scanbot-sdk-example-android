@@ -51,6 +51,7 @@ public class ExampleApplication extends Application {
                 .license(this, LICENSE_KEY)
                 .initialize(this);
 
+        Log.d("ScanbotExample", "Is license valid: " + sdkLicenseInfo.isValid());
         Log.d("ScanbotExample", "License status: " + sdkLicenseInfo.getStatus().name());
     }
 }
