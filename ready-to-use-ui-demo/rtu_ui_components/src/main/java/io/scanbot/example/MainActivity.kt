@@ -193,11 +193,12 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
             cameraConfiguration.setMultiPageEnabled(true)
+            cameraConfiguration.setAutoSnappingSensitivity(0.75f)
             cameraConfiguration.setPageCounterButtonTitle("%d Page(s)")
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
-            //cameraConfiguration.set...
+            // see further customization configs ...
 
-            val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@MainActivity,
+            val intent = DocumentScannerActivity.newIntent(this@MainActivity,
                     cameraConfiguration
             )
             startActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE)

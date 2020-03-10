@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Scanbot SDK RTU UI Example</string>
     <string name="scanbot_sdk_demo">Scanbot SDK RTU UI Example</string>
-    <string name="no_license_found_the_app_will_terminate_after_one_minute">No license found. The app will terminate after one minute.</string>
+    <string name="no_license_found_the_app_will_terminate_after_one_minute">No license key set. Trial mode is active. The app will stop working after one minute.</string>
     <string name="document_scanner">Document Scanner</string>
     <string name="scan_document">Scan Document</string>
     <string name="import_image">Import Image</string>
@@ -62,8 +62,8 @@
     <string name="mrz_check_digits_count">checkDigitsCount:</string>
     <string name="mrz_checksums">Checksums:</string>
     <string name="travel_doc_type">travelDocType:</string>
-    <string name="save_with_ocr">Save with OCR</string>
-    <string name="save_without_ocr">Save without OCR</string>
+    <string name="save_with_ocr">Save as PDF with OCR</string>
+    <string name="save_without_ocr">Save as PDF</string>
     <string name="importing_and_processing">Importing selected image and running auto document detection...</string>
     <string name="share_title">Select Image</string>
     <string name="error_openning_document">Error while opening the document</string>

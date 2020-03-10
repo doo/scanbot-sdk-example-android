@@ -2,6 +2,7 @@ package io.scanbot.example;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler;
 import io.scanbot.sap.SdkFeature;
@@ -16,10 +17,10 @@ import io.scanbot.sdk.ScanbotSDKInitializer;
 public class ExampleApplication extends Application {
 
     /*
-     * TODO 1/2: Add the Scanbot SDK license key here.
+     * TODO : Add the Scanbot SDK license key here.
      * Please note: The Scanbot SDK will run without a license key for one minute per session!
-     * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working
-     * or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
+     * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working.
+     * You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
      * Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
      * the app identifier "io.scanbot.example.sdk.android" of this example app.
      */
@@ -27,23 +28,30 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
-        SdkLicenseInfo sdkLicenseInfo = new ScanbotSDKInitializer()
-                .licenceErrorHandler(new IScanbotSDKLicenseErrorHandler() {
+        super.onCreate();
 
+        final SdkLicenseInfo sdkLicenseInfo = new ScanbotSDKInitializer()
+                .licenceErrorHandler(new IScanbotSDKLicenseErrorHandler() {
                     @Override
-                    public void handleLicenceStatusError(Status status, SdkFeature feature) {
-                        //handle license problem
-                        Log.d("ScanbotExample", "Status ${status.name} feature ${feature.name}");
+                    public void handleLicenceStatusError(final Status status, final SdkFeature feature) {
+                        // Handle license issues here.
+                        // A license issue can either be an invalid or expired license key
+                        // or missing SDK feature (see SDK feature packages on https://scanbot.io).
+                        final String errorMsg;
+                        if (status != Status.StatusOkay && status != Status.StatusTrial) {
+                            errorMsg = "License Error! License status: " + status.name();
+                        }
+                        else {
+                            errorMsg = "License Error! Missing SDK feature in license: " + feature.name();
+                        }
+                        Log.d("ScanbotExample", errorMsg);
+                        Toast.makeText(ExampleApplication.this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 })
-                .prepareOCRLanguagesBlobs(true)
-                // TODO 2/2: Enable the Scanbot SDK license key
-                //.license(this, LICENSE_KEY)
+                .license(this, LICENSE_KEY)
                 .initialize(this);
 
-        //check scanbot sdk status here
-        Log.d("ScanbotExample", "Status " + sdkLicenseInfo.getStatus().name());
-
-        super.onCreate();
+        Log.d("ScanbotExample", "Is license valid: " + sdkLicenseInfo.isValid());
+        Log.d("ScanbotExample", "License status: " + sdkLicenseInfo.getStatus().name());
     }
 }

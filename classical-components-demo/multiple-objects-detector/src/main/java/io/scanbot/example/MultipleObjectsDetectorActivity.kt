@@ -84,7 +84,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
 
         // minAspectRatio and maxAspectRatio params below specify the range of aspect ratio of desired recognized object
         // Business card standard is 8,9cm X 5,1cm (3.5" x 2") making aspect ratio to be ~ 1,74
-        multipleObjectsDetector.setParams(MultipleObjectsDetector.Params(1.6f, 1.8f)) // only qualify objects similar to business cards
+        //multipleObjectsDetector.setParams(MultipleObjectsDetector.Params(1.6f, 1.8f))
 
         val businessCardsFrameHandler = MultipleObjectsFrameHandler.attach(cameraView, multipleObjectsDetector)
 

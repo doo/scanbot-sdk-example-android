@@ -5,11 +5,20 @@
     android:padding="10dp"
     tools:context=".SelectImageActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:text="Adjustable Image Filters Example" />
+
     <Button
         android:id="@+id/import_from_lib_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Import From Gallery" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:text="Import Image From Gallery" />
 
     <ProgressBar
         android:id="@+id/progressBar"

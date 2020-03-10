@@ -102,6 +102,7 @@ public class ChequeScannerActivity extends AppCompatActivity {
         return new StringBuilder()
                 .append("accountNumber: ").append(result.accountNumber.value).append("\n")
                 .append("routingNumber: ").append(result.routingNumber.value).append("\n")
+                .append("chequeNumber: ").append(result.chequeNumber.value).append("\n")
                 .append("Polygon detection result: ").append(result.polygon.detectionResult.toString()).append("\n")
                 .append("Polygon : ").append(result.polygon.points.toString()).append("\n")
                 .toString();
