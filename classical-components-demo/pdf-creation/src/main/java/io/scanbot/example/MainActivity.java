@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
 
                     String newPageId = pageFileStorage.add(bitmap);
                     Page page = new Page(newPageId, Collections.<PointF>emptyList(), DetectionResult.OK, ImageFilterType.GRAYSCALE);
-                    pageProcessor.detectDocument(page);
-                    pages.add(page);
+                    Page detectedPage = pageProcessor.detectDocument(page);
+                    pages.add(detectedPage);
                 }
 
                 return pdfRenderer.renderDocumentFromPages(pages, PDFPageSize.FIXED_A4);

@@ -16,8 +16,11 @@ import net.doo.snap.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class MRZLiveDetectionActivity extends AppCompatActivity {
 
@@ -64,19 +67,23 @@ public class MRZLiveDetectionActivity extends AppCompatActivity {
 
         mrzScannerFrameHandler.addResultHandler(new MRZScannerFrameHandler.ResultHandler() {
             @Override
-            public boolean handleResult(MRZRecognitionResult mrzRecognitionResult) {
-                if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
-                    long a = System.currentTimeMillis();
+            public boolean handle(FrameHandlerResult<? extends MRZRecognitionResult, ? extends SdkLicenseError> frameHandlerResult) {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    MRZRecognitionResult mrzRecognitionResult = (MRZRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                    if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
+                        long a = System.currentTimeMillis();
 
-                    try {
-                        startActivity(MRZResultActivity.newIntent(MRZLiveDetectionActivity.this, mrzRecognitionResult));
-                    } finally {
-                        long b = System.currentTimeMillis();
-                        logger.d("MRZScanner", "Total scanning (sec): " + (b - a) / 1000f);
+                        try {
+                            startActivity(MRZResultActivity.newIntent(MRZLiveDetectionActivity.this, mrzRecognitionResult));
+                        } finally {
+                            long b = System.currentTimeMillis();
+                            logger.d("MRZScanner", "Total scanning (sec): " + (b - a) / 1000f);
+                        }
                     }
                 }
                 return false;
             }
+
         });
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {

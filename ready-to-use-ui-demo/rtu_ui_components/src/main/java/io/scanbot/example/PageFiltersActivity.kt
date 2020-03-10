@@ -4,10 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.*
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.MenuItem
+import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -23,14 +24,11 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
+class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener {
 
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
@@ -45,16 +43,14 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         }
     }
 
-
     lateinit var selectedPage: Page
-    var selectedFilter: ImageFilterType = ImageFilterType.NONE
     lateinit var scanbotSDK: ScanbotSDK
+    private var selectedFilter: ImageFilterType = ImageFilterType.NONE
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
-
+        get() = Dispatchers.Default + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +64,7 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         selectedPage.let {
             selectedFilter = it.filter
         }
+
         scanbotSDK = ScanbotSDK(application)
 
         action_filter.setOnClickListener {
@@ -100,6 +97,11 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         initMenu()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
     override fun onResume() {
         super.onResume()
         if (!scanbotSDK.isLicenseValid) {
@@ -111,7 +113,7 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA))
+            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA))
             initPagePreview()
             return
         }
@@ -167,38 +169,54 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         if (!scanbotSDK.isLicenseValid) {
             showLicenseDialog()
         } else {
-            GenerateFilterPreviewTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            generateFilteredPreview()
         }
     }
 
-    inner class GenerateFilterPreviewTask : AsyncTask<Void, Void, String>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progress.visibility = VISIBLE
-        }
-
-        override fun doInBackground(vararg p0: Void?): String? {
-            selectedPage.let {
-
-                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, selectedFilter).path
+    private fun generateFilteredPreview() {
+        progress.visibility = View.VISIBLE
+        launch {
+            val path = selectedPage.let {
+                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter)
+                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
                 }
-                return filteredPreviewFilePath
+                filteredPreviewFilePath
+            }
+            withContext(Dispatchers.Main) {
+                path?.let {
+                    Picasso.with(applicationContext)
+                            .load(File(it))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                }
             }
         }
+    }
 
-        override fun onPostExecute(filteredPreviewFilePath: String?) {
-            super.onPostExecute(filteredPreviewFilePath)
+    override fun onFilterApplied(filterType: ImageFilterType) {
+        applyFilter(filterType)
+    }
 
-            filteredPreviewFilePath?.let {
-                Picasso.with(applicationContext)
-                        .load(File(filteredPreviewFilePath))
-                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-                        .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                        .centerInside()
-                        .into(image, ImageCallback())
+    private fun applyFilter(imageFilterType: ImageFilterType) {
+        if (!scanbotSDK.isLicenseValid) {
+            showLicenseDialog()
+        } else {
+            progress.visibility = View.VISIBLE
+            selectedFilter = imageFilterType
+            launch {
+                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
+                withContext(Dispatchers.Main) {
+                    Picasso.with(applicationContext)
+                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+                            .centerInside()
+                            .into(image, ImageCallback())
+                    progress.visibility = GONE
+                }
             }
         }
     }
@@ -210,76 +228,6 @@ class PageFiltersActivity : AppCompatActivity(), FiltersListener, CoroutineScope
 
         override fun onError() {
             progress.visibility = GONE
-        }
-
-    }
-
-    override fun lowLightBinarizationFilter() {
-        applyFilter(ImageFilterType.LOW_LIGHT_BINARIZATION)
-    }
-
-    override fun edgeHighlightFilter() {
-        applyFilter(ImageFilterType.EDGE_HIGHLIGHT)
-    }
-
-    override fun deepBinarizationFilter() {
-        applyFilter(ImageFilterType.DEEP_BINARIZATION)
-    }
-
-    override fun otsuBinarizationFilter() {
-        applyFilter(ImageFilterType.OTSU_BINARIZATION)
-    }
-
-    override fun cleanBackgroundFilter() {
-        applyFilter(ImageFilterType.BACKGROUND_CLEAN)
-    }
-
-    override fun colorDocumentFilter() {
-        applyFilter(ImageFilterType.COLOR_DOCUMENT)
-    }
-
-    override fun colorFilter() {
-        applyFilter(ImageFilterType.COLOR_ENHANCED)
-    }
-
-    override fun grayscaleFilter() {
-        applyFilter(ImageFilterType.GRAYSCALE)
-    }
-
-    override fun binarizedFilter() {
-        applyFilter(ImageFilterType.BINARIZED)
-    }
-
-    override fun pureBinarizedFilter() {
-        applyFilter(ImageFilterType.PURE_BINARIZED)
-    }
-
-    override fun blackAndWhiteFilter() {
-        applyFilter(ImageFilterType.BLACK_AND_WHITE)
-    }
-
-    override fun noneFilter() {
-        applyFilter(ImageFilterType.NONE)
-    }
-
-    private fun applyFilter(imageFilterType: ImageFilterType) {
-        if (!scanbotSDK.isLicenseValid) {
-            showLicenseDialog()
-        } else {
-            progress.visibility = VISIBLE
-            selectedFilter = imageFilterType
-            launch {
-                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedFilter, selectedPage)
-                Handler(Looper.getMainLooper()).post {
-                    Picasso.with(applicationContext)
-                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
-                            .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                            .centerInside()
-                            .into(image, ImageCallback())
-                    progress.visibility = GONE
-                }
-            }
         }
     }
 }

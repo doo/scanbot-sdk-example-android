@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">Scanbot SDK RTU UI Example</string>
     <string name="scanbot_sdk_demo">Scanbot SDK RTU UI Example</string>
-    <string name="no_license_found_the_app_will_terminate_after_one_minute">No license found. The app will terminate after one minute.</string>
+    <string name="no_license_found_the_app_will_terminate_after_one_minute">No license key set. Trial mode is active. The app will stop working after one minute.</string>
     <string name="document_scanner">Document Scanner</string>
     <string name="scan_document">Scan Document</string>
     <string name="import_image">Import Image</string>
     <string name="view_images">View Images</string>
     <string name="data_detectors">Data Detectors</string>
     <string name="scan_qr_code">Scan QR-/Barcode</string>
+    <string name="scan_qr_code_with_image">Scan QR-/Barcode with image</string>
     <string name="scan_mrz">Scan MRZ</string>
     <string name="scan_mrz_image">Scan MRZ + Image</string>
     <string name="scan_mrz_back_and_front_image">Scan MRZ + Front and Back Image</string>
@@ -20,6 +21,7 @@
     <string name="filter">FILTER</string>
     <string name="delete_all">DELETE ALL</string>
     <string name="low_light_binarization_filter">Low Light Binarization Filter</string>
+    <string name="low_light_binarization_filter_2">Low Light Binarization Filter 2</string>
     <string name="edge_highlight_filter">Edge Highlight Filter</string>
     <string name="deep_binarization_filter">Deep Binarization Filter</string>
     <string name="otsu_binarization_filter">Otsu Binarization Filter</string>
@@ -60,8 +62,8 @@
     <string name="mrz_check_digits_count">checkDigitsCount:</string>
     <string name="mrz_checksums">Checksums:</string>
     <string name="travel_doc_type">travelDocType:</string>
-    <string name="save_with_ocr">Save with OCR</string>
-    <string name="save_without_ocr">Save without OCR</string>
+    <string name="save_with_ocr">Save as PDF with OCR</string>
+    <string name="save_without_ocr">Save as PDF</string>
     <string name="importing_and_processing">Importing selected image and running auto document detection...</string>
     <string name="share_title">Select Image</string>
     <string name="error_openning_document">Error while opening the document</string>

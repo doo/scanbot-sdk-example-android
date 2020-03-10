@@ -1,0 +1,52 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context=".MultipleObjectsDetectorActivity">
+
+    <net.doo.snap.camera.ScanbotCameraView
+            android:id="@+id/camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        <net.doo.snap.ui.MultiplePolygonsView
+                android:id="@+id/polygonView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:polygonFillColor="#55009688"
+                app:polygonStrokeColor="#ff80cbc4"
+                app:polygonStrokeWidth="8dp"
+                />
+    </net.doo.snap.camera.ScanbotCameraView>
+
+    <io.scanbot.sdk.ui.camera.ShutterButton
+            android:id="@+id/snap"
+            android:layout_width="@dimen/take_picture_size"
+            android:layout_height="@dimen/take_picture_size"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="28dp"
+            android:elevation="6dp"
+            />
+
+    <Button
+            android:id="@+id/flash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:text="Flash"
+            />
+
+    <ProgressBar
+            android:id="@+id/progressView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            />
+</FrameLayout>

@@ -29,6 +29,7 @@ import java.util.Set;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer;
 import io.scanbot.sdk.persistence.PageFileStorage;
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(OcrResult ocrResult) {
             progressView.setVisibility(View.GONE);
 
-            if (ocrResult != null) {
+            if (ocrResult != null && !ocrResult.ocrPages.isEmpty()) {
                 Toast.makeText(MainActivity.this,
                         "Recognized page content:\n" + ocrResult.getRecognizedText(),
                         Toast.LENGTH_LONG).show();

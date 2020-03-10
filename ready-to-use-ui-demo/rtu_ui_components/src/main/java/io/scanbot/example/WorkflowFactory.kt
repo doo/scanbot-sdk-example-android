@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.RectF
 import android.os.Parcel
 import android.os.Parcelable
-import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.barcode.entity.BarcodeFormat
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.entity.workflow.*
@@ -31,8 +30,7 @@ class WorkflowFactory {
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
                                 override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
-                                            || !stepResult.mrzResult!!.recognitionSuccessful
-                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                            || !stepResult.mrzResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
                                                 1,
                                                 "This does not seem to be the correct page.",
@@ -63,8 +61,7 @@ class WorkflowFactory {
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<MachineReadableZoneWorkflowStepResult> {
                                 override fun invoke(stepResult: MachineReadableZoneWorkflowStepResult): WorkflowStepError? {
                                     return if (stepResult.mrzResult == null
-                                            || !stepResult.mrzResult!!.recognitionSuccessful
-                                            || stepResult.mrzResult!!.errorCode != MRZRecognitionResult.NO_ERROR) {
+                                            || !stepResult.mrzResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
                                                 1,
                                                 "This does not seem to be the correct side. Please scan the back with MRZ.",
@@ -112,7 +109,7 @@ class WorkflowFactory {
                     ScanBarCodeWorkflowStep(
                             title = "Step 1/2 - QR-/Barcode",
                             message = "Please scan a QR or barcode.",
-                            acceptedCodeTypes = listOf(BarcodeFormat.ALL_FORMATS),
+                            acceptedCodeTypes = BarcodeFormat.values().toList() as ArrayList<BarcodeFormat>,
                             finderViewSize = FinderViewSize(1.0, 0.6),
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<BarCodeWorkflowStepResult> {
                                 override fun invoke(stepResult: BarCodeWorkflowStepResult): WorkflowStepError? {

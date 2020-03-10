@@ -15,8 +15,13 @@ import net.doo.snap.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import org.jetbrains.annotations.NotNull;
+
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class DCScannerActivity extends AppCompatActivity {
 
@@ -60,15 +65,18 @@ public class DCScannerActivity extends AppCompatActivity {
 
         dcScannerFrameHandler.addResultHandler(new DCScannerFrameHandler.ResultHandler() {
             @Override
-            public boolean handleResult(DisabilityCertificateRecognizerResultInfo resultInfo) {
-                if (resultInfo != null && resultInfo.recognitionSuccessful) {
-                    long a = System.currentTimeMillis();
+            public boolean handle(@NotNull FrameHandlerResult<? extends DisabilityCertificateRecognizerResultInfo, ? extends SdkLicenseError> frameHandlerResult) {
+                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                    final DisabilityCertificateRecognizerResultInfo resultInfo = ((FrameHandlerResult.Success<DisabilityCertificateRecognizerResultInfo>) frameHandlerResult).getValue();
+                    if (resultInfo != null && resultInfo.recognitionSuccessful) {
+                        long a = System.currentTimeMillis();
 
-                    try {
-                        startActivity(DCResultActivity.newIntent(DCScannerActivity.this, resultInfo));
-                    } finally {
-                        long b = System.currentTimeMillis();
-                        logger.d("DCScanner", "Total scanning (sec): " + (b - a) / 1000f);
+                        try {
+                            startActivity(DCResultActivity.newIntent(DCScannerActivity.this, resultInfo));
+                        } finally {
+                            long b = System.currentTimeMillis();
+                            logger.d("DCScanner", "Total scanning (sec): " + (b - a) / 1000f);
+                        }
                     }
                 }
                 return false;
