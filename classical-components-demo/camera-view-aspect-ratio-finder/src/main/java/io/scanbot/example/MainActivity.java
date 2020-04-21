@@ -30,6 +30,7 @@ import androidx.core.view.WindowCompat;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.ui.camera.FinderOverlayView;
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(this).contourDetector();;
         detector.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
         detector.detect(originalBitmap);
         final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);

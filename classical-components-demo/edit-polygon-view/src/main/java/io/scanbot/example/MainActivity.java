@@ -26,6 +26,8 @@ import java.util.concurrent.Executors;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
+import io.scanbot.sdk.ScanbotSDK;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditPolygonImageView editPolygonView;
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        Bitmap documentImage = new ContourDetector().processImageF(
+        Bitmap documentImage = new ScanbotSDK(MainActivity.this).contourDetector().processImageF(
                 originalBitmap, editPolygonView.getPolygon(), ContourDetector.IMAGE_FILTER_NONE);
 
         if (rotationDegrees > 0) {
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             originalBitmap = loadBitmapFromAssets("demo_image.jpg");
             previewBitmap = resizeForPreview(originalBitmap);
 
-            final ContourDetector detector = new ContourDetector();
+            final ContourDetector detector = new ScanbotSDK(MainActivity.this).contourDetector();
             final DetectionResult detectionResult = detector.detect(originalBitmap);
             Pair<List<Line2D>, List<Line2D>> linesPair = null;
             List<PointF> polygon = new ArrayList<>(EditPolygonImageView.DEFAULT_POLYGON);

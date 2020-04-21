@@ -21,6 +21,8 @@ import net.doo.snap.ui.PolygonView;
 
 import androidx.fragment.app.DialogFragment;
 
+import io.scanbot.sdk.ScanbotSDK;
+
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example
  */
@@ -134,7 +136,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(getContext()).contourDetector();
         DetectionResult detectionResult = detector.detect(originalBitmap);
         if (detectionResult != null) {
             final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
