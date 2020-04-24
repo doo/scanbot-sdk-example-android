@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private long lastUserGuidanceHintTs = 0L;
     private Button autoSnappingToggleButton;
     private ShutterButton shutterButton;
-    private ScanbotSDK scanbotSDK ;
+    private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
