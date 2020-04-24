@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.fragment.app.DialogFragment;
+
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.CameraOpenCallback;
 import net.doo.snap.camera.ContourDetectorFrameHandler;
@@ -19,7 +21,12 @@ import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.ui.PolygonView;
 
-import androidx.fragment.app.DialogFragment;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
 
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example
@@ -27,7 +34,7 @@ import androidx.fragment.app.DialogFragment;
 public class CameraDialogFragment extends DialogFragment implements PictureCallback {
     private ScanbotCameraView cameraView;
     private ImageView resultView;
-
+    private ScanbotSDK scanbotSDK;
     boolean flashEnabled = false;
 
     /**
@@ -40,6 +47,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        scanbotSDK = new ScanbotSDK(getContext());
     }
 
     @Override
@@ -136,8 +144,10 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         // Run document detection on original image:
         final ContourDetector detector = new ContourDetector();
         DetectionResult detectionResult = detector.detect(originalBitmap);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
         if (detectionResult != null) {
-            final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+            final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
             if (documentImage != null)
                 resultView.post(new Runnable() {
