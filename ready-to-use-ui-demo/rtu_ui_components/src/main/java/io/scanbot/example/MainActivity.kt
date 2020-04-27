@@ -77,12 +77,12 @@ class MainActivity : AppCompatActivity() {
                 page.pageId
             }
             requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                data?.getParcelableExtra<BarcodeScanningResult>(BaseBarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+                data?.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
                         ?.let {
                             val imagePath =
-                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
+                                    data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
                             val previewPath =
-                                    data.getStringExtra(BaseBarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
+                                    data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
 
                             BarcodeResultRepository.barcodeResultBundle =
                                     BarcodeResultBundle(it, imagePath, previewPath)

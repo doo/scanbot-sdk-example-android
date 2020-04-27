@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, new ScanbotSDK(this).contourDetector());
         //contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         finderOverlayView = (FinderOverlayView) findViewById(R.id.finder_overlay);
