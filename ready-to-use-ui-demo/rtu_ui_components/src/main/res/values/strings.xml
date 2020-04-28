@@ -16,6 +16,7 @@
     <string name="scan_dc_form">Scan DC Form</string>
     <string name="scan_pay_form">Scan SEPA Pay Form</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
+    <string name="multiple_object_detector">Multiple objects detector</string>
     <string name="copyright_note">© 2019 by doo GmbH. All rights reserved.</string>
     <string name="add_page">ADD PAGE</string>
     <string name="filter">FILTER</string>

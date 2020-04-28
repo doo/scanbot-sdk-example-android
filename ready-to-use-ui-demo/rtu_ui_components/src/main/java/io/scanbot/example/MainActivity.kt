@@ -8,6 +8,7 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -35,13 +36,14 @@ import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
 import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
+import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
+import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import net.doo.snap.camera.CameraPreviewMode
 import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,10 +56,13 @@ class MainActivity : AppCompatActivity() {
         private const val BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE = 915
         private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
         private const val EHIC_SCAN_REQUEST_CODE = 917
+        private const val MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE = 919
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
         private const val CAMERA_DEFAULT_UI_REQUEST_CODE = 1111
+
+        private const val LOG_TAG = "RTU_DEMO_MAIN_ACTIVITY"
     }
 
     private lateinit var scanbotSDK: ScanbotSDK
@@ -65,18 +70,28 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when {
-            requestCode == MRZ_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzDialog(data!!.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
-            requestCode == MRZ_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showFrontBackMrzImageWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val page = data!!.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
+        if (resultCode != Activity.RESULT_OK) {
+            Log.i(LOG_TAG, "resultCode is not OK when returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
+            return
+        }
+
+        if (data == null) {
+            Log.w(LOG_TAG, "No data while returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
+            return
+        }
+
+        when (requestCode) {
+            MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
+            MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            CROP_DEFAULT_UI_REQUEST_CODE -> {
+                val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
                 page.pageId
             }
-            requestCode == QR_BARCODE_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                data?.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
+            QR_BARCODE_DEFAULT_UI_REQUEST_CODE -> {
+                data.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
                         ?.let {
                             val imagePath =
                                     data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
@@ -90,35 +105,38 @@ class MainActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
             }
-            requestCode == BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showBarcodeAndDocumentWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == DC_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showDCWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == PAYFORM_SCAN_WORKFLOW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> showPayFormWorkflowResult(data!!.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data!!.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            requestCode == SELECT_PICTURE_FOR_CROPPING_UI_REQUEST && resultCode == RESULT_OK -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-            requestCode == SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST && resultCode == RESULT_OK -> {
+            BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE -> showBarcodeAndDocumentWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            DC_SCAN_WORKFLOW_REQUEST_CODE -> showDCWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            PAYFORM_SCAN_WORKFLOW_REQUEST_CODE -> showPayFormWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            SELECT_PICTURE_FOR_CROPPING_UI_REQUEST -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+            SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST -> {
                 if (!scanbotSDK.licenseInfo.isValid) {
                     showLicenseDialog()
                 } else {
                     ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                 }
             }
-            requestCode == CAMERA_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
-                    it as Page
-                }
-
-                PageRepository.addPages(pages)
-
-                val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
-                startActivity(intent)
-            }
-            requestCode == EHIC_SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
-                val hicRecognitionResult = data!!.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
+            MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE -> extractPagesToRepoStartPreview(data, MultipleObjectsDetectorActivity.SNAPPED_OBJECTS_EXTRA)
+            CAMERA_DEFAULT_UI_REQUEST_CODE -> extractPagesToRepoStartPreview(data, DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
+            EHIC_SCAN_REQUEST_CODE -> {
+                val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
                 showEHICResultDialog(hicRecognitionResult)
             }
         }
+    }
+
+    private fun extractPagesToRepoStartPreview(data: Intent, snappedResultsKey: String) {
+        val pages = data.getParcelableArrayExtra(snappedResultsKey).toList().map {
+            it as Page
+        }
+
+        PageRepository.addPages(pages)
+
+        val intent = Intent(this, PagePreviewActivity::class.java)
+        startActivity(intent)
     }
 
     private fun showLicenseDialog() {
@@ -331,6 +349,25 @@ class MainActivity : AppCompatActivity() {
 
             val intent = HealthInsuranceCardScannerActivity.newIntent(this@MainActivity, ehicScannerConfig)
             startActivityForResult(intent, EHIC_SCAN_REQUEST_CODE)
+        }
+
+        multiple_object_detector_ui.setOnClickListener {
+            val config = MultipleObjectsDetectorConfiguration().apply {
+                setCameraPreviewMode(CameraPreviewMode.FIT_IN)
+                setBottomBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
+                setBottomBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
+                setTopBarButtonsActiveColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
+                setCameraBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimary))
+                // aspect ratio below: from 2x1 (landscape-oriented object) to 1x2 (portrait)
+                setAspectRatioRange(MultipleObjectsDetectorConfiguration.AspectRatioRange(0.5F, 2.0F))
+                setCancelButtonTitle("Abort")
+                setBatchButtonTitle("Batch")
+                setBatchModeEnabled(true)
+                setPageCounterButtonTitle("%d Page(s)")
+            }
+
+            val intent = MultipleObjectsDetectorActivity.newIntent(this@MainActivity, config)
+            startActivityForResult(intent, MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE)
         }
     }
 
