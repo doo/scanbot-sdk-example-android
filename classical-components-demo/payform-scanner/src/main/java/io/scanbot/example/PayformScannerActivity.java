@@ -21,9 +21,6 @@ import net.doo.snap.util.log.LoggerProvider;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
-import io.scanbot.payformscanner.model.RecognizedField;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 

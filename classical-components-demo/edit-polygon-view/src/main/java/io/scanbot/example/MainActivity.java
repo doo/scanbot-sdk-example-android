@@ -26,6 +26,10 @@ import java.util.concurrent.Executors;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
+import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditPolygonImageView editPolygonView;
@@ -37,13 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private Button backButton;
     private int rotationDegrees = 0;
     private long lastRotationEventTs = 0L;
+    private ScanbotSDK scanbotSDK;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        scanbotSDK = new ScanbotSDK(this);
         getSupportActionBar().hide();
 
         editPolygonView = findViewById(R.id.polygonView);
@@ -115,9 +120,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void crop() {
+        final ContourDetector detector = scanbotSDK.contourDetector();
+        detector.detect(originalBitmap);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(editPolygonView.getPolygon()));
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        Bitmap documentImage = new ContourDetector().processImageF(
-                originalBitmap, editPolygonView.getPolygon(), ContourDetector.IMAGE_FILTER_NONE);
+        Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
+
 
         if (rotationDegrees > 0) {
             // rotate the final cropped image result based on current rotation value:
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             originalBitmap = loadBitmapFromAssets("demo_image.jpg");
             previewBitmap = resizeForPreview(originalBitmap);
 
-            final ContourDetector detector = new ContourDetector();
+            final ContourDetector detector = new ScanbotSDK(MainActivity.this).contourDetector();
             final DetectionResult detectionResult = detector.detect(originalBitmap);
             Pair<List<Line2D>, List<Line2D>> linesPair = null;
             List<PointF> polygon = new ArrayList<>(EditPolygonImageView.DEFAULT_POLYGON);
