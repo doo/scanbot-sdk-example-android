@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import io.scanbot.hicscanner.model.HealthInsuranceCardField;
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
-import io.scanbot.mrzscanner.model.MRZCheckDigit;
 
 public class EhicResultActivity extends AppCompatActivity {
 

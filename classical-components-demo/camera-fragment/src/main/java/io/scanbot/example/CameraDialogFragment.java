@@ -71,7 +71,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         resultView = (ImageView) baseView.findViewById(R.id.result);
 
-        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
 
         PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
@@ -142,7 +142,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(getContext()).contourDetector();
         DetectionResult detectionResult = detector.detect(originalBitmap);
         List<Operation> operations = new ArrayList<>();
         operations.add(new CropOperation(detector.getPolygonF()));

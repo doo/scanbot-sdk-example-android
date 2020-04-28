@@ -126,7 +126,7 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(this).contourDetector();
         detector.detect(originalBitmap);
         List<Operation> operations = new ArrayList<>();
         operations.add(new CropOperation(detector.getPolygonF()));

@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         polygonView.setFillColor(POLYGON_FILL_COLOR);
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60);
         contourDetectorFrameHandler.setAcceptedSizeScore(75);
@@ -276,7 +276,8 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, false);
         }
 
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = scanbotSDK.contourDetector();
+        // Run document detection on original image:
         detector.detect(originalBitmap);
         List<Operation> operations = new ArrayList<>();
         operations.add(new CropOperation(detector.getPolygonF()));

@@ -20,7 +20,6 @@ import net.doo.snap.ui.MagnifierView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -121,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void crop() {
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = scanbotSDK.contourDetector();
         detector.detect(originalBitmap);
         List<Operation> operations = new ArrayList<>();
         operations.add(new CropOperation(editPolygonView.getPolygon()));
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             originalBitmap = loadBitmapFromAssets("demo_image.jpg");
             previewBitmap = resizeForPreview(originalBitmap);
 
-            final ContourDetector detector = new ContourDetector();
+            final ContourDetector detector = new ScanbotSDK(MainActivity.this).contourDetector();
             final DetectionResult detectionResult = detector.detect(originalBitmap);
             Pair<List<Line2D>, List<Line2D>> linesPair = null;
             List<PointF> polygon = new ArrayList<>(EditPolygonImageView.DEFAULT_POLYGON);
