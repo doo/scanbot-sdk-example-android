@@ -48,11 +48,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private TextView userGuidanceHint;
     private long lastUserGuidanceHintTs = 0L;
     private ShutterButton shutterButton;
+    private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
 
-    private final PageAspectRatio[] requiredPageAspectRatios = new PageAspectRatio[] {
+    private final PageAspectRatio[] requiredPageAspectRatios = new PageAspectRatio[]{
             new PageAspectRatio(21.0, 29.7), // A4 page size
     };
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
-
+        scanbotSDK = new ScanbotSDK(this);
         askPermission();
 
         setContentView(R.layout.activity_main);
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             @Override
             public void run() {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
+                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>) frameHandlerResult).getValue().detectionResult);
                 }
             }
         });
@@ -243,10 +244,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ScanbotSDK(this).contourDetector();;
+        final ContourDetector detector = scanbotSDK.contourDetector();
+        ;
         detector.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
         detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
+        final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
         resultView.post(new Runnable() {
             @Override

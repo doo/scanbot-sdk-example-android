@@ -29,9 +29,14 @@ import androidx.core.view.WindowCompat;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private long lastUserGuidanceHintTs = 0L;
     private Button autoSnappingToggleButton;
     private ShutterButton shutterButton;
+    private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().hide();
+        scanbotSDK  = new ScanbotSDK(this);
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
@@ -269,10 +276,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, false);
         }
 
+        final ContourDetector detector = scanbotSDK.contourDetector();
         // Run document detection on original image:
-        final ContourDetector detector = new ScanbotSDK(this).contourDetector();
         detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
+        final Bitmap documentImage =  scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
         resultView.post(new Runnable() {
             @Override
