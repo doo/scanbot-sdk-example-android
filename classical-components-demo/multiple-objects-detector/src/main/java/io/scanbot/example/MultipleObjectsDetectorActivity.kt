@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,21 +13,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.multipleobjectsscanner.MultipleObjectsDetector
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.multipleobjects.MultipleObjectsFrameHandler
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.ShutterButton
 import net.doo.snap.camera.PictureCallback
 import net.doo.snap.camera.ScanbotCameraView
 import net.doo.snap.lib.detector.DetectionResult
 import net.doo.snap.ui.MultiplePolygonsView
-import net.doo.snap.util.snap.PolygonHelper
 import java.util.*
-
-private const val LOG_TAG = "MultipleObjectsDetector"
 
 class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
 
@@ -52,7 +46,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.CAMERA), 999)
+                    arrayOf(Manifest.permission.CAMERA), PERMISSION_CAMERA_REQUEST_CODE)
         }
     }
 
@@ -128,5 +122,11 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
     override fun onPause() {
         super.onPause()
         cameraView.onPause()
+    }
+
+    private companion object {
+
+        private const val LOG_TAG = "MultipleObjectsDetector"
+        private const val PERMISSION_CAMERA_REQUEST_CODE = 999
     }
 }

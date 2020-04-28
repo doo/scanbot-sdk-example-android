@@ -8,6 +8,7 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -61,6 +62,8 @@ class MainActivity : AppCompatActivity() {
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
         private const val CAMERA_DEFAULT_UI_REQUEST_CODE = 1111
+
+        private const val LOG_TAG = "RTU_DEMO_MAIN_ACTIVITY"
     }
 
     private lateinit var scanbotSDK: ScanbotSDK
@@ -68,9 +71,15 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode != Activity.RESULT_OK) return
+        if (resultCode != Activity.RESULT_OK) {
+            Log.i(LOG_TAG, "resultCode is not OK when returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
+            return
+        }
 
-        data!! // throw if null - we need data
+        if (data == null) {
+            Log.w(LOG_TAG, "No data while returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
+            return
+        }
 
         when (requestCode) {
             MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
