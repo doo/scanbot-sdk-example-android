@@ -28,8 +28,6 @@ import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.process.CropOperation;
 import io.scanbot.sdk.process.Operation;
 
-import io.scanbot.sdk.ScanbotSDK;
-
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example
  */
@@ -73,7 +71,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         resultView = (ImageView) baseView.findViewById(R.id.result);
 
-        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
 
         PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);

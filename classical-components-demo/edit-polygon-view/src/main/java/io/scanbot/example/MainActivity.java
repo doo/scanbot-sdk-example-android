@@ -20,7 +20,6 @@ import net.doo.snap.ui.MagnifierView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -28,6 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
 
 public class MainActivity extends AppCompatActivity {
 

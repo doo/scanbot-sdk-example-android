@@ -21,7 +21,9 @@ import net.doo.snap.lib.detector.ContourDetector;
 import net.doo.snap.lib.detector.DetectionResult;
 import net.doo.snap.lib.detector.PageAspectRatio;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +35,8 @@ import org.jetbrains.annotations.NotNull;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
 import io.scanbot.sdk.ui.camera.FinderOverlayView;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
@@ -97,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
         //contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         finderOverlayView = (FinderOverlayView) findViewById(R.id.finder_overlay);
@@ -245,7 +249,6 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         // Run document detection on original image:
         final ContourDetector detector = scanbotSDK.contourDetector();
-        ;
         detector.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
         detector.detect(originalBitmap);
         List<Operation> operations = new ArrayList<>();
