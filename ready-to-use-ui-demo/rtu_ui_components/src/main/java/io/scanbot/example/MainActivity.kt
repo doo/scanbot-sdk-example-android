@@ -119,7 +119,11 @@ class MainActivity : AppCompatActivity() {
                     ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                 }
             }
-            MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE -> extractPagesToRepoStartPreview(data, MultipleObjectsDetectorActivity.SNAPPED_OBJECTS_EXTRA)
+            MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE -> {
+                PageRepository.addPages(MultipleObjectsDetectorActivity.parseActivityResult(data))
+                val intent = Intent(this, PagePreviewActivity::class.java)
+                startActivity(intent)
+            }
             CAMERA_DEFAULT_UI_REQUEST_CODE -> extractPagesToRepoStartPreview(data, DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
             EHIC_SCAN_REQUEST_CODE -> {
                 val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
