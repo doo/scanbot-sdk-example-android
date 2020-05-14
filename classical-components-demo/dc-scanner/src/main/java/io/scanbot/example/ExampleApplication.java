@@ -39,6 +39,7 @@ public class ExampleApplication extends Application {
                 })
                 // TODO 2/2: Enable the Scanbot SDK license key
                 .prepareOCRLanguagesBlobs(true)
+                .prepareDcBlobs(true)
                 //.license(this, LICENSE_KEY)
                 .initialize(this);
 
