@@ -7,15 +7,16 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.mrzscanner.MRZScanner;
-import net.doo.snap.mrzscanner.MRZScannerFrameHandler;
-import net.doo.snap.util.log.Logger;
-import net.doo.snap.util.log.LoggerProvider;
+import io.scanbot.sdk.mrzscanner.MRZScanner;
+import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler;
+import io.scanbot.sdk.util.log.Logger;
+import io.scanbot.sdk.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import net.doo.snap.camera.CameraOpenCallback;
+import net.doo.snap.camera.ScanbotCameraView;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;

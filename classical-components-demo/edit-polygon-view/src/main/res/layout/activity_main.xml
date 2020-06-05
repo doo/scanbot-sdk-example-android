@@ -36,7 +36,7 @@
         android:text="Back"
         android:visibility="gone"/>
 
-    <net.doo.snap.ui.EditPolygonImageView
+    <io.scanbot.sdk.ui.EditPolygonImageView
         android:id="@+id/polygonView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,7 +48,7 @@
         app:magneticLineTreshold="10dp"
         android:layout_above="@+id/buttons"/>
 
-    <net.doo.snap.ui.MagnifierView
+    <io.scanbot.sdk.ui.MagnifierView
         android:id="@+id/magnifier"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

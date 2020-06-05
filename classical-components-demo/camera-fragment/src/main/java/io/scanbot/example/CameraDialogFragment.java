@@ -14,12 +14,11 @@ import androidx.fragment.app.DialogFragment;
 
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.ui.PolygonView;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.List;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.process.CropOperation;
 import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.PolygonView;
 
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example
@@ -73,7 +73,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
 
-        PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
+        PolygonView polygonView = baseView.findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
 
         AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);

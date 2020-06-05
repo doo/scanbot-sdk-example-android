@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
     </net.doo.snap.camera.ScanbotCameraView>
 
-    <io.scanbot.sdk.ui.camera.FinderOverlayView
+    <io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
         android:id="@id/finder_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

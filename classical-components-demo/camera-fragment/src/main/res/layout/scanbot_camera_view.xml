@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <net.doo.snap.ui.PolygonView
+        <io.scanbot.sdk.ui.PolygonView
             android:id="@+id/polygonView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

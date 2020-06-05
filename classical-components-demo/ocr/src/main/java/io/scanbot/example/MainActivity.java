@@ -12,11 +12,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.entity.Language;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.process.OcrResult;
-import net.doo.snap.util.FileChooserUtils;
-import net.doo.snap.util.bitmap.BitmapUtils;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+import io.scanbot.sdk.entity.Language;
+import io.scanbot.sdk.ocr.process.OcrResult;
+import io.scanbot.sdk.util.FileChooserUtils;
+import io.scanbot.sdk.util.bitmap.BitmapUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import io.scanbot.sdk.ocr.OpticalCharacterRecognizer;
 import io.scanbot.sdk.persistence.PageFileStorage;
 import io.scanbot.sdk.process.ImageFilterType;
 import io.scanbot.sdk.process.PDFPageSize;
-import io.scanbot.sdk.process.PageProcessor;
+import io.scanbot.sdk.docprocessing.PageProcessor;
 
 
 public class MainActivity extends AppCompatActivity {

@@ -14,14 +14,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.multipleobjects.MultipleObjectsFrameHandler
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.camera.ShutterButton
+import io.scanbot.sdk.ui.multipleobjects.MultiplePolygonsView
 import net.doo.snap.camera.PictureCallback
 import net.doo.snap.camera.ScanbotCameraView
-import net.doo.snap.lib.detector.DetectionResult
-import net.doo.snap.ui.MultiplePolygonsView
+
 import java.util.*
 
 class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {

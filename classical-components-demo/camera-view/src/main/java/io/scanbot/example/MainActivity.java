@@ -15,12 +15,11 @@ import android.widget.TextView;
 
 import net.doo.snap.camera.AutoSnappingController;
 import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
 import net.doo.snap.camera.PictureCallback;
 import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.ui.PolygonView;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -37,6 +36,7 @@ import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.process.CropOperation;
 import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.PolygonView;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
