@@ -22,6 +22,8 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
@@ -41,8 +43,6 @@ import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDete
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import net.doo.snap.camera.CameraPreviewMode
-import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {

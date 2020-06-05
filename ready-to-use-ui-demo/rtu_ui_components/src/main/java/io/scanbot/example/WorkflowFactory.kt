@@ -5,10 +5,10 @@ import android.graphics.RectF
 import android.os.Parcel
 import android.os.Parcelable
 import io.scanbot.sdk.barcode.entity.BarcodeFormat
+import io.scanbot.sdk.camera.FrameHandler
+import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.entity.workflow.*
-import net.doo.snap.camera.PreviewBuffer
-import net.doo.snap.lib.detector.PageAspectRatio
 
 /**
  * Provides predefined Workflow configurations
@@ -219,7 +219,7 @@ class WorkflowFactory {
     }
 
     class TestScanner(context: Context, step: WorkflowStep) : WorkflowScanner(context, step) {
-        override fun scanOnCameraFrame(previewFrame: PreviewBuffer.FrameHandler.Frame): WorkflowStepResult {
+        override fun scanOnCameraFrame(previewFrame: FrameHandler.Frame): WorkflowStepResult {
             // implement scanning logic here
             return TestWorkflowStepResult(step)
         }
@@ -235,7 +235,7 @@ class WorkflowFactory {
                    override val requiredAspectRatios: List<PageAspectRatio> = emptyList(),
                    override val wantsCapturedPage: Boolean = false,
                    override val wantsVideoFramePage: Boolean = false,
-                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> = object : WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> {
+                   override val workflowStepValidation: WorkflowStepValidationHandler<TestWorkflowStepResult> = object : WorkflowStepValidationHandler<TestWorkflowStepResult> {
                        override fun invoke(result: TestWorkflowStepResult): WorkflowStepError? {
                            return null
                        }
@@ -244,7 +244,8 @@ class WorkflowFactory {
         constructor(parcel: Parcel) : this(
                 parcel.readString(),
                 parcel.readString(),
-                parcel.createTypedArrayList(PageAspectRatio.CREATOR),
+//                parcel.createTypedArrayList(PageAspectRatio.), TODO
+                emptyList(),
                 parcel.readByte() != 0.toByte(),
                 parcel.readByte() != 0.toByte(),
                 parcel.readSerializable() as WorkflowStepValidationHandler<TestWorkflowStepResult>)
