@@ -9,6 +9,7 @@ import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.entity.workflow.*
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Provides predefined Workflow configurations
@@ -230,6 +231,7 @@ class WorkflowFactory {
         }
     }
 
+    @Parcelize
     class TestStep(override val title: String = "",
                    override val message: String = "",
                    override val requiredAspectRatios: List<PageAspectRatio> = emptyList(),
@@ -240,40 +242,7 @@ class WorkflowFactory {
                            return null
                        }
                    }
-    ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation) {
-        constructor(parcel: Parcel) : this(
-                parcel.readString(),
-                parcel.readString(),
-//                parcel.createTypedArrayList(PageAspectRatio.), TODO
-                emptyList(),
-                parcel.readByte() != 0.toByte(),
-                parcel.readByte() != 0.toByte(),
-                parcel.readSerializable() as WorkflowStepValidationHandler<TestWorkflowStepResult>)
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeString(title)
-            parcel.writeString(message)
-            parcel.writeTypedList(requiredAspectRatios)
-            parcel.writeByte(if (wantsCapturedPage) 1 else 0)
-            parcel.writeByte(if (wantsVideoFramePage) 1 else 0)
-            parcel.writeSerializable(workflowStepValidation)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<TestStep> {
-            override fun createFromParcel(parcel: Parcel): TestStep {
-                return TestStep(parcel)
-            }
-
-            override fun newArray(size: Int): Array<TestStep?> {
-                return arrayOfNulls(size)
-            }
-        }
-
-    }
+    ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation)
 
 }
 
