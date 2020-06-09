@@ -12,11 +12,11 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.DialogFragment;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
 import io.scanbot.sdk.core.contourdetector.ContourDetector;
 import io.scanbot.sdk.core.contourdetector.DetectionResult;
 

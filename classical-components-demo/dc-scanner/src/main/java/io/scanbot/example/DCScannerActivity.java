@@ -6,9 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.dcscanner.DCScanner;
 import io.scanbot.sdk.dcscanner.DCScannerFrameHandler;
 import io.scanbot.sdk.util.log.Logger;

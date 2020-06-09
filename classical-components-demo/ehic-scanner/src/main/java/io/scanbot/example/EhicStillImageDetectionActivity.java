@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import net.doo.snap.camera.CameraPreviewMode;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +22,7 @@ import java.util.List;
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus;
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.camera.CameraPreviewMode;
 import io.scanbot.sdk.core.contourdetector.DetectionResult;
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner;
 import io.scanbot.sdk.persistence.Page;

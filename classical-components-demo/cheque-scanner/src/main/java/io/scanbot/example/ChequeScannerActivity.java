@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
@@ -17,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import io.scanbot.chequescanner.model.Result;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.chequescanner.ChequeScanner;
 import io.scanbot.sdk.chequescanner.ChequeScannerFrameHandler;
 
