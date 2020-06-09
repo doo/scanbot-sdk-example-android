@@ -21,8 +21,8 @@ class BarcodeResultActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         showSnapImageIfExists(
-            BarcodeResultRepository.barcodeResultBundle?.previewPath
-                ?: BarcodeResultRepository.barcodeResultBundle?.imagePath
+                BarcodeResultRepository.barcodeResultBundle?.previewPath
+                        ?: BarcodeResultRepository.barcodeResultBundle?.imagePath
         )
 
         showLatestBarcodeResult(BarcodeResultRepository.barcodeResultBundle?.barcodeScanningResult)
@@ -31,13 +31,13 @@ class BarcodeResultActivity : AppCompatActivity() {
     private fun showSnapImageIfExists(imagePath: String?) {
         imagePath?.let { imagePath ->
             recognisedItems.addView(
-                layoutInflater.inflate(
-                    R.layout.snap_image_item,
-                    recognisedItems,
-                    false
-                )?.also {
-                    Picasso.with(this).load(File(imagePath)).into(it.snapImage)
-                })
+                    layoutInflater.inflate(
+                            R.layout.snap_image_item,
+                            recognisedItems,
+                            false
+                    )?.also {
+                        Picasso.with(this).load(File(imagePath)).into(it.snapImage)
+                    })
         }
     }
 
@@ -49,8 +49,8 @@ class BarcodeResultActivity : AppCompatActivity() {
                         it.image.setImageBitmap(bitmap)
                     }
                     it.barcodeFormat.text = item.barcodeFormat.name
-                    it.docFormat.text = item.barcodeDocumentFormat?.documentFormat
-                    it.docFormat.visibility = if (item.barcodeDocumentFormat != null) View.VISIBLE else View.GONE
+                    it.docFormat.text = item.formattedResult?.documentFormat
+                    it.docFormat.visibility = if (item.formattedData != null) View.VISIBLE else View.GONE
                     it.docText.text = item.text
                     it.setOnClickListener {
                         val intent = Intent(this, DetailedItemDataActivity::class.java)

@@ -13,14 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.ui.PolygonView;
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -29,8 +28,15 @@ import androidx.core.view.WindowCompat;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.PolygonView;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     private long lastUserGuidanceHintTs = 0L;
     private Button autoSnappingToggleButton;
     private ShutterButton shutterButton;
+    private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().hide();
+        scanbotSDK  = new ScanbotSDK(this);
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         polygonView.setFillColor(POLYGON_FILL_COLOR);
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60);
         contourDetectorFrameHandler.setAcceptedSizeScore(75);
@@ -268,10 +276,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, false);
         }
 
+        final ContourDetector detector = scanbotSDK.contourDetector();
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
         detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
+        final Bitmap documentImage =  scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
         resultView.post(new Runnable() {
             @Override

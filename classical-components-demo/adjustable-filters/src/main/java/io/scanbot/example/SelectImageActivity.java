@@ -15,9 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.util.FileChooserUtils;
-import net.doo.snap.util.bitmap.BitmapUtils;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+import io.scanbot.sdk.util.FileChooserUtils;
+import io.scanbot.sdk.util.bitmap.BitmapUtils;
 
 import java.io.IOException;
 import java.util.Collections;

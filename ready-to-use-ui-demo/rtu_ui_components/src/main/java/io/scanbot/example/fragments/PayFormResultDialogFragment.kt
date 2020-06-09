@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
-import io.scanbot.payformscanner.model.PayFormRecognitionResult
+import io.scanbot.sdk.core.payformscanner.model.PayFormRecognitionResult
 import io.scanbot.sdk.ui.entity.workflow.PayFormWorkflowStepResult
 import io.scanbot.sdk.ui.entity.workflow.ScanPayFormWorkflowStep
 import io.scanbot.sdk.ui.entity.workflow.Workflow

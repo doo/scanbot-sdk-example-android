@@ -5,7 +5,8 @@ import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
-import net.doo.snap.util.log.LoggerProvider
+
+import io.scanbot.sdk.util.log.LoggerProvider
 
 class ExampleApplication : Application() {
     /*
@@ -26,21 +27,21 @@ class ExampleApplication : Application() {
             // TODO 2/2: Enable the Scanbot SDK license key
             //.license(this, licenseKey)
             .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
-                LoggerProvider.getLogger().d("ExampleApplication", "+++> License status: ${status.name}")
+                LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}")
                 if (feature != SdkFeature.NoSdkFeature) {
-                    LoggerProvider.getLogger().d("ExampleApplication", "+++> Feature not available: ${feature.name}")
+                    LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
                 }
             })
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
             .prepareBarcodeScannerBlobs(true)
             .initialize(this)
 
-        LoggerProvider.getLogger().d("ExampleApplication", "Scanbot SDK was initialized")
+        LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")
 
         val licenseInfo = ScanbotSDK(this).licenseInfo
-        LoggerProvider.getLogger().d("ExampleApplication", "License status: ${licenseInfo.status}")
-        LoggerProvider.getLogger().d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
-        LoggerProvider.getLogger().d("ExampleApplication", "License expirationDate: ${licenseInfo.expirationDate}")
+        LoggerProvider.logger.d("ExampleApplication", "License status: ${licenseInfo.status}")
+        LoggerProvider.logger.d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
+        LoggerProvider.logger.d("ExampleApplication", "License expirationDate: ${licenseInfo.expirationDate}")
     }
 }
 

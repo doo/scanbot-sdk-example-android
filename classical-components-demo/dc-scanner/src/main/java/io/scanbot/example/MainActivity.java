@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import net.doo.snap.util.log.Logger;
-import net.doo.snap.util.log.LoggerProvider;
+import io.scanbot.sdk.util.log.Logger;
+import io.scanbot.sdk.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;

@@ -11,18 +11,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.CameraPreviewMode;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.lib.detector.PageAspectRatio;
-
-import java.util.Arrays;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -30,9 +18,26 @@ import androidx.core.view.WindowCompat;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.CameraPreviewMode;
 import io.scanbot.sdk.camera.FrameHandlerResult;
-import io.scanbot.sdk.ui.camera.FinderOverlayView;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+import io.scanbot.sdk.core.contourdetector.PageAspectRatio;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView;
+import io.scanbot.sdk.ui.camera.FinderAspectRatio;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
@@ -40,19 +45,20 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         ContourDetectorFrameHandler.ResultHandler {
 
     private ScanbotCameraView cameraView;
-    private FinderOverlayView finderOverlayView;
+    private AdaptiveFinderOverlayView finderOverlayView;
     private ImageView resultView;
     private ContourDetectorFrameHandler contourDetectorFrameHandler;
     private AutoSnappingController autoSnappingController;
     private TextView userGuidanceHint;
     private long lastUserGuidanceHintTs = 0L;
     private ShutterButton shutterButton;
+    private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
     private boolean autoSnappingEnabled = true;
 
-    private final PageAspectRatio[] requiredPageAspectRatios = new PageAspectRatio[] {
-            new PageAspectRatio(21.0, 29.7), // A4 page size
+    private final FinderAspectRatio[] requiredPageAspectRatios = new FinderAspectRatio[]{
+            new FinderAspectRatio(21.0, 29.7), // A4 page size
     };
 
 
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
-
+        scanbotSDK = new ScanbotSDK(this);
         askPermission();
 
         setContentView(R.layout.activity_main);
@@ -95,13 +101,17 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
         //contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
-        finderOverlayView = (FinderOverlayView) findViewById(R.id.finder_overlay);
+        finderOverlayView = (AdaptiveFinderOverlayView) findViewById(R.id.finder_overlay);
         finderOverlayView.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
 
-        contourDetectorFrameHandler.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
+        ArrayList<PageAspectRatio> list = new ArrayList<>();
+        for (FinderAspectRatio ratio : requiredPageAspectRatios) {
+            list.add(new PageAspectRatio(ratio.getWidth(),ratio.getHeight()));
+        }
+        contourDetectorFrameHandler.setRequiredAspectRatios(list);
         contourDetectorFrameHandler.addResultHandler(finderOverlayView.getContourDetectorFrameHandler());
         contourDetectorFrameHandler.addResultHandler(this);
 
@@ -167,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
             @Override
             public void run() {
                 if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
+                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>) frameHandlerResult).getValue().detectionResult);
                 }
             }
         });
@@ -242,10 +252,16 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
-        detector.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
+        final ContourDetector detector = scanbotSDK.contourDetector();
+        ArrayList<PageAspectRatio> list = new ArrayList<>();
+        for (FinderAspectRatio ratio : requiredPageAspectRatios) {
+            list.add(new PageAspectRatio(ratio.getWidth(),ratio.getHeight()));
+        }
+        detector.setRequiredAspectRatios(list);
         detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
+        final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
         resultView.post(new Runnable() {
             @Override

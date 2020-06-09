@@ -10,16 +10,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.ui.PolygonView;
-
 import androidx.fragment.app.DialogFragment;
+
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.PolygonView;
 
 /**
  * {@link ScanbotCameraView} integrated in {@link DialogFragment} example
@@ -27,7 +34,7 @@ import androidx.fragment.app.DialogFragment;
 public class CameraDialogFragment extends DialogFragment implements PictureCallback {
     private ScanbotCameraView cameraView;
     private ImageView resultView;
-
+    private ScanbotSDK scanbotSDK;
     boolean flashEnabled = false;
 
     /**
@@ -40,6 +47,7 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        scanbotSDK = new ScanbotSDK(getContext());
     }
 
     @Override
@@ -63,9 +71,9 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         resultView = (ImageView) baseView.findViewById(R.id.result);
 
-        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView);
+        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
 
-        PolygonView polygonView = (PolygonView) baseView.findViewById(R.id.polygonView);
+        PolygonView polygonView = baseView.findViewById(R.id.polygonView);
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler);
 
         AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
@@ -134,10 +142,12 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(getContext()).contourDetector();
         DetectionResult detectionResult = detector.detect(originalBitmap);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
         if (detectionResult != null) {
-            final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+            final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
             if (documentImage != null)
                 resultView.post(new Runnable() {

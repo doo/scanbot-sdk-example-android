@@ -5,10 +5,11 @@ import android.graphics.RectF
 import android.os.Parcel
 import android.os.Parcelable
 import io.scanbot.sdk.barcode.entity.BarcodeFormat
+import io.scanbot.sdk.camera.FrameHandler
+import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.ui.entity.workflow.*
-import net.doo.snap.camera.PreviewBuffer
-import net.doo.snap.lib.detector.PageAspectRatio
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Provides predefined Workflow configurations
@@ -219,7 +220,7 @@ class WorkflowFactory {
     }
 
     class TestScanner(context: Context, step: WorkflowStep) : WorkflowScanner(context, step) {
-        override fun scanOnCameraFrame(previewFrame: PreviewBuffer.FrameHandler.Frame): WorkflowStepResult {
+        override fun scanOnCameraFrame(previewFrame: FrameHandler.Frame): WorkflowStepResult {
             // implement scanning logic here
             return TestWorkflowStepResult(step)
         }
@@ -230,49 +231,18 @@ class WorkflowFactory {
         }
     }
 
+    @Parcelize
     class TestStep(override val title: String = "",
                    override val message: String = "",
                    override val requiredAspectRatios: List<PageAspectRatio> = emptyList(),
                    override val wantsCapturedPage: Boolean = false,
                    override val wantsVideoFramePage: Boolean = false,
-                   override val workflowStepValidation: WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> = object : WorkflowStep.WorkflowStepValidationHandler<TestWorkflowStepResult> {
+                   override val workflowStepValidation: WorkflowStepValidationHandler<TestWorkflowStepResult> = object : WorkflowStepValidationHandler<TestWorkflowStepResult> {
                        override fun invoke(result: TestWorkflowStepResult): WorkflowStepError? {
                            return null
                        }
                    }
-    ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation) {
-        constructor(parcel: Parcel) : this(
-                parcel.readString(),
-                parcel.readString(),
-                parcel.createTypedArrayList(PageAspectRatio.CREATOR),
-                parcel.readByte() != 0.toByte(),
-                parcel.readByte() != 0.toByte(),
-                parcel.readSerializable() as WorkflowStepValidationHandler<TestWorkflowStepResult>)
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeString(title)
-            parcel.writeString(message)
-            parcel.writeTypedList(requiredAspectRatios)
-            parcel.writeByte(if (wantsCapturedPage) 1 else 0)
-            parcel.writeByte(if (wantsVideoFramePage) 1 else 0)
-            parcel.writeSerializable(workflowStepValidation)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<TestStep> {
-            override fun createFromParcel(parcel: Parcel): TestStep {
-                return TestStep(parcel)
-            }
-
-            override fun newArray(size: Int): Array<TestStep?> {
-                return arrayOfNulls(size)
-            }
-        }
-
-    }
+    ) : WorkflowStep(title, message, requiredAspectRatios, wantsCapturedPage, wantsVideoFramePage, workflowStepValidation)
 
 }
 

@@ -22,12 +22,14 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
-import net.doo.snap.camera.PictureCallback
-import net.doo.snap.camera.ScanbotCameraView
+import io.scanbot.sdk.camera.PictureCallback
+import io.scanbot.sdk.camera.ScanbotCameraView
+
 
 class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler,
-    PictureCallback {
+        PictureCallback {
 
     private var cameraView: ScanbotCameraView? = null
     private var resultView: ImageView? = null
@@ -44,16 +46,19 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
 
-        cameraView!!.setCameraOpenCallback {
-            cameraView!!.postDelayed({
-                cameraView!!.useFlash(flashEnabled)
-                cameraView!!.continuousFocus()
-            }, 300)
-        }
+        cameraView!!.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView!!.postDelayed({
+                    cameraView!!.useFlash(flashEnabled)
+                    cameraView!!.continuousFocus()
+                }, 300)
+            }
+
+        })
 
         barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(
-            cameraView!!,
-            ScanbotSDK(this).barcodeDetector()
+                cameraView!!,
+                ScanbotSDK(this).barcodeDetector()
         )
 
         barcodeDetectorFrameHandler?.setDetectionInterval(1000)
@@ -61,12 +66,12 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         barcodeDetectorFrameHandler?.saveCameraPreviewFrame(true)
 
         val barcodeAutoSnappingController =
-            BarcodeAutoSnappingController.attach(cameraView!!, barcodeDetectorFrameHandler!!)
+                BarcodeAutoSnappingController.attach(cameraView!!, barcodeDetectorFrameHandler!!)
         barcodeAutoSnappingController.setSensitivity(1f)
         cameraView?.addPictureCallback(this)
 
         ScanbotSDK(this).barcodeDetector()
-            .setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
+                .setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
     }
 
     override fun onResume() {
@@ -98,7 +103,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         val matrix = Matrix()
         matrix.setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)
         val resultBitmap =
-            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+                Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
 
         resultView?.post {
             resultView?.setImageBitmap(resultBitmap)
@@ -113,9 +118,9 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         } else {
             cameraView?.post {
                 Toast.makeText(
-                    this,
-                    "License has expired!",
-                    Toast.LENGTH_LONG
+                        this,
+                        "License has expired!",
+                        Toast.LENGTH_LONG
                 ).show()
             }
         }

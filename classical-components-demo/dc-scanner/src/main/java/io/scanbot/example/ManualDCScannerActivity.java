@@ -11,16 +11,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.dcscanner.DCScanner;
-import net.doo.snap.lib.detector.ContourDetector;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.dcscanner.DCScanner;
+import io.scanbot.sdk.process.CropOperation;
+import io.scanbot.sdk.process.Operation;
 
 public class ManualDCScannerActivity extends AppCompatActivity implements PictureCallback {
 
@@ -29,6 +34,7 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
 
     boolean flashEnabled = false;
     private DCScanner dcScanner;
+    private ScanbotSDK scanbotSDK;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, ManualDCScannerActivity.class);
@@ -61,7 +67,7 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
 
         resultImageView = findViewById(R.id.resultImageView);
 
-        ScanbotSDK scanbotSDK = new ScanbotSDK(this);
+        scanbotSDK = new ScanbotSDK(this);
         dcScanner = scanbotSDK.dcScanner();
 
         findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
@@ -119,9 +125,11 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
         }
 
         // Run document detection on original image:
-        final ContourDetector detector = new ContourDetector();
+        final ContourDetector detector = new ScanbotSDK(this).contourDetector();
         detector.detect(originalBitmap);
-        final Bitmap documentImage = detector.processImageAndRelease(originalBitmap, detector.getPolygonF(), ContourDetector.IMAGE_FILTER_NONE);
+        List<Operation> operations = new ArrayList<>();
+        operations.add(new CropOperation(detector.getPolygonF()));
+        final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
         // Show the cropped image as thumbnail preview
         final Bitmap thumbnailImage = resizeImage(documentImage, 600, 600);
@@ -140,8 +148,7 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
 
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             startActivity(DCResultActivity.newIntent(ManualDCScannerActivity.this, resultInfo));
-        }
-        else {
+        } else {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
