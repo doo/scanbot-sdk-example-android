@@ -14,15 +14,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.core.contourdetector.ContourDetector;
 import io.scanbot.sdk.dcscanner.DCScanner;
 import io.scanbot.sdk.process.CropOperation;

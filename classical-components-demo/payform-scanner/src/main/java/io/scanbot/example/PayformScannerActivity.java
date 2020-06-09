@@ -10,10 +10,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.core.payformscanner.model.PayFormRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
 
 
 import io.scanbot.sdk.core.payformscanner.DetectionResult;

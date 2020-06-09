@@ -14,14 +14,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.PictureCallback
+import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.multipleobjects.MultipleObjectsFrameHandler
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.multipleobjects.MultiplePolygonsView
-import net.doo.snap.camera.PictureCallback
-import net.doo.snap.camera.ScanbotCameraView
 
 import java.util.*
 
@@ -55,12 +56,12 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
         progressView = findViewById(R.id.progressView)
 
         cameraView = findViewById(R.id.camera)
-        cameraView.setCameraOpenCallback {
+        cameraView.setCameraOpenCallback(CameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.continuousFocus()
                 cameraView.useFlash(flashEnabled)
             }, 700)
-        }
+        })
         cameraView.addPictureCallback(this)
 
         val shutterButton = findViewById<ShutterButton>(R.id.snap)

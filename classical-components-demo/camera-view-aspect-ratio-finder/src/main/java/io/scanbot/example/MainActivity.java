@@ -16,12 +16,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.CameraPreviewMode;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,7 +24,12 @@ import java.util.List;
 
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.CameraPreviewMode;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
 import io.scanbot.sdk.core.contourdetector.ContourDetector;
 import io.scanbot.sdk.core.contourdetector.DetectionResult;

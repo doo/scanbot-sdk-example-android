@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import io.scanbot.sdk.camera.CameraPreviewMode;
 import io.scanbot.sdk.core.contourdetector.DetectionResult;
 import io.scanbot.sdk.mrzscanner.MRZScanner;
 import io.scanbot.sdk.util.FileChooserUtils;
@@ -23,8 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import net.doo.snap.camera.CameraPreviewMode;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
