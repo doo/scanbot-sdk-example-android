@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         cameraView.lockToPortrait(true);
 
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
-        //cameraView.setPreviewMode(net.doo.snap.camera.CameraPreviewMode.FIT_IN);
+        //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
 
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override
