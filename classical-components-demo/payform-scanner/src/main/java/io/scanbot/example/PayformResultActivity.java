@@ -9,7 +9,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
-import io.scanbot.payformscanner.model.RecognizedField;
+
+import io.scanbot.sdk.core.payformscanner.model.RecognizedField;
 
 public class PayformResultActivity extends AppCompatActivity {
     public static final String EXTRA_SENDER = "sender";
@@ -41,30 +42,30 @@ public class PayformResultActivity extends AppCompatActivity {
     public static Intent newIntent(Context context, List<RecognizedField> fields) {
         Intent intent = new Intent(context, PayformResultActivity.class);
         for (RecognizedField field : fields) {
-            switch (field.getTokenType()) {
+            switch (field.tokenType) {
                 case RECEIVER:
-                    intent.putExtra(EXTRA_SENDER, field.getValue());
+                    intent.putExtra(EXTRA_SENDER, field.value);
                     break;
                 case IBAN:
-                    intent.putExtra(EXTRA_IBAN, field.getValue());
+                    intent.putExtra(EXTRA_IBAN, field.value);
                     break;
                 case AMOUNT:
-                    intent.putExtra(EXTRA_AMOUNT, field.getValue());
+                    intent.putExtra(EXTRA_AMOUNT, field.value);
                     break;
                 case BIC:
-                    intent.putExtra(EXTRA_BIC, field.getValue());
+                    intent.putExtra(EXTRA_BIC, field.value);
                     break;
                 case REFERENCE_NUMBER:
-                    intent.putExtra(EXTRA_REFERENCE_NUMBER, field.getValue());
+                    intent.putExtra(EXTRA_REFERENCE_NUMBER, field.value);
                     break;
                 case REFERENCE_NUMBER2:
-                    intent.putExtra(EXTRA_REFERENCE_NUMBER_2, field.getValue());
+                    intent.putExtra(EXTRA_REFERENCE_NUMBER_2, field.value);
                     break;
                 case SENDER:
-                    intent.putExtra(EXTRA_SENDER, field.getValue());
+                    intent.putExtra(EXTRA_SENDER, field.value);
                     break;
                 case SENDER_IBAN:
-                    intent.putExtra(EXTRA_SENDER_IBAN, field.getValue());
+                    intent.putExtra(EXTRA_SENDER_IBAN, field.value);
                     break;
             }
         }

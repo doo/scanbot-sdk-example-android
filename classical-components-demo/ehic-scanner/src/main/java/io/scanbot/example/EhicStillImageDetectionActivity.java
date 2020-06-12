@@ -15,11 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import net.doo.snap.camera.CameraPreviewMode;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.util.FileChooserUtils;
-import net.doo.snap.util.bitmap.BitmapUtils;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +22,8 @@ import java.util.List;
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus;
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.camera.CameraPreviewMode;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
@@ -36,6 +33,8 @@ import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity;
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration;
 import io.scanbot.sdk.ui.view.edit.CroppingActivity;
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration;
+import io.scanbot.sdk.util.FileChooserUtils;
+import io.scanbot.sdk.util.bitmap.BitmapUtils;
 
 public class EhicStillImageDetectionActivity extends AppCompatActivity {
 

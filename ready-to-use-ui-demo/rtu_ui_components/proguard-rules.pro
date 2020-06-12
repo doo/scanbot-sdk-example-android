@@ -3,13 +3,13 @@
 
 -ignorewarnings
 
--keep public class net.doo.snap.ui.** { *; }
+-ignorewarnings
 -keep public class io.scanbot.sdk.ui.** { *; }
 
 -keep public class io.scanbot.sap.SapManager { *; }
 
--keeppackagenames net.doo.snap.lib.detector.**
--keep public class net.doo.snap.lib.detector.**{ *; }
+-keeppackagenames io.scanbot.sdk.core.contourdetector.**
+-keep public class io.scanbot.sdk.core.contourdetector.**{ *; }
 
 -keeppackagenames com.googlecode.tesseract.android.**
 -keep public class com.googlecode.tesseract.android.**{ *; }

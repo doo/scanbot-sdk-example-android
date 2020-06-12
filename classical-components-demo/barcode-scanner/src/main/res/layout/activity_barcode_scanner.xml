@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.BarcodeScannerActivity">
 
-    <net.doo.snap.camera.ScanbotCameraView
+    <io.scanbot.sdk.camera.ScanbotCameraView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

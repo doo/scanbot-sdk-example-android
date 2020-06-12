@@ -22,13 +22,18 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.batch.BatchBarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.batch.configuration.BatchBarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
+import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
@@ -41,8 +46,6 @@ import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDete
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import net.doo.snap.camera.CameraPreviewMode
-import net.doo.snap.lib.detector.DetectionResult
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -264,6 +267,24 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
 
             val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
+            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
+            val barcodeCameraConfiguration = BatchBarcodeScannerConfiguration()
+
+            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            barcodeCameraConfiguration.setDetailsBackgroundColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setDetailsActionColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setDetailsBackgroundColor(ContextCompat.getColor(this, R.color.sheetColor))
+            barcodeCameraConfiguration.setDetailsPrimaryColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setBarcodesCountTextColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
+
+            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
         }
 

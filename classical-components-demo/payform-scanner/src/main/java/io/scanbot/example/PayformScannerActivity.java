@@ -10,21 +10,25 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
-import io.scanbot.payformscanner.model.PayFormRecognitionResult;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.core.payformscanner.model.PayFormRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.payformscanner.PayFormScanner;
-import net.doo.snap.payformscanner.PayFormScannerFrameHandler;
-import net.doo.snap.util.log.Logger;
-import net.doo.snap.util.log.LoggerProvider;
+
+
+import io.scanbot.sdk.core.payformscanner.DetectionResult;
+import io.scanbot.sdk.payformscanner.PayFormScannerFrameHandler;
+
+import io.scanbot.sdk.payformscanner.PayFormScanner;
+
+import io.scanbot.sdk.util.log.Logger;
+import io.scanbot.sdk.util.log.LoggerProvider;
 
 import org.jetbrains.annotations.NotNull;
 
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 
-import static io.scanbot.payformscanner.PayFormScanner.*;
 
 public class PayformScannerActivity extends AppCompatActivity {
 

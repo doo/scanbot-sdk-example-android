@@ -13,14 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.doo.snap.camera.AutoSnappingController;
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ContourDetectorFrameHandler;
-import net.doo.snap.camera.PictureCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.ui.PolygonView;
+import io.scanbot.sdk.camera.AutoSnappingController;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.PictureCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -37,6 +36,7 @@ import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.process.CropOperation;
 import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.PolygonView;
 import io.scanbot.sdk.ui.camera.ShutterButton;
 
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         cameraView.lockToPortrait(true);
 
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
-        //cameraView.setPreviewMode(net.doo.snap.camera.CameraPreviewMode.FIT_IN);
+        //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
 
         cameraView.setCameraOpenCallback(new CameraOpenCallback() {
             @Override

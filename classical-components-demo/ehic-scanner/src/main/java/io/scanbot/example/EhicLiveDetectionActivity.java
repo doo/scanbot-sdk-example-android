@@ -6,12 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.util.log.Logger;
-import net.doo.snap.util.log.LoggerProvider;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
@@ -19,9 +13,14 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus;
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
+import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.FrameHandlerResult;
+import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner;
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler;
+import io.scanbot.sdk.util.log.Logger;
+import io.scanbot.sdk.util.log.LoggerProvider;
+
 
 public class EhicLiveDetectionActivity extends AppCompatActivity {
 

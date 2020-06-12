@@ -13,10 +13,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.util.FileChooserUtils;
-import net.doo.snap.util.bitmap.BitmapUtils;
-import net.doo.snap.util.thread.MimeUtils;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+import io.scanbot.sdk.util.FileChooserUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,12 +27,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.docprocessing.PageProcessor;
 import io.scanbot.sdk.persistence.Page;
 import io.scanbot.sdk.persistence.PageFileStorage;
 import io.scanbot.sdk.process.ImageFilterType;
 import io.scanbot.sdk.process.PDFPageSize;
 import io.scanbot.sdk.process.PDFRenderer;
-import io.scanbot.sdk.process.PageProcessor;
+import io.scanbot.sdk.util.bitmap.BitmapUtils;
+import io.scanbot.sdk.util.thread.MimeUtils;
 
 
 public class MainActivity extends AppCompatActivity {

@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraOpenCallback;
-import net.doo.snap.camera.ScanbotCameraView;
-import net.doo.snap.dcscanner.DCScanner;
-import net.doo.snap.dcscanner.DCScannerFrameHandler;
-import net.doo.snap.util.log.Logger;
-import net.doo.snap.util.log.LoggerProvider;
+import io.scanbot.sdk.camera.CameraOpenCallback;
+import io.scanbot.sdk.camera.ScanbotCameraView;
+import io.scanbot.sdk.dcscanner.DCScanner;
+import io.scanbot.sdk.dcscanner.DCScannerFrameHandler;
+import io.scanbot.sdk.util.log.Logger;
+import io.scanbot.sdk.util.log.LoggerProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;

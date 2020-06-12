@@ -10,13 +10,9 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import io.scanbot.sdk.core.contourdetector.ContourDetector;
 
-import net.doo.snap.lib.detector.ContourDetector;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.lib.detector.Line2D;
-import net.doo.snap.ui.EditPolygonImageView;
-import net.doo.snap.ui.MagnifierView;
-
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,8 +23,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import io.scanbot.sdk.ScanbotSDK;
+import io.scanbot.sdk.core.contourdetector.Line2D;
 import io.scanbot.sdk.process.CropOperation;
 import io.scanbot.sdk.process.Operation;
+import io.scanbot.sdk.ui.EditPolygonImageView;
+import io.scanbot.sdk.ui.MagnifierView;
 
 public class MainActivity extends AppCompatActivity {
 

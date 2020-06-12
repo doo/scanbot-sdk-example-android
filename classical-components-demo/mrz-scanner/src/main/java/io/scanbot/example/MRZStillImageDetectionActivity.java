@@ -13,17 +13,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import net.doo.snap.camera.CameraPreviewMode;
-import net.doo.snap.lib.detector.DetectionResult;
-import net.doo.snap.mrzscanner.MRZScanner;
-import net.doo.snap.util.FileChooserUtils;
-import net.doo.snap.util.bitmap.BitmapUtils;
+import io.scanbot.sdk.camera.CameraPreviewMode;
+import io.scanbot.sdk.core.contourdetector.DetectionResult;
+import io.scanbot.sdk.mrzscanner.MRZScanner;
+import io.scanbot.sdk.util.FileChooserUtils;
+import io.scanbot.sdk.util.bitmap.BitmapUtils;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.persistence.Page;
