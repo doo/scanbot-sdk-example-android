@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,24 +13,6 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 public class MRZResultActivity extends AppCompatActivity {
 
     private static final String EXTRA_MRZ_RESULT = "MRZ_RESULT";
-
-    private TextView travelDocType;
-    private TextView documentCode;
-    private TextView firstName;
-    private TextView lastName;
-    private TextView issuingStateOrOrganization;
-    private TextView departmentOfIssuance;
-    private TextView nationality;
-    private TextView dateOfBirth;
-    private TextView gender;
-    private TextView dateOfExpiry;
-    private TextView personalNumber;
-    private TextView optional1;
-    private TextView optional2;
-    private TextView discreetIssuingStateOrOrganization;
-    private TextView validCheckDigitsCount;
-    private TextView checkDigitsCount;
-    private TextView checkDigits;
 
     public static Intent newIntent(final Context context, final MRZRecognitionResult result) {
         final Intent intent = new Intent(context, MRZResultActivity.class);
@@ -45,23 +26,23 @@ public class MRZResultActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_mrz_result);
 
-        travelDocType = findViewById(R.id.travelDocType);
-        documentCode = findViewById(R.id.document_code);
-        firstName = findViewById(R.id.first_name);
-        lastName = findViewById(R.id.last_name);
-        issuingStateOrOrganization = findViewById(R.id.issuingStateOrOrganization);
-        departmentOfIssuance = findViewById(R.id.departmentOfIssuance);
-        nationality = findViewById(R.id.nationality);
-        dateOfBirth = findViewById(R.id.dateOfBirth);
-        gender = findViewById(R.id.gender);
-        dateOfExpiry = findViewById(R.id.dateOfExpiry);
-        personalNumber = findViewById(R.id.personalNumber);
-        optional1 = findViewById(R.id.optional1);
-        optional2 = findViewById(R.id.optional2);
-        discreetIssuingStateOrOrganization = findViewById(R.id.discreetIssuingStateOrOrganization);
-        validCheckDigitsCount = findViewById(R.id.validCheckDigitsCount);
-        checkDigitsCount = findViewById(R.id.checkDigitsCount);
-        checkDigits = findViewById(R.id.checkDigits);
+        TextView travelDocType = findViewById(R.id.travelDocType);
+        TextView documentCode = findViewById(R.id.document_code);
+        TextView firstName = findViewById(R.id.first_name);
+        TextView lastName = findViewById(R.id.last_name);
+        TextView issuingStateOrOrganization = findViewById(R.id.issuingStateOrOrganization);
+        TextView departmentOfIssuance = findViewById(R.id.departmentOfIssuance);
+        TextView nationality = findViewById(R.id.nationality);
+        TextView dateOfBirth = findViewById(R.id.dateOfBirth);
+        TextView gender = findViewById(R.id.gender);
+        TextView dateOfExpiry = findViewById(R.id.dateOfExpiry);
+        TextView personalNumber = findViewById(R.id.personalNumber);
+        TextView optional1 = findViewById(R.id.optional1);
+        TextView optional2 = findViewById(R.id.optional2);
+        TextView discreetIssuingStateOrOrganization = findViewById(R.id.discreetIssuingStateOrOrganization);
+        TextView validCheckDigitsCount = findViewById(R.id.validCheckDigitsCount);
+        TextView checkDigitsCount = findViewById(R.id.checkDigitsCount);
+        TextView checkDigits = findViewById(R.id.checkDigits);
 
         final MRZRecognitionResult result = getIntent().getParcelableExtra(EXTRA_MRZ_RESULT);
 
@@ -89,11 +70,6 @@ public class MRZResultActivity extends AppCompatActivity {
         }
         checkDigits.setText(checkDigitsOutput);
 
-        findViewById(R.id.retry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.retry).setOnClickListener(v -> finish());
     }
 }

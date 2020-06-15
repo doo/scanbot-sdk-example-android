@@ -66,47 +66,31 @@ public class MRZStillImageDetectionActivity extends AppCompatActivity {
         scanbotSDK = new ScanbotSDK(this);
         mrzScanner = scanbotSDK.mrzScanner();
 
-        findViewById(R.id.start_scanner_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final DocumentScannerConfiguration configuration = new DocumentScannerConfiguration();
-                configuration.setMultiPageEnabled(false);
-                configuration.setMultiPageButtonHidden(true);
-                configuration.setAutoSnappingEnabled(false);
-                configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
-                configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT);
-                configuration.setIgnoreBadAspectRatio(true);
+        findViewById(R.id.start_scanner_btn).setOnClickListener(view -> {
+            final DocumentScannerConfiguration configuration = new DocumentScannerConfiguration();
+            configuration.setMultiPageEnabled(false);
+            configuration.setMultiPageButtonHidden(true);
+            configuration.setAutoSnappingEnabled(false);
+            configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN);
+            configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT);
+            configuration.setIgnoreBadAspectRatio(true);
 
-                final Intent intent = DocumentScannerActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
-                startActivityForResult(intent, DOCUMENT_SCANNER_REQUEST_CODE);
-            }
+            final Intent intent = DocumentScannerActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
+            startActivityForResult(intent, DOCUMENT_SCANNER_REQUEST_CODE);
         });
 
-        findViewById(R.id.import_from_lib_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-            }
-        });
+        findViewById(R.id.import_from_lib_btn).setOnClickListener(view -> openGallery());
 
         cropBtn = findViewById(R.id.crop_btn);
-        cropBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final CroppingConfiguration configuration = new CroppingConfiguration();
-                configuration.setPage(page);
-                final Intent intent = CroppingActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
-                startActivityForResult(intent, CROP_REQUEST_CODE);
-            }
+        cropBtn.setOnClickListener(view -> {
+            final CroppingConfiguration configuration = new CroppingConfiguration();
+            configuration.setPage(page);
+            final Intent intent = CroppingActivity.newIntent(MRZStillImageDetectionActivity.this, configuration);
+            startActivityForResult(intent, CROP_REQUEST_CODE);
         });
 
         runRecognitionBtn = findViewById(R.id.run_recognition_btn);
-        runRecognitionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                runRecognition();
-            }
-        });
+        runRecognitionBtn.setOnClickListener(view -> runRecognition());
     }
 
     @Override

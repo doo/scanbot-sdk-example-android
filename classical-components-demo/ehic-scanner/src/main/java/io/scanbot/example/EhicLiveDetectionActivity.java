@@ -3,8 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
@@ -12,8 +10,6 @@ import androidx.core.view.WindowCompat;
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus;
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.SdkLicenseError;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner;
@@ -27,7 +23,6 @@ public class EhicLiveDetectionActivity extends AppCompatActivity {
     private final Logger logger = LoggerProvider.getLogger();
 
     private ScanbotCameraView cameraView;
-    private TextView resultView;
 
     boolean flashEnabled = false;
 
@@ -46,52 +41,35 @@ public class EhicLiveDetectionActivity extends AppCompatActivity {
 
         cameraView = findViewById(R.id.camera);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
-
-        resultView = findViewById(R.id.result);
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.useFlash(flashEnabled);
+            cameraView.continuousFocus();
+        }, 700));
 
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
         final HealthInsuranceCardScanner healthInsuranceCardScanner = scanbotSDK.healthInsuranceCardScanner();
         HealthInsuranceCardScannerFrameHandler healthInsuranceCardScannerFrameHandler = HealthInsuranceCardScannerFrameHandler.attach(cameraView, healthInsuranceCardScanner);
 
-        healthInsuranceCardScannerFrameHandler.addResultHandler(new HealthInsuranceCardScannerFrameHandler.ResultHandler() {
-            @Override
-            public boolean handle(FrameHandlerResult<? extends HealthInsuranceCardRecognitionResult, ? extends SdkLicenseError> frameHandlerResult) {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    HealthInsuranceCardRecognitionResult ehicRecognitionResult = (HealthInsuranceCardRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
-                    if (ehicRecognitionResult != null && ehicRecognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
-                        long a = System.currentTimeMillis();
+        healthInsuranceCardScannerFrameHandler.addResultHandler(frameHandlerResult -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                HealthInsuranceCardRecognitionResult ehicRecognitionResult = (HealthInsuranceCardRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                if (ehicRecognitionResult != null && ehicRecognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
+                    long a = System.currentTimeMillis();
 
-                        try {
-                            startActivity(EhicResultActivity.newIntent(EhicLiveDetectionActivity.this, ehicRecognitionResult));
-                        } finally {
-                            long b = System.currentTimeMillis();
-                            logger.d("EHICScanner", "Total scanning (sec): " + (b - a) / 1000f);
-                        }
+                    try {
+                        startActivity(EhicResultActivity.newIntent(EhicLiveDetectionActivity.this, ehicRecognitionResult));
+                    } finally {
+                        long b = System.currentTimeMillis();
+                        logger.d("EHICScanner", "Total scanning (sec): " + (b - a) / 1000f);
                     }
                 }
-                return false;
             }
+            return false;
         });
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         Toast.makeText(

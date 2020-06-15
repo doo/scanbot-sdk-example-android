@@ -53,12 +53,7 @@ public class MainActivity extends AppCompatActivity {
         askPermission();
         initializeDependencies();
 
-        findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+        findViewById(R.id.scanButton).setOnClickListener(v -> openGallery());
         progressView = findViewById(R.id.progressBar);
         image = findViewById(R.id.image);
     }
@@ -95,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode != SELECT_PICTURE_REQUEST || resultCode != RESULT_OK) {
             return;
         }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 
@@ -14,12 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import io.scanbot.sdk.util.log.Logger;
-import io.scanbot.sdk.util.log.LoggerProvider;
-
 public class MainActivity extends AppCompatActivity {
-
-    private final Logger logger = LoggerProvider.getLogger();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,20 +23,12 @@ public class MainActivity extends AppCompatActivity {
         askPermission();
 
         Button liveScannerBtn = findViewById(R.id.live_scanner_btn);
-        liveScannerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(EhicLiveDetectionActivity.newIntent(MainActivity.this));
-            }
-        });
+        liveScannerBtn.setOnClickListener(v -> startActivity(EhicLiveDetectionActivity.newIntent(MainActivity.this)));
 
         Button stillImageScannerBtn = findViewById(R.id.still_image_detection_btn);
-        stillImageScannerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent = new Intent(getApplicationContext(), EhicStillImageDetectionActivity.class);
-                startActivity(intent);
-            }
+        stillImageScannerBtn.setOnClickListener(v -> {
+            final Intent intent = new Intent(getApplicationContext(), EhicStillImageDetectionActivity.class);
+            startActivity(intent);
         });
     }
 

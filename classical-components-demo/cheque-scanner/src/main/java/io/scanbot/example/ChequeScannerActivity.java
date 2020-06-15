@@ -3,18 +3,13 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
-import org.jetbrains.annotations.NotNull;
-
 import io.scanbot.chequescanner.model.Result;
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.SdkLicenseError;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.chequescanner.ChequeScanner;
@@ -41,51 +36,31 @@ public class ChequeScannerActivity extends AppCompatActivity {
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.useFlash(flashEnabled);
+            cameraView.continuousFocus();
+        }, 700));
 
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
         final ChequeScanner chequeScanner = scanbotSDK.chequeScanner();
         ChequeScannerFrameHandler chequeScannerFrameHandler = ChequeScannerFrameHandler.attach(cameraView, chequeScanner);
 
-        chequeScannerFrameHandler.addResultHandler(new ChequeScannerFrameHandler.ResultHandler() {
-            @Override
-            public boolean handle(@NotNull FrameHandlerResult<? extends Result, ? extends SdkLicenseError> frameHandlerResult) {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    final Result result = ((FrameHandlerResult.Success<Result>) frameHandlerResult).getValue();
-                    if (result != null
-                            && ((result.accountNumber != null && !result.accountNumber.value.isEmpty())
-                            || (result.routingNumber != null && !result.routingNumber.value.isEmpty()))) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ChequeScannerActivity.this,
-                                        extractData(result), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
+        chequeScannerFrameHandler.addResultHandler(frameHandlerResult -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                final Result result = ((FrameHandlerResult.Success<Result>) frameHandlerResult).getValue();
+                if (result != null
+                        && ((result.accountNumber != null && !result.accountNumber.value.isEmpty())
+                        || (result.routingNumber != null && !result.routingNumber.value.isEmpty()))) {
+                    runOnUiThread(() -> Toast.makeText(ChequeScannerActivity.this,
+                            extractData(result), Toast.LENGTH_LONG).show());
                 }
-                return false;
             }
+            return false;
         });
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         Toast.makeText(

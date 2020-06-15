@@ -3,10 +3,8 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.dcscanner.DCScanner;
 import io.scanbot.sdk.dcscanner.DCScannerFrameHandler;
@@ -16,11 +14,8 @@ import io.scanbot.sdk.util.log.LoggerProvider;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
-import org.jetbrains.annotations.NotNull;
-
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class DCScannerActivity extends AppCompatActivity {
@@ -46,50 +41,35 @@ public class DCScannerActivity extends AppCompatActivity {
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.useFlash(flashEnabled);
+            cameraView.continuousFocus();
+        }, 700));
 
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
         final DCScanner dcScanner = scanbotSDK.dcScanner();
         DCScannerFrameHandler dcScannerFrameHandler = DCScannerFrameHandler.attach(cameraView, dcScanner);
 
-        dcScannerFrameHandler.addResultHandler(new DCScannerFrameHandler.ResultHandler() {
-            @Override
-            public boolean handle(@NotNull FrameHandlerResult<? extends DisabilityCertificateRecognizerResultInfo, ? extends SdkLicenseError> frameHandlerResult) {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    final DisabilityCertificateRecognizerResultInfo resultInfo = ((FrameHandlerResult.Success<DisabilityCertificateRecognizerResultInfo>) frameHandlerResult).getValue();
-                    if (resultInfo != null && resultInfo.recognitionSuccessful) {
-                        long a = System.currentTimeMillis();
+        dcScannerFrameHandler.addResultHandler(frameHandlerResult -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                final DisabilityCertificateRecognizerResultInfo resultInfo = ((FrameHandlerResult.Success<DisabilityCertificateRecognizerResultInfo>) frameHandlerResult).getValue();
+                if (resultInfo != null && resultInfo.recognitionSuccessful) {
+                    long a = System.currentTimeMillis();
 
-                        try {
-                            startActivity(DCResultActivity.newIntent(DCScannerActivity.this, resultInfo));
-                        } finally {
-                            long b = System.currentTimeMillis();
-                            logger.d("DCScanner", "Total scanning (sec): " + (b - a) / 1000f);
-                        }
+                    try {
+                        startActivity(DCResultActivity.newIntent(DCScannerActivity.this, resultInfo));
+                    } finally {
+                        long b = System.currentTimeMillis();
+                        logger.d("DCScanner", "Total scanning (sec): " + (b - a) / 1000f);
                     }
                 }
-                return false;
             }
+            return false;
         });
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         Toast.makeText(

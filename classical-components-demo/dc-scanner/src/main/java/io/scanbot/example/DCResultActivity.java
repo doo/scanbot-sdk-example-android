@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,24 +28,6 @@ public class DCResultActivity extends AppCompatActivity {
     public static final String EXTRA_diagnosedOn = "diagnosedOn";
     public static final String EXTRA_diagnosedOnRC = "diagnosedOnRC";
     public static final String EXTRA_diagnosedOnVC = "diagnosedOnVC";
-
-    private TextView workAccident;
-    private TextView workAccidentConf;
-    private TextView assignedInsDoctor;
-    private TextView assignedInsDoctorConf;
-    private TextView initialCertificate;
-    private TextView initialCertificateConf;
-    private TextView renewedCertificate;
-    private TextView renewedCertificateConf;
-    private TextView incapableSince;
-    private TextView incapableSinceRC;
-    private TextView incapableSinceVC;
-    private TextView incapableUntil;
-    private TextView incapableUntilRC;
-    private TextView incapableUntilVC;
-    private TextView diagnosedOn;
-    private TextView diagnosedOnRC;
-    private TextView diagnosedOnVC;
 
     public static Intent newIntent(Context context, DisabilityCertificateRecognizerResultInfo result) {
         Intent intent = new Intent(context, DCResultActivity.class);
@@ -104,23 +85,23 @@ public class DCResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dc_result);
-        workAccident = (TextView) findViewById(R.id.work_accident);
-        workAccidentConf = (TextView) findViewById(R.id.work_accident_confidence);
-        assignedInsDoctor = (TextView) findViewById(R.id.assigned_ins_doctor);
-        assignedInsDoctorConf = (TextView) findViewById(R.id.assigned_ins_doctor_confidence);
-        initialCertificate = (TextView) findViewById(R.id.initial_certificate);
-        initialCertificateConf = (TextView) findViewById(R.id.initial_certificate_confidence);
-        renewedCertificate = (TextView) findViewById(R.id.renewed_certificate);
-        renewedCertificateConf = (TextView) findViewById(R.id.renewed_certificate_confidence);
-        incapableSince = (TextView) findViewById(R.id.incapable_since);
-        incapableSinceRC = (TextView) findViewById(R.id.incapable_since_rc);
-        incapableSinceVC = (TextView) findViewById(R.id.incapable_since_vc);
-        incapableUntil = (TextView) findViewById(R.id.incapable_until);
-        incapableUntilRC = (TextView) findViewById(R.id.incapable_until_rc);
-        incapableUntilVC = (TextView) findViewById(R.id.incapable_until_vc);
-        diagnosedOn = (TextView) findViewById(R.id.diagnosed_on);
-        diagnosedOnRC = (TextView) findViewById(R.id.diagnosed_on_rc);
-        diagnosedOnVC = (TextView) findViewById(R.id.diagnosed_on_vc);
+        TextView workAccident = (TextView) findViewById(R.id.work_accident);
+        TextView workAccidentConf = (TextView) findViewById(R.id.work_accident_confidence);
+        TextView assignedInsDoctor = (TextView) findViewById(R.id.assigned_ins_doctor);
+        TextView assignedInsDoctorConf = (TextView) findViewById(R.id.assigned_ins_doctor_confidence);
+        TextView initialCertificate = (TextView) findViewById(R.id.initial_certificate);
+        TextView initialCertificateConf = (TextView) findViewById(R.id.initial_certificate_confidence);
+        TextView renewedCertificate = (TextView) findViewById(R.id.renewed_certificate);
+        TextView renewedCertificateConf = (TextView) findViewById(R.id.renewed_certificate_confidence);
+        TextView incapableSince = (TextView) findViewById(R.id.incapable_since);
+        TextView incapableSinceRC = (TextView) findViewById(R.id.incapable_since_rc);
+        TextView incapableSinceVC = (TextView) findViewById(R.id.incapable_since_vc);
+        TextView incapableUntil = (TextView) findViewById(R.id.incapable_until);
+        TextView incapableUntilRC = (TextView) findViewById(R.id.incapable_until_rc);
+        TextView incapableUntilVC = (TextView) findViewById(R.id.incapable_until_vc);
+        TextView diagnosedOn = (TextView) findViewById(R.id.diagnosed_on);
+        TextView diagnosedOnRC = (TextView) findViewById(R.id.diagnosed_on_rc);
+        TextView diagnosedOnVC = (TextView) findViewById(R.id.diagnosed_on_vc);
 
         workAccident.setText(getIntent().getBooleanExtra(EXTRA_workAccident, false) ? "Checked" : "Unchecked");
         workAccidentConf.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_workAccidentConf, 0)));
@@ -140,12 +121,7 @@ public class DCResultActivity extends AppCompatActivity {
         diagnosedOnRC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_diagnosedOnRC, 0)));
         diagnosedOnVC.setText(Double.toString(getIntent().getDoubleExtra(EXTRA_diagnosedOnVC, 0)));
 
-        findViewById(R.id.retry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.retry).setOnClickListener(v -> finish());
 
     }
 }

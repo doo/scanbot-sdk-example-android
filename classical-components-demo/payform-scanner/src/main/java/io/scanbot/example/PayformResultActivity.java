@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,14 +19,6 @@ public class PayformResultActivity extends AppCompatActivity {
     public static final String EXTRA_REFERENCE_NUMBER = "reference_number";
     public static final String EXTRA_REFERENCE_NUMBER_2 = "reference_number_2";
     public static final String EXTRA_SENDER_IBAN = "sender_iban";
-
-    private TextView sender;
-    private TextView senderIban;
-    private TextView iban;
-    private TextView bic;
-    private TextView amount;
-    private TextView referenceNumber;
-    private TextView referenceNumber2;
 
     public static Intent newIntent(Context context, String sender, String iban, String bic, String amount, String referenceNumber) {
         Intent intent = new Intent(context, PayformResultActivity.class);
@@ -76,13 +67,13 @@ public class PayformResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payform_result);
-        sender = (TextView) findViewById(R.id.sender);
-        senderIban = (TextView) findViewById(R.id.sender_iban);
-        iban = (TextView) findViewById(R.id.iban);
-        bic = (TextView) findViewById(R.id.bic);
-        amount = (TextView) findViewById(R.id.amount);
-        referenceNumber = (TextView) findViewById(R.id.reference_number);
-        referenceNumber2 = (TextView) findViewById(R.id.reference_number_2);
+        TextView sender = (TextView) findViewById(R.id.sender);
+        TextView senderIban = (TextView) findViewById(R.id.sender_iban);
+        TextView iban = (TextView) findViewById(R.id.iban);
+        TextView bic = (TextView) findViewById(R.id.bic);
+        TextView amount = (TextView) findViewById(R.id.amount);
+        TextView referenceNumber = (TextView) findViewById(R.id.reference_number);
+        TextView referenceNumber2 = (TextView) findViewById(R.id.reference_number_2);
 
         sender.setText(getIntent().getStringExtra(EXTRA_SENDER));
         senderIban.setText(getIntent().getStringExtra(EXTRA_SENDER_IBAN));
@@ -92,18 +83,8 @@ public class PayformResultActivity extends AppCompatActivity {
         referenceNumber.setText(getIntent().getStringExtra(EXTRA_REFERENCE_NUMBER));
         referenceNumber2.setText(getIntent().getStringExtra(EXTRA_REFERENCE_NUMBER_2));
 
-        findViewById(R.id.retry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.retry).setOnClickListener(v -> finish());
 
-        findViewById(R.id.accept).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveTaskToBack(true);
-            }
-        });
+        findViewById(R.id.accept).setOnClickListener(v -> moveTaskToBack(true));
     }
 }

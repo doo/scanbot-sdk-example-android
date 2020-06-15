@@ -3,11 +3,8 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.mrzscanner.MRZScanner;
 import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler;
@@ -19,7 +16,6 @@ import androidx.core.view.WindowCompat;
 
 import io.scanbot.mrzscanner.model.MRZRecognitionResult;
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 
 public class MRZLiveDetectionActivity extends AppCompatActivity {
@@ -27,7 +23,6 @@ public class MRZLiveDetectionActivity extends AppCompatActivity {
     private final Logger logger = LoggerProvider.getLogger();
 
     private ScanbotCameraView cameraView;
-    private TextView resultView;
 
     boolean flashEnabled = false;
 
@@ -46,53 +41,35 @@ public class MRZLiveDetectionActivity extends AppCompatActivity {
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
-
-        resultView = (TextView) findViewById(R.id.result);
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.useFlash(flashEnabled);
+            cameraView.continuousFocus();
+        }, 700));
 
         ScanbotSDK scanbotSDK = new ScanbotSDK(this);
         final MRZScanner mrzScanner = scanbotSDK.mrzScanner();
         MRZScannerFrameHandler mrzScannerFrameHandler = MRZScannerFrameHandler.attach(cameraView, mrzScanner);
 
-        mrzScannerFrameHandler.addResultHandler(new MRZScannerFrameHandler.ResultHandler() {
-            @Override
-            public boolean handle(FrameHandlerResult<? extends MRZRecognitionResult, ? extends SdkLicenseError> frameHandlerResult) {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    MRZRecognitionResult mrzRecognitionResult = (MRZRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
-                    if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
-                        long a = System.currentTimeMillis();
+        mrzScannerFrameHandler.addResultHandler(frameHandlerResult -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                MRZRecognitionResult mrzRecognitionResult = (MRZRecognitionResult) ((FrameHandlerResult.Success) frameHandlerResult).getValue();
+                if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
+                    long a = System.currentTimeMillis();
 
-                        try {
-                            startActivity(MRZResultActivity.newIntent(MRZLiveDetectionActivity.this, mrzRecognitionResult));
-                        } finally {
-                            long b = System.currentTimeMillis();
-                            logger.d("MRZScanner", "Total scanning (sec): " + (b - a) / 1000f);
-                        }
+                    try {
+                        startActivity(MRZResultActivity.newIntent(MRZLiveDetectionActivity.this, mrzRecognitionResult));
+                    } finally {
+                        long b = System.currentTimeMillis();
+                        logger.d("MRZScanner", "Total scanning (sec): " + (b - a) / 1000f);
                     }
                 }
-                return false;
             }
-
+            return false;
         });
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         Toast.makeText(

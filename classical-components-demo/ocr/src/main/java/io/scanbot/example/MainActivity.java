@@ -55,12 +55,7 @@ public class MainActivity extends AppCompatActivity {
         askPermission();
         initDependencies();
 
-        findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+        findViewById(R.id.scanButton).setOnClickListener(v -> openGallery());
         progressView = findViewById(R.id.progressBar);
     }
 

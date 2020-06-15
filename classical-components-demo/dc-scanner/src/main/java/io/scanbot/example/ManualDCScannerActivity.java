@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo;
 import io.scanbot.sdk.ScanbotSDK;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.PictureCallback;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.core.contourdetector.ContourDetector;
@@ -51,18 +49,10 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
 
         cameraView = (ScanbotCameraView) findViewById(R.id.camera);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.useFlash(flashEnabled);
-                        cameraView.continuousFocus();
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.useFlash(flashEnabled);
+            cameraView.continuousFocus();
+        }, 700));
         cameraView.addPictureCallback(this);
 
         resultImageView = findViewById(R.id.resultImageView);
@@ -70,21 +60,12 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
         scanbotSDK = new ScanbotSDK(this);
         dcScanner = scanbotSDK.dcScanner();
 
-        findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
-        findViewById(R.id.take_picture_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraView.takePicture(false);
-            }
-        });
+        findViewById(R.id.take_picture_btn).setOnClickListener(v -> cameraView.takePicture(false));
 
         Toast.makeText(
                 this,
@@ -133,14 +114,11 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
 
         // Show the cropped image as thumbnail preview
         final Bitmap thumbnailImage = resizeImage(documentImage, 600, 600);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                resultImageView.setImageBitmap(thumbnailImage);
-                // continue with camera preview
-                cameraView.continuousFocus();
-                cameraView.startPreview();
-            }
+        runOnUiThread(() -> {
+            resultImageView.setImageBitmap(thumbnailImage);
+            // continue with camera preview
+            cameraView.continuousFocus();
+            cameraView.startPreview();
         });
 
         // And finally run DC recognition on prepared document image:
@@ -149,23 +127,15 @@ public class ManualDCScannerActivity extends AppCompatActivity implements Pictur
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             startActivity(DCResultActivity.newIntent(ManualDCScannerActivity.this, resultInfo));
         } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final Toast toast = Toast.makeText(ManualDCScannerActivity.this, "No DC content was recognized!", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
+            runOnUiThread(() -> {
+                final Toast toast = Toast.makeText(ManualDCScannerActivity.this, "No DC content was recognized!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
             });
         }
 
         // reset preview image
-        resultImageView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                resultImageView.setImageBitmap(null);
-            }
-        }, 1000);
+        resultImageView.postDelayed(() -> resultImageView.setImageBitmap(null), 1000);
     }
 
     private Bitmap resizeImage(final Bitmap bitmap, final float width, final float height) {

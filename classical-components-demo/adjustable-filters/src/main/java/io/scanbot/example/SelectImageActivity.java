@@ -44,12 +44,7 @@ public class SelectImageActivity extends AppCompatActivity {
 
         askPermission();
 
-        findViewById(R.id.import_from_lib_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-            }
-        });
+        findViewById(R.id.import_from_lib_btn).setOnClickListener(view -> openGallery());
     }
 
     private void askPermission() {

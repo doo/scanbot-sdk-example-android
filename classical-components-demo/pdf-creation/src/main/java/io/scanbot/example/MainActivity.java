@@ -57,12 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         initializeDependencies();
 
-        findViewById(R.id.scanButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+        findViewById(R.id.scanButton).setOnClickListener(v -> openGallery());
         progressView = findViewById(R.id.progressBar);
     }
 
@@ -192,7 +187,5 @@ public class MainActivity extends AppCompatActivity {
                 openDocument(processedDocument);
             }
         }
-
     }
-
 }

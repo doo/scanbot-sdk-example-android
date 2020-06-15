@@ -3,7 +3,6 @@ package io.scanbot.example;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,15 +13,6 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult;
 public class EhicResultActivity extends AppCompatActivity {
 
     private static final String EXTRA_EHIC_RESULT = "EHIC_RESULT";
-
-    private TextView surname;
-    private TextView givenName;
-    private TextView personalNumber;
-    private TextView dateOfBirth;
-    private TextView institutionNumber;
-    private TextView institutionName;
-    private TextView cardNumber;
-    private TextView cardDate;
 
     public static Intent newIntent(final Context context, final HealthInsuranceCardRecognitionResult result) {
         final Intent intent = new Intent(context, EhicResultActivity.class);
@@ -36,14 +26,14 @@ public class EhicResultActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ehic_result);
 
-        surname = findViewById(R.id.surname);
-        givenName = findViewById(R.id.given_name);
-        dateOfBirth = findViewById(R.id.date_of_birth);
-        personalNumber = findViewById(R.id.personal_number);
-        institutionNumber = findViewById(R.id.institution_number);
-        institutionName = findViewById(R.id.institution_name);
-        cardNumber = findViewById(R.id.card_number);
-        cardDate = findViewById(R.id.card_date);
+        TextView surname = findViewById(R.id.surname);
+        TextView givenName = findViewById(R.id.given_name);
+        TextView dateOfBirth = findViewById(R.id.date_of_birth);
+        TextView personalNumber = findViewById(R.id.personal_number);
+        TextView institutionNumber = findViewById(R.id.institution_number);
+        TextView institutionName = findViewById(R.id.institution_name);
+        TextView cardNumber = findViewById(R.id.card_number);
+        TextView cardDate = findViewById(R.id.card_date);
 
         final HealthInsuranceCardRecognitionResult result = getIntent().getParcelableExtra(EXTRA_EHIC_RESULT);
 
@@ -76,11 +66,6 @@ public class EhicResultActivity extends AppCompatActivity {
             }
         }
 
-        findViewById(R.id.retry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.retry).setOnClickListener(v -> finish());
     }
 }

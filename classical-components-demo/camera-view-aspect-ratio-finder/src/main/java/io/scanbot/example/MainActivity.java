@@ -25,7 +25,6 @@ import java.util.List;
 import io.scanbot.sdk.ScanbotSDK;
 import io.scanbot.sdk.SdkLicenseError;
 import io.scanbot.sdk.camera.AutoSnappingController;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.CameraPreviewMode;
 import io.scanbot.sdk.camera.FrameHandlerResult;
 import io.scanbot.sdk.camera.PictureCallback;
@@ -45,17 +44,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         ContourDetectorFrameHandler.ResultHandler {
 
     private ScanbotCameraView cameraView;
-    private AdaptiveFinderOverlayView finderOverlayView;
     private ImageView resultView;
-    private ContourDetectorFrameHandler contourDetectorFrameHandler;
-    private AutoSnappingController autoSnappingController;
     private TextView userGuidanceHint;
     private long lastUserGuidanceHintTs = 0L;
     private ShutterButton shutterButton;
     private ScanbotSDK scanbotSDK;
 
     private boolean flashEnabled = false;
-    private boolean autoSnappingEnabled = true;
 
     private final FinderAspectRatio[] requiredPageAspectRatios = new FinderAspectRatio[]{
             new FinderAspectRatio(21.0, 29.7), // A4 page size
@@ -79,32 +74,24 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         // Lock the orientation of the UI (Activity) as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.setAutoFocusSound(false);
-                        // Shutter sound is ON by default. You can disable it:
-                        /*
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            cameraView.setShutterSound(false);
-                        }
-                        */
-                        cameraView.continuousFocus();
-                        cameraView.useFlash(flashEnabled);
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.setAutoFocusSound(false);
+            // Shutter sound is ON by default. You can disable it:
+                /*
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    cameraView.setShutterSound(false);
+                }
+                */
+            cameraView.continuousFocus();
+            cameraView.useFlash(flashEnabled);
+        }, 700));
 
         resultView = (ImageView) findViewById(R.id.result);
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
+        ContourDetectorFrameHandler contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector());
         //contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
-        finderOverlayView = (AdaptiveFinderOverlayView) findViewById(R.id.finder_overlay);
+        AdaptiveFinderOverlayView finderOverlayView = (AdaptiveFinderOverlayView) findViewById(R.id.finder_overlay);
         finderOverlayView.setRequiredAspectRatios(Arrays.asList(requiredPageAspectRatios));
 
         ArrayList<PageAspectRatio> list = new ArrayList<>();
@@ -115,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         contourDetectorFrameHandler.addResultHandler(finderOverlayView.getContourDetectorFrameHandler());
         contourDetectorFrameHandler.addResultHandler(this);
 
-        autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
+        AutoSnappingController autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler);
         //autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true);
 
@@ -124,26 +111,13 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         userGuidanceHint = findViewById(R.id.userGuidanceHint);
 
         shutterButton = findViewById(R.id.shutterButton);
-        shutterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraView.takePicture(false);
-            }
-        });
+        shutterButton.setOnClickListener(v -> cameraView.takePicture(false));
         shutterButton.setVisibility(View.VISIBLE);
-        shutterButton.post(new Runnable() {
-            @Override
-            public void run() {
-                shutterButton.showAutoButton();
-            }
-        });
+        shutterButton.post(() -> shutterButton.showAutoButton());
 
-        findViewById(R.id.flashToggle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flashToggle).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
     }
 
@@ -173,12 +147,9 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     public boolean handle(@NotNull final FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
-        userGuidanceHint.post(new Runnable() {
-            @Override
-            public void run() {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>) frameHandlerResult).getValue().detectionResult);
-                }
+        userGuidanceHint.post(() -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>) frameHandlerResult).getValue().detectionResult);
             }
         });
 
@@ -186,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     }
 
     private void showUserGuidance(final DetectionResult result) {
+        boolean autoSnappingEnabled = true;
         if (!autoSnappingEnabled) {
             return;
         }
@@ -263,13 +235,10 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         operations.add(new CropOperation(detector.getPolygonF()));
         final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
-        resultView.post(new Runnable() {
-            @Override
-            public void run() {
-                resultView.setImageBitmap(documentImage);
-                cameraView.continuousFocus();
-                cameraView.startPreview();
-            }
+        resultView.post(() -> {
+            resultView.setImageBitmap(documentImage);
+            cameraView.continuousFocus();
+            cameraView.startPreview();
         });
     }
 

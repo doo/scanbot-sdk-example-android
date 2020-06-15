@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.scanbot.sdk.camera.AutoSnappingController;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.PictureCallback;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
@@ -83,25 +82,17 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
         //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
 
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.setAutoFocusSound(false);
-                        // Shutter sound is ON by default. You can disable it:
-                        /*
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            cameraView.setShutterSound(false);
-                        }
-                        */
-                        cameraView.continuousFocus();
-                        cameraView.useFlash(flashEnabled);
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.setAutoFocusSound(false);
+            // Shutter sound is ON by default. You can disable it:
+                /*
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    cameraView.setShutterSound(false);
+                }
+                */
+            cameraView.continuousFocus();
+            cameraView.useFlash(flashEnabled);
+        }, 700));
 
         resultView = (ImageView) findViewById(R.id.result);
 
@@ -127,37 +118,21 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         userGuidanceHint = findViewById(R.id.userGuidanceHint);
 
         shutterButton = findViewById(R.id.shutterButton);
-        shutterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraView.takePicture(false);
-            }
-        });
+        shutterButton.setOnClickListener(v -> cameraView.takePicture(false));
         shutterButton.setVisibility(View.VISIBLE);
 
-        findViewById(R.id.flashToggle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        findViewById(R.id.flashToggle).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         autoSnappingToggleButton = findViewById(R.id.autoSnappingToggle);
-        autoSnappingToggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoSnappingEnabled = !autoSnappingEnabled;
-                setAutoSnapEnabled(autoSnappingEnabled);
-            }
+        autoSnappingToggleButton.setOnClickListener(v -> {
+            autoSnappingEnabled = !autoSnappingEnabled;
+            setAutoSnapEnabled(autoSnappingEnabled);
         });
 
-        autoSnappingToggleButton.post(new Runnable() {
-            @Override
-            public void run() {
-                setAutoSnapEnabled(autoSnappingEnabled);
-            }
-        });
+        autoSnappingToggleButton.post(() -> setAutoSnapEnabled(autoSnappingEnabled));
 
     }
 
@@ -187,12 +162,9 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
     public boolean handle(@NotNull final FrameHandlerResult<? extends ContourDetectorFrameHandler.DetectedFrame, ? extends SdkLicenseError> frameHandlerResult) {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
-        userGuidanceHint.post(new Runnable() {
-            @Override
-            public void run() {
-                if (frameHandlerResult instanceof FrameHandlerResult.Success) {
-                    showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
-                }
+        userGuidanceHint.post(() -> {
+            if (frameHandlerResult instanceof FrameHandlerResult.Success) {
+                showUserGuidance(((FrameHandlerResult.Success<ContourDetectorFrameHandler.DetectedFrame>)frameHandlerResult).getValue().detectionResult);
             }
         });
 
@@ -283,20 +255,12 @@ public class MainActivity extends AppCompatActivity implements PictureCallback,
         operations.add(new CropOperation(detector.getPolygonF()));
         final Bitmap documentImage =  scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
-        resultView.post(new Runnable() {
-            @Override
-            public void run() {
-                resultView.setImageBitmap(documentImage);
-            }
-        });
+        resultView.post(() -> resultView.setImageBitmap(documentImage));
 
         // continue scanning
-        cameraView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                cameraView.continuousFocus();
-                cameraView.startPreview();
-            }
+        cameraView.postDelayed(() -> {
+            cameraView.continuousFocus();
+            cameraView.startPreview();
         }, 1000);
     }
 

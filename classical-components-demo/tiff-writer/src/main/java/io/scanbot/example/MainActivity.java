@@ -53,12 +53,9 @@ public class MainActivity extends AppCompatActivity {
         binarizationCheckBox = findViewById(R.id.binarizationCheckBox);
         customFieldsCheckBox = findViewById(R.id.customFieldsCheckBox);
 
-        findViewById(R.id.selectImagesButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resultTextView.setText("");
-                openGallery();
-            }
+        findViewById(R.id.selectImagesButton).setOnClickListener(v -> {
+            resultTextView.setText("");
+            openGallery();
         });
         progressView = findViewById(R.id.progressBar);
     }
@@ -146,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         private final List<File> images = new ArrayList<>();
         private final File resultFile;
         private final TIFFImageWriterParameters parameters;
-        private final int dpi = 200;
+        private static final int dpi = 200;
 
         private WriteTIFFImageTask(final List<Uri> imageUris, final boolean binarize, final boolean addCustomFields) {
             for (final Uri uri : imageUris) {

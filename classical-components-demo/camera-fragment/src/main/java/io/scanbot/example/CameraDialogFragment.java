@@ -12,8 +12,9 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.DialogFragment;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.scanbot.sdk.camera.AutoSnappingController;
-import io.scanbot.sdk.camera.CameraOpenCallback;
 import io.scanbot.sdk.camera.PictureCallback;
 import io.scanbot.sdk.camera.ScanbotCameraView;
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler;
@@ -51,23 +52,15 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View baseView = getActivity().getLayoutInflater().inflate(R.layout.scanbot_camera_view, container, false);
 
         cameraView = (ScanbotCameraView) baseView.findViewById(R.id.camera);
-        cameraView.setCameraOpenCallback(new CameraOpenCallback() {
-            @Override
-            public void onCameraOpened() {
-                cameraView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        cameraView.continuousFocus();
-                        cameraView.useFlash(flashEnabled);
-                    }
-                }, 700);
-            }
-        });
+        cameraView.setCameraOpenCallback(() -> cameraView.postDelayed(() -> {
+            cameraView.continuousFocus();
+            cameraView.useFlash(flashEnabled);
+        }, 700));
 
         resultView = (ImageView) baseView.findViewById(R.id.result);
 
@@ -80,20 +73,11 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
 
         cameraView.addPictureCallback(this);
 
-        baseView.findViewById(R.id.snap).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraView.takePicture(false);
-            }
-        });
+        baseView.findViewById(R.id.snap).setOnClickListener(v -> cameraView.takePicture(false));
 
-        baseView.findViewById(R.id.flash).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                flashEnabled = !flashEnabled;
-                cameraView.useFlash(flashEnabled);
-            }
+        baseView.findViewById(R.id.flash).setOnClickListener(v -> {
+            flashEnabled = !flashEnabled;
+            cameraView.useFlash(flashEnabled);
         });
 
         return baseView;
@@ -150,13 +134,10 @@ public class CameraDialogFragment extends DialogFragment implements PictureCallb
             final Bitmap documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false);
 
             if (documentImage != null)
-                resultView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultView.setImageBitmap(documentImage);
-                        cameraView.continuousFocus();
-                        cameraView.startPreview();
-                    }
+                resultView.post(() -> {
+                    resultView.setImageBitmap(documentImage);
+                    cameraView.continuousFocus();
+                    cameraView.startPreview();
                 });
         }
 

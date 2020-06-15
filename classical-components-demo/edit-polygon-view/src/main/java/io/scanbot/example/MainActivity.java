@@ -58,32 +58,19 @@ public class MainActivity extends AppCompatActivity {
         resultImageView.setVisibility(View.GONE);
 
         cropButton = findViewById(R.id.cropButton);
-        cropButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                crop();
-            }
-        });
+        cropButton.setOnClickListener(v -> crop());
 
         rotateButton = findViewById(R.id.rotateButton);
-        rotateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rotatePreview();
-            }
-        });
+        rotateButton.setOnClickListener(v -> rotatePreview());
 
         backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backButton.setVisibility(View.GONE);
-                resultImageView.setVisibility(View.GONE);
+        backButton.setOnClickListener(v -> {
+            backButton.setVisibility(View.GONE);
+            resultImageView.setVisibility(View.GONE);
 
-                editPolygonView.setVisibility(View.VISIBLE);
-                cropButton.setVisibility(View.VISIBLE);
-                rotateButton.setVisibility(View.VISIBLE);
-            }
+            editPolygonView.setVisibility(View.VISIBLE);
+            cropButton.setVisibility(View.VISIBLE);
+            rotateButton.setVisibility(View.VISIBLE);
         });
 
         new InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor());
