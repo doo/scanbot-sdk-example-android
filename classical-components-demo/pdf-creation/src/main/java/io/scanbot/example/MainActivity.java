@@ -62,13 +62,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void askPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        999);
-            }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    999);
         }
     }
 
@@ -94,24 +92,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode != SELECT_PICTURE_REQUEST || resultCode != RESULT_OK) {
             return;
         }
 
         ArrayList<Uri> imageUris = new ArrayList<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (intent.getClipData() != null) {
-                ClipData mClipData = intent.getClipData();
-                for (int i = 0; i < mClipData.getItemCount(); i++) {
+        if (intent.getClipData() != null) {
+            ClipData mClipData = intent.getClipData();
+            for (int i = 0; i < mClipData.getItemCount(); i++) {
 
-                    ClipData.Item item = mClipData.getItemAt(i);
-                    Uri uri = item.getUri();
-                    imageUris.add(uri);
-                }
-            } else if (intent.getData() != null) {
-                imageUris.add(intent.getData());
+                ClipData.Item item = mClipData.getItemAt(i);
+                Uri uri = item.getUri();
+                imageUris.add(uri);
             }
+        } else if (intent.getData() != null) {
+            imageUris.add(intent.getData());
         }
 
         new ProcessDocumentTask(imageUris).execute();
