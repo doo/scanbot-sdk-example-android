@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissionNotGranted(permission: String) =
             ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
 
-
     /*
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
