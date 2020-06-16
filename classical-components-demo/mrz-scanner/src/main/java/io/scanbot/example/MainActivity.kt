@@ -39,5 +39,4 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkPermissionNotGranted(permission: String) =
             ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
-
 }
