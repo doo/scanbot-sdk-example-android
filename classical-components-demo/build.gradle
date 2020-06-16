@@ -21,7 +21,7 @@ allprojects {
         buildToolsVersion = '28.0.3'
         androidxSupportVersion = '1.0.1'
 
-        scanbotSdkVersion = '1.70.0.6-LOCAL-SNAPSHOT'
+        scanbotSdkVersion = '1.70.0'
     }
 
     repositories {
@@ -29,7 +29,6 @@ allprojects {
         jcenter()
         mavenCentral()
 
-        mavenLocal()
         maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
         maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
     }
