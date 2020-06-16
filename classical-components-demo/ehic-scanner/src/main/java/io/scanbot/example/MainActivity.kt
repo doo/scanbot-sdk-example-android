@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askPermission() {
-        if (checkGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                checkGranted(Manifest.permission.CAMERA)) {
+        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                checkPermissionNotGranted(Manifest.permission.CAMERA)) {
 
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -40,6 +40,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkGranted(permission: String) =
+    private fun checkPermissionNotGranted(permission: String) =
             ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
 }
