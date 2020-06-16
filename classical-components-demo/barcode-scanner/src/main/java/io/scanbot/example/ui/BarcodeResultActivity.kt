@@ -29,14 +29,14 @@ class BarcodeResultActivity : AppCompatActivity() {
     }
 
     private fun showSnapImageIfExists(imagePath: String?) {
-        imagePath?.let { imagePath ->
+        imagePath?.let { path ->
             recognisedItems.addView(
                     layoutInflater.inflate(
                             R.layout.snap_image_item,
                             recognisedItems,
                             false
                     )?.also {
-                        Picasso.with(this).load(File(imagePath)).into(it.snapImage)
+                        Picasso.with(this).load(File(path)).into(it.snapImage)
                     })
         }
     }

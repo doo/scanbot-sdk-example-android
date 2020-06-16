@@ -18,10 +18,10 @@ class BarcodeTypesActivity : AppCompatActivity() {
         val typesList = findViewById<RecyclerView>(R.id.barcode_types_list)
         typesList.setHasFixedSize(true)
         typesList.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration(
+                        this,
+                        DividerItemDecoration.VERTICAL
+                )
         )
 
         // use a linear layout manager
@@ -29,12 +29,11 @@ class BarcodeTypesActivity : AppCompatActivity() {
         typesList.layoutManager = layoutManager
 
 
-            val adapter = BarcodeTypesAdapter()
-            typesList.adapter = adapter
+        val adapter = BarcodeTypesAdapter()
+        typesList.adapter = adapter
 
-            findViewById<View>(R.id.apply).setOnClickListener { v ->
-                finish()
-            }
+        findViewById<View>(R.id.apply).setOnClickListener { v ->
+            finish()
         }
-
     }
+}
