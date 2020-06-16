@@ -52,7 +52,7 @@ class ManualDCScannerActivity : AppCompatActivity(), PictureCallback {
         scanbotSDK = ScanbotSDK(this)
 
         dcScanner = scanbotSDK.dcScanner()
-        findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }

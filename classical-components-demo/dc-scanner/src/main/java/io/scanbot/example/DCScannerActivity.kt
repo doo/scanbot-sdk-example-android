@@ -24,7 +24,6 @@ class DCScannerActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
     private var flashEnabled = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)

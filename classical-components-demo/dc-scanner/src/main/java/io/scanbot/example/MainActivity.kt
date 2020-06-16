@@ -26,8 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
-                    999)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
 }
