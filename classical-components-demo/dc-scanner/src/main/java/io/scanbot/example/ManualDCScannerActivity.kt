@@ -95,7 +95,7 @@ class ManualDCScannerActivity : AppCompatActivity(), PictureCallback {
         val detector = scanbotSDK.contourDetector()
         detector.detect(originalBitmap)
         val operations: MutableList<Operation> = ArrayList()
-        operations.add(CropOperation(detector.polygonF))
+        operations.add(CropOperation(detector.polygonF!!))
         val documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false)
 
         documentImage?.let { docImage ->

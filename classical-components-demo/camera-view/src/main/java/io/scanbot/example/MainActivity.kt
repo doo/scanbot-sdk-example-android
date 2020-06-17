@@ -211,7 +211,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         // Run document detection on original image:
         detector.detect(originalBitmap)
         val operations: MutableList<Operation> = ArrayList()
-        operations.add(CropOperation(detector.polygonF))
+        operations.add(CropOperation(detector.polygonF!!))
         val documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false)
         resultView.post { resultView.setImageBitmap(documentImage) }
 

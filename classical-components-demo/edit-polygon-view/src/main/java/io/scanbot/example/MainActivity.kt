@@ -60,8 +60,6 @@ class MainActivity : AppCompatActivity() {
             cropButton.visibility = View.VISIBLE
             rotateButton.visibility = View.VISIBLE
         }
-        editPolygonView.setEditPolygonDragListener {
-        }
         InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor())
     }
 
@@ -137,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                     val linesPair = Pair(detector.horizontalLines, detector.verticalLines)
                     val polygon = detector.polygonF
 
-                    InitImageResult(linesPair, polygon)
+                    InitImageResult(linesPair, polygon!!)
                 }
                 else -> InitImageResult(Pair(listOf(), listOf()), listOf())
             }
