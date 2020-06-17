@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
-    private val requiredPageAspectRatios = arrayOf(FinderAspectRatio(21.0, 29.7))
+    private val requiredPageAspectRatios = listOf(FinderAspectRatio(21.0, 29.7))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         //contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
-        finderOverlayView.setRequiredAspectRatios(listOf(*requiredPageAspectRatios))
+        finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
         val list = ArrayList<PageAspectRatio>()
         for ((width, height) in requiredPageAspectRatios) {
             list.add(PageAspectRatio(width, height))
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         shutterButton.visibility = View.VISIBLE
         shutterButton.post { shutterButton.showAutoButton() }
 
-        findViewById<View>(R.id.flashToggle).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.flashToggle).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }
