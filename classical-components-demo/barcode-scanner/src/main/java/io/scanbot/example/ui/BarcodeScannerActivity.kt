@@ -28,11 +28,10 @@ import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 
 
-class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler,
-        PictureCallback {
+class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler, PictureCallback {
 
-    private var cameraView: ScanbotCameraView? = null
-    private var resultView: ImageView? = null
+    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var resultView: ImageView
 
     private var flashEnabled = false
     private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
@@ -46,37 +45,32 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
 
-        cameraView!!.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView!!.postDelayed({
-                    cameraView!!.useFlash(flashEnabled)
-                    cameraView!!.continuousFocus()
-                }, 300)
-            }
-
+        cameraView.setCameraOpenCallback(CameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 300)
         })
 
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(
-                cameraView!!,
-                ScanbotSDK(this).barcodeDetector()
-        )
+        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, ScanbotSDK(this).barcodeDetector())
 
-        barcodeDetectorFrameHandler?.setDetectionInterval(1000)
-        barcodeDetectorFrameHandler?.addResultHandler(this)
-        barcodeDetectorFrameHandler?.saveCameraPreviewFrame(true)
+        barcodeDetectorFrameHandler?.let { frameHandler ->
+            frameHandler.setDetectionInterval(1000)
+            frameHandler.addResultHandler(this)
+            frameHandler.saveCameraPreviewFrame(true)
 
-        val barcodeAutoSnappingController =
-                BarcodeAutoSnappingController.attach(cameraView!!, barcodeDetectorFrameHandler!!)
-        barcodeAutoSnappingController.setSensitivity(1f)
-        cameraView?.addPictureCallback(this)
+            val barcodeAutoSnappingController = BarcodeAutoSnappingController.attach(cameraView, frameHandler)
+            barcodeAutoSnappingController.setSensitivity(1f)
 
-        ScanbotSDK(this).barcodeDetector()
-                .setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
+        }
+        cameraView.addPictureCallback(this)
+
+        ScanbotSDK(this).barcodeDetector().setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
     }
 
     override fun onResume() {
         super.onResume()
-        cameraView?.onResume()
+        cameraView.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             // Use onActivityResult to handle permission rejection
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CODE)
@@ -85,7 +79,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
 
     override fun onPause() {
         super.onPause()
-        cameraView?.onPause()
+        cameraView.onPause()
     }
 
     private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {
@@ -105,10 +99,10 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         val resultBitmap =
                 Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
 
-        resultView?.post {
-            resultView?.setImageBitmap(resultBitmap)
-            cameraView?.continuousFocus()
-            cameraView?.startPreview()
+        resultView.post {
+            resultView.setImageBitmap(resultBitmap)
+            cameraView.continuousFocus()
+            cameraView.startPreview()
         }
     }
 
@@ -116,7 +110,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         if (result is FrameHandlerResult.Success) {
             handleSuccess(result)
         } else {
-            cameraView?.post {
+            cameraView.post {
                 Toast.makeText(
                         this,
                         "License has expired!",

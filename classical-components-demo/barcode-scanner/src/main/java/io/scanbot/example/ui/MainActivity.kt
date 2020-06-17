@@ -3,7 +3,6 @@ package io.scanbot.example.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -44,9 +43,7 @@ class MainActivity : AppCompatActivity() {
             imageIntent.type = "image/*"
             imageIntent.action = Intent.ACTION_GET_CONTENT
             imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-            }
+            imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             startActivityForResult(
                     Intent.createChooser(
                             imageIntent,
