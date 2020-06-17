@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -55,19 +54,18 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         cameraView.setCameraOpenCallback(CameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.setAutoFocusSound(false)
+
                 // Shutter sound is ON by default. You can disable it:
-                /*
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    cameraView.setShutterSound(false);
-                }
-                */cameraView.continuousFocus()
+                // cameraView.setShutterSound(false);
+
+                cameraView.continuousFocus()
                 cameraView.useFlash(flashEnabled)
             }, 700)
         })
         resultView = findViewById<View>(R.id.result) as ImageView
 
         val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector())
-        //contourDetectorFrameHandler.setAcceptedSizeScore(70);
+        // contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
@@ -81,7 +79,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         contourDetectorFrameHandler.addResultHandler(this)
 
         val autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
-        //autoSnappingController.setSensitivity(0.4f);
+        // autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true)
         cameraView.addPictureCallback(this)
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
@@ -171,8 +169,10 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
+
         // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
         options.inSampleSize = 8
+
         // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
         //options.inSampleSize = 1;
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)

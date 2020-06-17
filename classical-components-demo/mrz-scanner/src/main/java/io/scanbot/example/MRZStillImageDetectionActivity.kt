@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
-import io.scanbot.example.MRZStillImageDetectionActivity
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode

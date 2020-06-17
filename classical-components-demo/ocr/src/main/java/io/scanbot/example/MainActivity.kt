@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -27,7 +26,6 @@ import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.util.FileChooserUtils
 import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import java.io.IOException
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var progressView: View
