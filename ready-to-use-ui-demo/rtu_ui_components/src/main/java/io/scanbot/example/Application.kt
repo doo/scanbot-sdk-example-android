@@ -40,7 +40,7 @@ class Application : MultiDexApplication(), CoroutineScope {
         val sdkLicenseInfo = ScanbotSDKInitializer()
                 .withLogging(BuildConfig.DEBUG)
                 // Optional, custom SDK files directory. Please see the comments below!
-                .sdkFilesDirectory(this, customStorageDirectory())
+                //.sdkFilesDirectory(this, customStorageDirectory())
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
                                 .imageFormat(CameraImageFormat.JPG)
