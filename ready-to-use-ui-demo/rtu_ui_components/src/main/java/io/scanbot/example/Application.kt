@@ -40,7 +40,7 @@ class Application : MultiDexApplication(), CoroutineScope {
         val sdkLicenseInfo = ScanbotSDKInitializer()
                 .withLogging(BuildConfig.DEBUG)
                 // Optional, custom SDK files directory. Please see the comments below!
-                //.sdkFilesDirectory(this, customStorageDirectory())
+                .sdkFilesDirectory(this, customStorageDirectory())
                 .usePageStorageSettings(
                         PageStorageSettings.Builder()
                                 .imageFormat(CameraImageFormat.JPG)
@@ -95,7 +95,9 @@ class Application : MultiDexApplication(), CoroutineScope {
         // - https://developer.android.com/guide/topics/data/data-storage
         // - https://developer.android.com/training/data-storage/files
 
-        return File(this.getExternalFilesDir(null), "my-custom-storage-folder")
+        val customDir = File(this.getExternalFilesDir(null), "my-custom-storage-folder")
+        customDir.mkdirs()
+        return customDir
     }
 
 }
