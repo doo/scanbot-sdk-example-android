@@ -9,6 +9,7 @@ include(
         ':barcode-scanner',
         ':mrz-scanner',
         ':dc-scanner',
+        ':idcard-scanner',
         ':tiff-writer',
         ':cheque-scanner',
         ':manual-processing',
