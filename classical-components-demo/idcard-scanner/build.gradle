@@ -30,7 +30,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta7'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
-    implementation "io.scanbot:sdk-idcard-assets:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-package-4:1.70.2.1-SNAPSHOT"
+    implementation "io.scanbot:sdk-idcard-assets:1.70.2.1-SNAPSHOT"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 }
