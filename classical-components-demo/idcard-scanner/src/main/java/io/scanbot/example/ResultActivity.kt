@@ -19,6 +19,7 @@ class ResultActivity : AppCompatActivity() {
         if (this::results.isInitialized.not()) {
             results = IdCardScannerResultsStorage.results ?: kotlin.run {
                 // results were not set - something went wrong (e.g. activity was restored)
+                super.onCreate(savedInstanceState)
                 finish()
                 return
             }
@@ -81,7 +82,7 @@ private class Adapter(
 
         fun bind(item: IdScanResult) {
             croppedCard.setImageBitmap(item.croppedImage)
-            cardType.text = item.cardType.name
+            cardType.text = item.documentType.name
         }
     }
 

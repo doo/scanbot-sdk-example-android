@@ -60,19 +60,23 @@ class ScannerActivity : AppCompatActivity() {
             }
         })
 
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.useFlash(useFlash)
-            cameraView.continuousFocus()
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.useFlash(useFlash)
+                cameraView.continuousFocus()
+            }
         })
-        cameraView.addPictureCallback(PictureCallback { image, imageOrientation ->
-            onPictureTaken(image, imageOrientation)
+        cameraView.addPictureCallback(object : PictureCallback {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                processPictureTaken(image, imageOrientation)
+            }
         })
 
         findViewById<Button>(R.id.flashButton).setOnClickListener { toggleFlash() }
         findViewById<ShutterButton>(R.id.shutterButton).setOnClickListener { cameraView.takePicture(false) }
     }
 
-    private fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val rotatedBitmap = scanbotSdk.imageProcessor().processBitmap(bitmap, RotateOperation(imageOrientation))!!
         val recognitionResult = idCardScanner.scanBitmap(rotatedBitmap)

@@ -45,11 +45,13 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
 
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.useFlash(flashEnabled)
-                cameraView.continuousFocus()
-            }, 300)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.useFlash(flashEnabled)
+                    cameraView.continuousFocus()
+                }, 300)
+            }
         })
 
         barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, ScanbotSDK(this).barcodeDetector())
