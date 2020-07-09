@@ -4,7 +4,7 @@ import io.scanbot.sdk.barcode.entity.BarcodeFormat
 
 object BarcodeTypeRepository {
     val selectedTypes = mutableSetOf<BarcodeFormat>().also {
-        it.addAll(BarcodeFormat.values())
+        it.addAll(BarcodeFormat.COMMON_CODES)
     }
 
     fun selectType(type: BarcodeFormat) {
