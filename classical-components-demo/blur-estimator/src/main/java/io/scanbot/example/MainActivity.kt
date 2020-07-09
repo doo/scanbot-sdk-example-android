@@ -16,7 +16,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -66,22 +65,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         findViewById<Button>(R.id.still_image_close).setOnClickListener { closeStillImageResults() }
     }
 
-    private val resultHandler = object : BaseResultHandler<Float, SdkLicenseError> {
-
-        override fun handle(result: FrameHandlerResult<Float, SdkLicenseError>): Boolean {
-            when (result) {
-                is FrameHandlerResult.Success -> {
-                    runOnUiThread {
-                        resultCaption.text = String.format(BLURRINESS_CAPTION_FORMAT, result.value)
-                    }
-                }
-                is FrameHandlerResult.Failure -> errorToast()
-            }
-
-            return false
-        }
-    }
-
     private val blurFrameHandler = object : FrameHandler {
 
         var isEnabled = AtomicBoolean(true)
@@ -89,17 +72,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         @Synchronized
         override fun handleFrame(previewFrame: FrameHandler.Frame): Boolean {
             if (isEnabled.get()) {
-                val result: FrameHandlerResult<Float, SdkLicenseError> = try {
-                    val blurValue = blurEstimator.estimate(
-                        previewFrame.frame, previewFrame.width, previewFrame.height,
-                        previewFrame.frameOrientation
-                    )
-                    FrameHandlerResult.Success(blurValue)
-                } catch (e: Exception) {
-                    FrameHandlerResult.Failure(SdkLicenseError())
-                }
+                val blurValue = blurEstimator.estimate(
+                    previewFrame.frame, previewFrame.width, previewFrame.height,
+                    previewFrame.frameOrientation
+                )
 
-                resultHandler.handle(result)
+                runOnUiThread {
+                    resultCaption.text = String.format(BLURRINESS_CAPTION_FORMAT, blurValue)
+                }
             }
 
             return false
