@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      tools:context="io.scanbot.example.MainActivity"
+      tools:ignore="HardcodedText,ExtraText,ContentDescription"
+      >
+
+   <io.scanbot.sdk.camera.ScanbotCameraView
+         android:id="@+id/camera_view"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+         />
+
+   <TextView
+         android:id="@+id/blur_estimated_result"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="170dp"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         android:padding="8dp"
+         android:textColor="#FFF"
+         android:background="#925C5757"
+         tools:text="Image blurriness: 0.42"
+         />
+
+   <Button
+         android:id="@+id/flash_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_margin="9dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         android:text="flash"
+         />
+
+   <Button
+         android:id="@+id/gallery_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_margin="9dp"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+         android:text="choose from gallery"
+         />
+
+   <FrameLayout
+         android:id="@+id/still_image_root"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:background="#B9333232"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+         android:translationZ="2dp"
+         android:clickable="true"
+         android:focusable="true"
+         android:visibility="gone"
+         tools:visibility="visible"
+         >
+
+      <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="42dp"
+            android:background="#FFF"
+            >
+
+         <ImageView
+               android:id="@+id/still_image_image_view"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               tools:layout_height="550dp"
+               android:layout_centerHorizontal="true"
+               android:layout_alignParentTop="true"
+               android:layout_above="@id/still_image_blur_caption"
+               android:scaleType="centerInside"
+               />
+
+         <TextView
+               android:id="@+id/still_image_blur_caption"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentBottom="true"
+               android:layout_centerHorizontal="true"
+               android:layout_marginTop="15dp"
+               android:layout_marginBottom="15dp"
+               android:padding="10dp"
+               android:background="#925C5757"
+               android:gravity="center"
+               android:textColor="@android:color/white"
+               android:textSize="20sp"
+               android:textStyle="bold"
+               tools:text="Image blurriness: 0.42"
+               />
+
+         <Button
+               android:id="@+id/still_image_close"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentTop="true"
+               android:layout_alignParentEnd="true"
+               android:text="close"
+               />
+      </RelativeLayout>
+   </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
