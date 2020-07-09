@@ -13,7 +13,7 @@ import io.scanbot.sdk.barcode.entity.BarcodeFormat
 
 class BarcodeTypesAdapter : RecyclerView.Adapter<BarcodeTypesViewHolder>() {
 
-    private val values = BarcodeFormat.values()
+    private val values = BarcodeFormat.ALL_CODES
 
     class BarcodeTypesViewHolder(barcodeTypeView: View) : RecyclerView.ViewHolder(barcodeTypeView) {
         var barcodeTypeName: TextView = barcodeTypeView.findViewById(R.id.barcode_type_name)
