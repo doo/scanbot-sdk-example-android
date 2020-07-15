@@ -32,7 +32,7 @@ class ExampleApplication : Application() {
                         LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
                     }
                 })
-                //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
+                .sdkFilesDirectory(this, getExternalFilesDir(null)!!)
                 .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

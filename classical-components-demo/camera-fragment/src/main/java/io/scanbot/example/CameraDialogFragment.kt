@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.AutoSnappingController
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
+import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.Operation
 import io.scanbot.sdk.ui.PolygonView
@@ -38,17 +38,19 @@ class CameraDialogFragment : DialogFragment(), PictureCallback {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val baseView = activity!!.layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
         cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.continuousFocus()
-                cameraView.useFlash(flashEnabled)
-            }, 700)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
+            }
         })
         resultView = baseView.findViewById<View>(R.id.result) as ImageView
         val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector())
         val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
-        AutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         cameraView.addPictureCallback(this)
         baseView.findViewById<View>(R.id.snap).setOnClickListener { v: View? -> cameraView.takePicture(false) }
         baseView.findViewById<View>(R.id.flash).setOnClickListener { v: View? ->

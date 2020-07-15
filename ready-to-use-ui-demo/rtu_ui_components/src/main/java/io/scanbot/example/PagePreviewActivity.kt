@@ -25,11 +25,9 @@ import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.docprocessing.DocumentProcessor
 import io.scanbot.sdk.docprocessing.draft.DocumentDraftExtractor
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFactory
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.cleanup.Cleaner
 import io.scanbot.sdk.process.ImageFilterType
@@ -59,9 +57,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         var selectedPage: Page? = null
     }
 
-    private lateinit var pageFactory: PageFactory
     private lateinit var documentDraftExtractor: DocumentDraftExtractor
-    private lateinit var documentProcessor: DocumentProcessor
     private lateinit var cleaner: Cleaner
     private lateinit var textRecognition: OpticalCharacterRecognizer
     private lateinit var pdfRenderer: PDFRenderer
@@ -81,9 +77,6 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         initMenu()
         scanbotSDK = ScanbotSDK(application)
 
-        pageFactory = scanbotSDK.pageFactory()
-        documentDraftExtractor = scanbotSDK.documentDraftExtractor()
-        documentProcessor = scanbotSDK.documentProcessor()
         cleaner = scanbotSDK.cleaner()
         textRecognition = scanbotSDK.ocrRecognizer()
         pdfRenderer = scanbotSDK.pdfRenderer()

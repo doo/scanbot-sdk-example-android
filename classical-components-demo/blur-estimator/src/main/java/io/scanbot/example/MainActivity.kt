@@ -48,11 +48,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         resultCaption = findViewById(R.id.blur_estimated_result)
 
         cameraView = findViewById(R.id.camera_view)
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.useFlash(false)
-                cameraView.continuousFocus()
-            }, 700)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.useFlash(false)
+                    cameraView.continuousFocus()
+                }, 700)
+            }
         })
         cameraView.addFrameHandler(blurFrameHandler)
 

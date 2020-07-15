@@ -31,11 +31,13 @@ class DCScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.useFlash(flashEnabled)
-                cameraView.continuousFocus()
-            }, 700)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.useFlash(flashEnabled)
+                    cameraView.continuousFocus()
+                }, 700)
+            }
         })
 
         val scanbotSDK = ScanbotSDK(this)

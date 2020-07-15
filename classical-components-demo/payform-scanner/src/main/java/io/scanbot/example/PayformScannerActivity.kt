@@ -31,12 +31,14 @@ class PayformScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.lockToLandscape()
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.useFlash(flashEnabled)
-                cameraView.continuousFocus()
-            }, 700)
+        cameraView.lockToLandscape(true)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.useFlash(flashEnabled)
+                    cameraView.continuousFocus()
+                }, 700)
+            }
         })
 
         val scanbotSDK = ScanbotSDK(this)

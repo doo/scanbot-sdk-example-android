@@ -20,6 +20,7 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
+import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.Operation
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var contourDetectorFrameHandler: ContourDetectorFrameHandler
-    private lateinit var autoSnappingController: AutoSnappingController
+    private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
 
@@ -60,16 +61,18 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
 
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
         //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.setAutoFocusSound(false)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.setAutoFocusSound(false)
 
-                // Shutter sound is ON by default. You can disable it:
-                // cameraView.setShutterSound(false);
+                    // Shutter sound is ON by default. You can disable it:
+                    // cameraView.setShutterSound(false);
 
-                cameraView.continuousFocus()
-                cameraView.useFlash(flashEnabled)
-            }, 700)
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
+            }
         })
         resultView = findViewById<View>(R.id.result) as ImageView
 
@@ -85,7 +88,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
         contourDetectorFrameHandler.addResultHandler(this)
 
-        autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         autoSnappingController.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity

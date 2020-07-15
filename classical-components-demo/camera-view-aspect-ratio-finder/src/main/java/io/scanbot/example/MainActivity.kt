@@ -18,6 +18,7 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
+import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.process.CropOperation
@@ -51,16 +52,18 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
 
         // Lock the orientation of the UI (Activity) as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true)
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.setAutoFocusSound(false)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.setAutoFocusSound(false)
 
-                // Shutter sound is ON by default. You can disable it:
-                // cameraView.setShutterSound(false);
+                    // Shutter sound is ON by default. You can disable it:
+                    // cameraView.setShutterSound(false);
 
-                cameraView.continuousFocus()
-                cameraView.useFlash(flashEnabled)
-            }, 700)
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
+            }
         })
         resultView = findViewById<View>(R.id.result) as ImageView
 
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         contourDetectorFrameHandler.addResultHandler(finderOverlayView.contourDetectorFrameHandler)
         contourDetectorFrameHandler.addResultHandler(this)
 
-        val autoSnappingController = AutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         // autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true)
         cameraView.addPictureCallback(this)
