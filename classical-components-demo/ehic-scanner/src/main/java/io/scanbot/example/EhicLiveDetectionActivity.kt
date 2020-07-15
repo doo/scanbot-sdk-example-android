@@ -30,11 +30,13 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ehic_live_scanner)
         supportActionBar!!.hide()
         cameraView = findViewById(R.id.camera)
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed(Runnable {
-                cameraView.useFlash(flashEnabled)
-                cameraView.continuousFocus()
-            }, 700)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed(Runnable {
+                    cameraView.useFlash(flashEnabled)
+                    cameraView.continuousFocus()
+                }, 700)
+            }
         })
 
         val scanbotSDK = ScanbotSDK(this)

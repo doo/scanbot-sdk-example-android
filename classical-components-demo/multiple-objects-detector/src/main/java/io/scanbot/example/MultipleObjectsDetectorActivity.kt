@@ -56,11 +56,13 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
         progressView = findViewById(R.id.progressView)
 
         cameraView = findViewById(R.id.camera)
-        cameraView.setCameraOpenCallback(CameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.continuousFocus()
-                cameraView.useFlash(flashEnabled)
-            }, 700)
+        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
+            override fun onCameraOpened() {
+                cameraView.postDelayed({
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
+            }
         })
         cameraView.addPictureCallback(this)
 
