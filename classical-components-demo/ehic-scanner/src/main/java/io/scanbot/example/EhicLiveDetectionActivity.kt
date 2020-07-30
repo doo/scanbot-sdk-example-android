@@ -65,7 +65,7 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
 
-        Toast.makeText(this, if (scanbotSDK.isLicenseActive) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {

@@ -21,10 +21,11 @@ allprojects {
         buildToolsVersion = '28.0.3'
         androidxSupportVersion = '1.0.1'
 
-        scanbotSdkVersion = '1.70.4'
+        scanbotSdkVersion = '1.71.0'
     }
 
     repositories {
+        mavenLocal()
         google()
         jcenter()
         mavenCentral()
