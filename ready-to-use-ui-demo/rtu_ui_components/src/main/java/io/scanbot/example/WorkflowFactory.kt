@@ -110,7 +110,7 @@ class WorkflowFactory {
                     ScanBarCodeWorkflowStep(
                             title = "Step 1/2 - QR-/Barcode",
                             message = "Please scan a QR or barcode.",
-                            acceptedCodeTypes = BarcodeFormat.values().toList() as ArrayList<BarcodeFormat>,
+                            acceptedCodeTypes = BarcodeFormat.COMMON_CODES as ArrayList<BarcodeFormat>,
                             finderViewSize = FinderViewSize(1.0, 0.6),
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<BarCodeWorkflowStepResult> {
                                 override fun invoke(stepResult: BarCodeWorkflowStepResult): WorkflowStepError? {

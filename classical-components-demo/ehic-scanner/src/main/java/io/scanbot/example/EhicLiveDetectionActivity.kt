@@ -32,7 +32,7 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         cameraView = findViewById(R.id.camera)
         cameraView.setCameraOpenCallback(object : CameraOpenCallback {
             override fun onCameraOpened() {
-                cameraView.postDelayed({
+                cameraView.postDelayed(Runnable {
                     cameraView.useFlash(flashEnabled)
                     cameraView.continuousFocus()
                 }, 700)
@@ -65,7 +65,7 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
 
-        Toast.makeText(this, if (scanbotSDK.isLicenseActive) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {
