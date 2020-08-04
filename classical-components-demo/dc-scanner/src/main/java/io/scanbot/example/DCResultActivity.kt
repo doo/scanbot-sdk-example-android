@@ -81,7 +81,6 @@ class DCResultActivity : AppCompatActivity() {
         layout.addView(v)
     }
 
-
     companion object {
         const val EXTRA_workAccident = "workAccident"
         const val EXTRA_workAccidentConf = "workAccidentConf"
