@@ -163,6 +163,10 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 .append("Issue Date: ").append(
                         result.dates?.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordDiagnosedOn }?.dateString
                 )
+                .append("\n")
+                .append("Form type: ${result.dcFormType.name}")
+                .append("\n")
+                .append(result.patientInfoFields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
                 .toString()
     }
 }

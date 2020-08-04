@@ -3,10 +3,13 @@ package io.scanbot.example
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.dcscanner.model.DCInfoBoxSubtype
+import io.scanbot.dcscanner.model.DCPatientInfoField
 import io.scanbot.dcscanner.model.DateRecordType
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 
@@ -15,44 +18,69 @@ class DCResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dc_result)
 
-        val workAccident = findViewById<View>(R.id.work_accident) as TextView
-        val workAccidentConf = findViewById<View>(R.id.work_accident_confidence) as TextView
-        val assignedInsDoctor = findViewById<View>(R.id.assigned_ins_doctor) as TextView
-        val assignedInsDoctorConf = findViewById<View>(R.id.assigned_ins_doctor_confidence) as TextView
-        val initialCertificate = findViewById<View>(R.id.initial_certificate) as TextView
-        val initialCertificateConf = findViewById<View>(R.id.initial_certificate_confidence) as TextView
-        val renewedCertificate = findViewById<View>(R.id.renewed_certificate) as TextView
-        val renewedCertificateConf = findViewById<View>(R.id.renewed_certificate_confidence) as TextView
-        val incapableSince = findViewById<View>(R.id.incapable_since) as TextView
-        val incapableSinceRC = findViewById<View>(R.id.incapable_since_rc) as TextView
-        val incapableSinceVC = findViewById<View>(R.id.incapable_since_vc) as TextView
-        val incapableUntil = findViewById<View>(R.id.incapable_until) as TextView
-        val incapableUntilRC = findViewById<View>(R.id.incapable_until_rc) as TextView
-        val incapableUntilVC = findViewById<View>(R.id.incapable_until_vc) as TextView
-        val diagnosedOn = findViewById<View>(R.id.diagnosed_on) as TextView
-        val diagnosedOnRC = findViewById<View>(R.id.diagnosed_on_rc) as TextView
-        val diagnosedOnVC = findViewById<View>(R.id.diagnosed_on_vc) as TextView
+        val checkboxesLayout = findViewById<LinearLayout>(R.id.dc_result_checkboxes_layout)
+        val datesLayout = findViewById<LinearLayout>(R.id.dc_result_dates_layout)
+        val patientInfoLayout = findViewById<LinearLayout>(R.id.dc_result_patient_info_layout)
+        val otherLayout = findViewById<LinearLayout>(R.id.dc_result_other_layout)
 
 
-        workAccident.text = if (intent.getBooleanExtra(EXTRA_workAccident, false)) "Checked" else "Unchecked"
-        workAccidentConf.text = intent.getDoubleExtra(EXTRA_workAccidentConf, 0.0).toString()
-        assignedInsDoctor.text = if (intent.getBooleanExtra(EXTRA_assignedInsDoctor, false)) "Checked" else "Unchecked"
-        assignedInsDoctorConf.text = intent.getDoubleExtra(EXTRA_assignedInsDoctorConf, 0.0).toString()
-        initialCertificate.text = if (intent.getBooleanExtra(EXTRA_initialCertificate, false)) "Checked" else "Unchecked"
-        initialCertificateConf.text = intent.getDoubleExtra(EXTRA_initialCertificateConf, 0.0).toString()
-        renewedCertificate.text = if (intent.getBooleanExtra(EXTRA_renewedCertificate, false)) "Checked" else "Unchecked"
-        renewedCertificateConf.text = intent.getDoubleExtra(EXTRA_renewedCertificateConf, 0.0).toString()
-        incapableSince.text = intent.getStringExtra(EXTRA_incapableSince)
-        incapableSinceRC.text = intent.getDoubleExtra(EXTRA_incapableSinceRC, 0.0).toString()
-        incapableSinceVC.text = intent.getDoubleExtra(EXTRA_incapableSinceVC, 0.0).toString()
-        incapableUntil.text = intent.getStringExtra(EXTRA_incapableUntil)
-        incapableUntilRC.text = intent.getDoubleExtra(EXTRA_incapableUntilRC, 0.0).toString()
-        incapableUntilVC.text = intent.getDoubleExtra(EXTRA_incapableUntilVC, 0.0).toString()
-        diagnosedOn.text = intent.getStringExtra(EXTRA_diagnosedOn)
-        diagnosedOnRC.text = intent.getDoubleExtra(EXTRA_diagnosedOnRC, 0.0).toString()
-        diagnosedOnVC.text = intent.getDoubleExtra(EXTRA_diagnosedOnVC, 0.0).toString()
+        addValueView(checkboxesLayout, "Work accident", intent.getBooleanExtra(EXTRA_workAccident, false))
+        addConfidenceValueView(checkboxesLayout,  intent.getDoubleExtra(EXTRA_workAccidentConf, 0.0))
+        addValueView(checkboxesLayout, "Assigned to ins. doctor", intent.getBooleanExtra(EXTRA_assignedInsDoctor, false))
+        addConfidenceValueView(checkboxesLayout, intent.getDoubleExtra(EXTRA_assignedInsDoctorConf, 0.0))
+        addValueView(checkboxesLayout, "Initial certificate", intent.getBooleanExtra(EXTRA_initialCertificate, false))
+        addConfidenceValueView(checkboxesLayout, intent.getDoubleExtra(EXTRA_initialCertificateConf, 0.0))
+        addValueView(checkboxesLayout, "Renewed certificate", intent.getBooleanExtra(EXTRA_renewedCertificate, false))
+        addConfidenceValueView(checkboxesLayout, intent.getDoubleExtra(EXTRA_renewedCertificateConf, 0.0))
+
+        addValueView(datesLayout, "Incapable since", intent.getStringExtra(EXTRA_incapableSince))
+        addConfidenceValueView(datesLayout,  intent.getDoubleExtra(EXTRA_incapableSinceRC, 0.0), ConfidenceType.RECOGNITION)
+        addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableSinceVC, 0.0), ConfidenceType.VALIDATION)
+
+        addValueView(datesLayout, "Incapable until", intent.getStringExtra(EXTRA_incapableUntil))
+        addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableUntilRC, 0.0), ConfidenceType.RECOGNITION)
+        addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableUntilVC, 0.0), ConfidenceType.VALIDATION)
+
+        addValueView(datesLayout, "Diagnosed on", intent.getStringExtra(EXTRA_diagnosedOn))
+        addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_diagnosedOnRC, 0.0), ConfidenceType.RECOGNITION)
+        addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_diagnosedOnVC, 0.0), ConfidenceType.VALIDATION)
+
+        addValueView(otherLayout, "Form type", intent.getStringExtra(EXTRA_formType))
+        val parcelableArrayExtra = intent.getParcelableArrayExtra(EXTRA_patientInfo) as Array<Parcelable>
+        parcelableArrayExtra.forEach {
+            if (it is DCPatientInfoField) {
+                addValueView(patientInfoLayout, it.patientInfoFieldType.name, it.value)
+                addConfidenceValueView(patientInfoLayout, it.confidenceValue)
+            }
+        }
+
         findViewById<View>(R.id.retry).setOnClickListener { v: View? -> finish() }
     }
+
+    private fun addValueView(layout: LinearLayout, title: String, value: String) {
+        val v = layoutInflater.inflate(R.layout.view_key_value, layout, false)
+        v.findViewById<TextView>(R.id.view_text_key).text = title
+        v.findViewById<TextView>(R.id.view_text_value).text = value
+        layout.addView(v)
+    }
+    private fun addValueView(layout: LinearLayout, title: String, value: Boolean) {
+        val v = layoutInflater.inflate(R.layout.view_key_value, layout, false)
+        v.findViewById<TextView>(R.id.view_text_key).text = title
+        v.findViewById<TextView>(R.id.view_text_value).text = if (value) "Checked" else "Unchecked"
+        layout.addView(v)
+    }
+
+    private fun addConfidenceValueView(layout: LinearLayout, value: Double, type: ConfidenceType = ConfidenceType.COMMON) {
+        val v = layoutInflater.inflate(R.layout.view_confidence, layout, false)
+        v.findViewById<TextView>(R.id.view_text_key).text = when (type) {
+            ConfidenceType.COMMON -> "Confidence"
+            ConfidenceType.VALIDATION -> "Validation confidence"
+            ConfidenceType.RECOGNITION -> "Recognition confidence"
+        }
+        v.findViewById<TextView>(R.id.view_text_value).text =  "%.4f".format(value)
+        layout.addView(v)
+    }
+
 
     companion object {
         const val EXTRA_workAccident = "workAccident"
@@ -72,29 +100,31 @@ class DCResultActivity : AppCompatActivity() {
         const val EXTRA_diagnosedOn = "diagnosedOn"
         const val EXTRA_diagnosedOnRC = "diagnosedOnRC"
         const val EXTRA_diagnosedOnVC = "diagnosedOnVC"
+        const val EXTRA_patientInfo = "patientInfo"
+        const val EXTRA_formType = "formType"
 
         @JvmStatic
         fun newIntent(context: Context?, result: DisabilityCertificateRecognizerResultInfo): Intent {
             val intent = Intent(context, DCResultActivity::class.java)
-            for (chackbox in result.checkboxes) {
-                when (chackbox.subType) {
+            for (checkbox in result.checkboxes) {
+                when (checkbox.subType) {
                     DCInfoBoxSubtype.DCBoxUnknown, DCInfoBoxSubtype.DCBoxPatientInfo -> {
                     }
                     DCInfoBoxSubtype.DCBoxWorkAccident -> {
-                        intent.putExtra(EXTRA_workAccident, chackbox.hasContents)
-                        intent.putExtra(EXTRA_workAccidentConf, chackbox.contentsValidationConfidenceValue)
+                        intent.putExtra(EXTRA_workAccident, checkbox.hasContents)
+                        intent.putExtra(EXTRA_workAccidentConf, checkbox.contentsValidationConfidenceValue)
                     }
                     DCInfoBoxSubtype.DCBoxAssignedToAccidentInsuranceDoctor -> {
-                        intent.putExtra(EXTRA_assignedInsDoctor, chackbox.hasContents)
-                        intent.putExtra(EXTRA_assignedInsDoctorConf, chackbox.contentsValidationConfidenceValue)
+                        intent.putExtra(EXTRA_assignedInsDoctor, checkbox.hasContents)
+                        intent.putExtra(EXTRA_assignedInsDoctorConf, checkbox.contentsValidationConfidenceValue)
                     }
                     DCInfoBoxSubtype.DCBoxInitialCertificate -> {
-                        intent.putExtra(EXTRA_initialCertificate, chackbox.hasContents)
-                        intent.putExtra(EXTRA_initialCertificateConf, chackbox.contentsValidationConfidenceValue)
+                        intent.putExtra(EXTRA_initialCertificate, checkbox.hasContents)
+                        intent.putExtra(EXTRA_initialCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
                     DCInfoBoxSubtype.DCBoxRenewedCertificate -> {
-                        intent.putExtra(EXTRA_renewedCertificate, chackbox.hasContents)
-                        intent.putExtra(EXTRA_renewedCertificateConf, chackbox.contentsValidationConfidenceValue)
+                        intent.putExtra(EXTRA_renewedCertificate, checkbox.hasContents)
+                        intent.putExtra(EXTRA_renewedCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
                 }
             }
@@ -119,7 +149,17 @@ class DCResultActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            intent.putExtra(EXTRA_formType, result.dcFormType.name)
+            intent.putExtra(EXTRA_patientInfo, result.patientInfoFields.toTypedArray())
+
             return intent
         }
     }
+}
+
+private enum class ConfidenceType {
+    COMMON,
+    VALIDATION,
+    RECOGNITION
 }
