@@ -39,6 +39,8 @@ import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
 import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
+import io.scanbot.sdk.ui.view.idcard.IdCardScannerActivity
+import io.scanbot.sdk.ui.view.idcard.configuration.IdCardScannerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
@@ -60,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
         private const val EHIC_SCAN_REQUEST_CODE = 917
         private const val MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE = 919
+        private const val ID_CARD_DEFAULT_UI = 920
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -131,6 +134,12 @@ class MainActivity : AppCompatActivity() {
             EHIC_SCAN_REQUEST_CODE -> {
                 val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
                 showEHICResultDialog(hicRecognitionResult)
+            }
+            ID_CARD_DEFAULT_UI -> {
+                // TODO: Process data from
+                // data.getParcelableExtra(IdCardScannerActivity.EXTRACTED_FIELDS_EXTRA) as IdCardScanningResult
+                // Can be GermanyPassportCard or GermanyIdCard
+                Toast.makeText(this@MainActivity, getString(R.string.id_card_flow_finished), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -347,6 +356,23 @@ class MainActivity : AppCompatActivity() {
                     WorkflowFactory.disabilityCertificate()
             )
             startActivityForResult(intent, DC_SCAN_WORKFLOW_REQUEST_CODE)
+        }
+
+        id_card_default_ui.setOnClickListener {
+            val idCardScannerConfiguration = IdCardScannerConfiguration()
+            idCardScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            idCardScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+
+            // If it is needed to get access to photos from the id card it is needed to enable this option manually
+            // Then they will be saved in %SDK_DIRECTORY%/id_scan_results/
+            // The Uris to images are stored in IdCardScanningResult.photo and IdCardScanningResult.signature
+            // only if the following options are enabled:
+            //
+            // idCardScannerConfiguration.setShouldSavePhotoImageInStorage(true)
+            // idCardScannerConfiguration.setShouldSaveSignatureImageInStorage(true)
+
+            val intent = IdCardScannerActivity.newIntent(this@MainActivity, idCardScannerConfiguration)
+            startActivityForResult(intent, ID_CARD_DEFAULT_UI)
         }
 
         payform_default_ui.setOnClickListener {
