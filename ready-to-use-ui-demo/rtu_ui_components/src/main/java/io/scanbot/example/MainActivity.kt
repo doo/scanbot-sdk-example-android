@@ -363,9 +363,9 @@ class MainActivity : AppCompatActivity() {
             idCardScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
             idCardScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            // If it is needed to get access to photos from the id card it is needed to enable this option manually
-            // Then they will be saved in %SDK_DIRECTORY%/id_scan_results/
-            // The Uris to images are stored in IdCardScanningResult.photo and IdCardScanningResult.signature
+            // It is required to enable saving photos from the Id Card manually
+            // Then they will be saved in %SDK_FILES_DIRECTORY%/id_scan_results/
+            // The Uris to images can be get from IdCardScanningResult.photo and IdCardScanningResult.signature
             // only if the following options are enabled:
             //
             // idCardScannerConfiguration.setShouldSavePhotoImageInStorage(true)
