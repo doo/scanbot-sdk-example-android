@@ -103,7 +103,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
         return barcodesResult.toString()
     }
 
-    private fun ByteArray.toHexString() = this.joinToString("") { String.format("%02X", (it.toInt() and 0xFF)) }
+    private fun ByteArray.toHexString() = this.joinToString("") { String.format("%02X", it.toInt() and 0xFF) }
 
     companion object {
         const val BARCODE_ITEM = "BARCODE_ITEM"
