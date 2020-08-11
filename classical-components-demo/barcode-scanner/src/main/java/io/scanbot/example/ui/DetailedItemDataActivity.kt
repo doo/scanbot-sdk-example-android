@@ -32,7 +32,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
     private fun printParsedFormat(item: BarcodeItem): String {
         val barcodeDocumentFormat = item.formattedResult
-            ?: return item.text // for not supported by current barcode detector implementation
+            ?: return "${item.text}\n\nBinary data:\n${item.rawBytes.toHexString()}" // for not supported by current barcode detector implementation
 
         val barcodesResult = StringBuilder()
         when (barcodeDocumentFormat) {
@@ -102,6 +102,8 @@ class DetailedItemDataActivity : AppCompatActivity() {
         }
         return barcodesResult.toString()
     }
+
+    private fun ByteArray.toHexString() = this.joinToString("") { String.format("%02X", (it.toInt() and 0xFF)) }
 
     companion object {
         const val BARCODE_ITEM = "BARCODE_ITEM"
