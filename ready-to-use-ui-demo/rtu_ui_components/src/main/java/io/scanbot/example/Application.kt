@@ -8,6 +8,7 @@ import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +52,10 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .prepareDcBlobs(true)
+                .prepareIdCardScannerBlobs(true)
                 .preparePayFormBlobs(true)
                 .prepareBarcodeScannerBlobs(true)
+                .contourDetectorType(ContourDetector.Type.ML_BASED)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key

@@ -16,9 +16,7 @@ import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.idcardscanner.IdCardScannerFrameHandler
 import io.scanbot.sdk.idcardscanner.IdScanResult
 import io.scanbot.sdk.process.RotateOperation
-import io.scanbot.sdk.ui.camera.IScanbotCameraView
-import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import io.scanbot.sdk.ui.camera.ShutterButton
+import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
 
@@ -38,6 +36,7 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 3.0)))
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
