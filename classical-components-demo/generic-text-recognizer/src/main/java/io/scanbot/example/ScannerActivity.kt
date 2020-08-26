@@ -36,7 +36,7 @@ class ScannerActivity : AppCompatActivity() {
         resultTextView = findViewById(R.id.resultTextView)
 
         val finderOverlay = findViewById<FinderOverlayView>(R.id.finder_overlay)
-        // The smaller finder view brings better performance and
+        // The smaller finder view brings better performance and allows user to detect text more precise
         finderOverlay.setFixedFinderHeight(100)
         finderOverlay.setFixedFinderWidth(400)
 
