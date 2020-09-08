@@ -45,6 +45,9 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
 import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
+import io.scanbot.sdk.ui.view.nfc.NfcPassportScannerActivity
+import io.scanbot.sdk.ui.view.nfc.configuration.NfcPassportConfiguration
+import io.scanbot.sdk.ui.view.nfc.entity.NfcPassportScanningResult
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
@@ -63,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         private const val EHIC_SCAN_REQUEST_CODE = 917
         private const val MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE = 919
         private const val ID_CARD_DEFAULT_UI = 920
+        private const val PASSPORT_NFC_MRZ_DEFAULT_UI = 921
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -88,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         when (requestCode) {
             MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
+            PASSPORT_NFC_MRZ_DEFAULT_UI -> showNfcPassportDialog(data.getParcelableExtra(NfcPassportScannerActivity.EXTRACTED_FIELDS_EXTRA))
             MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
                     data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
             MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
@@ -165,6 +170,11 @@ class MainActivity : AppCompatActivity() {
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
         val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
+    }
+
+    private fun showNfcPassportDialog(nfcPassportScanningResult: NfcPassportScanningResult) {
+        val dialogFragment = NfcPassportResultDialogFragment.newInstance(nfcPassportScanningResult)
+        dialogFragment.show(supportFragmentManager, NfcPassportResultDialogFragment.NAME)
     }
 
     private fun showMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
@@ -251,6 +261,20 @@ class MainActivity : AppCompatActivity() {
 
             val intent = MRZScannerActivity.newIntent(this@MainActivity, mrzCameraConfiguration)
             startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)
+        }
+
+        findViewById<View>(R.id.nfc_passport_default_ui).setOnClickListener {
+            val nfcPassportConfiguration = NfcPassportConfiguration()
+
+            nfcPassportConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            nfcPassportConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            nfcPassportConfiguration.setSuccessBeepEnabled(false)
+
+            // TODO: if you need to load an image from the NFC chip enable
+            // nfcPassportConfiguration.setShouldSavePhotoImageInStorage(true)
+
+            val intent = NfcPassportScannerActivity.newIntent(this@MainActivity, nfcPassportConfiguration)
+            startActivityForResult(intent, PASSPORT_NFC_MRZ_DEFAULT_UI)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {

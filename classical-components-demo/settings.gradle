@@ -11,6 +11,7 @@ include(
         ':blur-estimator',
         ':dc-scanner',
         ':idcard-scanner',
+        ':generic-text-recognizer',
         ':tiff-writer',
         ':cheque-scanner',
         ':manual-processing',

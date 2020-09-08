@@ -44,36 +44,27 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(this.activity!!)
-
         val inflater = LayoutInflater.from(activity)
-
         val contentContainer = inflater.inflate(R.layout.holo_dialog_frame, null, false) as ViewGroup
+
         addContentView(inflater, contentContainer)
 
         builder.setView(contentContainer)
 
-
-        builder.setPositiveButton(
-                getString(R.string.cancel_dialog_button)) { _, _ ->
-            run {
-                dismiss()
-            }
+        builder.setPositiveButton(getString(R.string.cancel_dialog_button)) { _, _ ->
+            dismiss()
         }
 
-        builder.setNegativeButton(
-                R.string.copy_dialog_button) { _, _ ->
-            run {
-                val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                if (mrzRecognitionResult != null) {
-                    val data = extractData(mrzRecognitionResult!!)
-
-                    val clip = ClipData.newPlainText(data, data)
-
-                    clipboard.primaryClip = clip
-                }
-                dismiss()
+        builder.setNegativeButton(R.string.copy_dialog_button) { _, _ ->
+            val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            if (mrzRecognitionResult != null) {
+                val data = extractData(mrzRecognitionResult!!)
+                val clip = ClipData.newPlainText(data, data)
+                clipboard.primaryClip = clip
             }
+            dismiss()
         }
+
         val dialog = builder.create()
         dialog.setCanceledOnTouchOutside(true)
 
