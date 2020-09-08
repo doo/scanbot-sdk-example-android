@@ -13,9 +13,7 @@ import io.scanbot.sdk.entity.Language
 import io.scanbot.sdk.generictext.GenericTextRecognitionResult
 import io.scanbot.sdk.generictext.GenericTextRecognizer
 import io.scanbot.sdk.generictext.GenericTextRecognizerFrameHandler
-import io.scanbot.sdk.ui.camera.FinderOverlayView
-import io.scanbot.sdk.ui.camera.IScanbotCameraView
-import io.scanbot.sdk.ui.camera.ScanbotCameraXView
+import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
     private val scanbotSdk = ScanbotSDK(this)
@@ -35,10 +33,10 @@ class ScannerActivity : AppCompatActivity() {
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
 
-        val finderOverlay = findViewById<FinderOverlayView>(R.id.finder_overlay)
+        val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
         // The smaller finder view brings better performance and allows user to detect text more precise
-        finderOverlay.setFixedFinderHeight(100)
-        finderOverlay.setFixedFinderWidth(400)
+        zoomFinderOverlay.setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 1.0)))
+        zoomFinderOverlay.zoomLevel = 1.8f
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
@@ -50,6 +48,23 @@ class ScannerActivity : AppCompatActivity() {
                 return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
             }
         })
+
+
+        // TODO: If the string which is needed to scan is not clearly separated from other parts of the text
+        // then enable this setting. This will only work with 'pattern' variable from the validator:
+        //
+        // genericTextScanner.matchSubstringForPattern = true
+
+
+        // TODO: as an alternative it is possible to extract the valuable text from the raw scanned text manually
+        // using a Cleaner. The effective implementation of this function might significantly improve the speed
+        // of scanning
+        //
+        // genericTextScanner.setCleaner(object : GenericTextRecognizer.CleanRecognitionResultCallback {
+        //     override fun process(rawText: String): String {
+        //         return extractValuableDataFromText(rawText)
+        //     }
+        // })
 
         genericTextScanner.supportedLanguages = setOf(Language.ENG, Language.DEU)
 

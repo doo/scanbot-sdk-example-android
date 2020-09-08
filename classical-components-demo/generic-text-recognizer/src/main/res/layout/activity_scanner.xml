@@ -13,9 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <io.scanbot.sdk.ui.camera.FinderOverlayView
+    <io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
         android:id="@+id/finder_overlay"
         android:layout_width="match_parent"
+        app:fixed_height="30dp"
         android:layout_height="match_parent" />
 
     <Button
