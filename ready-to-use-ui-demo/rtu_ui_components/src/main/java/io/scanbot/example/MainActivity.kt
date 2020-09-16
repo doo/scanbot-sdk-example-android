@@ -24,6 +24,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.nfcscanner.passport.PassportPhotoSaveCallback
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
@@ -270,8 +271,19 @@ class MainActivity : AppCompatActivity() {
             nfcPassportConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
             nfcPassportConfiguration.setSuccessBeepEnabled(false)
 
-            // TODO: if you need to load an image from the NFC chip enable
+            // TODO: if you need to load an image from the NFC chip enable line below
             // nfcPassportConfiguration.setShouldSavePhotoImageInStorage(true)
+
+            // if for some reason (e.g. security) you need to retrieve passport photo from NFC chip
+            // without getting it stored on device disk, you can enable the following configuration
+            class PhotoSaveCallback : PassportPhotoSaveCallback {
+                // NOTE: callback implementation class must be static (in case of Java)
+                // or non-inner (in case of Kotlin) and must not touch fields or methods of enclosing class/method
+                override fun onImageRetrieved(photo: Bitmap?) {
+                    // TODO: use photo from this callback
+                }
+            }
+            nfcPassportConfiguration.setPassportPhotoSaveCallback(PhotoSaveCallback::class.java)
 
             val intent = NfcPassportScannerActivity.newIntent(this@MainActivity, nfcPassportConfiguration)
             startActivityForResult(intent, PASSPORT_NFC_MRZ_DEFAULT_UI)
