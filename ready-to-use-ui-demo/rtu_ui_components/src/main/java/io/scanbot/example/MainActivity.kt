@@ -21,7 +21,10 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
+import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.nfcscanner.passport.PassportPhotoSaveCallback
@@ -329,7 +332,16 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setBarcodesCountTextColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
 
-            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
+            class CustomFormattedBarcodeDataMapper : FormattedBarcodeDataMapper {
+                // NOTE: callback implementation class must be static (in case of Java)
+                // or non-inner (in case of Kotlin) and must not touch fields or methods of enclosing class/method
+                override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
+                    // TODO: use barcodeItem appropriately here as needed
+                    return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.text)
+                }
+            }
+
+            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration, CustomFormattedBarcodeDataMapper::class.java)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
         }
 
