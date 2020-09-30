@@ -25,6 +25,7 @@ class ScannerActivity : AppCompatActivity() {
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var resultTextView: TextView
+    private lateinit var shutterButton: ShutterButton
 
     private lateinit var idCardScannerFrameHandler: IdCardScannerFrameHandler
 
@@ -74,7 +75,15 @@ class ScannerActivity : AppCompatActivity() {
         })
 
         findViewById<Button>(R.id.flashButton).setOnClickListener { toggleFlash() }
-        findViewById<ShutterButton>(R.id.shutterButton).setOnClickListener { cameraView.takePicture(false) }
+
+        shutterButton = findViewById(R.id.shutterButton)
+        shutterButton.setOnClickListener {
+            cameraView.takePicture(false)
+
+            // pause frame handler to stop detecting results on a preview
+            idCardScannerFrameHandler.isEnabled = false
+            shutterButton.isEnabled = false
+        }
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
@@ -92,7 +101,9 @@ class ScannerActivity : AppCompatActivity() {
                         "Error scanning: ${recognitionResult?.status}",
                         Toast.LENGTH_SHORT)
                         .show()
+                shutterButton.isEnabled = true
             }
+            idCardScannerFrameHandler.isEnabled = true
         }
     }
 
