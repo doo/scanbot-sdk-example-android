@@ -40,7 +40,9 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        idCardScannerFrameHandler = IdCardScannerFrameHandler.attach(cameraView, idCardScanner)
+        // TODO: pass shouldRecognize = true to recognize all the fields during the live detection.
+        // It will only report only the status otherwise
+        idCardScannerFrameHandler = IdCardScannerFrameHandler.attach(cameraView, idCardScanner, false)
         idCardScannerFrameHandler.addResultHandler(object : IdCardScannerFrameHandler.ResultHandler {
             override fun handle(result: FrameHandlerResult<IdScanResult, SdkLicenseError>): Boolean {
                 val resultText: String = when (result) {
@@ -77,8 +79,7 @@ class ScannerActivity : AppCompatActivity() {
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val rotatedBitmap = scanbotSdk.imageProcessor().processBitmap(bitmap, RotateOperation(imageOrientation))!!
-        val recognitionResult = idCardScanner.scanBitmap(rotatedBitmap)
+        val recognitionResult = idCardScanner.scanBitmap(bitmap, orientation = imageOrientation)
 
         val isSuccess = recognitionResult != null &&
                 (recognitionResult.status == IdScanResult.RecognitionStatus.Success)
