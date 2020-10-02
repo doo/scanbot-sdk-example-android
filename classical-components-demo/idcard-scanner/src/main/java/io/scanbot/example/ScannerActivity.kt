@@ -13,9 +13,9 @@ import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
+import io.scanbot.sdk.idcardscanner.IdCardAutoSnappingController
 import io.scanbot.sdk.idcardscanner.IdCardScannerFrameHandler
 import io.scanbot.sdk.idcardscanner.IdScanResult
-import io.scanbot.sdk.process.RotateOperation
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
@@ -28,6 +28,7 @@ class ScannerActivity : AppCompatActivity() {
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var idCardScannerFrameHandler: IdCardScannerFrameHandler
+    private lateinit var autoSnappingController: IdCardAutoSnappingController
 
     private var useFlash = false
 
@@ -62,6 +63,8 @@ class ScannerActivity : AppCompatActivity() {
             }
         })
 
+        autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScannerFrameHandler)
+
         cameraView.setCameraOpenCallback(object : CameraOpenCallback {
             override fun onCameraOpened() {
                 cameraView.useFlash(useFlash)
@@ -87,6 +90,7 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
+        autoSnappingController.isEnabled = false
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val recognitionResult = idCardScanner.scanBitmap(bitmap, orientation = imageOrientation)
 
@@ -104,6 +108,7 @@ class ScannerActivity : AppCompatActivity() {
                 shutterButton.isEnabled = true
             }
             idCardScannerFrameHandler.isEnabled = true
+            autoSnappingController.isEnabled = true
         }
     }
 
