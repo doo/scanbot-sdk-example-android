@@ -82,15 +82,16 @@ class ScannerActivity : AppCompatActivity() {
         shutterButton = findViewById(R.id.shutterButton)
         shutterButton.setOnClickListener {
             cameraView.takePicture(false)
-
-            // pause frame handler to stop detecting results on a preview
-            idCardScannerFrameHandler.isEnabled = false
-            shutterButton.isEnabled = false
         }
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
+        // pause frame handler to stop detecting results on a preview during the recognition on the full-size picture
+        idCardScannerFrameHandler.isEnabled = false
         autoSnappingController.isEnabled = false
+
+        shutterButton.isEnabled = false
+
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val recognitionResult = idCardScanner.scanBitmap(bitmap, orientation = imageOrientation)
 
