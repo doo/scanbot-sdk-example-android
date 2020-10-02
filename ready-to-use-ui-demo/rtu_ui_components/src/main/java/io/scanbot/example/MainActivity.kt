@@ -27,7 +27,6 @@ import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
-import io.scanbot.sdk.nfcscanner.passport.PassportPhotoSaveCallback
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
@@ -50,6 +49,7 @@ import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
 import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
 import io.scanbot.sdk.ui.view.nfc.NfcPassportScannerActivity
+import io.scanbot.sdk.ui.view.nfc.PassportPhotoSaveCallback
 import io.scanbot.sdk.ui.view.nfc.configuration.NfcPassportConfiguration
 import io.scanbot.sdk.ui.view.nfc.entity.NfcPassportScanningResult
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
@@ -281,7 +281,8 @@ class MainActivity : AppCompatActivity() {
             // without getting it stored on device disk, you can enable the following configuration
             class PhotoSaveCallback : PassportPhotoSaveCallback {
                 // NOTE: callback implementation class must be static (in case of Java)
-                // or non-inner (in case of Kotlin) and must not touch fields or methods of enclosing class/method
+                // or non-inner (in case of Kotlin), have default (empty) constructor
+                // and must not touch fields or methods of enclosing class/method
                 override fun onImageRetrieved(photo: Bitmap?) {
                     // TODO: use photo from this callback
                 }
@@ -334,7 +335,8 @@ class MainActivity : AppCompatActivity() {
 
             class CustomFormattedBarcodeDataMapper : FormattedBarcodeDataMapper {
                 // NOTE: callback implementation class must be static (in case of Java)
-                // or non-inner (in case of Kotlin) and must not touch fields or methods of enclosing class/method
+                // or non-inner (in case of Kotlin), have default (empty) constructor
+                // and must not touch fields or methods of enclosing class/method
                 override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
                     // TODO: use barcodeItem appropriately here as needed
                     return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.text)
