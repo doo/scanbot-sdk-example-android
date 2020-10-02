@@ -24,10 +24,8 @@ class ScannerActivity : AppCompatActivity() {
     private val idCardScanner = scanbotSdk.idCardScanner()
 
     private lateinit var cameraView: IScanbotCameraView
-    private lateinit var resultTextView: TextView
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var idCardScannerFrameHandler: IdCardScannerFrameHandler
     private lateinit var autoSnappingController: IdCardAutoSnappingController
 
     private var useFlash = false
@@ -37,33 +35,11 @@ class ScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_scanner)
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
-        resultTextView = findViewById(R.id.resultTextView)
         findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 3.0)))
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        // TODO: pass shouldRecognize = true to recognize all the fields during the live detection.
-        // It will only report only the status otherwise
-        idCardScannerFrameHandler = IdCardScannerFrameHandler.attach(cameraView, idCardScanner, false)
-        idCardScannerFrameHandler.addResultHandler(object : IdCardScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<IdScanResult, SdkLicenseError>): Boolean {
-                val resultText: String = when (result) {
-                    is FrameHandlerResult.Success -> {
-                        if (result.value.status == IdScanResult.RecognitionStatus.Success) {
-                            // TODO: your code here
-                        }
-                        result.value.status.toString()
-                    }
-                    is FrameHandlerResult.Failure -> "Check your setup or license"
-                }
-
-                runOnUiThread { resultTextView.text = resultText }
-
-                return false
-            }
-        })
-
-        autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScannerFrameHandler)
+        autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScanner)
 
         cameraView.setCameraOpenCallback(object : CameraOpenCallback {
             override fun onCameraOpened() {
@@ -86,10 +62,8 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // pause frame handler to stop detecting results on a preview during the recognition on the full-size picture
-        idCardScannerFrameHandler.isEnabled = false
+        // pause autoSnappingController to stop detecting results on a preview during the recognition on the full-size picture
         autoSnappingController.isEnabled = false
-
         shutterButton.isEnabled = false
 
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
@@ -108,7 +82,6 @@ class ScannerActivity : AppCompatActivity() {
                         .show()
                 shutterButton.isEnabled = true
             }
-            idCardScannerFrameHandler.isEnabled = true
             autoSnappingController.isEnabled = true
         }
     }
