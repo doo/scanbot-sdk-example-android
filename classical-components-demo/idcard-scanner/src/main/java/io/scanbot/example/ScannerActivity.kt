@@ -39,8 +39,9 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
+        // TODO: adjust accepted sharpness score to control the blurriness of the result image
+        idCardScanner.acceptedSharpnessScore = 80f
         autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScanner)
-        autoSnappingController.setForceAutofocusBeforeSnap(true)
 
         cameraView.setCameraOpenCallback(object : CameraOpenCallback {
             override fun onCameraOpened() {
