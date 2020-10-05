@@ -40,6 +40,7 @@ class ScannerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScanner)
+        autoSnappingController.setForceAutofocusBeforeSnap(true)
 
         cameraView.setCameraOpenCallback(object : CameraOpenCallback {
             override fun onCameraOpened() {
@@ -58,13 +59,17 @@ class ScannerActivity : AppCompatActivity() {
         shutterButton = findViewById(R.id.shutterButton)
         shutterButton.setOnClickListener {
             cameraView.takePicture(false)
+            shutterButton.isEnabled = false
         }
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // pause autoSnappingController to stop detecting results on a preview during the recognition on the full-size picture
         autoSnappingController.isEnabled = false
-        shutterButton.isEnabled = false
+
+        runOnUiThread {
+            shutterButton.isEnabled = false
+        }
 
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val recognitionResult = idCardScanner.scanBitmap(bitmap, orientation = imageOrientation)
