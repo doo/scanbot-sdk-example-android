@@ -62,11 +62,10 @@ class CameraDialogFragment : DialogFragment(), PictureCallback {
 
     override fun onStart() {
         super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
+        dialog?.window?.let {
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window.setLayout(width, height)
+            it.setLayout(width, height)
         }
     }
 

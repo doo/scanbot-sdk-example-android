@@ -110,7 +110,7 @@ class WorkflowFactory {
                     ScanBarCodeWorkflowStep(
                             title = "Step 1/2 - QR-/Barcode",
                             message = "Please scan a QR or barcode.",
-                            acceptedCodeTypes = BarcodeFormat.COMMON_CODES as ArrayList<BarcodeFormat>,
+                            acceptedCodeTypes = BarcodeFormat.COMMON_CODES,
                             finderViewSize = FinderViewSize(1.0, 0.6),
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<BarCodeWorkflowStepResult> {
                                 override fun invoke(stepResult: BarCodeWorkflowStepResult): WorkflowStepError? {
@@ -177,7 +177,7 @@ class WorkflowFactory {
             val customTestValue: Int = 1
     ) : BasicWorkflowStepResult(step), Parcelable {
         constructor(parcel: Parcel) : this(
-                parcel.readParcelable(WorkflowStep::class.java.classLoader),
+                parcel.readParcelable<WorkflowStep>(WorkflowStep::class.java.classLoader) as WorkflowStep,
                 parcel.readParcelable(Page::class.java.classLoader),
                 parcel.readParcelable(Page::class.java.classLoader),
                 parcel.readInt()) {

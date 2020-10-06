@@ -98,8 +98,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val imageUri = data!!.data
-            estimateOnStillImage(imageUri)
+            data?.data?.let {
+                estimateOnStillImage(it)
+            }
         }
     }
 

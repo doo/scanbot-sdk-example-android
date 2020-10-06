@@ -115,7 +115,7 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 if (barcodeItem != null && barcodeScanStepResult.step is ScanBarCodeWorkflowStep) {
                     val data = extractData(barcodeItem)
                     val clip = ClipData.newPlainText(data, data)
-                    clipboard.primaryClip = clip
+                    clipboard.setPrimaryClip(clip)
                 }
                 dismiss()
             }

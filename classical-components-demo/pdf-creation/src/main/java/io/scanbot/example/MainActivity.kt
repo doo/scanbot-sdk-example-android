@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -142,8 +143,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun loadImage(imageUri: Uri): Bitmap {
-            val imagePath = FileChooserUtils.getPath(this@MainActivity, imageUri)
-            return BitmapUtils.decodeQuietly(imagePath, null) ?: throw IOException("Bitmap is null")
+            return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
         }
 
         override fun onPostExecute(processedDocument: File?) {

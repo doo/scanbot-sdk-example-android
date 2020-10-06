@@ -119,7 +119,7 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
                     val clip = ClipData.newPlainText(data, data)
 
-                    clipboard.primaryClip = clip
+                    clipboard.setPrimaryClip(clip)
                 }
                 dismiss()
             }

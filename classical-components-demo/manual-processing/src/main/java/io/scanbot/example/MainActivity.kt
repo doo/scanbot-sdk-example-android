@@ -136,8 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         @Throws(IOException::class)
         private fun loadImage(imageUri: Uri): Bitmap {
-            val imagePath = FileChooserUtils.getPath(this@MainActivity, imageUri)
-            return decodeQuietly(imagePath, null) ?: throw IOException("Bitmap is null")
+            return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
         }
 
         override fun onPostExecute(bitmap: Bitmap?) {

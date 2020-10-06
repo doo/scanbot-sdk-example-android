@@ -5,9 +5,11 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.CheckBox
 import android.widget.TextView
@@ -22,6 +24,7 @@ import io.scanbot.tiffwriter.model.TIFFImageWriterCompressionOptions
 import io.scanbot.tiffwriter.model.TIFFImageWriterParameters
 import io.scanbot.tiffwriter.model.TIFFImageWriterUserDefinedField
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -124,14 +127,13 @@ class MainActivity : AppCompatActivity() {
     private inner class WriteTIFFImageTask(imageUris: List<Uri>, binarize: Boolean, addCustomFields: Boolean) : AsyncTask<Void, Void, Boolean>() {
         private val dpi = 200
 
-        private val images: MutableList<File> = ArrayList()
+        private val images: MutableList<Bitmap> = ArrayList()
         private val resultFile: File
         private val parameters: TIFFImageWriterParameters
 
         init {
             for (uri in imageUris) {
-                val imageFilePath = FileChooserUtils.getPath(this@MainActivity, uri)
-                images.add(File(imageFilePath))
+                images.add(MediaStore.Images.Media.getBitmap(contentResolver, uri))
             }
             resultFile = File(getExternalFilesDir(null)!!.path + "/tiff_result_" + System.currentTimeMillis() + ".tiff")
 
@@ -152,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg voids: Void): Boolean {
-            return tiffWriter.writeTIFFFromFiles(images, resultFile, parameters)
+            return tiffWriter.writeTIFFFromImages(images.toTypedArray(), resultFile, parameters)
         }
 
         override fun onPostExecute(result: Boolean) {
