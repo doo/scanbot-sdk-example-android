@@ -59,7 +59,7 @@ class NfcPassportResultDialogFragment : androidx.fragment.app.DialogFragment() {
             if (nfcPassportScanningResult != null) {
                 val data = extractData(nfcPassportScanningResult!!)
                 val clip = ClipData.newPlainText(data, data)
-                clipboard.primaryClip = clip
+                clipboard.setPrimaryClip(clip)
             }
             dismiss()
         }

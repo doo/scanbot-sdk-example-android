@@ -9,6 +9,7 @@ import android.graphics.PointF
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -71,8 +72,7 @@ class SelectImageActivity : AppCompatActivity() {
     }
 
     private fun loadImage(imageUri: Uri): Bitmap? {
-        val filePath = FileChooserUtils.getPath(this, imageUri)
-        return decodeQuietly(filePath, null)
+        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
     }
 
     private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Void, Void, Page?>() {

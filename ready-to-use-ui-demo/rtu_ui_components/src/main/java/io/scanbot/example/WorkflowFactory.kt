@@ -177,7 +177,7 @@ class WorkflowFactory {
             val customTestValue: Int = 1
     ) : BasicWorkflowStepResult(step), Parcelable {
         constructor(parcel: Parcel) : this(
-                parcel.readParcelable(WorkflowStep::class.java.classLoader),
+                parcel.readParcelable<WorkflowStep>(WorkflowStep::class.java.classLoader) as WorkflowStep,
                 parcel.readParcelable(Page::class.java.classLoader),
                 parcel.readParcelable(Page::class.java.classLoader),
                 parcel.readInt()) {

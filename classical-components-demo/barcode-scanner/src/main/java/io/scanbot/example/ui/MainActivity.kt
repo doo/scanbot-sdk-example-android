@@ -85,13 +85,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun processGalleryResult(data: Intent): Bitmap? {
         val imageUri = data.data
-        var bitmap: Bitmap? = null
-        if (imageUri != null) {
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-            } catch (e: IOException) {
-            }
-        }
-        return bitmap
+        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
     }
 }

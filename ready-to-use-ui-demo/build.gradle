@@ -1,8 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.compileVersion = 28
-    ext.targetVersion = 28
+    ext.compileVersion = 29
+    ext.targetVersion = 29
     ext.minVersion = 21
 
     ext.buildToolsVersion = '28.0.3'

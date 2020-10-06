@@ -124,7 +124,7 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
 
                     val clip = ClipData.newPlainText(data, data)
 
-                    clipboard.primaryClip = clip
+                    clipboard.setPrimaryClip(clip)
                 }
                 dismiss()
             }
