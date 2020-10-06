@@ -3,11 +3,15 @@ package io.scanbot.example
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.sap.SapManager
+import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -75,17 +79,13 @@ class ScannerActivity : AppCompatActivity() {
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val recognitionResult = idCardScanner.scanBitmap(bitmap, orientation = imageOrientation)
 
-        val isSuccess = recognitionResult != null &&
-                (recognitionResult.status == IdScanResult.RecognitionStatus.Success)
+        val isSuccess = recognitionResult != null && recognitionResult.status == IdScanResult.RecognitionStatus.Success
 
         if (isSuccess) {
             proceedToResult(recognitionResult!!)
         } else {
             runOnUiThread {
-                Toast.makeText(this@ScannerActivity,
-                        "Error scanning: ${recognitionResult?.status}",
-                        Toast.LENGTH_SHORT)
-                        .show()
+                Toast.makeText(this@ScannerActivity, "Error scanning: ${recognitionResult?.status}", Toast.LENGTH_SHORT).show()
                 shutterButton.isEnabled = true
             }
             autoSnappingController.isEnabled = true
