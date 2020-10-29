@@ -23,7 +23,7 @@ import io.scanbot.sdk.process.Operation
 import java.util.*
 import kotlin.math.roundToInt
 
-class ManualDCScannerActivity : AppCompatActivity(), PictureCallback {
+class ManualDCScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultImageView: ImageView
 
@@ -47,7 +47,11 @@ class ManualDCScannerActivity : AppCompatActivity(), PictureCallback {
                 }, 700)
             }
         })
-        cameraView.addPictureCallback(this)
+        cameraView.addPictureCallback(object : PictureCallback() {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                this@ManualDCScannerActivity.processPictureTaken(image, imageOrientation)
+            }
+        })
 
         resultImageView = findViewById(R.id.resultImageView)
 
@@ -77,7 +81,7 @@ class ManualDCScannerActivity : AppCompatActivity(), PictureCallback {
         cameraView.onPause()
     }
 
-    override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
         // Implement a suitable async(!) detection and image handling here.
 
