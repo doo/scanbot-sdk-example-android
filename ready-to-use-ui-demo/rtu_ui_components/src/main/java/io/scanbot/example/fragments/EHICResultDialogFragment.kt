@@ -68,7 +68,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 ehicRecognitionResult?.let {
                     val data = extractData(it)
                     val clip = ClipData.newPlainText(data, data)
-                    clipboard.primaryClip = clip
+                    clipboard.setPrimaryClip(clip)
                 }
 
                 dismiss()

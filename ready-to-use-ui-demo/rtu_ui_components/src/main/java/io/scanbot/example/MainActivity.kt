@@ -485,7 +485,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun processGalleryResult(data: Intent): List<Bitmap> {
         val imageUris = data.data?.let { listOf(it) }
-                ?: (0 until data.clipData.itemCount).toList().map { data.clipData.getItemAt(it).uri }
+                ?: (0 until data.clipData!!.itemCount).toList().map { data.clipData!!.getItemAt(it).uri }
 
         return imageUris.mapNotNull {
             var bitmap: Bitmap? = null

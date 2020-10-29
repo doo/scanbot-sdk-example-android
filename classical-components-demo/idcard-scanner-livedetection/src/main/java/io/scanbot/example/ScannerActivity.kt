@@ -1,21 +1,17 @@
 package io.scanbot.example
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.idcardscanner.IdCardScannerFrameHandler
 import io.scanbot.sdk.idcardscanner.IdScanResult
-import io.scanbot.sdk.process.RotateOperation
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
@@ -40,13 +36,18 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        idCardScannerFrameHandler = IdCardScannerFrameHandler.attach(cameraView, idCardScanner)
+        // TODO: adjust accepted sharpness score to control the accepted blurriness of the result image
+        idCardScanner.acceptedSharpnessScore = 80f
+        idCardScannerFrameHandler = IdCardScannerFrameHandler.attach(cameraView, idCardScanner, true)
         idCardScannerFrameHandler.addResultHandler(object : IdCardScannerFrameHandler.ResultHandler {
             override fun handle(result: FrameHandlerResult<IdScanResult, SdkLicenseError>): Boolean {
                 val resultText: String = when (result) {
                     is FrameHandlerResult.Success -> {
                         if (result.value.status == IdScanResult.RecognitionStatus.Success) {
-                            // TODO: your code here
+                            idCardScannerFrameHandler.isEnabled = false
+                            IdCardScannerResultsStorage.results = result.value
+                            startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
+                            finish()
                         }
                         result.value.status.toString()
                     }
@@ -65,40 +66,8 @@ class ScannerActivity : AppCompatActivity() {
                 cameraView.continuousFocus()
             }
         })
-        cameraView.addPictureCallback(object : PictureCallback {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                processPictureTaken(image, imageOrientation)
-            }
-        })
 
         findViewById<Button>(R.id.flashButton).setOnClickListener { toggleFlash() }
-        findViewById<ShutterButton>(R.id.shutterButton).setOnClickListener { cameraView.takePicture(false) }
-    }
-
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val rotatedBitmap = scanbotSdk.imageProcessor().processBitmap(bitmap, RotateOperation(imageOrientation))!!
-        val recognitionResult = idCardScanner.scanBitmap(rotatedBitmap)
-
-        val isSuccess = recognitionResult != null &&
-                (recognitionResult.status == IdScanResult.RecognitionStatus.Success)
-
-        if (isSuccess) {
-            proceedToResult(recognitionResult!!)
-        } else {
-            runOnUiThread {
-                Toast.makeText(this@ScannerActivity,
-                        "Error scanning: ${recognitionResult?.status}",
-                        Toast.LENGTH_SHORT)
-                        .show()
-            }
-        }
-    }
-
-    private fun proceedToResult(idScanResult: IdScanResult) {
-        IdCardScannerResultsStorage.results = idScanResult
-        startActivity(Intent(this, ResultActivity::class.java))
-        finish()
     }
 
     private fun toggleFlash() {

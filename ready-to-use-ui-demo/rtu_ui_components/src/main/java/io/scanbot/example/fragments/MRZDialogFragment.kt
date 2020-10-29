@@ -60,7 +60,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
             if (mrzRecognitionResult != null) {
                 val data = extractData(mrzRecognitionResult!!)
                 val clip = ClipData.newPlainText(data, data)
-                clipboard.primaryClip = clip
+                clipboard.setPrimaryClip(clip)
             }
             dismiss()
         }

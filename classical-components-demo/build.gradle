@@ -17,11 +17,11 @@ allprojects {
     project.ext {
         exampleAppId = 'io.scanbot.example.sdk.android'
 
-        compileSdkVersion = 28
+        compileSdkVersion = 29
         buildToolsVersion = '28.0.3'
         androidxSupportVersion = '1.0.1'
 
-        scanbotSdkVersion = '1.73.0'
+        scanbotSdkVersion = '1.74.2'
     }
 
     repositories {

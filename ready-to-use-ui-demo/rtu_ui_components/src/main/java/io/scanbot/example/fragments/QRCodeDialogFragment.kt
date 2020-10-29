@@ -71,7 +71,7 @@ class QRCodeDialogFragment : androidx.fragment.app.DialogFragment() {
                 val barcodeItem = qrCodeData?.barcodeItems?.firstOrNull()
                 barcodeItem?.let {
                     val clip = ClipData.newPlainText(it.text, it.text)
-                    clipboard.primaryClip = clip
+                    clipboard.setPrimaryClip(clip)
                 }
 
                 dismiss()

@@ -7,6 +7,7 @@ import android.graphics.PointF
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -91,7 +92,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
         }
         if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val imageUri = data!!.data
-            ImportImageToPageTask(imageUri).execute()
+            ImportImageToPageTask(imageUri!!).execute()
             progressView.visibility = View.VISIBLE
             return
         }
@@ -116,8 +117,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun loadImage(imageUri: Uri): Bitmap? {
-        val filePath = FileChooserUtils.getPath(this, imageUri)
-        return decodeQuietly(filePath, null)
+        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
     }
 
     private fun runRecognition() {

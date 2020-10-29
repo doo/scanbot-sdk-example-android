@@ -32,7 +32,7 @@ class MultiObjectsDetectorResultsActivity : AppCompatActivity() {
         val pageFileStorage = ScanbotSDK(this).pageFileStorage()
 
         return pages.map { page ->
-            pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.UNFILTERED_DOCUMENT).path
+            pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.UNFILTERED_DOCUMENT).path!!
         }
     }
 

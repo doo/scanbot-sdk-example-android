@@ -85,6 +85,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             croppingConfig.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
             croppingConfig.setPolygonColor(Color.RED)
             croppingConfig.setPolygonColorMagnetic(Color.BLUE)
+            croppingConfig.setHintTitle("Please, select the bounds of the document")
+            croppingConfig.setHintTitleColor(Color.WHITE)
             //croppingConfig.setCancelButtonTitle("Cancel")
             //croppingConfig.setDetectResetButtonHidden(true)
             // Customize further colors, text resources, behavior flags ...
