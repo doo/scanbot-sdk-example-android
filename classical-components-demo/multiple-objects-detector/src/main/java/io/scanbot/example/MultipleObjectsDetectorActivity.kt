@@ -26,7 +26,7 @@ import io.scanbot.sdk.ui.multipleobjects.MultiplePolygonsView
 
 import java.util.*
 
-class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
+class MultipleObjectsDetectorActivity : AppCompatActivity() {
 
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var progressView: ProgressBar
@@ -64,7 +64,11 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
                 }, 700)
             }
         })
-        cameraView.addPictureCallback(this)
+        cameraView.addPictureCallback(object : PictureCallback() {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                this@MultipleObjectsDetectorActivity.processPictureTaken(image, imageOrientation)
+            }
+        })
 
         val shutterButton = findViewById<ShutterButton>(R.id.snap)
         shutterButton.setOnClickListener { cameraView.takePicture(false) }
@@ -90,7 +94,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity(), PictureCallback {
         businessCardsFrameHandler.addResultHandler(polygonView.multipleObjectDetectorHandler)
     }
 
-    override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         Log.i(LOG_TAG, "initial imageOrientation: $imageOrientation")
         cameraView.post { progressView.visibility = View.VISIBLE }
 

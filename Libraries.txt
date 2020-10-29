@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.74.2:
+Open Source libraries used in the Scanbot SDK for Android version 1.75.0:
 
 Apache Commons Codec
 
@@ -23,7 +23,7 @@ limitations under the License.
 
 CWAC-Camera
 
-Version 0.6.33
+Version 0.6.38
 (https://github.com/doo/cwac-camera)
 (https://github.com/commonsguy/cwac-camera/)
 

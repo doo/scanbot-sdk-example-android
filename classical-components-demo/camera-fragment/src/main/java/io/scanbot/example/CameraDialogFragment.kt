@@ -23,7 +23,7 @@ import java.util.*
 /**
  * [ScanbotCameraView] integrated in [DialogFragment] example
  */
-class CameraDialogFragment : DialogFragment(), PictureCallback {
+class CameraDialogFragment : DialogFragment() {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultView: ImageView
     private lateinit var scanbotSDK: ScanbotSDK
@@ -51,7 +51,11 @@ class CameraDialogFragment : DialogFragment(), PictureCallback {
         val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
         DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
-        cameraView.addPictureCallback(this)
+        cameraView.addPictureCallback(object : PictureCallback() {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                this@CameraDialogFragment.processPictureTaken(image, imageOrientation)
+            }
+        })
         baseView.findViewById<View>(R.id.snap).setOnClickListener { v: View? -> cameraView.takePicture(false) }
         baseView.findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled
@@ -79,7 +83,7 @@ class CameraDialogFragment : DialogFragment(), PictureCallback {
         cameraView.onPause()
     }
 
-    override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
         // Implement a suitable async(!) detection and image handling here.
         // This is just a demo showing detected image as downscaled preview image.

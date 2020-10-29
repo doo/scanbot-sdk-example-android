@@ -28,7 +28,7 @@ import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ShutterButton
 import java.util.*
 
-class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: ImageView
@@ -93,7 +93,11 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
         autoSnappingController.setSensitivity(0.85f)
-        cameraView.addPictureCallback(this)
+        cameraView.addPictureCallback(object : PictureCallback() {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                this@MainActivity.processPictureTaken(image, imageOrientation)
+            }
+        })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
 
         shutterButton = findViewById(R.id.shutterButton)
@@ -190,7 +194,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
         // Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Handling-camera-picture
         // This is just a demo showing the detected document image as a downscaled(!) preview image.
