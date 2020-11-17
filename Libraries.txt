@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.75.2:
+Open Source libraries used in the Scanbot SDK for Android version 1.75.3:
 
 Apache Commons Codec
 
@@ -170,7 +170,7 @@ limitations under the License.
 
 Dagger
 
-Version 2.16
+Version 2.25.2
 (https://github.com/google/dagger)
 
 Copyright 2012 The Dagger Authors

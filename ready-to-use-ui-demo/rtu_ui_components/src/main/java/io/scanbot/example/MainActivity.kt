@@ -24,6 +24,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.generictext.GenericTextRecognizer
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
@@ -37,6 +38,10 @@ import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui.view.generictext.TextDataScannerActivity
+import io.scanbot.sdk.ui.view.generictext.configuration.TextDataScannerConfiguration
+import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStep
+import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStepResult
 import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
 import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
 import io.scanbot.sdk.ui.view.idcard.IdCardScannerActivity
@@ -67,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         private const val MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE = 919
         private const val ID_CARD_DEFAULT_UI = 920
         private const val PASSPORT_NFC_MRZ_DEFAULT_UI = 921
+        private const val TEXT_DATA_SCANNER_DEFAULT_UI = 922
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -145,6 +151,11 @@ class MainActivity : AppCompatActivity() {
                 // data.getParcelableExtra(IdCardScannerActivity.EXTRACTED_FIELDS_EXTRA) as IdCardScanningResult
                 // Can be GermanyPassportCard or GermanyIdCard
                 Toast.makeText(this@MainActivity, getString(R.string.id_card_flow_finished), Toast.LENGTH_LONG).show()
+            }
+            TEXT_DATA_SCANNER_DEFAULT_UI -> {
+                val result = data.getParcelableArrayExtra(TextDataScannerActivity.EXTRACTED_FIELDS_EXTRA)
+                val textDataScannerStepResult = result!!.first() as TextDataScannerStepResult
+                Toast.makeText(this@MainActivity, "Scanned: ${textDataScannerStepResult.text}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -275,6 +286,31 @@ class MainActivity : AppCompatActivity() {
 
             val intent = NfcPassportScannerActivity.newIntent(this@MainActivity, nfcPassportConfiguration)
             startActivityForResult(intent, PASSPORT_NFC_MRZ_DEFAULT_UI)
+        }
+
+        findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
+            val textDataScannerConfiguration = TextDataScannerConfiguration()
+
+            textDataScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            textDataScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+
+            val intent = TextDataScannerActivity.newIntent(this@MainActivity, textDataScannerConfiguration,
+                    step = TextDataScannerStep(
+                            stepTag = "Date",
+                            title = "6-digits string",
+                            guidanceText = "Scan a 6-digit string which starts with 1 or 2",
+                            // For the pattern: # - digits, ? - for any character. Other characters represent themselves
+                            pattern = "######",
+                            // TODO: set validation string and validation callback which matches the need of the task
+                            // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
+                            validationCallback = object : GenericTextRecognizer.GenericTextValidationCallback {
+                                override fun validate(text: String): Boolean {
+                                    return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                                }
+                            },
+                            preferredZoom = 1.6f))
+
+            startActivityForResult(intent, TEXT_DATA_SCANNER_DEFAULT_UI)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {

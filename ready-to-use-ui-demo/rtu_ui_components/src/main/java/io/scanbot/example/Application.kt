@@ -54,6 +54,7 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareDcBlobs(true)
                 .prepareIdCardScannerBlobs(true)
                 .preparePayFormBlobs(true)
+                .prepareGenericTextRecognizerBlobs(true)
                 .prepareBarcodeScannerBlobs(true)
                 .contourDetectorType(ContourDetector.Type.ML_BASED)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
