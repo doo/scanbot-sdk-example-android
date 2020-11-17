@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             val intent = TextDataScannerActivity.newIntent(this@MainActivity, textDataScannerConfiguration,
                     step = TextDataScannerStep(
                             stepTag = "Date",
-                            title = "6-digits string",
+                            title = "6-digit string",
                             guidanceText = "Scan a 6-digit string which starts with 1 or 2",
                             // For the pattern: # - digits, ? - for any character. Other characters represent themselves
                             pattern = "######",
