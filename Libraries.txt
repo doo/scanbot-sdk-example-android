@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.75.4:
+Open Source libraries used in the Scanbot SDK for Android version 1.75.5:
 
 Apache Commons Codec
 
