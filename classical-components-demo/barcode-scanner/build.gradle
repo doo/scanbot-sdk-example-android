@@ -36,6 +36,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-barcode-assets:$project.ext.scanbotSdkVersion"
 
     implementation 'androidx.core:core-ktx:1.1.0'
 
