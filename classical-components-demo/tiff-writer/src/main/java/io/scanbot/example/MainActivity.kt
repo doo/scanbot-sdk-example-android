@@ -18,13 +18,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.tiffwriter.TIFFWriter
-import io.scanbot.tiffwriter.model.TIFFImageWriterCompressionOptions
-import io.scanbot.tiffwriter.model.TIFFImageWriterParameters
-import io.scanbot.tiffwriter.model.TIFFImageWriterUserDefinedField
+import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.tiff.TIFFWriter
+import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
+import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
+import io.scanbot.sdk.tiff.model.TIFFImageWriterUserDefinedField
 import java.io.File
-import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -150,7 +149,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 arrayListOf()
             }
-            parameters = TIFFImageWriterParameters(binarize, dpi, compression, userDefinedFields)
+            val binarizationFilter = if (binarize) ImageFilterType.DEEP_BINARIZATION else ImageFilterType.NONE
+            parameters = TIFFImageWriterParameters(binarizationFilter, dpi, compression, userDefinedFields)
         }
 
         override fun doInBackground(vararg voids: Void): Boolean {
