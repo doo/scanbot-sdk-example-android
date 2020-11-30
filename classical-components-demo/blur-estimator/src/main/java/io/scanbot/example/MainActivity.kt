@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         stillImageBlurCaption = findViewById(R.id.still_image_blur_caption)
 
         findViewById<Button>(R.id.gallery_button).setOnClickListener { openGallery() }
-        findViewById<Button>(R.id.still_image_close).setOnClickListener { closeStillImageResults() }
+        findViewById<Button>(R.id.still_image_close).setOnClickListener { close() }
     }
 
     private fun estimateOnStillImage(imageUri: Uri) {
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         super.onPause()
     }
 
-    private fun closeStillImageResults() {
+    private fun close() {
         finish()
     }
 
@@ -82,12 +82,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         startActivityForResult(
                 Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE
         )
-    }
-
-    private fun errorToast() {
-        runOnUiThread {
-            Toast.makeText(this, "Error detecting blur", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun askPermission() {
