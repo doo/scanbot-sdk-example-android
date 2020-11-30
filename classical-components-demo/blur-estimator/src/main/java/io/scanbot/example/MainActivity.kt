@@ -8,24 +8,20 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.*
 import kotlinx.coroutines.*
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
 
-    private lateinit var resultCaption: TextView
-    private lateinit var cameraView: ScanbotCameraView
-    private lateinit var stillImageResultsRoot: ViewGroup
     private lateinit var stillImageImageView: ImageView
     private lateinit var stillImageBlurCaption: TextView
 
@@ -45,53 +41,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         setContentView(R.layout.activity_main)
         askPermission()
 
-        resultCaption = findViewById(R.id.blur_estimated_result)
 
-        cameraView = findViewById(R.id.camera_view)
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(false)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
-        cameraView.addFrameHandler(blurFrameHandler)
-
-        stillImageResultsRoot = findViewById(R.id.still_image_root)
         stillImageImageView = findViewById(R.id.still_image_image_view)
         stillImageBlurCaption = findViewById(R.id.still_image_blur_caption)
 
-        findViewById<Button>(R.id.flash_button).setOnClickListener { toggleFlash() }
         findViewById<Button>(R.id.gallery_button).setOnClickListener { openGallery() }
         findViewById<Button>(R.id.still_image_close).setOnClickListener { closeStillImageResults() }
     }
 
-    private val blurFrameHandler = object : FrameHandler {
-
-        var isEnabled = AtomicBoolean(true)
-
-        @Synchronized
-        override fun handleFrame(previewFrame: FrameHandler.Frame): Boolean {
-            if (isEnabled.get()) {
-                val blurValue = blurEstimator.estimate(
-                    previewFrame.frame, previewFrame.width, previewFrame.height,
-                    previewFrame.frameOrientation
-                )
-
-                runOnUiThread {
-                    resultCaption.text = String.format(BLURRINESS_CAPTION_FORMAT, blurValue)
-                }
-            }
-
-            return false
-        }
-    }
-
     private fun estimateOnStillImage(imageUri: Uri) {
-        cameraView.stopPreview()
-        blurFrameHandler.isEnabled.set(false)
-        stillImageResultsRoot.visibility = View.VISIBLE
         calculateForImage(imageUri)
     }
 
@@ -106,25 +64,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onResume() {
         super.onResume()
-        cameraView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        cameraView.onPause()
-    }
-
-    private fun toggleFlash() {
-        flashEnabled = !flashEnabled
-        cameraView.useFlash(flashEnabled)
     }
 
     private fun closeStillImageResults() {
-        stillImageImageView.setImageBitmap(null)
-        stillImageBlurCaption.text = ""
-        cameraView.startPreview()
-        blurFrameHandler.isEnabled.set(true)
-        stillImageResultsRoot.visibility = View.GONE
+        finish()
     }
 
     private fun openGallery() {
@@ -133,7 +80,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         intent.action = Intent.ACTION_GET_CONTENT
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
         startActivityForResult(
-            Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE
+                Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE
         )
     }
 
@@ -157,7 +104,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     private fun calculateForImage(imageUri: Uri) {
         launch {
             val bitmap: Bitmap =
-                MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                    MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
 
             withContext(Dispatchers.Main) {
                 stillImageImageView.setImageBitmap(bitmap)
