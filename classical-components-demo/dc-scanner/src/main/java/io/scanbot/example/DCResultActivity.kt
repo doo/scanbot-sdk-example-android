@@ -33,19 +33,19 @@ class DCResultActivity : AppCompatActivity() {
         addValueView(checkboxesLayout, "Renewed certificate", intent.getBooleanExtra(EXTRA_renewedCertificate, false))
         addConfidenceValueView(checkboxesLayout, intent.getDoubleExtra(EXTRA_renewedCertificateConf, 0.0))
 
-        addValueView(datesLayout, "Incapable since", intent.getStringExtra(EXTRA_incapableSince))
+        intent.getStringExtra(EXTRA_incapableSince)?.let { addValueView(datesLayout, "Incapable since", it) }
         addConfidenceValueView(datesLayout,  intent.getDoubleExtra(EXTRA_incapableSinceRC, 0.0), ConfidenceType.RECOGNITION)
         addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableSinceVC, 0.0), ConfidenceType.VALIDATION)
 
-        addValueView(datesLayout, "Incapable until", intent.getStringExtra(EXTRA_incapableUntil))
+        intent.getStringExtra(EXTRA_incapableUntil)?.let { addValueView(datesLayout, "Incapable until", it) }
         addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableUntilRC, 0.0), ConfidenceType.RECOGNITION)
         addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_incapableUntilVC, 0.0), ConfidenceType.VALIDATION)
 
-        addValueView(datesLayout, "Diagnosed on", intent.getStringExtra(EXTRA_diagnosedOn))
+        intent.getStringExtra(EXTRA_diagnosedOn)?.let { addValueView(datesLayout, "Diagnosed on", it) }
         addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_diagnosedOnRC, 0.0), ConfidenceType.RECOGNITION)
         addConfidenceValueView(datesLayout, intent.getDoubleExtra(EXTRA_diagnosedOnVC, 0.0), ConfidenceType.VALIDATION)
 
-        addValueView(otherLayout, "Form type", intent.getStringExtra(EXTRA_formType))
+        intent.getStringExtra(EXTRA_formType)?.let { addValueView(otherLayout, "Form type", it) }
         val parcelableArrayExtra = intent.getParcelableArrayExtra(EXTRA_patientInfo) as Array<Parcelable>
         parcelableArrayExtra.forEach {
             if (it is DCPatientInfoField) {
