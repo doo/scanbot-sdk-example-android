@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.77.2
+Open Source libraries used in the Scanbot SDK for Android version 1.78.0
 
 Apache Commons Codec
 
@@ -45,7 +45,7 @@ limitations under the License.
 
 Android PDF Writer
 
-Version 1.0.8
+Version 1.0.9
 (https://github.com/Turbo87/apwlibrary/)
 
 Copyright (c) 2010 - 2013, Javier Santo Domingo (j-a-s-d@coderesearchlabs.com).
