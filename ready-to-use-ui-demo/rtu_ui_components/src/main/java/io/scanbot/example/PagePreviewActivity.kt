@@ -253,7 +253,11 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
                     //open first document
                     if (pdfFile != null) {
-                        openDocument(pdfFile)
+                        if (!Application.USE_ENCRYPTION) {
+                            openDocument(pdfFile)
+                        } else {
+                            showEncryptedDocumentToast(pdfFile)
+                        }
                     }
                 }
             }
@@ -343,6 +347,11 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         } else {
             Toast.makeText(this@PagePreviewActivity, getString(R.string.error_openning_document), Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun showEncryptedDocumentToast(pdfFile: File) {
+        // TODO: scanbotSDK.fileIOProcessor().openFileInputStream() you need to use this call to unencrypt the pdf file
+        Toast.makeText(this@PagePreviewActivity, getString(R.string.encrypted_document_saved, pdfFile.toString()), Toast.LENGTH_LONG).show()
     }
 
     /**
