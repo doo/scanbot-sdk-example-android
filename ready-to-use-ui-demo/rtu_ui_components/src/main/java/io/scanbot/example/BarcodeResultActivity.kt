@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.squareup.picasso.Picasso
 import io.scanbot.example.repository.BarcodeResultRepository
+import io.scanbot.example.util.PicassoHelper
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import kotlinx.android.synthetic.main.activity_barcode_result.*
 import kotlinx.android.synthetic.main.barcode_item.view.*
@@ -35,7 +35,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                     recognisedItems,
                     false
                 )?.also {
-                    Picasso.with(this).load(File(imagePath)).into(it.snapImage)
+                    PicassoHelper.with(this).load(File(imagePath)).into(it.snapImage)
                 })
         }
     }

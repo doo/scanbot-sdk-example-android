@@ -12,8 +12,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import io.scanbot.example.R
+import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -57,15 +57,16 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
 
         val frontScanStepResult = workflowStepResults?.get(0) as ContourDetectorWorkflowStepResult
         val backScanStepResult = workflowStepResults?.get(1) as MachineReadableZoneWorkflowStepResult
+        val context = context!!.applicationContext
         if (frontScanStepResult.step is ScanDocumentPageWorkflowStep) {
-            val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
+            val pageFileStorage = ScanbotSDK(context).pageFileStorage()
             frontScanStepResult.capturedPage?.let {
                 view.images_container.visibility = View.VISIBLE
                 view.front_snap_result.visibility = View.VISIBLE
                 val imagePath = pageFileStorage.getPreviewImageURI(it.pageId, PageFileStorage.PageFileType.DOCUMENT).path
                 val originalImagePath = pageFileStorage.getPreviewImageURI(it.pageId, PageFileStorage.PageFileType.ORIGINAL).path
                 val fileToShow = if (File(imagePath).exists()) File(imagePath) else File(originalImagePath)
-                Picasso.with(context)
+                PicassoHelper.with(context)
                         .load(fileToShow)
                         .memoryPolicy(MemoryPolicy.NO_CACHE)
                         .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
@@ -76,14 +77,14 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
         if (backScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
             view.findViewById<TextView>(R.id.tv_data).text = backScanStepResult.mrzResult?.let { extractData(it) }
 
-            val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
+            val pageFileStorage = ScanbotSDK(context).pageFileStorage()
             backScanStepResult.capturedPage?.let {
                 view.images_container.visibility = View.VISIBLE
                 view.back_snap_result.visibility = View.VISIBLE
                 val imagePath = pageFileStorage.getPreviewImageURI(it.pageId, PageFileStorage.PageFileType.DOCUMENT).path
                 val originalImagePath = pageFileStorage.getPreviewImageURI(it.pageId, PageFileStorage.PageFileType.ORIGINAL).path
                 val fileToShow = if (File(imagePath).exists()) File(imagePath) else File(originalImagePath)
-                Picasso.with(context)
+                PicassoHelper.with(context)
                         .load(fileToShow)
                         .memoryPolicy(MemoryPolicy.NO_CACHE)
                         .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)

@@ -13,11 +13,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import io.scanbot.dcscanner.model.DCInfoBoxSubtype
 import io.scanbot.dcscanner.model.DateRecordType
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.R
+import io.scanbot.example.util.PicassoHelper
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -76,12 +76,13 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
     }
 
     private fun showPageImage(page: Page, imageView: ImageView) {
-        val pageFileStorage = ScanbotSDK(context!!.applicationContext).pageFileStorage()
+        val context = context!!.applicationContext
+        val pageFileStorage = ScanbotSDK(context).pageFileStorage()
         imageView.visibility = View.VISIBLE
         val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
         val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
         val fileToShow = if (docImageFile.exists()) docImageFile else origImageFile
-        Picasso.with(context)
+        PicassoHelper.with(context)
                 .load(fileToShow)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
