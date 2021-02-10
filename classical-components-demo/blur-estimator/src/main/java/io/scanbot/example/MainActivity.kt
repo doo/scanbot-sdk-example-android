@@ -69,10 +69,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     private fun close() {
         finish()
     }
