@@ -52,7 +52,6 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .prepareDcBlobs(true)
-                .prepareIdCardScannerBlobs(true)
                 .preparePayFormBlobs(true)
                 .prepareGenericTextRecognizerBlobs(true)
                 .contourDetectorType(ContourDetector.Type.ML_BASED)
