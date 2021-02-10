@@ -14,10 +14,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
+import io.scanbot.example.util.PicassoHelper
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
@@ -187,7 +187,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             }
             withContext(Dispatchers.Main) {
                 path?.let {
-                    Picasso.with(applicationContext)
+                    PicassoHelper.with(applicationContext)
                             .load(File(it))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
@@ -211,7 +211,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             launch {
                 selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
                 withContext(Dispatchers.Main) {
-                    Picasso.with(applicationContext)
+                    PicassoHelper.with(applicationContext)
                             .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)

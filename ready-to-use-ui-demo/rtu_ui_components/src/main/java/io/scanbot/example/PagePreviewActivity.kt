@@ -17,11 +17,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
+import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -106,7 +106,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
 
-            val intent = io.scanbot.sdk.ui.view.camera.DocumentScannerActivity.newIntent(this@PagePreviewActivity,
+            val intent = DocumentScannerActivity.newIntent(this@PagePreviewActivity,
                     cameraConfiguration
             )
             startActivityForResult(intent, CAMERA_ACTIVITY)
@@ -293,7 +293,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
             val originalImagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path
             val fileToShow = if (File(imagePath).exists()) File(imagePath) else File(originalImagePath)
-            Picasso.with(applicationContext)
+            PicassoHelper.with(applicationContext)
                     .load(fileToShow)
                     .memoryPolicy(MemoryPolicy.NO_CACHE)
                     .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
