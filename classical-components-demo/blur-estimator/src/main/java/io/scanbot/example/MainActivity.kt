@@ -27,7 +27,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
     private var flashEnabled = false
 
-    private val blurEstimator = ScanbotSDK(this).blurEstimator()
+    private val scanbotSDK = ScanbotSDK(this)
+    private val blurEstimator = scanbotSDK.blurEstimator()
 
     private val parentJob = Job()
 
@@ -47,6 +48,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         findViewById<Button>(R.id.gallery_button).setOnClickListener { openGallery() }
         findViewById<Button>(R.id.still_image_close).setOnClickListener { close() }
+
+        Toast.makeText(
+                this,
+                if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
+                Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun estimateOnStillImage(imageUri: Uri) {
@@ -60,10 +67,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 estimateOnStillImage(it)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onPause() {
