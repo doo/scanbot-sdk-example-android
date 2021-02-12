@@ -70,7 +70,9 @@
     <string name="importing_and_processing">Importing selected image and running auto document detection...</string>
     <string name="share_title">Select Image</string>
     <string name="error_openning_document">Error while opening the document</string>
+    <string name="encrypted_document_saved">Encrypted PDF file is saved to: %s. You need to unencrypt it before opening</string>
     <string name="bitmap_is_null_error">Bitmap is null</string>
     <string name="id_card_flow_finished">Id card flow scanning finished</string>
     <string name="scan_nfc_passport">Scan passport (MRZ + NFC)</string>
+    <string name="scan_text_data">Scan data</string>
 </resources>

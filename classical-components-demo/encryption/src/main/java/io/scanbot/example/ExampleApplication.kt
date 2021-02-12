@@ -1,20 +1,17 @@
 package io.scanbot.example
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
 
 import io.scanbot.sdk.util.log.LoggerProvider
-import java.lang.IllegalStateException
 
 class ExampleApplication : Application() {
     /*
-     * TODO 1/3: Add the Scanbot SDK license key here.
+     * TODO: Add the Scanbot SDK license key here.
      * Please note: The Scanbot SDK will run without a license key for one minute per session!
      * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working.
      * You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
@@ -23,28 +20,32 @@ class ExampleApplication : Application() {
      */
     val licenseKey = ""
 
+    companion object {
+        // TODO: you can enable encryption of all the image files and generated PDFs by changing this property
+        const val USE_ENCRYPTION = true
+
+        // TODO: you should store a password in a secure place or let the user enter it manually
+        private const val ENCRYPTION_PASSWORD = "password"
+
+        // TODO: you can select an encryption method
+        private val ENCRYPTION_METHOD = AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
+    }
+
     override fun onCreate() {
         super.onCreate()
 
-        val uiHandler = Handler(Looper.getMainLooper())
         ScanbotSDKInitializer()
                 .withLogging(true)
-                // TODO 2/3: Enable the Scanbot SDK license key
+                // TODO 2/2: Enable the Scanbot SDK license key
                 //.license(this, licenseKey)
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
                     LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}")
                     if (feature != SdkFeature.NoSdkFeature) {
                         LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
-
-                        // TODO: 3/3 Handle license error properly
-                        uiHandler.post {
-                            Toast.makeText(applicationContext, "Trial license expired", Toast.LENGTH_SHORT).show()
-                            throw IllegalStateException("Trial license expired")
-                        }
                     }
                 })
+                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
-                .prepareOCRLanguagesBlobs(true)
                 .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

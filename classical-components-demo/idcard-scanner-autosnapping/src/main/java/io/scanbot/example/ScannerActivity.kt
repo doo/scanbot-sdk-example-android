@@ -53,7 +53,7 @@ class ScannerActivity : AppCompatActivity() {
                 cameraView.continuousFocus()
             }
         })
-        cameraView.addPictureCallback(object : PictureCallback {
+        cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
                 processPictureTaken(image, imageOrientation)
             }

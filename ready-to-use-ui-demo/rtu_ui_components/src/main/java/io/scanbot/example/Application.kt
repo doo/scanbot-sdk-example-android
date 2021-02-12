@@ -11,6 +11,7 @@ import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
+import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,6 +35,13 @@ class Application : MultiDexApplication(), CoroutineScope {
          * the app identifier "io.scanbot.example.sdk.rtu.android" of this example app.
          */
         const val LICENSE_KEY = ""
+
+        // TODO: you can enable encryption of all the image files and generated PDFs by changing this property
+        const val USE_ENCRYPTION = false
+        // TODO: you should store a password in a secure place or let the user enter it manually
+        private const val ENCRYPTION_PASSWORD = "password"
+        // TODO: you can select an encryption method
+        private val ENCRYPTION_METHOD = AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
     }
 
     override fun onCreate() {
@@ -52,18 +60,17 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
                 .prepareDcBlobs(true)
-                .prepareIdCardScannerBlobs(true)
                 .preparePayFormBlobs(true)
-                .prepareBarcodeScannerBlobs(true)
+                .prepareGenericTextRecognizerBlobs(true)
                 .contourDetectorType(ContourDetector.Type.ML_BASED)
+                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
                     // or missing SDK feature (see SDK feature packages on https://scanbot.io).
                     val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
                         "License Error! License status: ${status.name}"
-                    }
-                    else {
+                    } else {
                         "License Error! Missing SDK feature in license: ${feature.name}"
                     }
                     Log.d("ScanbotSDKExample", errorMsg)

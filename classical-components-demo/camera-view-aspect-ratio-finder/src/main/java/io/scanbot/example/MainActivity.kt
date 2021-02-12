@@ -28,7 +28,7 @@ import io.scanbot.sdk.ui.camera.FinderAspectRatio
 import io.scanbot.sdk.ui.camera.ShutterButton
 import java.util.*
 
-class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultView: ImageView
     private lateinit var userGuidanceHint: TextView
@@ -84,7 +84,11 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         // autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true)
-        cameraView.addPictureCallback(this)
+        cameraView.addPictureCallback(object : PictureCallback() {
+            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+                this@MainActivity.processPictureTaken(image, imageOrientation)
+            }
+        })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
 
         shutterButton = findViewById(R.id.shutterButton)
@@ -167,7 +171,7 @@ class MainActivity : AppCompatActivity(), PictureCallback, ContourDetectorFrameH
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full (original) image from the camera.
 
         // Decode Bitmap from bytes of original image:

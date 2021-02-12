@@ -63,20 +63,15 @@ class MainActivity : AppCompatActivity() {
         InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor())
     }
 
-    private fun loadBitmapFromAssets(filePath: String): Bitmap? {
-        return try {
-            val inputStream = this.assets.open(filePath)
-            BitmapFactory.decodeStream(inputStream)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
+    private fun loadBitmapFromAssets(filePath: String): Bitmap {
+            val inputStream = assets.open(filePath)
+            return BitmapFactory.decodeStream(inputStream)
     }
 
-    private fun resizeForPreview(bitmap: Bitmap?): Bitmap {
+    private fun resizeForPreview(bitmap: Bitmap): Bitmap {
         val maxW = 1000f
         val maxH = 1000f
-        val oldWidth = bitmap!!.width.toFloat()
+        val oldWidth = bitmap.width.toFloat()
         val oldHeight = bitmap.height.toFloat()
         val scaleFactor = if (oldWidth > oldHeight) maxW / oldWidth else maxH / oldHeight
         val scaledWidth = (oldWidth * scaleFactor).roundToInt()
@@ -109,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             editPolygonView.visibility = View.GONE
             cropButton.visibility = View.GONE
             rotateButton.visibility = View.GONE
-            resultImageView.setImageBitmap(resizeForPreview(documentImage))
+            resultImageView.setImageBitmap(resizeForPreview(documentImage!!))
             resultImageView.visibility = View.VISIBLE
             backButton.visibility = View.VISIBLE
         }

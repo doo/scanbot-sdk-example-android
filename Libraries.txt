@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.74.2:
+Open Source libraries used in the Scanbot SDK for Android version 1.79.0
 
 Apache Commons Codec
 
@@ -23,7 +23,7 @@ limitations under the License.
 
 CWAC-Camera
 
-Version 0.6.33
+Version 0.6.41
 (https://github.com/doo/cwac-camera)
 (https://github.com/commonsguy/cwac-camera/)
 
@@ -45,7 +45,7 @@ limitations under the License.
 
 Android PDF Writer
 
-Version 1.0.8
+Version 1.0.9
 (https://github.com/Turbo87/apwlibrary/)
 
 Copyright (c) 2010 - 2013, Javier Santo Domingo (j-a-s-d@coderesearchlabs.com).
@@ -215,7 +215,7 @@ limitations under the License.
 
 Dagger
 
-Version 2.16
+Version 2.25.2
 (https://github.com/google/dagger)
 
 Copyright 2012 The Dagger Authors
