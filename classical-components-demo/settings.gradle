@@ -20,4 +20,5 @@ include(
         ':multiple-objects-detector',
         ':ehic-scanner',
         ':adjustable-filters',
+        ':encryption',
 )

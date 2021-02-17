@@ -21,7 +21,10 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
+import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.generictext.GenericTextRecognizer
@@ -51,6 +54,7 @@ import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
 import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
 import io.scanbot.sdk.ui.view.nfc.NfcPassportScannerActivity
+import io.scanbot.sdk.ui.view.nfc.PassportPhotoSaveCallback
 import io.scanbot.sdk.ui.view.nfc.configuration.NfcPassportConfiguration
 import io.scanbot.sdk.ui.view.nfc.entity.NfcPassportScanningResult
 import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
@@ -281,8 +285,20 @@ class MainActivity : AppCompatActivity() {
             nfcPassportConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
             nfcPassportConfiguration.setSuccessBeepEnabled(false)
 
-            // TODO: if you need to load an image from the NFC chip enable
+            // TODO: if you need to load an image from the NFC chip enable line below
             // nfcPassportConfiguration.setShouldSavePhotoImageInStorage(true)
+
+            // if for some reason (e.g. security) you need to retrieve passport photo from NFC chip
+            // without getting it stored on device disk, you can enable the following configuration
+            class PhotoSaveCallback : PassportPhotoSaveCallback {
+                // NOTE: callback implementation class must be static (in case of Java)
+                // or non-inner (in case of Kotlin), have default (empty) constructor
+                // and must not touch fields or methods of enclosing class/method
+                override fun onImageRetrieved(photo: Bitmap?) {
+                    // TODO: use photo from this callback
+                }
+            }
+            nfcPassportConfiguration.setPassportPhotoSaveCallback(PhotoSaveCallback::class.java)
 
             val intent = NfcPassportScannerActivity.newIntent(this@MainActivity, nfcPassportConfiguration)
             startActivityForResult(intent, PASSPORT_NFC_MRZ_DEFAULT_UI)
@@ -353,7 +369,17 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setBarcodesCountTextColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
 
-            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
+            class CustomFormattedBarcodeDataMapper : FormattedBarcodeDataMapper {
+                // NOTE: callback implementation class must be static (in case of Java)
+                // or non-inner (in case of Kotlin), have default (empty) constructor
+                // and must not touch fields or methods of enclosing class/method
+                override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
+                    // TODO: use barcodeItem appropriately here as needed
+                    return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.text)
+                }
+            }
+
+            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration, CustomFormattedBarcodeDataMapper::class.java)
             startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
         }
 
