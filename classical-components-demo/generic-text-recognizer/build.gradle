@@ -32,4 +32,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-generictext-assets:$project.ext.scanbotSdkVersion"
+
+    // For Scanbot sdk version 1.79.x and 1.80.x Generic text line recognizer requires id card assets as well. It will be fixed in 1.81.0.
+    implementation "io.scanbot:sdk-idcard-assets:$project.ext.scanbotSdkVersion"
 }
