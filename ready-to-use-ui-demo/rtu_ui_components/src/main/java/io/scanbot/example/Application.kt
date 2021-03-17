@@ -61,7 +61,6 @@ class Application : MultiDexApplication(), CoroutineScope {
                 .prepareMRZBlobs(true)
                 .prepareDcBlobs(true)
                 .preparePayFormBlobs(true)
-                .prepareGenericTextRecognizerBlobs(true)
                 .contourDetectorType(ContourDetector.Type.ML_BASED)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->

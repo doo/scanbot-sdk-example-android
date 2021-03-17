@@ -49,6 +49,8 @@ import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
 import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
 import io.scanbot.sdk.ui.view.idcard.IdCardScannerActivity
 import io.scanbot.sdk.ui.view.idcard.configuration.IdCardScannerConfiguration
+import io.scanbot.sdk.ui.view.licenseplate.LicensePlateScannerActivity
+import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
@@ -77,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         private const val ID_CARD_DEFAULT_UI = 920
         private const val PASSPORT_NFC_MRZ_DEFAULT_UI = 921
         private const val TEXT_DATA_SCANNER_DEFAULT_UI = 922
+        private const val LICENSE_PLATE_SCANNER_DEFAULT_UI = 923
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -155,6 +158,11 @@ class MainActivity : AppCompatActivity() {
                 // data.getParcelableExtra(IdCardScannerActivity.EXTRACTED_FIELDS_EXTRA) as IdCardScanningResult
                 // Can be GermanyPassportCard or GermanyIdCard
                 Toast.makeText(this@MainActivity, getString(R.string.id_card_flow_finished), Toast.LENGTH_LONG).show()
+            }
+            LICENSE_PLATE_SCANNER_DEFAULT_UI -> {
+                // TODO: Process data from
+                // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
+                Toast.makeText(this@MainActivity, getString(R.string.license_plate_flow_finished), Toast.LENGTH_LONG).show()
             }
             TEXT_DATA_SCANNER_DEFAULT_UI -> {
                 val result = data.getParcelableArrayExtra(TextDataScannerActivity.EXTRACTED_FIELDS_EXTRA)
@@ -327,6 +335,17 @@ class MainActivity : AppCompatActivity() {
                             preferredZoom = 1.6f))
 
             startActivityForResult(intent, TEXT_DATA_SCANNER_DEFAULT_UI)
+        }
+
+        findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
+            val licensePlateScannerConfiguration = LicensePlateScannerConfiguration()
+
+            licensePlateScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            licensePlateScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+
+            val intent = LicensePlateScannerActivity.newIntent(this@MainActivity, licensePlateScannerConfiguration)
+
+            startActivityForResult(intent, LICENSE_PLATE_SCANNER_DEFAULT_UI)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
