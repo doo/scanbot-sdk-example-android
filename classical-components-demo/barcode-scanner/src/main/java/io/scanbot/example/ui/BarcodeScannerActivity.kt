@@ -54,7 +54,8 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             }
         })
 
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, ScanbotSDK(this).barcodeDetector())
+        val barcodeDetector = ScanbotSDK(this).barcodeDetector()
+        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
 
         barcodeDetectorFrameHandler?.let { frameHandler ->
             frameHandler.setDetectionInterval(1000)
@@ -71,7 +72,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             }
         })
 
-        ScanbotSDK(this).barcodeDetector().setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
+        barcodeDetector.modifyConfig { it.copy(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList()) }
     }
 
     override fun onResume() {
