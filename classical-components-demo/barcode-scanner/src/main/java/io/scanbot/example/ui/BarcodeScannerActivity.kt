@@ -60,7 +60,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         barcodeDetectorFrameHandler?.let { frameHandler ->
             frameHandler.setDetectionInterval(1000)
             frameHandler.addResultHandler(this)
-            frameHandler.saveCameraPreviewFrame(true)
+            frameHandler.modifyConfig { it.copy(saveCameraPreviewFrame = true) }
 
             val barcodeAutoSnappingController = BarcodeAutoSnappingController.attach(cameraView, frameHandler)
             barcodeAutoSnappingController.setSensitivity(1f)
