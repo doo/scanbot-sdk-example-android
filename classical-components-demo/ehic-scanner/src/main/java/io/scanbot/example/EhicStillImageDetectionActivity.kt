@@ -29,8 +29,6 @@ import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import java.io.IOException
 
 class EhicStillImageDetectionActivity : AppCompatActivity() {

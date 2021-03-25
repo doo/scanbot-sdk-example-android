@@ -65,7 +65,6 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.0.0"
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-4:$scanbotSdkVersion"
-    implementation "io.scanbot:sdk-ml-docdetector:$scanbotSdkVersion"
 
     // This dependency is only needed if you plan to use the ID card scanner feature
     implementation "io.scanbot:sdk-idcard-assets:$scanbotSdkVersion"

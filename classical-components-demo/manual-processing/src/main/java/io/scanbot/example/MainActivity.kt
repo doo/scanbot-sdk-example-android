@@ -23,8 +23,6 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import io.scanbot.sdk.util.thread.MimeUtils
 import java.io.File
 import java.io.IOException
