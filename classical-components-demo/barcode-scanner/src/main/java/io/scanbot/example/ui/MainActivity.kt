@@ -16,7 +16,6 @@ import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -71,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 processGalleryResult(data!!)?.let { bitmap ->
                     val barcodeDetector = sdk.barcodeDetector()
-                    barcodeDetector.setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
+                    barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
                     val result = barcodeDetector.detectFromBitmap(bitmap, 0)
 
                     BarcodeResultRepository.barcodeResultBundle =
