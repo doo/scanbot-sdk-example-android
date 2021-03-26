@@ -31,8 +31,5 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta7'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
-    implementation "io.scanbot:sdk-generictext-assets:$project.ext.scanbotSdkVersion"
-
-    // For Scanbot SDK version 1.79.x and 1.80.x Generic text line recognizer required id card assets as well. It was fixed in 1.81.0.
-    // implementation "io.scanbot:sdk-idcard-assets:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-licenseplate-assets:$project.ext.scanbotSdkVersion"
 }

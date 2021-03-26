@@ -38,5 +38,5 @@ proguard/
 
 build
 
-
+*.hprof
 

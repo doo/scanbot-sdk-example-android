@@ -37,7 +37,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
     private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_barcode_scanner)
@@ -54,12 +53,16 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             }
         })
 
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, ScanbotSDK(this).barcodeDetector())
+        val barcodeDetector = ScanbotSDK(this).barcodeDetector()
+        barcodeDetector.modifyConfig {
+            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
+            setSaveCameraPreviewFrame(true)
+        }
+        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
 
         barcodeDetectorFrameHandler?.let { frameHandler ->
             frameHandler.setDetectionInterval(1000)
             frameHandler.addResultHandler(this)
-            frameHandler.saveCameraPreviewFrame(true)
 
             val barcodeAutoSnappingController = BarcodeAutoSnappingController.attach(cameraView, frameHandler)
             barcodeAutoSnappingController.setSensitivity(1f)
@@ -70,8 +73,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
                 this@BarcodeScannerActivity.processPictureTaken(image, imageOrientation)
             }
         })
-
-        ScanbotSDK(this).barcodeDetector().setBarcodeFormatsFilter(BarcodeTypeRepository.selectedTypes.toList())
     }
 
     override fun onResume() {

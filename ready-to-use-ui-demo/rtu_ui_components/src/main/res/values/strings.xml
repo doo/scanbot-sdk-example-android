@@ -72,7 +72,9 @@
     <string name="error_openning_document">Error while opening the document</string>
     <string name="encrypted_document_saved">Encrypted PDF file is saved to: %s. You need to unencrypt it before opening</string>
     <string name="bitmap_is_null_error">Bitmap is null</string>
-    <string name="id_card_flow_finished">Id card flow scanning finished</string>
+    <string name="id_card_flow_finished">Id card scanning flow finished</string>
+    <string name="license_plate_flow_finished">License plate scanning flow finished</string>
     <string name="scan_nfc_passport">Scan passport (MRZ + NFC)</string>
     <string name="scan_text_data">Scan data</string>
+    <string name="scan_license_plate">Scan EU license plate</string>
 </resources>
