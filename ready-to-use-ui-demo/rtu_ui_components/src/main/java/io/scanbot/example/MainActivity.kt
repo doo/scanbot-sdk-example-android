@@ -26,6 +26,7 @@ import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.camera.ZoomRange
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.generictext.GenericTextRecognizer
 import io.scanbot.sdk.persistence.Page
@@ -354,6 +355,11 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+
+            // Default value is 0.
+            barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
+            // Default value is ZoomRange(0, 1).
+            barcodeCameraConfiguration.setCameraZoomRange(ZoomRange(0.1f, 1f))
 
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
 
