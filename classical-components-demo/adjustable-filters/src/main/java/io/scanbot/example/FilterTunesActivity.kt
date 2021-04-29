@@ -170,7 +170,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             progress.visibility = View.GONE
         }
 
-        override fun onError() {
+        override fun onError(e: java.lang.Exception?) {
             progress.visibility = View.GONE
         }
     }
@@ -227,7 +227,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     }
 
                     withContext(Dispatchers.Main) {
-                        Picasso.with(applicationContext)
+                        Picasso.get()
                                 .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(
                                         this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))
                                 .memoryPolicy(MemoryPolicy.NO_CACHE)
