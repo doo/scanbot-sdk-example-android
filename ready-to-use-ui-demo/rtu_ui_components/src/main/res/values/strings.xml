@@ -77,4 +77,5 @@
     <string name="scan_nfc_passport">Scan passport (MRZ + NFC)</string>
     <string name="scan_text_data">Scan data</string>
     <string name="scan_license_plate">Scan EU license plate</string>
+    <string name="scan_generic_document">Scan Generic Document</string>
 </resources>
