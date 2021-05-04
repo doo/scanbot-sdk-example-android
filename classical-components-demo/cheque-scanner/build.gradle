@@ -36,6 +36,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-beta01'
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
 }
