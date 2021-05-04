@@ -60,7 +60,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation "androidx.constraintlayout:constraintlayout-solver:2.0.4"
     implementation "androidx.recyclerview:recyclerview:1.2.0"
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
@@ -75,7 +75,7 @@ dependencies {
     // This dependency is only needed if you plan to use license plate scanner feature
     implementation "io.scanbot:sdk-licenseplate-assets:$scanbotSdkVersion"
 
-    // This dependency is only needed if you plan to use the barcode scanner or DC scnner feature
+    // This dependency is only needed if you plan to use the barcode scanner or DC scanner feature
     implementation "io.scanbot:sdk-barcode-assets:$scanbotSdkVersion"
 
     // This dependency is only needed if you plan to use the encryption feature
