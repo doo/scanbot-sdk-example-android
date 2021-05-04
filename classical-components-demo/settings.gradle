@@ -12,6 +12,8 @@ include(
         ':dc-scanner',
         ':idcard-scanner-autosnapping',
         ':idcard-scanner-livedetection',
+        ':generic-document-recognizer-autosnapping',
+        ':generic-document-recognizer-livedetection',
         ':generic-text-recognizer',
         ':licenseplate-scanner',
         ':tiff-writer',
