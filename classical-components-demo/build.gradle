@@ -22,6 +22,8 @@ allprojects {
         androidxSupportVersion = '1.0.1'
 
         scanbotSdkVersion = '1.82.0'
+
+        constraintLayoutVersion = "2.0.4"
     }
 
     repositories {

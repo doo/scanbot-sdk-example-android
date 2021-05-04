@@ -75,7 +75,7 @@ dependencies {
     // This dependency is only needed if you plan to use license plate scanner feature
     implementation "io.scanbot:sdk-licenseplate-assets:$scanbotSdkVersion"
 
-    // This dependency is only needed if you plan to use the barcode scanner or DC scnner feature
+    // This dependency is only needed if you plan to use the barcode scanner or DC scanner feature
     implementation "io.scanbot:sdk-barcode-assets:$scanbotSdkVersion"
 
     // This dependency is only needed if you plan to use the encryption feature
