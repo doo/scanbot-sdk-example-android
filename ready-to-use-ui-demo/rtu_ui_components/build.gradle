@@ -69,6 +69,9 @@ dependencies {
     // This dependency is only needed if you plan to use the ID card scanner feature
     implementation "io.scanbot:sdk-idcard-assets:$scanbotSdkVersion"
 
+    // This dependency is only needed if you plan to use the Generic Document Recognizer feature
+    implementation "io.scanbot:sdk-genericdocument-assets:$scanbotSdkVersion"
+
     // This dependency is only needed if you plan to use data scanner feature
     implementation "io.scanbot:sdk-generictext-assets:$scanbotSdkVersion"
 

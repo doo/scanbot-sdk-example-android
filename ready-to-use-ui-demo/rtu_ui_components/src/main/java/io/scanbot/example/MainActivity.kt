@@ -169,11 +169,22 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, getString(R.string.id_card_flow_finished), Toast.LENGTH_LONG).show()
             }
             GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI -> {
-                val documents = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)
-                val firstDocument = documents.first()
-                val resultById = scanbotSDK.resultRepositoryForClass(firstDocument.clazz).getResultAndErase(firstDocument.resultId)
+                // Get the ResultWrapper object from the intent
+                val resultWrappers
+                        = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)
 
-                Toast.makeText(this, resultById?.fields?.map { "${it.type.name} = ${it.value?.text}"}.toString(), Toast.LENGTH_LONG).show()
+                // For simplicity we will take only the first document
+                val firstResultWrapper = resultWrappers.first()
+
+                // Get the ResultRepository from the ScanbotSDK instance
+                // scanbotSDK was created in onCreate via ScanbotSDK(context)
+                val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
+
+                // Receive an instance of GenericDocument class from the repository
+                // This call will also remove the result from the repository (to make the memory usage less)
+                val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
+
+                Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
             }
             LICENSE_PLATE_SCANNER_DEFAULT_UI -> {
                 // TODO: Process data from
