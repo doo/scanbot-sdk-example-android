@@ -38,7 +38,7 @@ dependencies {
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-barcode-assets:$project.ext.scanbotSdkVersion"
 
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
