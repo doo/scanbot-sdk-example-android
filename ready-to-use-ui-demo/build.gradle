@@ -8,7 +8,7 @@ buildscript {
     ext.buildToolsVersion = '28.0.3'
     ext.kotlin_version = '1.4.0'
 
-    ext.scanbotSdkVersion = '1.83.0.125-SNAPSHOT'
+    ext.scanbotSdkVersion = '1.83.0'
 
     repositories {
         google()

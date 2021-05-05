@@ -21,7 +21,7 @@ allprojects {
         buildToolsVersion = '28.0.3'
         androidxSupportVersion = '1.0.1'
 
-        scanbotSdkVersion = '1.83.0.125-SNAPSHOT'
+        scanbotSdkVersion = '1.83.0'
     }
 
     repositories {
