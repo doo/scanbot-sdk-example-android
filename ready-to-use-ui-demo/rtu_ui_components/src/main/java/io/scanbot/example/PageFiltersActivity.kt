@@ -26,6 +26,7 @@ import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
 import kotlinx.coroutines.*
 import java.io.File
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener {
@@ -228,7 +229,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             progress.visibility = GONE
         }
 
-        override fun onError() {
+        override fun onError(e: Exception?) {
             progress.visibility = GONE
         }
     }
