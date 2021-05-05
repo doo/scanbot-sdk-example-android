@@ -17,6 +17,10 @@ import io.scanbot.example.fragments.*
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.PageRepository
+import io.scanbot.genericdocument.entity.DePassport
+import io.scanbot.genericdocument.entity.FieldProperties
+import io.scanbot.genericdocument.entity.GenericDocument
+import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sap.Status
@@ -33,6 +37,7 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
+import io.scanbot.sdk.ui.result.ResultWrapper
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.batch.BatchBarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.batch.configuration.BatchBarcodeScannerConfiguration
@@ -42,6 +47,8 @@ import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui.view.genericdocument.GenericDocumentRecognizerActivity
+import io.scanbot.sdk.ui.view.genericdocument.configuration.GenericDocumentRecognizerConfiguration
 import io.scanbot.sdk.ui.view.generictext.TextDataScannerActivity
 import io.scanbot.sdk.ui.view.generictext.configuration.TextDataScannerConfiguration
 import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStep
@@ -81,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         private const val PASSPORT_NFC_MRZ_DEFAULT_UI = 921
         private const val TEXT_DATA_SCANNER_DEFAULT_UI = 922
         private const val LICENSE_PLATE_SCANNER_DEFAULT_UI = 923
+        private const val GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI = 924
         private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
         private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
         private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
@@ -159,6 +167,24 @@ class MainActivity : AppCompatActivity() {
                 // data.getParcelableExtra(IdCardScannerActivity.EXTRACTED_FIELDS_EXTRA) as IdCardScanningResult
                 // Can be GermanyPassportCard or GermanyIdCard
                 Toast.makeText(this@MainActivity, getString(R.string.id_card_flow_finished), Toast.LENGTH_LONG).show()
+            }
+            GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI -> {
+                // Get the ResultWrapper object from the intent
+                val resultWrappers
+                        = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)
+
+                // For simplicity we will take only the first document
+                val firstResultWrapper = resultWrappers.first()
+
+                // Get the ResultRepository from the ScanbotSDK instance
+                // scanbotSDK was created in onCreate via ScanbotSDK(context)
+                val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
+
+                // Receive an instance of GenericDocument class from the repository
+                // This call will also remove the result from the repository (to make the memory usage less)
+                val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
+
+                Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
             }
             LICENSE_PLATE_SCANNER_DEFAULT_UI -> {
                 // TODO: Process data from
@@ -347,6 +373,26 @@ class MainActivity : AppCompatActivity() {
             val intent = LicensePlateScannerActivity.newIntent(this@MainActivity, licensePlateScannerConfiguration)
 
             startActivityForResult(intent, LICENSE_PLATE_SCANNER_DEFAULT_UI)
+        }
+
+        findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
+            val genericDocumentConfiguration = GenericDocumentRecognizerConfiguration()
+            genericDocumentConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
+            genericDocumentConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            genericDocumentConfiguration.setFieldsDisplayConfiguration(
+                hashMapOf(
+                    DePassport.NormalizedFieldNames.PHOTO to FieldProperties(
+                        "My passport photo",
+                        FieldProperties.DisplayState.AlwaysVisible
+                    ),
+                    MRZ.NormalizedFieldNames.CHECK_DIGIT to FieldProperties(
+                        "Check digit",
+                        FieldProperties.DisplayState.AlwaysVisible
+                    )
+                )
+            )
+            val intent = GenericDocumentRecognizerActivity.newIntent(this, genericDocumentConfiguration)
+            startActivityForResult(intent, GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
