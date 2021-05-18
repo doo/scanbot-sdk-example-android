@@ -6,9 +6,9 @@ buildscript {
     ext.minVersion = 21
 
     ext.buildToolsVersion = '28.0.3'
-    ext.kotlin_version = '1.4.0'
+    ext.kotlin_version = '1.4.20'
 
-    ext.scanbotSdkVersion = '1.83.0'
+    ext.scanbotSdkVersion = '1.83.1'
 
     repositories {
         google()
