@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.83.0
+Open Source libraries used in the Scanbot SDK for Android version 1.83.1
 
 Apache Commons Codec
 
@@ -139,7 +139,7 @@ limitations under the License.
 
 Kotlin Standard Library
 
-Version 1.4.0
+Version 1.4.20
 (https://github.com/JetBrains/kotlin)
 
 Copyright 2010-2018 JetBrains s.r.o.
