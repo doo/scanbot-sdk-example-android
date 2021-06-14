@@ -42,4 +42,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$project.ext.coroutinesCoreVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$project.ext.coroutinesAndroidVersion"
+    implementation "com.google.android.material:material:$project.ext.materialVersion"
 }

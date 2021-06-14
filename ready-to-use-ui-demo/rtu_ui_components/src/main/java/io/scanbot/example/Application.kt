@@ -8,7 +8,6 @@ import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
@@ -59,17 +58,16 @@ class Application : MultiDexApplication(), CoroutineScope {
                 )
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
-                .prepareDcBlobs(true)
                 .preparePayFormBlobs(true)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
+                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
                     // or missing SDK feature (see SDK feature packages on https://scanbot.io).
                     val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
-                        "License Error! License status: ${status.name}"
+                        "License Error! License status: ${status.name}. $statusMessage"
                     } else {
-                        "License Error! Missing SDK feature in license: ${feature.name}"
+                        "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"
                     }
                     Log.d("ScanbotSDKExample", errorMsg)
                     Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()

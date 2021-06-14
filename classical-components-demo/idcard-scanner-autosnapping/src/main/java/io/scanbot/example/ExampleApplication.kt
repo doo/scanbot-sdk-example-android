@@ -31,8 +31,8 @@ class ExampleApplication : Application() {
                 .withLogging(true)
                 // TODO 2/3: Enable the Scanbot SDK license key
                 //.license(this, licenseKey)
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature ->
-                    LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}")
+                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
+                    LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}. Status message: $statusMessage")
                     if (feature != SdkFeature.NoSdkFeature) {
                         LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
 
