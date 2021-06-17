@@ -63,6 +63,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation "androidx.constraintlayout:constraintlayout-solver:2.0.4"
     implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation "com.google.android.material:material:1.3.0"
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-4:$scanbotSdkVersion"
 
@@ -80,6 +81,9 @@ dependencies {
 
     // This dependency is only needed if you plan to use the barcode scanner or DC scanner feature
     implementation "io.scanbot:sdk-barcode-assets:$scanbotSdkVersion"
+
+    // This dependency is only needed if you plan to use DC scanner feature
+    implementation "io.scanbot:sdk-dc-assets:$scanbotSdkVersion"
 
     // This dependency is only needed if you plan to use the encryption feature
     implementation "io.scanbot:sdk-crypto-persistence:$scanbotSdkVersion"
