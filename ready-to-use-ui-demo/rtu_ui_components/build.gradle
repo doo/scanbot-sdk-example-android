@@ -82,6 +82,9 @@ dependencies {
     // This dependency is only needed if you plan to use the barcode scanner or DC scanner feature
     implementation "io.scanbot:sdk-barcode-assets:$scanbotSdkVersion"
 
+    // This dependency is only needed if you plan to use DC scanner feature
+    implementation "io.scanbot:sdk-dc-assets:$scanbotSdkVersion"
+
     // This dependency is only needed if you plan to use the encryption feature
     implementation "io.scanbot:sdk-crypto-persistence:$scanbotSdkVersion"
 
