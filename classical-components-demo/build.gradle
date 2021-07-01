@@ -20,7 +20,7 @@ allprojects {
         compileSdkVersion = 29
         buildToolsVersion = '28.0.3'
 
-        scanbotSdkVersion = '1.84.0'
+        scanbotSdkVersion = '1.85.0'
 
         constraintLayoutVersion = "2.0.4"
         coroutinesAndroidVersion = "1.4.1"
