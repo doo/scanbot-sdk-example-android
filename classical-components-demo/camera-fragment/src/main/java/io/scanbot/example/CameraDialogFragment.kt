@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
@@ -52,8 +53,8 @@ class CameraDialogFragment : DialogFragment() {
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
         DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@CameraDialogFragment.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                this@CameraDialogFragment.processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
         baseView.findViewById<View>(R.id.snap).setOnClickListener { v: View? -> cameraView.takePicture(false) }

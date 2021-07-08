@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true)
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@MainActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                this@MainActivity.processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)

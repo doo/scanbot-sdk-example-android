@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import io.scanbot.example.DCResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.dcscanner.DCScanner
@@ -48,8 +49,8 @@ class ManualDCScannerActivity : AppCompatActivity() {
             }
         })
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@ManualDCScannerActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                this@ManualDCScannerActivity.processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 

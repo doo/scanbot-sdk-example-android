@@ -6,15 +6,13 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.genericdocument.GenericDocumentAutoSnappingController
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizer
-import io.scanbot.sdk.idcardscanner.IdScanResult
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
@@ -49,8 +47,8 @@ class ScannerActivity : AppCompatActivity() {
             }
         })
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 

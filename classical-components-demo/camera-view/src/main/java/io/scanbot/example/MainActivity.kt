@@ -94,8 +94,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
         autoSnappingController.setSensitivity(0.85f)
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@MainActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                this@MainActivity.processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
