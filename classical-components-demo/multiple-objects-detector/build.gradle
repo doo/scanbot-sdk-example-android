@@ -39,7 +39,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
-    implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "io.scanbot:sdk-package-4:${project.ext.scanbotSdkVersion}"
 }
