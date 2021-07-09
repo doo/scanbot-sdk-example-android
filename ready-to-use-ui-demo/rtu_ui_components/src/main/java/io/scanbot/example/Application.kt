@@ -1,8 +1,8 @@
 package io.scanbot.example
 
+import android.app.Application
 import android.util.Log
 import android.widget.Toast
-import androidx.multidex.MultiDexApplication
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class Application : MultiDexApplication(), CoroutineScope {
+class Application : Application(), CoroutineScope {
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
