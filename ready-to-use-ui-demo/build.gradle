@@ -6,7 +6,7 @@ buildscript {
     ext.minVersion = 21
 
     ext.buildToolsVersion = '28.0.3'
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.5.21'
     ext.coroutines_version = '1.4.3'
 
     ext.scanbotSdkVersion = '1.85.1'
