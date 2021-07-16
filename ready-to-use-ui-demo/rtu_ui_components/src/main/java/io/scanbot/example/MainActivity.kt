@@ -663,7 +663,7 @@ class MainActivity : AppCompatActivity() {
 
             val singleton = ExampleSingletonImpl(this@MainActivity)
             val pageFileStorage = singleton.pageFileStorageInstance()
-            val pageProcessor = ExampleSingletonImpl(this@MainActivity).pageProcessorInstance()
+            val pageProcessor = singleton.pageProcessorInstance()
 
             // create a new Page object with given image as original image:
 
