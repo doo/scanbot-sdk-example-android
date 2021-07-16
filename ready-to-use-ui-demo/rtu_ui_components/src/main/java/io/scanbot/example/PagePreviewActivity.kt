@@ -2,7 +2,6 @@ package io.scanbot.example
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -17,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.MemoryPolicy
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
@@ -35,12 +35,10 @@ import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
-import io.scanbot.sdk.util.bitmap.BitmapUtils
 import io.scanbot.sdk.util.thread.MimeUtils
 import kotlinx.android.synthetic.main.activity_page_preview.*
 import kotlinx.coroutines.*
 import java.io.File
-import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 
 
@@ -77,11 +75,11 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         initMenu()
         scanbotSDK = ScanbotSDK(application)
 
-        cleaner = scanbotSDK.cleaner()
-        textRecognition = scanbotSDK.ocrRecognizer()
-        pdfRenderer = scanbotSDK.pdfRenderer()
+        cleaner = scanbotSDK.createCleaner()
+        textRecognition = scanbotSDK.createOcrRecognizer()
+        pdfRenderer = scanbotSDK.createPdfRenderer()
 
-        adapter = PagesAdapter()
+        adapter = PagesAdapter(ExampleSingletonImpl(this).pageFileStorageInstance())
         adapter.setHasStableIds(true)
 
         recycleView = findViewById(R.id.pages_preview)
@@ -275,8 +273,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         return super.onOptionsItemSelected(item)
     }
 
-    private inner class PagesAdapter : RecyclerView.Adapter<PageViewHolder>() {
-
+    private inner class PagesAdapter(val pageFileStorage: PageFileStorage) : RecyclerView.Adapter<PageViewHolder>() {
         val items: MutableList<Page> = mutableListOf()
         private val mOnClickListener: View.OnClickListener = PageClickListener()
         fun setItems(pages: List<Page>) {
@@ -294,8 +291,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
             val page = items[position]
 
-            val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
-            val originalImagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path
+            val imagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
+            val originalImagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path
             val fileToShow = if (File(imagePath).exists()) File(imagePath) else File(originalImagePath)
             PicassoHelper.with(applicationContext)
                     .load(fileToShow)
@@ -323,14 +320,6 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             val intent = PageFiltersActivity.newIntent(this@PagePreviewActivity, selectedPage!!)
             startActivityForResult(intent, FILTER_UI_REQUEST_CODE)
         }
-    }
-
-    @Throws(IOException::class)
-    private fun loadImage(page: Page): Bitmap {
-        val imagePath = ScanbotSDK(applicationContext).pageFileStorage().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
-
-        return BitmapUtils.decodeQuietly(imagePath, null)
-                ?: throw IOException(getString(R.string.bitmap_is_null_error))
     }
 
     private fun openDocument(pdfFile: File) {

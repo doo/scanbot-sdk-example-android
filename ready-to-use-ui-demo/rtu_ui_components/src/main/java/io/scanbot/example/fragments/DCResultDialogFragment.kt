@@ -17,8 +17,8 @@ import io.scanbot.dcscanner.model.DCInfoBoxSubtype
 import io.scanbot.dcscanner.model.DateRecordType
 import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.R
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
-import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.DisabilityCertificateWorkflowStepResult
@@ -76,8 +76,8 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
     }
 
     private fun showPageImage(page: Page, imageView: ImageView) {
-        val context = context!!.applicationContext
-        val pageFileStorage = ScanbotSDK(context).pageFileStorage()
+        val context = requireContext().applicationContext
+        val pageFileStorage = ExampleSingletonImpl(requireContext()).pageFileStorageInstance()
         imageView.visibility = View.VISIBLE
         val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
         val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
@@ -93,7 +93,7 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 

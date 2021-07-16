@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -13,6 +12,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.*
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
@@ -619,7 +619,7 @@ class MainActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void): List<Page> {
             val processGalleryResult = processGalleryResult(data!!)
 
-            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
+            val pageFileStorage = ExampleSingletonImpl(this@MainActivity).pageFileStorageInstance()
 
             // create a new Page object with given image as original image:
 
@@ -661,8 +661,9 @@ class MainActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void): List<Page> {
             val processGalleryResult = processGalleryResult(data!!)
 
-            val pageFileStorage = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageFileStorage()
-            val pageProcessor = io.scanbot.sdk.ScanbotSDK(this@MainActivity).pageProcessor()
+            val singleton = ExampleSingletonImpl(this@MainActivity)
+            val pageFileStorage = singleton.pageFileStorageInstance()
+            val pageProcessor = ExampleSingletonImpl(this@MainActivity).pageProcessorInstance()
 
             // create a new Page object with given image as original image:
 
