@@ -7,7 +7,6 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.TuneOperation
 
 class PageRepository {
-
     companion object {
         private val pages = mutableListOf<Page>()
 
@@ -52,10 +51,11 @@ class PageRepository {
         }
 
         fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int): Page {
+            val processor = ExampleSingletonImpl(context).pageProcessorInstance()
             pages.forEach {
                 if (it.pageId == page.pageId) {
-                    ExampleSingletonImpl(context).pageProcessorInstance().applyFilterTunes(it, imageFilterType, tunes, filterOrder)
-                    ExampleSingletonImpl(context).pageProcessorInstance().generateFilteredPreview(it, imageFilterType, tunes, filterOrder)
+                    processor.applyFilterTunes(it, imageFilterType, tunes, filterOrder)
+                    processor.generateFilteredPreview(it, imageFilterType, tunes, filterOrder)
                 }
             }
             val result = Page(pageId = page.pageId,
