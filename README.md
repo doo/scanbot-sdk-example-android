@@ -14,7 +14,7 @@ For more details visit our website https://scanbot.io
 
 ## Documentation of the Scanbot SDK
 
-- [Developer Guide](https://github.com/doo/scanbot-sdk-example-android/wiki)
+- [Developer Guide](https://docs.scanbot.io/document-scanner-sdk/android/introduction/)
 - [API Docs](https://scanbotsdk.github.io/documentation/android/api/)
 
 
