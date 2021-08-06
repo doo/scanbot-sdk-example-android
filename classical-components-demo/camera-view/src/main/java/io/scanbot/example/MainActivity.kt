@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         contourDetector.detect(originalBitmap)
         val detectedPolygon = contourDetector.polygonF!!
 
-        val documentImage = imageProcessor.processBitmap(originalBitmap, listOf(CropOperation(detectedPolygon)), false)
+        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
         resultView.post { resultView.setImageBitmap(documentImage) }
 
         // continue scanning

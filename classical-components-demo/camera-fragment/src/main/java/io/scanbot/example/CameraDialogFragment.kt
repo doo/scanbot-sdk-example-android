@@ -111,8 +111,7 @@ class CameraDialogFragment : DialogFragment() {
         val detectionResult = contourDetector.detect(originalBitmap)
         if (detectionResult != null) {
             contourDetector.polygonF?.let { polygon ->
-                val operations = listOf(CropOperation(polygon))
-                val documentImage = imageProcessor.processBitmap(originalBitmap, operations, false)
+                val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygon), false)
                 if (documentImage != null) resultView.post {
                     resultView.setImageBitmap(documentImage)
                     cameraView.continuousFocus()

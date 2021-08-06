@@ -6,16 +6,6 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.TuneOperation
 
 object PageFilterHelper {
-    fun generatePreview(
-        pageProcessor: PageProcessor,
-        page: Page,
-        imageFilterType: ImageFilterType,
-        tunes: List<TuneOperation>,
-        filterOrder: Int
-    ) {
-        pageProcessor.generateFilteredPreview(page, imageFilterType, tunes, filterOrder)
-    }
-
     fun applyFilter(
         pageProcessor: PageProcessor,
         page: Page,
