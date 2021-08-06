@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
+import io.scanbot.example.di.ExampleSingleton
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
@@ -46,6 +48,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     lateinit var selectedPage: Page
     lateinit var scanbotSDK: ScanbotSDK
+    lateinit var singletonInstance: ExampleSingleton
+
     private var selectedFilter: ImageFilterType = ImageFilterType.NONE
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
@@ -67,6 +71,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }
 
         scanbotSDK = ScanbotSDK(application)
+        singletonInstance = ExampleSingletonImpl(this@PageFiltersActivity)
 
         action_filter.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
@@ -180,9 +185,9 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         progress.visibility = View.VISIBLE
         launch {
             val path = selectedPage.let {
-                val filteredPreviewFilePath = scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(it.pageId, it.filter).path
+                val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance().getFilteredPreviewImageURI(it.pageId, it.filter).path
                 if (!File(filteredPreviewFilePath).exists()) {
-                    scanbotSDK.pageProcessor().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
+                    singletonInstance.pageProcessorInstance().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
                 }
                 filteredPreviewFilePath
             }
@@ -212,8 +217,9 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             launch {
                 selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
                 withContext(Dispatchers.Main) {
+                    val pageFileStorageInstance = singletonInstance.pageFileStorageInstance()
                     PicassoHelper.with(applicationContext)
-                            .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .load(File(pageFileStorageInstance.getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()

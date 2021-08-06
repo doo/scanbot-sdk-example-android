@@ -14,8 +14,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
-import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -26,12 +26,11 @@ import java.util.*
 
 
 class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
-
     companion object {
         const val NAME = "BarCodeResultDialogFragment"
 
-        val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
-        val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
+        const val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
+        const val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
 
         fun newInstance(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>): BarCodeResultDialogFragment {
             val f = BarCodeResultDialogFragment()
@@ -74,8 +73,8 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
     }
 
     private fun showPageImage(page: Page, imageView: ImageView) {
-        val context = context!!.applicationContext
-        val pageFileStorage = ScanbotSDK(context).pageFileStorage()
+        val context = requireContext().applicationContext
+        val pageFileStorage = ExampleSingletonImpl(context).pageFileStorageInstance()
         imageView.visibility = View.VISIBLE
         val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
         val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
@@ -90,7 +89,7 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 

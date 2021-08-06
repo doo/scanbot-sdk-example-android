@@ -13,9 +13,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
-import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.MachineReadableZoneWorkflowStepResult
 import io.scanbot.sdk.ui.entity.workflow.ScanMachineReadableZoneWorkflowStep
@@ -27,12 +27,11 @@ import java.util.*
 
 
 class MRZImageResultDialogFragment : androidx.fragment.app.DialogFragment() {
-
     companion object {
         const val NAME = "MRZImageResultDialogFragment"
 
-        val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
-        val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
+        const val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
+        const val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
 
         fun newInstance(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>): MRZImageResultDialogFragment {
             val f = MRZImageResultDialogFragment()
@@ -62,8 +61,8 @@ class MRZImageResultDialogFragment : androidx.fragment.app.DialogFragment() {
         if (mrzScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
             view.findViewById<TextView>(R.id.tv_data).text = mrzScanStepResult.mrzResult?.let { extractData(it) }
 
-            val context = context!!.applicationContext
-            val pageFileStorage = ScanbotSDK(context).pageFileStorage()
+            val context = requireContext().applicationContext
+            val pageFileStorage = ExampleSingletonImpl(requireContext()).pageFileStorageInstance()
             mrzScanStepResult.capturedPage?.let {
                 view.images_container.visibility = View.VISIBLE
                 view.front_snap_result.visibility = View.VISIBLE

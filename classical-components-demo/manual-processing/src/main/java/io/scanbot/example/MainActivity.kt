@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeDependencies() {
         val scanbotSDK = ScanbotSDK(this)
-        pageFileStorage = scanbotSDK.pageFileStorage()
-        pageProcessor = scanbotSDK.pageProcessor()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
     }
 
     private fun openGallery() {

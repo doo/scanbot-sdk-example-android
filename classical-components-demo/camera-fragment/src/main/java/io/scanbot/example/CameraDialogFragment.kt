@@ -10,12 +10,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
+import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.process.CropOperation
+import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.process.Operation
 import io.scanbot.sdk.ui.PolygonView
 import java.util.*
@@ -26,36 +28,40 @@ import java.util.*
 class CameraDialogFragment : DialogFragment() {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultView: ImageView
-    private lateinit var scanbotSDK: ScanbotSDK
+
+    private lateinit var contourDetector: ContourDetector
+    private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scanbotSDK = ScanbotSDK(context!!)
+        val scanbotSDK = ScanbotSDK(requireContext())
+        contourDetector = scanbotSDK.createContourDetector()
+        imageProcessor = scanbotSDK.imageProcessor()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val baseView = activity!!.layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
+        val baseView = requireActivity().layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
         cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.continuousFocus()
-                    cameraView.useFlash(flashEnabled)
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.continuousFocus()
+                cameraView.useFlash(flashEnabled)
+            }, 700)
+        }
         resultView = baseView.findViewById<View>(R.id.result) as ImageView
-        val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector())
+        val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
         val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
         DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@CameraDialogFragment.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
+
         baseView.findViewById<View>(R.id.snap).setOnClickListener { v: View? -> cameraView.takePicture(false) }
         baseView.findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled
@@ -102,13 +108,11 @@ class CameraDialogFragment : DialogFragment() {
         }
 
         // Run document detection on original image:
-        val detector = ScanbotSDK(context!!).contourDetector()
-        val detectionResult = detector.detect(originalBitmap)
-        val operations: MutableList<Operation> = ArrayList()
+        val detectionResult = contourDetector.detect(originalBitmap)
         if (detectionResult != null) {
-            detector.polygonF?.let { polygon ->
-                operations.add(CropOperation(polygon))
-                val documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false)
+            contourDetector.polygonF?.let { polygon ->
+                val operations = listOf(CropOperation(polygon))
+                val documentImage = imageProcessor.processBitmap(originalBitmap, operations, false)
                 if (documentImage != null) resultView.post {
                     resultView.setImageBitmap(documentImage)
                     cameraView.continuousFocus()

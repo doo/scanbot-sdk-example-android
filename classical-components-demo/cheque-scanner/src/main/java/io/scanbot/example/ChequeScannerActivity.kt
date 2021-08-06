@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.chequescanner.model.Result
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.chequescanner.ChequeScannerFrameHandler
@@ -25,32 +23,30 @@ class ChequeScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_cheque_scanner)
         supportActionBar!!.hide()
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
         val scanbotSDK = ScanbotSDK(this)
-        val chequeScanner = scanbotSDK.chequeScanner()
+        val chequeScanner = scanbotSDK.createChequeScanner()
         val chequeScannerFrameHandler = ChequeScannerFrameHandler.attach(cameraView, chequeScanner)
-        chequeScannerFrameHandler.addResultHandler(object : ChequeScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<Result, SdkLicenseError>): Boolean {
-                if (result is FrameHandlerResult.Success<*>) {
-                    val value = (result as FrameHandlerResult.Success<Result?>).value
-                    if (value != null && (value.accountNumber.value.isNotEmpty() || value.routingNumber.value.isNotEmpty())) {
-                        runOnUiThread {
-                            Toast.makeText(this@ChequeScannerActivity,
-                                    extractData(value), Toast.LENGTH_LONG).show()
-                        }
+        chequeScannerFrameHandler.addResultHandler { result ->
+            if (result is FrameHandlerResult.Success) {
+                val value = result.value
+                if (value.accountNumber.value.isNotEmpty() || value.routingNumber.value.isNotEmpty()) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@ChequeScannerActivity,
+                            extractData(value), Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
-                return false
             }
-        })
-        findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
+            false
+        }
+        findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }

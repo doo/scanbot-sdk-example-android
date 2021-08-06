@@ -14,12 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.example.DCResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
+import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.dcscanner.DCScanner
 import io.scanbot.sdk.process.CropOperation
-import io.scanbot.sdk.process.Operation
+import io.scanbot.sdk.process.ImageProcessor
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -28,7 +29,8 @@ class ManualDCScannerActivity : AppCompatActivity() {
     private lateinit var resultImageView: ImageView
 
     private lateinit var dcScanner: DCScanner
-    private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var contourDetector: ContourDetector
+    private lateinit var imageProcessor: ImageProcessor
 
     var flashEnabled = false
 
@@ -38,26 +40,26 @@ class ManualDCScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_manual_dc_scanner)
         supportActionBar!!.hide()
 
+        val scanbotSDK = ScanbotSDK(this)
+        contourDetector = scanbotSDK.createContourDetector()
+        imageProcessor = scanbotSDK.imageProcessor()
+        dcScanner = scanbotSDK.createDcScanner()
+
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@ManualDCScannerActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 
         resultImageView = findViewById(R.id.resultImageView)
 
-        scanbotSDK = ScanbotSDK(this)
-
-        dcScanner = scanbotSDK.dcScanner()
         findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
@@ -65,9 +67,9 @@ class ManualDCScannerActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.take_picture_btn).setOnClickListener { v: View? -> cameraView.takePicture(false) }
         Toast.makeText(
-                this,
-                if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
-                Toast.LENGTH_LONG
+            this,
+            if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
+            Toast.LENGTH_LONG
         ).show()
     }
 
@@ -98,11 +100,9 @@ class ManualDCScannerActivity : AppCompatActivity() {
         }
 
         // Run document detection on original image:
-        val detector = scanbotSDK.contourDetector()
-        detector.detect(originalBitmap)
-        val operations: MutableList<Operation> = ArrayList()
-        operations.add(CropOperation(detector.polygonF!!))
-        val documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false)
+        contourDetector.detect(originalBitmap)
+        val detectedPolygon = contourDetector.polygonF!!
+        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
 
         documentImage?.let { docImage ->
             // Show the cropped image as thumbnail preview

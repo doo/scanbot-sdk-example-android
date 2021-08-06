@@ -9,19 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.example.PayformResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
-import io.scanbot.sdk.core.payformscanner.DetectionResult
 import io.scanbot.sdk.payformscanner.PayFormScannerFrameHandler
-import io.scanbot.sdk.util.log.LoggerProvider
 
 class PayformScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraView
-
-    private val logger = LoggerProvider.logger
-
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,51 +25,39 @@ class PayformScannerActivity : AppCompatActivity() {
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
         cameraView.lockToLandscape(true)
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
 
         val scanbotSDK = ScanbotSDK(this)
-        val payFormScanner = scanbotSDK.payFormScanner()
+        val payFormScanner = scanbotSDK.createPayFormScanner()
 
         val payFormScannerFrameHandler = PayFormScannerFrameHandler.attach(cameraView, payFormScanner)
 
-        payFormScannerFrameHandler.addResultHandler(object : PayFormScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<DetectionResult, SdkLicenseError>): Boolean {
-                if (result is FrameHandlerResult.Success<*>) {
-                    val detectionResult = (result as FrameHandlerResult.Success<DetectionResult?>).value
-
-                    detectionResult?.let {
-                        if (detectionResult.form?.isValid == true) {
-                            val detectStart = System.currentTimeMillis()
-
-                            try {
-                                payFormScanner.recognizeForm(detectionResult.lastFrame,
-                                        detectionResult.frameWidth, detectionResult.frameHeight, 0)?.let { recognitionResult ->
-                                    startActivity(newIntent(this@PayformScannerActivity, recognitionResult.payformFields))
-                                }
-                            } finally {
-                                val detectEnd = System.currentTimeMillis()
-                                logger.d("PayFormScanner", "Total scanning (sec): " + (detectEnd - detectStart) / 1000f)
-                            }
-                        }
+        payFormScannerFrameHandler.addResultHandler { result ->
+            if (result is FrameHandlerResult.Success) {
+                val detectionResult = result.value
+                if (detectionResult.form?.isValid == true) {
+                    payFormScanner.recognizeForm(
+                        detectionResult.lastFrame,
+                        detectionResult.frameWidth, detectionResult.frameHeight, 0
+                    )?.let { recognitionResult ->
+                        startActivity(newIntent(this@PayformScannerActivity, recognitionResult.payformFields))
                     }
                 }
-                return false
             }
-        })
+            false
+        }
 
         findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }
 
-        Toast.makeText(this, if (scanbotSDK.isLicenseActive) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {

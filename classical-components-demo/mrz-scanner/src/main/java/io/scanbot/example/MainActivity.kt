@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val liveScannerBtn = findViewById<Button>(R.id.live_scanner_btn)
 
-        liveScannerBtn.setOnClickListener { startActivity(MRZLiveDetectionActivity.newIntent(this@MainActivity)) }
+        liveScannerBtn.setOnClickListener { startActivity(MRZLiveDetectionActivity.newIntent(this)) }
         val stillImageScannerBtn = findViewById<Button>(R.id.still_image_detection_btn)
 
         stillImageScannerBtn.setOnClickListener {

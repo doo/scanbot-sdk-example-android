@@ -13,9 +13,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
+import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
-import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.*
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
@@ -57,9 +57,10 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
 
         val frontScanStepResult = workflowStepResults?.get(0) as ContourDetectorWorkflowStepResult
         val backScanStepResult = workflowStepResults?.get(1) as MachineReadableZoneWorkflowStepResult
-        val context = context!!.applicationContext
+        val context = requireContext().applicationContext
+        val pageFileStorage = ExampleSingletonImpl(requireContext()).pageFileStorageInstance()
+
         if (frontScanStepResult.step is ScanDocumentPageWorkflowStep) {
-            val pageFileStorage = ScanbotSDK(context).pageFileStorage()
             frontScanStepResult.capturedPage?.let {
                 view.images_container.visibility = View.VISIBLE
                 view.front_snap_result.visibility = View.VISIBLE
@@ -76,8 +77,6 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
         }
         if (backScanStepResult.step is ScanMachineReadableZoneWorkflowStep) {
             view.findViewById<TextView>(R.id.tv_data).text = backScanStepResult.mrzResult?.let { extractData(it) }
-
-            val pageFileStorage = ScanbotSDK(context).pageFileStorage()
             backScanStepResult.capturedPage?.let {
                 view.images_container.visibility = View.VISIBLE
                 view.back_snap_result.visibility = View.VISIBLE
@@ -98,7 +97,7 @@ class MRZFrontBackImageResultDialogFragment : androidx.fragment.app.DialogFragme
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 

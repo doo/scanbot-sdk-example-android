@@ -15,7 +15,9 @@ import com.squareup.picasso.Picasso
 import io.scanbot.example.fragment.ErrorFragment
 import io.scanbot.example.fragment.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterTuneType
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.TuneOperation
@@ -38,11 +40,15 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     private lateinit var selectedPage: Page
+
     private var filteringState: FilteringState = FilteringState.IDLE
     private var selectedFilter: ImageFilterType = ImageFilterType.NONE
     private var tunes: LinkedHashMap<ImageFilterTuneType, TuneOperation> = linkedMapOf()
-    private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
+
+    private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var pageProcessor: PageProcessor
+    private lateinit var pageFileStorage: PageFileStorage
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -64,6 +70,8 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         filter_value.text = getFilterName()
 
         scanbotSDK = ScanbotSDK(application)
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
 
         filters_inner_layout.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
@@ -83,7 +91,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
             launch {
                 val list = tunes.values.toList()
                 val filterOrder = if (base_filter_first_switch.isChecked) 0 else list.size
-                selectedPage = PageRepository.applyFilter(this@FilterTunesActivity, selectedPage, selectedFilter, list, filterOrder)
+                selectedPage = PageFilterHelper.applyFilter(pageProcessor, selectedPage, selectedFilter, list, filterOrder)
                 withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
                     val data = Intent()
@@ -188,7 +196,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
     }
 
     private fun removeFilteredPreview() {
-        scanbotSDK.pageFileStorage().removeFilteredPreviewImages(selectedPage.pageId)
+        pageFileStorage.removeFilteredPreviewImages(selectedPage.pageId)
     }
 
     private fun updateCheckboxForType(filterType: ImageFilterType) {
@@ -218,7 +226,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     val tunesList = tunes.values.toList()
 
                     try {
-                        PageRepository.generatePreview(this@FilterTunesActivity, selectedPage, selectedFilter,
+                        PageFilterHelper.generatePreview(pageProcessor, selectedPage, selectedFilter,
                                 tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
                     }
                     catch (e: Exception) {
@@ -227,18 +235,19 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     }
 
                     withContext(Dispatchers.Main) {
-                        Picasso.get()
-                                .load(File(scanbotSDK.pageFileStorage().getFilteredPreviewImageURI(
-                                        this@FilterTunesActivity.selectedPage.pageId, selectedFilter).path))
+                        pageFileStorage.getFilteredPreviewImageURI(selectedPage.pageId, selectedFilter).path?.let {
+                            Picasso.get()
+                                .load(File(it))
                                 .memoryPolicy(MemoryPolicy.NO_CACHE)
                                 .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                                 .centerInside()
                                 .into(image, ImageCallback())
-                        progress.visibility = View.GONE
-                        val previousState = filteringState
-                        filteringState = FilteringState.IDLE
-                        if (previousState == FilteringState.PROCESSING_AND_SCHEDULED) {
-                            applyFilter(selectedFilter)
+                            progress.visibility = View.GONE
+                            val previousState = filteringState
+                            filteringState = FilteringState.IDLE
+                            if (previousState == FilteringState.PROCESSING_AND_SCHEDULED) {
+                                applyFilter(selectedFilter)
+                            }
                         }
                     }
                 }

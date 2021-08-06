@@ -7,21 +7,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.DCResultActivity.Companion.newIntent
-import io.scanbot.example.DCScannerActivity
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.dcscanner.DCScannerFrameHandler
-import io.scanbot.sdk.util.log.LoggerProvider
 
 class DCScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraView
 
-    private val logger = LoggerProvider.logger
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,43 +25,33 @@ class DCScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
 
         val scanbotSDK = ScanbotSDK(this)
-        val dcScanner = scanbotSDK.dcScanner()
+        val dcScanner = scanbotSDK.createDcScanner()
         val dcScannerFrameHandler = DCScannerFrameHandler.attach(cameraView, dcScanner)
 
-        dcScannerFrameHandler.addResultHandler(object : DCScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<DisabilityCertificateRecognizerResultInfo, SdkLicenseError>): Boolean {
-                if (result is FrameHandlerResult.Success<*>) {
-                    val resultInfo = (result as FrameHandlerResult.Success<DisabilityCertificateRecognizerResultInfo?>).value
-                    if (resultInfo != null && resultInfo.recognitionSuccessful) {
-                        val a = System.currentTimeMillis()
-                        try {
-                            startActivity(newIntent(this@DCScannerActivity, resultInfo))
-                        } finally {
-                            val b = System.currentTimeMillis()
-                            logger.d("DCScanner", "Total scanning (sec): " + (b - a) / 1000f)
-                        }
-                    }
+        dcScannerFrameHandler.addResultHandler { result ->
+            if (result is FrameHandlerResult.Success) {
+                val resultInfo = result.value
+                if (resultInfo.recognitionSuccessful) {
+                    startActivity(newIntent(this, resultInfo))
                 }
-                return false
             }
-        })
+            false
+        }
         findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }
         Toast.makeText(
                 this,
-                if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
+                if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
                 Toast.LENGTH_LONG
         ).show()
     }

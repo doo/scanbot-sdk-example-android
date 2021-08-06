@@ -3,29 +3,20 @@ package io.scanbot.example
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sap.SapManager
-import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.idcardscanner.IdCardAutoSnappingController
-import io.scanbot.sdk.idcardscanner.IdCardScannerFrameHandler
+import io.scanbot.sdk.idcardscanner.IdCardScanner
 import io.scanbot.sdk.idcardscanner.IdScanResult
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
-
-    private val scanbotSdk = ScanbotSDK(this)
-    private val idCardScanner = scanbotSdk.idCardScanner()
+    private lateinit var idCardScanner: IdCardScanner
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var shutterButton: ShutterButton
@@ -43,19 +34,19 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
+        idCardScanner = ScanbotSDK(this).createIdCardScanner()
+
         // TODO: adjust accepted sharpness score to control the blurriness of the result image
         idCardScanner.acceptedSharpnessScore = 80f
         autoSnappingController = IdCardAutoSnappingController.attach(cameraView, idCardScanner)
 
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.useFlash(useFlash)
-                cameraView.continuousFocus()
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.useFlash(useFlash)
+            cameraView.continuousFocus()
+        }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 
