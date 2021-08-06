@@ -21,8 +21,8 @@ class ScannerActivity : AppCompatActivity() {
     
     private var useFlash = false
 
-    private lateinit var generTextRecognizer: GenericTextRecognizer
-    private lateinit var genericTextRecognizerFrameHandler: GenericTextRecognizerFrameHandler
+    private lateinit var textRecognizer: GenericTextRecognizer
+    private lateinit var textRecognizerFrameHandler: GenericTextRecognizerFrameHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +37,12 @@ class ScannerActivity : AppCompatActivity() {
         zoomFinderOverlay.zoomLevel = 1.8f
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
-        generTextRecognizer = ScanbotSDK(this).createGenericTextRecognizer()
+        textRecognizer = ScanbotSDK(this).createGenericTextRecognizer()
 
         // TODO: set validation string and validation callback which matches the need of the task
         // For the pattern: # - digits, ? - for any character. Other characters represent themselves
         // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-        generTextRecognizer.setValidator("######", object : GenericTextRecognizer.GenericTextValidationCallback {
+        textRecognizer.setValidator("######", object : GenericTextRecognizer.GenericTextValidationCallback {
             override fun validate(text: String): Boolean {
                 return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
             }
@@ -65,10 +65,10 @@ class ScannerActivity : AppCompatActivity() {
         //     }
         // })
 
-        generTextRecognizer.supportedLanguages = setOf(Language.ENG, Language.DEU)
+        textRecognizer.supportedLanguages = setOf(Language.ENG, Language.DEU)
 
-        genericTextRecognizerFrameHandler = GenericTextRecognizerFrameHandler.attach(cameraView, generTextRecognizer)
-        genericTextRecognizerFrameHandler.addResultHandler { result ->
+        textRecognizerFrameHandler = GenericTextRecognizerFrameHandler.attach(cameraView, textRecognizer)
+        textRecognizerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
                     when {
