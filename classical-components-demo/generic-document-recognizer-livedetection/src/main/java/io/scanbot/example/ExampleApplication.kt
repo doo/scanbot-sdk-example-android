@@ -1,11 +1,9 @@
 package io.scanbot.example
 
 import android.app.Application
-import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
-
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class ExampleApplication : Application() {
@@ -26,13 +24,13 @@ class ExampleApplication : Application() {
                 .withLogging(true)
                 // TODO 2/2: Enable the Scanbot SDK license key
                 //.license(this, licenseKey)
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
+                .licenceErrorHandler { status, feature, statusMessage ->
                     LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}. Status message: $statusMessage")
                     if (feature != SdkFeature.NoSdkFeature) {
                         LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
                     }
-                })
-                //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
+                }
+            //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
                 .prepareOCRLanguagesBlobs(true)
                 .initialize(this)
 

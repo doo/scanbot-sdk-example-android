@@ -19,10 +19,11 @@ import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
+import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.process.CropOperation
-import io.scanbot.sdk.process.Operation
+import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
 import io.scanbot.sdk.ui.camera.FinderAspectRatio
 import io.scanbot.sdk.ui.camera.ShutterButton
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var contourDetector: ContourDetector
+    private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
@@ -43,7 +46,11 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
+
         scanbotSDK = ScanbotSDK(this)
+        contourDetector = scanbotSDK.createContourDetector()
+        imageProcessor = scanbotSDK.imageProcessor()
+
         askPermission()
         setContentView(R.layout.activity_main)
         supportActionBar!!.hide()
@@ -52,22 +59,20 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
         // Lock the orientation of the UI (Activity) as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true)
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.setAutoFocusSound(false)
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.setAutoFocusSound(false)
 
-                    // Shutter sound is ON by default. You can disable it:
-                    // cameraView.setShutterSound(false);
+                // Shutter sound is ON by default. You can disable it:
+                // cameraView.setShutterSound(false);
 
-                    cameraView.continuousFocus()
-                    cameraView.useFlash(flashEnabled)
-                }, 700)
-            }
-        })
+                cameraView.continuousFocus()
+                cameraView.useFlash(flashEnabled)
+            }, 700)
+        }
         resultView = findViewById<View>(R.id.result) as ImageView
 
-        val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, scanbotSDK.contourDetector())
+        val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
         // contourDetectorFrameHandler.setAcceptedSizeScore(70);
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
@@ -84,9 +89,10 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         // autoSnappingController.setSensitivity(0.4f);
         autoSnappingController.setIgnoreBadAspectRatio(true)
+
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@MainActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
@@ -122,8 +128,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post {
-            if (result is FrameHandlerResult.Success<*>) {
-                showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+            if (result is FrameHandlerResult.Success) {
+                showUserGuidance(result.value.detectionResult)
             }
         }
         return false // typically you need to return false
@@ -193,16 +199,15 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         }
 
         // Run document detection on original image:
-        val detector = scanbotSDK.contourDetector()
         val list = ArrayList<PageAspectRatio>()
         for ((width, height) in requiredPageAspectRatios) {
             list.add(PageAspectRatio(width, height))
         }
-        detector.setRequiredAspectRatios(list)
-        detector.detect(originalBitmap)
-        val operations: MutableList<Operation> = ArrayList()
-        operations.add(CropOperation(detector.polygonF!!))
-        val documentImage = scanbotSDK.imageProcessor().process(originalBitmap, operations, false)
+        contourDetector.setRequiredAspectRatios(list)
+        contourDetector.detect(originalBitmap)
+        val detectedPolygon = contourDetector.polygonF!!
+
+        val documentImage = imageProcessor.processBitmap(originalBitmap, listOf(CropOperation(detectedPolygon)), false)
         resultView.post {
             resultView.setImageBitmap(documentImage)
             cameraView.continuousFocus()

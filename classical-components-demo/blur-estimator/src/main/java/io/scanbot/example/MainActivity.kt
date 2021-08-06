@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.process.BlurEstimator
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
@@ -25,10 +26,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var stillImageImageView: ImageView
     private lateinit var stillImageBlurCaption: TextView
 
-    private var flashEnabled = false
-
-    private val scanbotSDK = ScanbotSDK(this)
-    private val blurEstimator = scanbotSDK.blurEstimator()
+    private lateinit var blurEstimator: BlurEstimator
 
     private val parentJob = Job()
 
@@ -38,6 +36,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
+
+        val scanbotSDK = ScanbotSDK(this)
+        blurEstimator = scanbotSDK.createBlurEstimator()
+
         supportActionBar!!.hide()
         setContentView(R.layout.activity_main)
         askPermission()

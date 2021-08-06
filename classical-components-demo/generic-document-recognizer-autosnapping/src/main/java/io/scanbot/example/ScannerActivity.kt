@@ -6,21 +6,17 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.genericdocument.GenericDocumentAutoSnappingController
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognizer
-import io.scanbot.sdk.idcardscanner.IdScanResult
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
-
-    private val scanbotSdk = ScanbotSDK(this)
-    private val documentRecognizer = scanbotSdk.genericDocumentRecognizer()
+    private lateinit var documentRecognizer: GenericDocumentRecognizer
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var shutterButton: ShutterButton
@@ -33,6 +29,9 @@ class ScannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
 
+        val scanbotSdk = ScanbotSDK(this)
+        documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
+
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 3.0)))
 
@@ -42,15 +41,13 @@ class ScannerActivity : AppCompatActivity() {
         documentRecognizer.acceptedSharpnessScore = 80f
         autoSnappingController = GenericDocumentAutoSnappingController.attach(cameraView, documentRecognizer)
 
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.useFlash(useFlash)
-                cameraView.continuousFocus()
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.useFlash(useFlash)
+            cameraView.continuousFocus()
+        }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 

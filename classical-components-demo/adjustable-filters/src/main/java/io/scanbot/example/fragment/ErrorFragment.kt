@@ -29,7 +29,7 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 

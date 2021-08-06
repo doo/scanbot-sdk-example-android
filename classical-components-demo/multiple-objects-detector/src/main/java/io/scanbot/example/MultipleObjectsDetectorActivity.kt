@@ -13,25 +13,30 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.multipleobjectsscanner.MultipleObjectsDetector
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraOpenCallback
+import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.multipleobjects.MultipleObjectsFrameHandler
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.multipleobjects.MultiplePolygonsView
-
 import java.util.*
 
 class MultipleObjectsDetectorActivity : AppCompatActivity() {
-
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var progressView: ProgressBar
 
     private var flashEnabled = false
+
+    private lateinit var multipleObjectsDetector: MultipleObjectsDetector
+    private lateinit var pageProcessor: PageProcessor
+    private lateinit var pageFileStorage: PageFileStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -42,6 +47,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity() {
 
         askPermission()
         setupUi()
+        setupDependencies()
         setupObjectDetector()
     }
 
@@ -56,17 +62,15 @@ class MultipleObjectsDetectorActivity : AppCompatActivity() {
         progressView = findViewById(R.id.progressView)
 
         cameraView = findViewById(R.id.camera)
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.continuousFocus()
-                    cameraView.useFlash(flashEnabled)
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.continuousFocus()
+                cameraView.useFlash(flashEnabled)
+            }, 700)
+        }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@MultipleObjectsDetectorActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
 
@@ -80,10 +84,14 @@ class MultipleObjectsDetectorActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObjectDetector() {
+    private fun setupDependencies() {
         val scanbotSdk = ScanbotSDK(this)
-        val multipleObjectsDetector = scanbotSdk.multipleObjectsDetector()
+        multipleObjectsDetector = scanbotSdk.createMultipleObjectsDetector()
+        pageFileStorage = scanbotSdk.createPageFileStorage()
+        pageProcessor = scanbotSdk.createPageProcessor()
+    }
 
+    private fun setupObjectDetector() {
         // minAspectRatio and maxAspectRatio params below specify the range of aspect ratio of desired recognized object
         // Business card standard is 8,9cm X 5,1cm (3.5" x 2") making aspect ratio to be ~ 1,74
         //multipleObjectsDetector.setParams(MultipleObjectsDetector.Params(1.6f, 1.8f))
@@ -103,11 +111,6 @@ class MultipleObjectsDetectorActivity : AppCompatActivity() {
             setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)
         }
         val resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
-
-        val scanbotSDK = ScanbotSDK(this)
-        val pageProcessor = scanbotSDK.pageProcessor()
-        val pageFileStorage = scanbotSDK.pageFileStorage()
-        val multipleObjectsDetector = scanbotSDK.multipleObjectsDetector()
 
         val polygons = multipleObjectsDetector.detectOnBitmap(resultBitmap)
         val detectedObjectsPages = polygons.map { polygon ->

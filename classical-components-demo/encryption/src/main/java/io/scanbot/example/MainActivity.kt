@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
-        pdfRenderer = scanbotSDK.pdfRenderer()
+        pdfRenderer = scanbotSDK.createPdfRenderer()
 
         findViewById<Button>(R.id.encrypt_image).setOnClickListener {
             writeEncryptedImage()

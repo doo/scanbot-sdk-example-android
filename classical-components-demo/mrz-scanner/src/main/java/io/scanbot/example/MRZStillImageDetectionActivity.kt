@@ -19,8 +19,10 @@ import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.mrzscanner.MRZScanner
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
@@ -28,8 +30,6 @@ import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import java.io.IOException
 
 class MRZStillImageDetectionActivity : AppCompatActivity() {
@@ -40,16 +40,20 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
     private var page: Page? = null
 
-    private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var mrzScanner: MRZScanner
+    private lateinit var pageFileStorage: PageFileStorage
+    private lateinit var pageProcessor: PageProcessor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mrz_still_image_detection)
         resultImageView = findViewById(R.id.resultImageView)
         progressView = findViewById(R.id.progressBar)
-        scanbotSDK = ScanbotSDK(this)
-        mrzScanner = scanbotSDK.mrzScanner()
+
+        val scanbotSDK = ScanbotSDK(this)
+        mrzScanner = scanbotSDK.createMrzScanner()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
 
         findViewById<View>(R.id.start_scanner_btn).setOnClickListener {
             val configuration = DocumentScannerConfiguration()
@@ -111,7 +115,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun displayPreviewImage() {
-        val imageUri = scanbotSDK.pageFileStorage().getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
+        val imageUri = pageFileStorage.getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
         resultImageView.setImageBitmap(loadImage(imageUri))
     }
 
@@ -126,7 +130,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
     private inner class RecognizeMrzTask(private val page: Page) : AsyncTask<Any?, Any?, Any?>() {
         override fun doInBackground(objects: Array<Any?>): Any? {
-            val imageUri = scanbotSDK.pageFileStorage().getImageURI(page.pageId, PageFileType.DOCUMENT)
+            val imageUri = pageFileStorage.getImageURI(page.pageId, PageFileType.DOCUMENT)
             val documentImage = loadImage(imageUri)
             return mrzScanner.recognizeMRZBitmap(documentImage, 0)
         }
@@ -138,8 +142,10 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
             if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
                 startActivity(newIntent(this@MRZStillImageDetectionActivity, mrzRecognitionResult))
             } else {
-                Toast.makeText(this@MRZStillImageDetectionActivity,
-                        "No MRZ data recognized!", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@MRZStillImageDetectionActivity,
+                    "No MRZ data recognized!", Toast.LENGTH_LONG
+                ).show()
             }
         }
 
@@ -147,11 +153,11 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
     private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Any?, Any?, Any?>() {
         override fun doInBackground(objects: Array<Any?>): Any? {
-            val pageId = scanbotSDK.pageFileStorage().add(loadImage(imageUri)!!)
+            val pageId = pageFileStorage.add(loadImage(imageUri)!!)
             val emptyPolygon = emptyList<PointF>()
             val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
             return try {
-                scanbotSDK.pageProcessor().detectDocument(newPage)
+                pageProcessor.detectDocument(newPage)
             } catch (ex: IOException) {
                 Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
                 null

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         askPermission()
 
         val liveScannerBtn = findViewById<Button>(R.id.live_scanner_btn)
-        liveScannerBtn.setOnClickListener { v: View? -> startActivity(newIntent(this@MainActivity)) }
+        liveScannerBtn.setOnClickListener { startActivity(newIntent(this@MainActivity)) }
 
         val stillImageScannerBtn = findViewById<Button>(R.id.still_image_detection_btn)
         stillImageScannerBtn.setOnClickListener {

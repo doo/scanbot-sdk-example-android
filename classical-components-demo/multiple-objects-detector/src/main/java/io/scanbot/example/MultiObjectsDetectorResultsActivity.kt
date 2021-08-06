@@ -18,18 +18,19 @@ class MultiObjectsDetectorResultsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_multiple_objects_detector_results)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val imagePaths = getImagePathsFromArgs()
-        val adapter = MultipleObjectsDetectorResultsAdapter(imagePaths)
+
+        val adapter = MultipleObjectsDetectorResultsAdapter()
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
+
+        adapter.submitList(getImagePathsFromArgs())
     }
 
     private fun getImagePathsFromArgs(): List<String> {
         val pages = intent.getParcelableArrayListExtra<Page>(PARAMS_KEY)
 
-        val pageFileStorage = ScanbotSDK(this).pageFileStorage()
+        val pageFileStorage = ScanbotSDK(this).createPageFileStorage()
 
         return pages.map { page ->
             pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.UNFILTERED_DOCUMENT).path!!

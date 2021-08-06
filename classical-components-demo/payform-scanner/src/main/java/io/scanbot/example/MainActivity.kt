@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         initDependencies()
 
         val scannerBtn = findViewById<View>(R.id.scanner_btn) as Button
-        scannerBtn.setOnClickListener { v: View? -> startActivity(PayformScannerActivity.newIntent(this@MainActivity)) }
+        scannerBtn.setOnClickListener { startActivity(PayformScannerActivity.newIntent(this@MainActivity)) }
     }
 
     private fun askPermission() {
