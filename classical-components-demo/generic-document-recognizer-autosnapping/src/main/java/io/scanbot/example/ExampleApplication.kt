@@ -4,13 +4,10 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
-
 import io.scanbot.sdk.util.log.LoggerProvider
-import java.lang.IllegalStateException
 
 class ExampleApplication : Application() {
     /*
@@ -28,24 +25,24 @@ class ExampleApplication : Application() {
 
         val uiHandler = Handler(Looper.getMainLooper())
         ScanbotSDKInitializer()
-                .withLogging(true)
-                // TODO 2/3: Enable the Scanbot SDK license key
-                //.license(this, licenseKey)
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
-                    LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}. Status message: $statusMessage")
-                    if (feature != SdkFeature.NoSdkFeature) {
-                        LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
+            .withLogging(true)
+            // TODO 2/3: Enable the Scanbot SDK license key
+            //.license(this, licenseKey)
+            .licenceErrorHandler { status, feature, statusMessage ->
+                LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}. Status message: $statusMessage")
+                if (feature != SdkFeature.NoSdkFeature) {
+                    LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
 
-                        // TODO: 3/3 Handle license error properly
-                        uiHandler.post {
-                            Toast.makeText(applicationContext, "Trial license expired", Toast.LENGTH_SHORT).show()
-                            throw IllegalStateException("Trial license expired")
-                        }
+                    // TODO: 3/3 Handle license error properly
+                    uiHandler.post {
+                        Toast.makeText(applicationContext, "Trial license expired", Toast.LENGTH_SHORT).show()
+                        throw IllegalStateException("Trial license expired")
                     }
-                })
-                //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
-                .prepareOCRLanguagesBlobs(true)
-                .initialize(this)
+                }
+            }
+            //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")
 

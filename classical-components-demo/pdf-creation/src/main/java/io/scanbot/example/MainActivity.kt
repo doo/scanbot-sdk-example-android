@@ -23,8 +23,6 @@ import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils
 import io.scanbot.sdk.util.thread.MimeUtils
 import java.io.File
 import java.io.IOException
@@ -61,9 +59,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeDependencies() {
         val scanbotSDK = ScanbotSDK(this)
-        pdfRenderer = scanbotSDK.pdfRenderer()
-        pageFileStorage = scanbotSDK.pageFileStorage()
-        pageProcessor = scanbotSDK.pageProcessor()
+        pdfRenderer = scanbotSDK.createPdfRenderer()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
     }
 
     private fun openGallery() {

@@ -7,10 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler
@@ -29,36 +26,27 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_mrz_live_scanner)
         supportActionBar!!.hide()
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
         val scanbotSDK = ScanbotSDK(this)
 
-        val mrzScanner = scanbotSDK.mrzScanner()
+        val mrzScanner = scanbotSDK.createMrzScanner()
         val mrzScannerFrameHandler = MRZScannerFrameHandler.attach(cameraView, mrzScanner)
 
-        mrzScannerFrameHandler.addResultHandler(object : MRZScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<MRZRecognitionResult, SdkLicenseError>): Boolean {
-                if (result is FrameHandlerResult.Success<*>) {
-                    val mrzRecognitionResult = (result as FrameHandlerResult.Success<*>).value as MRZRecognitionResult?
-                    if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
-                        val detectStart = System.currentTimeMillis()
-                        try {
-                            startActivity(MRZResultActivity.newIntent(this@MRZLiveDetectionActivity, mrzRecognitionResult))
-                        } finally {
-                            val detectEnd = System.currentTimeMillis()
-                            logger.d("MRZScanner", "Total scanning (sec): " + (detectEnd - detectStart) / 1000f)
-                        }
-                    }
+        mrzScannerFrameHandler.addResultHandler { result ->
+            if (result is FrameHandlerResult.Success) {
+                val mrzRecognitionResult = result.value
+                if (mrzRecognitionResult.recognitionSuccessful) {
+                    startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
                 }
-                return false
             }
-        })
+            false
+        }
 
         findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled

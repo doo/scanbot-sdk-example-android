@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             } else {
                 processGalleryResult(data!!)?.let { bitmap ->
-                    val barcodeDetector = sdk.barcodeDetector()
+                    val barcodeDetector = sdk.createBarcodeDetector()
                     barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
                     val result = barcodeDetector.detectFromBitmap(bitmap, 0)
 

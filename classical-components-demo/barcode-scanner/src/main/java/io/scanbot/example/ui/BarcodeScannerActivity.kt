@@ -22,14 +22,10 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
-import io.scanbot.sdk.camera.CameraOpenCallback
-import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.camera.ScanbotCameraView
+import io.scanbot.sdk.camera.*
 
 
 class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler {
-
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultView: ImageView
 
@@ -44,16 +40,14 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
 
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed({
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 300)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 300)
+        }
 
-        val barcodeDetector = ScanbotSDK(this).barcodeDetector()
+        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
         barcodeDetector.modifyConfig {
             setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
             setSaveCameraPreviewFrame(true)
@@ -69,8 +63,8 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
 
         }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, imageOrientation: Int) {
-                this@BarcodeScannerActivity.processPictureTaken(image, imageOrientation)
+            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
     }

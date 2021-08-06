@@ -13,12 +13,13 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.core.contourdetector.Line2D
 import io.scanbot.sdk.process.CropOperation
+import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
-import java.io.IOException
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
@@ -29,9 +30,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cropButton: Button
     private lateinit var rotateButton: Button
     private lateinit var backButton: Button
-    private lateinit var scanbotSDK: ScanbotSDK
 
     private lateinit var originalBitmap: Bitmap
+
+    private lateinit var imageProcessor: ImageProcessor
+    private lateinit var contourDetector: ContourDetector
 
     private var lastRotationEventTs = 0L
     private var rotationDegrees = 0
@@ -40,7 +43,11 @@ class MainActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        scanbotSDK = ScanbotSDK(this)
+
+        val scanbotSDK = ScanbotSDK(this)
+        contourDetector = scanbotSDK.createContourDetector()
+        imageProcessor = scanbotSDK.imageProcessor()
+
         supportActionBar!!.hide()
 
         editPolygonView = findViewById(R.id.polygonView)
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         cropButton = findViewById(R.id.cropButton)
         cropButton.setOnClickListener { crop() }
         rotateButton = findViewById(R.id.rotateButton)
-        rotateButton.setOnClickListener { v: View? -> rotatePreview() }
+        rotateButton.setOnClickListener { rotatePreview() }
         backButton = findViewById(R.id.backButton)
 
         backButton.setOnClickListener {
@@ -92,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
         val operations = listOf(CropOperation(editPolygonView.polygon))
 
-        var documentImage = scanbotSDK.imageProcessor().processBitmap(originalBitmap, operations, false)
+        var documentImage = imageProcessor.processBitmap(originalBitmap, operations, false)
         documentImage?.let {
             if (rotationDegrees > 0) {
                 // rotate the final cropped image result based on current rotation value:
@@ -118,19 +125,15 @@ class MainActivity : AppCompatActivity() {
             originalBitmap = loadBitmapFromAssets("demo_image.jpg")!!
             previewBitmap = resizeForPreview(originalBitmap)
 
-            val detector = ScanbotSDK(this@MainActivity).contourDetector()
-            val detectionResult = detector.detect(originalBitmap)
-
-
-            return when (detectionResult) {
+            return when (contourDetector.detect(originalBitmap)) {
                 DetectionResult.OK,
                 DetectionResult.OK_BUT_BAD_ANGLES,
                 DetectionResult.OK_BUT_TOO_SMALL,
                 DetectionResult.OK_BUT_BAD_ASPECT_RATIO -> {
-                    val linesPair = Pair(detector.horizontalLines, detector.verticalLines)
-                    val polygon = detector.polygonF
+                    val linesPair = Pair(contourDetector.horizontalLines, contourDetector.verticalLines)
+                    val polygon = contourDetector.polygonF!!
 
-                    InitImageResult(linesPair, polygon!!)
+                    InitImageResult(linesPair, polygon)
                 }
                 else -> InitImageResult(Pair(listOf(), listOf()), listOf())
             }

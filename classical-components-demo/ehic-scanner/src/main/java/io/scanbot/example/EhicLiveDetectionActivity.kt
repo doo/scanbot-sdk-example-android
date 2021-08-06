@@ -8,10 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
-import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler
@@ -30,36 +27,32 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ehic_live_scanner)
         supportActionBar!!.hide()
         cameraView = findViewById(R.id.camera)
-        cameraView.setCameraOpenCallback(object : CameraOpenCallback {
-            override fun onCameraOpened() {
-                cameraView.postDelayed(Runnable {
-                    cameraView.useFlash(flashEnabled)
-                    cameraView.continuousFocus()
-                }, 700)
-            }
-        })
+        cameraView.setCameraOpenCallback {
+            cameraView.postDelayed({
+                cameraView.useFlash(flashEnabled)
+                cameraView.continuousFocus()
+            }, 700)
+        }
 
         val scanbotSDK = ScanbotSDK(this)
-        val healthInsuranceCardScanner = scanbotSDK.healthInsuranceCardScanner()
+        val healthInsuranceCardScanner = scanbotSDK.createHealthInsuranceCardScanner()
         val frameHandler = HealthInsuranceCardScannerFrameHandler.attach(cameraView, healthInsuranceCardScanner)
 
-        frameHandler.addResultHandler(object : HealthInsuranceCardScannerFrameHandler.ResultHandler {
-            override fun handle(result: FrameHandlerResult<HealthInsuranceCardRecognitionResult?, SdkLicenseError>): Boolean {
-                if (result is FrameHandlerResult.Success<*>) {
-                    val recognitionResult = (result as FrameHandlerResult.Success<*>).value as HealthInsuranceCardRecognitionResult?
-                    if (recognitionResult != null && recognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
-                        val detectStart = System.currentTimeMillis()
-                        try {
-                            startActivity(EhicResultActivity.newIntent(this@EhicLiveDetectionActivity, recognitionResult))
-                        } finally {
-                            val detectEnd = System.currentTimeMillis()
-                            logger.d("EHICScanner", "Total scanning (sec): " + (detectEnd - detectStart) / 1000f)
-                        }
+        frameHandler.addResultHandler { result ->
+            if (result is FrameHandlerResult.Success) {
+                val recognitionResult = result.value
+                if (recognitionResult != null && recognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
+                    val detectStart = System.currentTimeMillis()
+                    try {
+                        startActivity(EhicResultActivity.newIntent(this@EhicLiveDetectionActivity, recognitionResult))
+                    } finally {
+                        val detectEnd = System.currentTimeMillis()
+                        logger.d("EHICScanner", "Total scanning (sec): " + (detectEnd - detectStart) / 1000f)
                     }
                 }
-                return false
             }
-        })
+            false
+        }
         findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)

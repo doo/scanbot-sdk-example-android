@@ -18,22 +18,26 @@ import androidx.core.content.ContextCompat
 import io.scanbot.example.FilterTunesActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import java.io.IOException
 
 class SelectImageActivity : AppCompatActivity() {
     private lateinit var progressView: View
-    private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var pageProcessor: PageProcessor
+    private lateinit var pageFileStorage: PageFileStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_import_image)
 
         progressView = findViewById(R.id.progressBar)
-        scanbotSDK = ScanbotSDK(this)
+
+        val scanbotSDK = ScanbotSDK(this)
+        pageProcessor = scanbotSDK.createPageProcessor()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
 
         askPermission()
 
@@ -42,15 +46,20 @@ class SelectImageActivity : AppCompatActivity() {
 
     private fun askPermission() {
         if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE), 999)
+            checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), 999
+            )
         }
     }
 
     private fun checkPermissionNotGranted(permission: String) =
-            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -77,11 +86,11 @@ class SelectImageActivity : AppCompatActivity() {
 
     private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Void, Void, Page?>() {
         override fun doInBackground(objects: Array<Void>): Page? {
-            val pageId = scanbotSDK.pageFileStorage().add(loadImage(imageUri)!!)
+            val pageId = pageFileStorage.add(loadImage(imageUri)!!)
             val emptyPolygon = emptyList<PointF>()
             val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
             return try {
-                scanbotSDK.pageProcessor().detectDocument(newPage)
+                pageProcessor.detectDocument(newPage)
             } catch (ex: IOException) {
                 Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
                 null

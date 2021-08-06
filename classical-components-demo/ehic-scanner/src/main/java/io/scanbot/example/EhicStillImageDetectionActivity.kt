@@ -20,8 +20,10 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
@@ -38,6 +40,8 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
     private lateinit var progressView: View
 
     private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var pageFileStorage: PageFileStorage
+    private lateinit var pageProcessor: PageProcessor
     private lateinit var healthInsuranceCardScanner: HealthInsuranceCardScanner
 
     private var page: Page? = null
@@ -50,7 +54,9 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
         progressView = findViewById(R.id.progressBar)
         scanbotSDK = ScanbotSDK(this)
 
-        healthInsuranceCardScanner = scanbotSDK.healthInsuranceCardScanner()
+        healthInsuranceCardScanner = scanbotSDK.createHealthInsuranceCardScanner()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
 
         findViewById<View>(R.id.start_scanner_btn).setOnClickListener {
             val configuration = DocumentScannerConfiguration()
@@ -81,11 +87,12 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == DOCUMENT_SCANNER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val parcelablePages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
-            page = parcelablePages[0] as Page
-            displayPreviewImage()
-            cropBtn.visibility = View.VISIBLE
-            runRecognitionBtn.visibility = View.VISIBLE
+            data?.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)?.let {
+                page = it.first() as Page
+                displayPreviewImage()
+                cropBtn.visibility = View.VISIBLE
+                runRecognitionBtn.visibility = View.VISIBLE
+            }
             return
         }
         if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -110,7 +117,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun displayPreviewImage() {
-        val imageUri = scanbotSDK.pageFileStorage().getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
+        val imageUri = pageFileStorage.getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
         resultImageView.setImageBitmap(loadImage(imageUri))
     }
 
@@ -125,7 +132,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
 
     private inner class RecognizeEhicTask(private val page: Page?) : AsyncTask<Void, Void, HealthInsuranceCardRecognitionResult?>() {
         override fun doInBackground(objects: Array<Void>): HealthInsuranceCardRecognitionResult? {
-            val imageUri = scanbotSDK.pageFileStorage().getImageURI(page!!.pageId, PageFileType.DOCUMENT)
+            val imageUri = pageFileStorage.getImageURI(page!!.pageId, PageFileType.DOCUMENT)
             val documentImage = loadImage(imageUri)!!
             return healthInsuranceCardScanner.detectAndRecognizeBitmap(documentImage, 0)
         }
@@ -136,21 +143,22 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
             if (result != null && result.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
             } else {
-                Toast.makeText(this@EhicStillImageDetectionActivity,
-                        "No EHIC data recognized!", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@EhicStillImageDetectionActivity,
+                    "No EHIC data recognized!", Toast.LENGTH_LONG
+                ).show()
             }
         }
-
     }
 
     private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Void, Void, Page?>() {
         override fun doInBackground(objects: Array<Void>): Page? {
-            val pageId = scanbotSDK.pageFileStorage().add(loadImage(imageUri)!!)
+            val pageId = pageFileStorage.add(loadImage(imageUri)!!)
             val emptyPolygon = emptyList<PointF>()
             val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
 
             return try {
-                scanbotSDK.pageProcessor().detectDocument(newPage)
+                pageProcessor.detectDocument(newPage)
             } catch (ex: IOException) {
                 Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
                 null

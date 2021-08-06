@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         askPermission()
 
-        tiffWriter = ScanbotSDK(this).tiffWriter()
+        tiffWriter = ScanbotSDK(this).createTiffWriter()
         resultTextView = findViewById(R.id.resultTextView)
         binarizationCheckBox = findViewById(R.id.binarizationCheckBox)
         customFieldsCheckBox = findViewById(R.id.customFieldsCheckBox)

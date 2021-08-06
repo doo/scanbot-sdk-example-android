@@ -24,8 +24,6 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.PDFPageSize
-import io.scanbot.sdk.util.FileChooserUtils
-import io.scanbot.sdk.util.bitmap.BitmapUtils.decodeQuietly
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -72,9 +70,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDependencies() {
         val scanbotSDK = ScanbotSDK(this)
-        opticalCharacterRecognizer = scanbotSDK.ocrRecognizer()
-        pageFileStorage = scanbotSDK.pageFileStorage
-        pageProcessor = scanbotSDK.pageProcessor()
+        opticalCharacterRecognizer = scanbotSDK.createOcrRecognizer()
+        pageFileStorage = scanbotSDK.createPageFileStorage()
+        pageProcessor = scanbotSDK.createPageProcessor()
     }
 
     private fun askPermission() {
