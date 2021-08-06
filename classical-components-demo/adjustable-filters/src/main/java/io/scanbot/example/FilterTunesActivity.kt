@@ -226,7 +226,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
                     val tunesList = tunes.values.toList()
 
                     try {
-                        PageFilterHelper.generatePreview(pageProcessor, selectedPage, selectedFilter,
+                        pageProcessor.generateFilteredPreview(selectedPage, selectedFilter,
                                 tunesList, if (base_filter_first_switch.isChecked) 0 else tunesList.size)
                     }
                     catch (e: Exception) {
