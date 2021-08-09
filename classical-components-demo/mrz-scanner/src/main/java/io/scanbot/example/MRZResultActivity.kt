@@ -30,32 +30,34 @@ class MRZResultActivity : AppCompatActivity() {
         val validCheckDigitsCount = findViewById<TextView>(R.id.validCheckDigitsCount)
         val checkDigitsCount = findViewById<TextView>(R.id.checkDigitsCount)
         val checkDigits = findViewById<TextView>(R.id.checkDigits)
-        val result: MRZRecognitionResult = intent.getParcelableExtra(EXTRA_MRZ_RESULT)
+        val result: MRZRecognitionResult? = intent.getParcelableExtra(EXTRA_MRZ_RESULT)
 
-        travelDocType.text = result.travelDocType.name
-        documentCode.text = result.documentCodeField().value
-        firstName.text = result.firstNameField().value
-        lastName.text = result.lastNameField().value
-        issuingStateOrOrganization.text = result.issuingStateOrOrganizationField().value
-        departmentOfIssuance.text = result.departmentOfIssuanceField().value
-        nationality.text = result.nationalityField().value
-        dateOfBirth.text = result.dateOfBirthField().value
-        gender.text = result.genderField().value
-        dateOfExpiry.text = result.dateOfExpiryField().value
-        personalNumber.text = result.personalNumberField().value
-        optional1.text = result.optional1Field().value
-        optional2.text = result.optional2Field().value
-        discreetIssuingStateOrOrganization.text = result.discreetIssuingStateOrOrganizationField().value
-        validCheckDigitsCount.text = result.validCheckDigitsCount.toString()
-        checkDigitsCount.text = result.checkDigitsCount.toString()
+        result?.let {
+            travelDocType.text = result.travelDocType.name
+            documentCode.text = result.documentCodeField().value
+            firstName.text = result.firstNameField().value
+            lastName.text = result.lastNameField().value
+            issuingStateOrOrganization.text = result.issuingStateOrOrganizationField().value
+            departmentOfIssuance.text = result.departmentOfIssuanceField().value
+            nationality.text = result.nationalityField().value
+            dateOfBirth.text = result.dateOfBirthField().value
+            gender.text = result.genderField().value
+            dateOfExpiry.text = result.dateOfExpiryField().value
+            personalNumber.text = result.personalNumberField().value
+            optional1.text = result.optional1Field().value
+            optional2.text = result.optional2Field().value
+            discreetIssuingStateOrOrganization.text = result.discreetIssuingStateOrOrganizationField().value
+            validCheckDigitsCount.text = result.validCheckDigitsCount.toString()
+            checkDigitsCount.text = result.checkDigitsCount.toString()
 
-        var checkDigitsOutput = ""
-        for ((checkDigitCharacter, successfullyValidated, type) in result.checkDigits) {
-            checkDigitsOutput += type.name + ": " + checkDigitCharacter.toChar() + " (" + successfullyValidated + ")"
-            checkDigitsOutput += "\n"
+            var checkDigitsOutput = ""
+            for ((checkDigitCharacter, successfullyValidated, type) in result.checkDigits) {
+                checkDigitsOutput += type.name + ": " + checkDigitCharacter.toChar() + " (" + successfullyValidated + ")"
+                checkDigitsOutput += "\n"
+            }
+            checkDigits.text = checkDigitsOutput
+            findViewById<View>(R.id.retry).setOnClickListener { v: View? -> finish() }
         }
-        checkDigits.text = checkDigitsOutput
-        findViewById<View>(R.id.retry).setOnClickListener { v: View? -> finish() }
     }
 
     companion object {

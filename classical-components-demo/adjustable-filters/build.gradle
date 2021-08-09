@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId project.ext.exampleAppId
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

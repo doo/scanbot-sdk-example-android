@@ -59,13 +59,11 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         setContentView(R.layout.activity_filters_tunes)
         initActionBar()
 
-        selectedPage = intent.getParcelableExtra(PAGE_DATA) as Page
+        selectedPage = intent.getParcelableExtra(PAGE_DATA) ?: return
 
-        selectedPage.let { page ->
-            selectedFilter = page.filter
-            updateCheckboxForType(page.filter)
-            tunes = LinkedHashMap(page.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
-        }
+        selectedFilter = selectedPage.filter
+        updateCheckboxForType(selectedPage.filter)
+        tunes = LinkedHashMap(selectedPage.tunes.groupBy { it.tuneType }.mapValues { it.value.first() })
 
         filter_value.text = getFilterName()
 
