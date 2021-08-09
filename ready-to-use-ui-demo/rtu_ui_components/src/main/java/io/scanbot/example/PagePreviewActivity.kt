@@ -210,10 +210,10 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+        if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK && data != null) {
+            val pages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)?.toList()?.map {
                 it as Page
-            }
+            } ?: return
             PageRepository.addPages(pages)
             adapter.setItems(PageRepository.getPages())
             checkVisibility()

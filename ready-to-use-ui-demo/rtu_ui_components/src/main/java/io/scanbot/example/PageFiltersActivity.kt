@@ -63,8 +63,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         initActionBar()
 
         selectedPage = PageRepository.getPages().find {
-            it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
-        }!!
+            it.pageId == intent.getParcelableExtra<Page>(PAGE_DATA)?.pageId
+        } ?: return
 
         selectedPage.let {
             selectedFilter = it.filter
@@ -120,8 +120,9 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA))
+        if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            val page = data.getParcelableExtra<Page>(CroppingActivity.EDITED_PAGE_EXTRA) ?: return
+            selectedPage = PageRepository.updatePage(page)
             initPagePreview()
             return
         }

@@ -71,6 +71,7 @@ import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
 import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                     data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
             CROP_DEFAULT_UI_REQUEST_CODE -> {
                 val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
-                page.pageId
+                page?.pageId // TODO: process page if needed
             }
             QR_BARCODE_DEFAULT_UI_REQUEST_CODE -> {
                 data.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
@@ -173,18 +174,20 @@ class MainActivity : AppCompatActivity() {
                 val resultWrappers
                         = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)
 
-                // For simplicity we will take only the first document
-                val firstResultWrapper = resultWrappers.first()
+                resultWrappers?.let {
+                    // For simplicity we will take only the first document
+                    val firstResultWrapper = resultWrappers.first()
 
-                // Get the ResultRepository from the ScanbotSDK instance
-                // scanbotSDK was created in onCreate via ScanbotSDK(context)
-                val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
+                    // Get the ResultRepository from the ScanbotSDK instance
+                    // scanbotSDK was created in onCreate via ScanbotSDK(context)
+                    val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
 
-                // Receive an instance of GenericDocument class from the repository
-                // This call will also remove the result from the repository (to make the memory usage less)
-                val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
+                    // Receive an instance of GenericDocument class from the repository
+                    // This call will also remove the result from the repository (to make the memory usage less)
+                    val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
 
-                Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
+                }
             }
             LICENSE_PLATE_SCANNER_DEFAULT_UI -> {
                 // TODO: Process data from
@@ -200,9 +203,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun extractPagesToRepoStartPreview(data: Intent, snappedResultsKey: String) {
-        val pages = data.getParcelableArrayExtra(snappedResultsKey).toList().map {
+        val pages = data.getParcelableArrayExtra(snappedResultsKey)?.toList()?.map {
             it as Page
-        }
+        } ?: return
 
         PageRepository.addPages(pages)
 
@@ -217,44 +220,70 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
-        val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
-        dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
+    private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult?) {
+        mrzRecognitionResult?.let {
+            val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
+            dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
+        }
     }
 
-    private fun showNfcPassportDialog(nfcPassportScanningResult: NfcPassportScanningResult) {
-        val dialogFragment = NfcPassportResultDialogFragment.newInstance(nfcPassportScanningResult)
-        dialogFragment.show(supportFragmentManager, NfcPassportResultDialogFragment.NAME)
+    private fun showNfcPassportDialog(nfcPassportScanningResult: NfcPassportScanningResult?) {
+        nfcPassportScanningResult?.let {
+            val dialogFragment = NfcPassportResultDialogFragment.newInstance(nfcPassportScanningResult)
+            dialogFragment.show(supportFragmentManager, NfcPassportResultDialogFragment.NAME)
+        }
     }
 
-    private fun showMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = MRZImageResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, MRZImageResultDialogFragment.NAME)
+    private fun showMrzImageWorkflowResult(workflow: Workflow?, workflowStepResults: java.util.ArrayList<WorkflowStepResult>?) {
+        workflow?.let {
+            workflowStepResults?.let {
+                val dialogFragment = MRZImageResultDialogFragment.newInstance(workflow, workflowStepResults)
+                dialogFragment.show(supportFragmentManager, MRZImageResultDialogFragment.NAME)
+            }
+        }
     }
 
-    private fun showFrontBackMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = MRZFrontBackImageResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
+    private fun showFrontBackMrzImageWorkflowResult(workflow: Workflow?, workflowStepResults: java.util.ArrayList<WorkflowStepResult>?) {
+        workflow?.let {
+            workflowStepResults?.let {
+                val dialogFragment = MRZFrontBackImageResultDialogFragment.newInstance(workflow, workflowStepResults)
+                dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
+            }
+        }
     }
 
-    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
+    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow?, workflowStepResults: java.util.ArrayList<WorkflowStepResult>?) {
+        workflow?.let {
+            workflowStepResults?.let {
+                val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
+                dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
+            }
+        }
     }
 
-    private fun showDCWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = DCResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, DCResultDialogFragment.NAME)
+    private fun showDCWorkflowResult(workflow: Workflow?, workflowStepResults: java.util.ArrayList<WorkflowStepResult>?) {
+        workflow?.let {
+            workflowStepResults?.let {
+                val dialogFragment = DCResultDialogFragment.newInstance(workflow, workflowStepResults)
+                dialogFragment.show(supportFragmentManager, DCResultDialogFragment.NAME)
+            }
+        }
     }
 
-    private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
+    private fun showPayFormWorkflowResult(workflow: Workflow?, workflowStepResults: ArrayList<WorkflowStepResult>?) {
+        workflow?.let {
+            workflowStepResults?.let {
+                val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
+                dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
+            }
+        }
     }
 
-    private fun showEHICResultDialog(recognitionResult: HealthInsuranceCardRecognitionResult) {
-        val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
-        dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
+    private fun showEHICResultDialog(recognitionResult: HealthInsuranceCardRecognitionResult?) {
+        recognitionResult?.let {
+            val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
+            dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
+        }
     }
 
     override fun onResume() {
