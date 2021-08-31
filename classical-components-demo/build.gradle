@@ -17,8 +17,9 @@ allprojects {
     project.ext {
         exampleAppId = 'io.scanbot.example.sdk.android'
 
-        compileSdkVersion = 29
-        buildToolsVersion = '28.0.3'
+        compileSdkVersion = 30
+        minSdkVersion = 21
+        targetSdkVersion = 30
 
         scanbotSdkVersion = '1.86.0'
 
