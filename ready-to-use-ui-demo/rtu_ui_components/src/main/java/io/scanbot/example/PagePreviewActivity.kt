@@ -203,15 +203,15 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     }
 
     private fun checkVisibility() {
-        action_save_document.isEnabled = !adapter.items.isEmpty()
-        action_delete_all.isEnabled = !adapter.items.isEmpty()
-        action_filter.isEnabled = !adapter.items.isEmpty()
+        action_save_document.isEnabled = adapter.items.isNotEmpty()
+        action_delete_all.isEnabled = adapter.items.isNotEmpty()
+        action_filter.isEnabled = adapter.items.isNotEmpty()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA).toList().map {
+            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)!!.toList().map {
                 it as Page
             }
             PageRepository.addPages(pages)

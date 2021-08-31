@@ -62,8 +62,10 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         setContentView(R.layout.activity_filters)
         initActionBar()
 
+        val page = intent.getParcelableExtra(PAGE_DATA) as? Page ?: throw IllegalStateException("No page to filter provided!")
+
         selectedPage = PageRepository.getPages().find {
-            it.pageId == (intent.getParcelableExtra(PAGE_DATA) as Page).pageId
+            it.pageId == page.pageId
         }!!
 
         selectedPage.let {
@@ -121,7 +123,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA))
+            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA)!!)
             initPagePreview()
             return
         }

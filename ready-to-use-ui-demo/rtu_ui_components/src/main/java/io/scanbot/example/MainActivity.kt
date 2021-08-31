@@ -113,37 +113,36 @@ class MainActivity : AppCompatActivity() {
         }
 
         when (requestCode) {
-            MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA))
-            PASSPORT_NFC_MRZ_DEFAULT_UI -> showNfcPassportDialog(data.getParcelableExtra(NfcPassportScannerActivity.EXTRACTED_FIELDS_EXTRA))
-            MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA)!!)
+            PASSPORT_NFC_MRZ_DEFAULT_UI -> showNfcPassportDialog(data.getParcelableExtra(NfcPassportScannerActivity.EXTRACTED_FIELDS_EXTRA)!!)
+            MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
+            MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
             CROP_DEFAULT_UI_REQUEST_CODE -> {
-                val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)
+                val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)!!
                 page.pageId
             }
             QR_BARCODE_DEFAULT_UI_REQUEST_CODE -> {
-                data.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)
-                        ?.let {
-                            val imagePath =
-                                    data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
-                            val previewPath =
-                                    data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
+                val qrCodeResult = data.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)!!
 
-                            BarcodeResultRepository.barcodeResultBundle =
-                                    BarcodeResultBundle(it, imagePath, previewPath)
+                val imagePath =
+                        data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
+                val previewPath =
+                        data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
 
-                            val intent = Intent(this, BarcodeResultActivity::class.java)
-                            startActivity(intent)
-                        }
+                BarcodeResultRepository.barcodeResultBundle =
+                        BarcodeResultBundle(qrCodeResult, imagePath, previewPath)
+
+                val intent = Intent(this, BarcodeResultActivity::class.java)
+                startActivity(intent)
             }
-            BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE -> showBarcodeAndDocumentWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            DC_SCAN_WORKFLOW_REQUEST_CODE -> showDCWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
-            PAYFORM_SCAN_WORKFLOW_REQUEST_CODE -> showPayFormWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA),
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA))
+            BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE -> showBarcodeAndDocumentWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
+            DC_SCAN_WORKFLOW_REQUEST_CODE -> showDCWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
+            PAYFORM_SCAN_WORKFLOW_REQUEST_CODE -> showPayFormWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
+                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
             SELECT_PICTURE_FOR_CROPPING_UI_REQUEST -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
             SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST -> {
                 if (!scanbotSDK.licenseInfo.isValid) {
@@ -159,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             }
             CAMERA_DEFAULT_UI_REQUEST_CODE -> extractPagesToRepoStartPreview(data, DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
             EHIC_SCAN_REQUEST_CODE -> {
-                val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)
+                val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)!!
                 showEHICResultDialog(hicRecognitionResult)
             }
             ID_CARD_DEFAULT_UI -> {
@@ -171,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI -> {
                 // Get the ResultWrapper object from the intent
                 val resultWrappers
-                        = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)
+                        = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)!!
 
                 // For simplicity we will take only the first document
                 val firstResultWrapper = resultWrappers.first()
@@ -200,7 +199,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun extractPagesToRepoStartPreview(data: Intent, snappedResultsKey: String) {
-        val pages = data.getParcelableArrayExtra(snappedResultsKey).toList().map {
+        val pages = data.getParcelableArrayExtra(snappedResultsKey)!!.toList().map {
             it as Page
         }
 
