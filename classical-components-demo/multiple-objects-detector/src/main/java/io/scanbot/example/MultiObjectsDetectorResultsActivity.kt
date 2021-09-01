@@ -28,7 +28,7 @@ class MultiObjectsDetectorResultsActivity : AppCompatActivity() {
     }
 
     private fun getImagePathsFromArgs(): List<String> {
-        val pages = intent.getParcelableArrayListExtra<Page>(PARAMS_KEY)
+        val pages = intent.getParcelableArrayListExtra<Page>(PARAMS_KEY)!!
 
         val pageFileStorage = ScanbotSDK(this).createPageFileStorage()
 

@@ -30,7 +30,7 @@ class MRZResultActivity : AppCompatActivity() {
         val validCheckDigitsCount = findViewById<TextView>(R.id.validCheckDigitsCount)
         val checkDigitsCount = findViewById<TextView>(R.id.checkDigitsCount)
         val checkDigits = findViewById<TextView>(R.id.checkDigits)
-        val result: MRZRecognitionResult = intent.getParcelableExtra(EXTRA_MRZ_RESULT)
+        val result: MRZRecognitionResult = intent.getParcelableExtra(EXTRA_MRZ_RESULT)!!
 
         travelDocType.text = result.travelDocType.name
         documentCode.text = result.documentCodeField().value
