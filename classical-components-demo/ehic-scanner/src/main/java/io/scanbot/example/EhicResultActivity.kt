@@ -23,7 +23,7 @@ class EhicResultActivity : AppCompatActivity() {
         val institutionName = findViewById<TextView>(R.id.institution_name)
         val cardNumber = findViewById<TextView>(R.id.card_number)
         val cardDate = findViewById<TextView>(R.id.card_date)
-        val result : HealthInsuranceCardRecognitionResult = intent.getParcelableExtra(EXTRA_EHIC_RESULT)
+        val result : HealthInsuranceCardRecognitionResult = intent.getParcelableExtra(EXTRA_EHIC_RESULT)!!
 
         for ((type, value) in result.fields) {
             when (type) {

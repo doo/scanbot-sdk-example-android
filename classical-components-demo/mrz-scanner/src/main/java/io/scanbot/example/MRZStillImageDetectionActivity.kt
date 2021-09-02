@@ -85,7 +85,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         data?.let {
             if (requestCode == DOCUMENT_SCANNER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                val parcelablePages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
+                val parcelablePages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)!!
                 page = parcelablePages[0] as Page
                 displayPreviewImage()
                 cropBtn.visibility = View.VISIBLE

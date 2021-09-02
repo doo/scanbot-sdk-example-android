@@ -4,13 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion compileVersion
-    buildToolsVersion buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "io.scanbot.example.sdk.rtu.android"
-        targetSdkVersion targetVersion
-        minSdkVersion minVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersion
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

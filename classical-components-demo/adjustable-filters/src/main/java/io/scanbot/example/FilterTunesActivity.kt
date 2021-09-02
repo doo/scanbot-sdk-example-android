@@ -59,7 +59,7 @@ class FilterTunesActivity : AppCompatActivity(), FiltersListener, CoroutineScope
         setContentView(R.layout.activity_filters_tunes)
         initActionBar()
 
-        selectedPage = intent.getParcelableExtra(PAGE_DATA) as Page
+        selectedPage = intent.getParcelableExtra(PAGE_DATA)!!
 
         selectedPage.let { page ->
             selectedFilter = page.filter
