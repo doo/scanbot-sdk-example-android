@@ -12,7 +12,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
 
         maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
         maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
@@ -26,7 +26,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
 
         maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
