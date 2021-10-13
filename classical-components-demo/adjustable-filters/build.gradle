@@ -36,7 +36,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
-    implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
     implementation "io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion"
     implementation "com.squareup.picasso:picasso:$project.ext.picassoVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
