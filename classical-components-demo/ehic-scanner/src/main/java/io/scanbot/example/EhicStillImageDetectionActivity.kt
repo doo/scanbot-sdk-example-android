@@ -134,7 +134,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
         override fun doInBackground(objects: Array<Void>): HealthInsuranceCardRecognitionResult? {
             val imageUri = pageFileStorage.getImageURI(page!!.pageId, PageFileType.DOCUMENT)
             val documentImage = loadImage(imageUri)!!
-            return healthInsuranceCardScanner.detectAndRecognizeBitmap(documentImage, 0)
+            return healthInsuranceCardScanner.recognizeBitmap(documentImage, 0)
         }
 
         override fun onPostExecute(result: HealthInsuranceCardRecognitionResult?) {
