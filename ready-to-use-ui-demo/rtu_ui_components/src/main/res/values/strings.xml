@@ -15,7 +15,6 @@
     <string name="scan_mrz_back_and_front_image">Scan MRZ + Front and Back Image</string>
     <string name="scan_bar_code_and_doc_image">Scan QR-/Barcode + Document Image</string>
     <string name="scan_dc_form">Scan DC Form</string>
-    <string name="scan_id_card">Scan ID Card</string>
     <string name="scan_pay_form">Scan SEPA Pay Form</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
     <string name="multiple_object_detector">Multiple objects detector</string>
@@ -72,7 +71,6 @@
     <string name="error_openning_document">Error while opening the document</string>
     <string name="encrypted_document_saved">Encrypted PDF file is saved to: %s. You need to unencrypt it before opening</string>
     <string name="bitmap_is_null_error">Bitmap is null</string>
-    <string name="id_card_flow_finished">Id card scanning flow finished</string>
     <string name="license_plate_flow_finished">License plate scanning flow finished</string>
     <string name="scan_nfc_passport">Scan passport (MRZ + NFC)</string>
     <string name="scan_text_data">Scan data</string>
