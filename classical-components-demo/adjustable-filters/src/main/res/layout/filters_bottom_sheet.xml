@@ -101,6 +101,24 @@
         app:layout_constraintTop_toBottomOf="@+id/otsuBinarizationFilter" />
 
     <Button
+        android:id="@+id/sensitiveBinarizationFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/sensitive_binarization_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/otsuBinarizationFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sensitiveBinarizationFilter" />
+
+    <Button
         android:id="@+id/cleanBackgroundFilter"
         style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
         android:layout_width="0dp"
@@ -108,7 +126,7 @@
         android:text="@string/clean_background_filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/otsuBinarizationFilter" />
+        app:layout_constraintTop_toBottomOf="@+id/sensitiveBinarizationFilter" />
 
     <View
         android:layout_width="0dp"
@@ -173,6 +191,24 @@
         app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
 
     <Button
+        android:id="@+id/pureGrayscaleFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/pure_grayscale_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:background="@color/titleSeparatorColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pureGrayscaleFilter" />
+
+    <Button
         android:id="@+id/binarizedFilter"
         style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
         android:layout_width="0dp"
@@ -180,7 +216,7 @@
         android:text="@string/binarizedfilter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grayscaleFilter" />
+        app:layout_constraintTop_toBottomOf="@+id/pureGrayscaleFilter" />
 
     <View
         android:layout_width="0dp"

@@ -47,6 +47,9 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         view.findViewById<Button>(R.id.grayscaleFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.GRAYSCALE)
         }
+        view.findViewById<Button>(R.id.pureGrayscaleFilter).setOnClickListener {
+            callListenerAndDismiss(ImageFilterType.PURE_GRAYSCALE)
+        }
         view.findViewById<Button>(R.id.binarizedFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.BINARIZED)
         }
@@ -55,6 +58,9 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         }
         view.findViewById<Button>(R.id.blackAndWhiteFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.BLACK_AND_WHITE)
+        }
+        view.findViewById<Button>(R.id.sensitiveBinarizationFilter).setOnClickListener {
+            callListenerAndDismiss(ImageFilterType.SENSITIVE_BINARIZATION)
         }
         view.findViewById<Button>(R.id.none).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.NONE)

@@ -4,6 +4,7 @@ import android.app.Application
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class ExampleApplication : Application() {
@@ -31,6 +32,7 @@ class ExampleApplication : Application() {
                 }
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
+            .imageProcessorType(ImageProcessor.Type.ML_BASED)
             .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

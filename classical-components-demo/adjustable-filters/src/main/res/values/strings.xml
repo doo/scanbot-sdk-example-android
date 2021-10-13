@@ -9,9 +9,11 @@
     <string name="color_document_filter">Color Document Filter</string>
     <string name="color_filter">Color Filter</string>
     <string name="grayscale_filter">Grayscale Filter</string>
+    <string name="pure_grayscale_filter">Pure grayscale Filter</string>
     <string name="binarizedfilter">Binarized Filter</string>
     <string name="pure_binarized_filter">Pure Binarized Filter</string>
     <string name="black_amp_white_filter"><![CDATA[Black & White Filter]]></string>
+    <string name="sensitive_binarization_filter">Sensitive Binarization Filter</string>
     <string name="none">None</string>
     <string name="the_demo_expired">The demo app will terminate because of the missing license key. Get your free 30-day license today!</string>
     <string name="demo_expired">Demo Expired</string>
