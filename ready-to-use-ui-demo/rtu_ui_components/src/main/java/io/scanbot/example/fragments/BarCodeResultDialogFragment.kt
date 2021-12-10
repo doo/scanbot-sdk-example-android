@@ -22,7 +22,6 @@ import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.*
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
 import java.io.File
-import java.util.*
 
 
 class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -32,13 +31,13 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
         const val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
         const val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
 
-        fun newInstance(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>): BarCodeResultDialogFragment {
+        fun newInstance(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>): BarCodeResultDialogFragment {
             val f = BarCodeResultDialogFragment()
 
             // Supply num input as an argument.
             val args = Bundle()
             args.putParcelable(WORKFLOW_EXTRA, workflow)
-            args.putParcelableArrayList(WORKFLOW_RESULT_EXTRA, workflowStepResults)
+            args.putParcelableArrayList(WORKFLOW_RESULT_EXTRA, ArrayList(workflowStepResults))
             f.arguments = args
 
             return f

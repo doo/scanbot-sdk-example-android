@@ -7,9 +7,10 @@ import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.di.ExampleSingletonImpl
@@ -27,16 +28,15 @@ import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
 import io.scanbot.sdk.barcode.entity.BarcodeItem
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.ZoomRange
 import io.scanbot.sdk.core.contourdetector.DetectionResult
-import io.scanbot.sdk.generictext.GenericTextRecognizer
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
+import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.result.ResultWrapper
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.batch.BatchBarcodeScannerActivity
@@ -46,13 +46,13 @@ import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
+import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.genericdocument.GenericDocumentRecognizerActivity
 import io.scanbot.sdk.ui.view.genericdocument.configuration.GenericDocumentRecognizerConfiguration
 import io.scanbot.sdk.ui.view.generictext.TextDataScannerActivity
 import io.scanbot.sdk.ui.view.generictext.configuration.TextDataScannerConfiguration
 import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStep
-import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStepResult
 import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
 import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
 import io.scanbot.sdk.ui.view.licenseplate.LicensePlateScannerActivity
@@ -72,132 +72,39 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        private const val MRZ_DEFAULT_UI_REQUEST_CODE = 909
-        private const val QR_BARCODE_DEFAULT_UI_REQUEST_CODE = 910
-        private const val MRZ_SNAP_WORKFLOW_REQUEST_CODE = 912
-        private const val MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE = 913
-        private const val DC_SCAN_WORKFLOW_REQUEST_CODE = 914
-        private const val BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE = 915
-        private const val PAYFORM_SCAN_WORKFLOW_REQUEST_CODE = 916
-        private const val EHIC_SCAN_REQUEST_CODE = 917
-        private const val MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE = 919
-        private const val PASSPORT_NFC_MRZ_DEFAULT_UI = 921
-        private const val TEXT_DATA_SCANNER_DEFAULT_UI = 922
-        private const val LICENSE_PLATE_SCANNER_DEFAULT_UI = 923
-        private const val GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI = 924
-        private const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
-        private const val SELECT_PICTURE_FOR_CROPPING_UI_REQUEST = 8888
-        private const val SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST = 7777
-        private const val CAMERA_DEFAULT_UI_REQUEST_CODE = 1111
-
-        private const val LOG_TAG = "RTU_DEMO_MAIN_ACTIVITY"
-    }
-
     private lateinit var scanbotSDK: ScanbotSDK
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
+    private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerActivity.InputParams>
+    private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
+    private val nfcPassportScannerResultLauncher: ActivityResultLauncher<NfcPassportConfiguration>
+    private val mrzSnapWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
+    private val mrzFrontBackWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
+    private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
+    private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
+    private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
+    private val barcodeAndDocWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
+    private val dcWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
+    private val payformWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
+    private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
+    private val multipleObjectsDetectorResultLauncher: ActivityResultLauncher<MultipleObjectsDetectorConfiguration>
+    private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
+    private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
+    private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
 
-        if (resultCode != Activity.RESULT_OK) {
-            Log.i(LOG_TAG, "resultCode is not OK when returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
-            return
-        }
+    private fun handleGeneriDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
+        // For simplicity we will take only the first document
+        val firstResultWrapper = resultWrappers.first()
 
-        if (data == null) {
-            Log.w(LOG_TAG, "No data while returning from activity with requestCode $requestCode. onActivityResult will do nothing now.")
-            return
-        }
+        // Get the ResultRepository from the ScanbotSDK instance
+        // scanbotSDK was created in onCreate via ScanbotSDK(context)
+        val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
 
-        when (requestCode) {
-            MRZ_DEFAULT_UI_REQUEST_CODE -> showMrzDialog(data.getParcelableExtra(MRZScannerActivity.EXTRACTED_FIELDS_EXTRA)!!)
-            PASSPORT_NFC_MRZ_DEFAULT_UI -> showNfcPassportDialog(data.getParcelableExtra(NfcPassportScannerActivity.EXTRACTED_FIELDS_EXTRA)!!)
-            MRZ_SNAP_WORKFLOW_REQUEST_CODE -> showMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
-            MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE -> showFrontBackMrzImageWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
-            CROP_DEFAULT_UI_REQUEST_CODE -> {
-                val page = data.getParcelableExtra<Page>(io.scanbot.sdk.ui.view.edit.CroppingActivity.EDITED_PAGE_EXTRA)!!
-                page.pageId
-            }
-            QR_BARCODE_DEFAULT_UI_REQUEST_CODE -> {
-                val qrCodeResult = data.getParcelableExtra<BarcodeScanningResult>(BarcodeScannerActivity.SCANNED_BARCODE_EXTRA)!!
+        // Receive an instance of GenericDocument class from the repository
+        // This call will also remove the result from the repository (to make the memory usage less)
+        val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
 
-                val imagePath =
-                        data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_IMAGE_PATH_EXTRA)
-                val previewPath =
-                        data.getStringExtra(BarcodeScannerActivity.SCANNED_BARCODE_PREVIEW_FRAME_PATH_EXTRA)
-
-                BarcodeResultRepository.barcodeResultBundle =
-                        BarcodeResultBundle(qrCodeResult, imagePath, previewPath)
-
-                val intent = Intent(this, BarcodeResultActivity::class.java)
-                startActivity(intent)
-            }
-            BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE -> showBarcodeAndDocumentWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
-            DC_SCAN_WORKFLOW_REQUEST_CODE -> showDCWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
-            PAYFORM_SCAN_WORKFLOW_REQUEST_CODE -> showPayFormWorkflowResult(data.getParcelableExtra(WorkflowScannerActivity.WORKFLOW_EXTRA)!!,
-                    data.getParcelableArrayListExtra(WorkflowScannerActivity.WORKFLOW_RESULT_EXTRA)!!)
-            SELECT_PICTURE_FOR_CROPPING_UI_REQUEST -> ProcessImageForCroppingUI(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-            SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST -> {
-                if (!scanbotSDK.licenseInfo.isValid) {
-                    showLicenseDialog()
-                } else {
-                    ProcessImageForAutoDocumentDetection(data).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-                }
-            }
-            MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE -> {
-                PageRepository.addPages(MultipleObjectsDetectorActivity.parseActivityResult(data))
-                val intent = Intent(this, PagePreviewActivity::class.java)
-                startActivity(intent)
-            }
-            CAMERA_DEFAULT_UI_REQUEST_CODE -> extractPagesToRepoStartPreview(data, DocumentScannerActivity.SNAPPED_PAGE_EXTRA)
-            EHIC_SCAN_REQUEST_CODE -> {
-                val hicRecognitionResult = data.getParcelableExtra<HealthInsuranceCardRecognitionResult>(HealthInsuranceCardScannerActivity.EXTRACTED_FIELDS_EXTRA)!!
-                showEHICResultDialog(hicRecognitionResult)
-            }
-            GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI -> {
-                // Get the ResultWrapper object from the intent
-                val resultWrappers
-                        = data.getParcelableArrayListExtra<ResultWrapper<GenericDocument>>(GenericDocumentRecognizerActivity.EXTRACTED_FIELDS_EXTRA)!!
-
-                // For simplicity we will take only the first document
-                val firstResultWrapper = resultWrappers.first()
-
-                // Get the ResultRepository from the ScanbotSDK instance
-                // scanbotSDK was created in onCreate via ScanbotSDK(context)
-                val resultRepository = scanbotSDK.resultRepositoryForClass(firstResultWrapper.clazz)
-
-                // Receive an instance of GenericDocument class from the repository
-                // This call will also remove the result from the repository (to make the memory usage less)
-                val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
-
-                Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
-            }
-            LICENSE_PLATE_SCANNER_DEFAULT_UI -> {
-                // TODO: Process data from
-                // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
-                Toast.makeText(this@MainActivity, getString(R.string.license_plate_flow_finished), Toast.LENGTH_LONG).show()
-            }
-            TEXT_DATA_SCANNER_DEFAULT_UI -> {
-                val result = data.getParcelableArrayExtra(TextDataScannerActivity.EXTRACTED_FIELDS_EXTRA)
-                val textDataScannerStepResult = result!!.first() as TextDataScannerStepResult
-                Toast.makeText(this@MainActivity, "Scanned: ${textDataScannerStepResult.text}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun extractPagesToRepoStartPreview(data: Intent, snappedResultsKey: String) {
-        val pages = data.getParcelableArrayExtra(snappedResultsKey)!!.toList().map {
-            it as Page
-        }
-
-        PageRepository.addPages(pages)
-
-        val intent = Intent(this, PagePreviewActivity::class.java)
-        startActivity(intent)
+        Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
     }
 
     private fun showLicenseDialog() {
@@ -227,17 +134,17 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
     }
 
-    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
         val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
         dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
     }
 
-    private fun showDCWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+    private fun showDCWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
         val dialogFragment = DCResultDialogFragment.newInstance(workflow, workflowStepResults)
         dialogFragment.show(supportFragmentManager, DCResultDialogFragment.NAME)
     }
 
-    private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
+    private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
         val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
         dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
     }
@@ -281,10 +188,7 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
             // see further customization configs ...
 
-            val intent = DocumentScannerActivity.newIntent(this@MainActivity,
-                    cameraConfiguration
-            )
-            startActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE)
+            documentScannerResultLauncher.launch(cameraConfiguration)
         }
 
         findViewById<View>(R.id.page_preview_activity).setOnClickListener {
@@ -299,8 +203,7 @@ class MainActivity : AppCompatActivity() {
             mrzCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
             mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
-            val intent = MRZScannerActivity.newIntent(this@MainActivity, mrzCameraConfiguration)
-            startActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE)
+            mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
         }
 
         findViewById<View>(R.id.nfc_passport_default_ui).setOnClickListener {
@@ -325,8 +228,7 @@ class MainActivity : AppCompatActivity() {
             }
             nfcPassportConfiguration.setPassportPhotoSaveCallback(PhotoSaveCallback::class.java)
 
-            val intent = NfcPassportScannerActivity.newIntent(this@MainActivity, nfcPassportConfiguration)
-            startActivityForResult(intent, PASSPORT_NFC_MRZ_DEFAULT_UI)
+            nfcPassportScannerResultLauncher.launch(nfcPassportConfiguration)
         }
 
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
@@ -335,23 +237,22 @@ class MainActivity : AppCompatActivity() {
             textDataScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             textDataScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
 
-            val intent = TextDataScannerActivity.newIntent(this@MainActivity, textDataScannerConfiguration,
-                    step = TextDataScannerStep(
-                            stepTag = "Date",
-                            title = "6-digit string",
-                            guidanceText = "Scan a 6-digit string which starts with 1 or 2",
-                            // For the pattern: # - digits, ? - for any character. Other characters represent themselves
-                            pattern = "######",
-                            // TODO: set validation string and validation callback which matches the need of the task
-                            // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-                            validationCallback = object : GenericTextRecognizer.GenericTextValidationCallback {
-                                override fun validate(text: String): Boolean {
-                                    return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
-                                }
-                            },
-                            preferredZoom = 1.6f))
-
-            startActivityForResult(intent, TEXT_DATA_SCANNER_DEFAULT_UI)
+            val step = TextDataScannerStep(
+                    stepTag = "Date",
+                    title = "6-digit string",
+                    guidanceText = "Scan a 6-digit string which starts with 1 or 2",
+                    // For the pattern: # - digits, ? - for any character. Other characters represent themselves
+                    pattern = "######",
+                    // TODO: set validation string and validation callback which matches the need of the task
+                    // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
+                    validationCallback = { text ->
+                        text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                    },
+                    preferredZoom = 1.6f)
+            val rtuInput = TextDataScannerActivity.InputParams(
+                    textDataScannerConfiguration, step
+            )
+            textDataScannerResultLauncher.launch(rtuInput)
         }
 
         findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
@@ -360,9 +261,7 @@ class MainActivity : AppCompatActivity() {
             licensePlateScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             licensePlateScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
 
-            val intent = LicensePlateScannerActivity.newIntent(this@MainActivity, licensePlateScannerConfiguration)
-
-            startActivityForResult(intent, LICENSE_PLATE_SCANNER_DEFAULT_UI)
+            licensePlateScannerResultLauncher.launch(licensePlateScannerConfiguration)
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
@@ -381,8 +280,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             )
-            val intent = GenericDocumentRecognizerActivity.newIntent(this, genericDocumentConfiguration)
-            startActivityForResult(intent, GENERIC_DOCUMENT_RECOGNIZER_DEFAULT_UI)
+            genericDocumentRecognizerResultLauncher.launch(genericDocumentConfiguration)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
@@ -396,11 +294,9 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
             // Default value is ZoomRange(0, 1).
             barcodeCameraConfiguration.setCameraZoomRange(ZoomRange(0.1f, 1f))
-
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
 
-            val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
-            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui_with_image).setOnClickListener {
@@ -409,11 +305,9 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
-
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
 
-            val intent = BarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration)
-            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
         findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
@@ -440,8 +334,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val intent = BatchBarcodeScannerActivity.newIntent(this@MainActivity, barcodeCameraConfiguration, CustomFormattedBarcodeDataMapper::class.java)
-            startActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
+            val rtuInput = BatchBarcodeScannerActivity.InputParams(
+                    barcodeCameraConfiguration,
+                    CustomFormattedBarcodeDataMapper::class.java
+            )
+            batchBarcodeResultLauncher.launch(rtuInput)
         }
 
         findViewById<View>(R.id.mrz_image_default_ui).setOnClickListener {
@@ -452,11 +349,10 @@ class MainActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
-                    workflowScannerConfiguration,
-                    WorkflowFactory.scanMRZAndSnap()
+            val rtuInput = WorkflowScannerActivity.InputParams(
+                    workflowScannerConfiguration, WorkflowFactory.scanMRZAndSnap()
             )
-            startActivityForResult(intent, MRZ_SNAP_WORKFLOW_REQUEST_CODE)
+            mrzSnapWorkflowResultLauncher.launch(rtuInput)
         }
 
         findViewById<View>(R.id.mrz_front_back_image_default_ui).setOnClickListener {
@@ -467,11 +363,10 @@ class MainActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
-                    workflowScannerConfiguration,
-                    WorkflowFactory.scanMRZAndFrontBackSnap()
+            val rtuInput = WorkflowScannerActivity.InputParams(
+                    workflowScannerConfiguration, WorkflowFactory.scanMRZAndFrontBackSnap()
             )
-            startActivityForResult(intent, MRZ_FRONBACK_SNAP_WORKFLOW_REQUEST_CODE)
+            mrzFrontBackWorkflowResultLauncher.launch(rtuInput)
         }
 
         findViewById<View>(R.id.barcode_and_doc_default_ui).setOnClickListener {
@@ -482,11 +377,8 @@ class MainActivity : AppCompatActivity() {
             workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
-            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
-                    workflowScannerConfiguration,
-                    WorkflowFactory.barcodeAndDocumentImage()
-            )
-            startActivityForResult(intent, BARCODE_AND_DOC_SCAN_WORKFLOW_REQUEST_CODE)
+            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.barcodeAndDocumentImage())
+            barcodeAndDocWorkflowResultLauncher.launch(rtuInput)
         }
 
         findViewById<View>(R.id.dc_default_ui).setOnClickListener {
@@ -498,11 +390,8 @@ class MainActivity : AppCompatActivity() {
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
 
-            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
-                    workflowScannerConfiguration,
-                    WorkflowFactory.disabilityCertificate()
-            )
-            startActivityForResult(intent, DC_SCAN_WORKFLOW_REQUEST_CODE)
+            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.disabilityCertificate())
+            dcWorkflowResultLauncher.launch(rtuInput)
         }
 
         payform_default_ui.setOnClickListener {
@@ -514,11 +403,8 @@ class MainActivity : AppCompatActivity() {
             workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
 
-            val intent = WorkflowScannerActivity.newIntent(this@MainActivity,
-                    workflowScannerConfiguration,
-                    WorkflowFactory.payFormWithClassicalDocPolygonDetection()
-            )
-            startActivityForResult(intent, PAYFORM_SCAN_WORKFLOW_REQUEST_CODE)
+            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.payFormWithClassicalDocPolygonDetection())
+            payformWorkflowResultLauncher.launch(rtuInput)
         }
 
         ehic_default_ui.setOnClickListener {
@@ -528,8 +414,7 @@ class MainActivity : AppCompatActivity() {
             // ehicScannerConfig.setFinderTextHint("custom text")
             // ...
 
-            val intent = HealthInsuranceCardScannerActivity.newIntent(this@MainActivity, ehicScannerConfig)
-            startActivityForResult(intent, EHIC_SCAN_REQUEST_CODE)
+            ehicScannerResultLauncher.launch(ehicScannerConfig)
         }
 
         multiple_object_detector_ui.setOnClickListener {
@@ -547,8 +432,7 @@ class MainActivity : AppCompatActivity() {
                 setPageCounterButtonTitle("%d Page(s)")
             }
 
-            val intent = MultipleObjectsDetectorActivity.newIntent(this@MainActivity, config)
-            startActivityForResult(intent, MULTIPLE_OBJECT_DETECTOR_REQUEST_CODE)
+            multipleObjectsDetectorResultLauncher.launch(config)
         }
     }
 
@@ -558,7 +442,7 @@ class MainActivity : AppCompatActivity() {
         imageIntent.action = Intent.ACTION_GET_CONTENT
         imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
         imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.share_title)), SELECT_PICTURE_FOR_DOC_DETECTION_REQUEST)
+        selectPictureFromGalleryResultLauncher.launch(Intent.createChooser(imageIntent, getString(R.string.share_title)))
     }
 
     private fun processGalleryResult(data: Intent): List<Bitmap> {
@@ -579,10 +463,122 @@ class MainActivity : AppCompatActivity() {
         scanbotSDK = ScanbotSDK(this)
     }
 
-    /**
-     * Imports a selected image as original image, creates a new page and opens the Cropping UI on it.
-     */
-    internal inner class ProcessImageForCroppingUI(private var data: Intent?) : AsyncTask<Void, Void, List<Page>>() {
+    init {
+        mrzDefaultUiResultLauncher =
+                registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
+                    showMrzDialog(resultEntity.result!!)
+                }
+        textDataScannerResultLauncher =
+                registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
+                    val textDataScannerStepResult = resultEntity.result!!.first()
+                    Toast.makeText(this@MainActivity, "Scanned: ${textDataScannerStepResult.text}", Toast.LENGTH_LONG).show()
+                }
+
+        licensePlateScannerResultLauncher =
+                registerForActivityResultOk(LicensePlateScannerActivity.ResultContract()) { resultEntity ->
+                    // TODO: Process data from
+                    // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
+                    Toast.makeText(this@MainActivity, getString(R.string.license_plate_flow_finished), Toast.LENGTH_LONG).show()
+                }
+
+        nfcPassportScannerResultLauncher =
+                registerForActivityResultOk(NfcPassportScannerActivity.ResultContract()) { resultEntity ->
+                    showNfcPassportDialog(resultEntity.result!!)
+                }
+
+        mrzSnapWorkflowResultLauncher =
+                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
+                    showMrzImageWorkflowResult(resultEntity.workflow!!, ArrayList(resultEntity.result!!))
+                }
+
+        mrzFrontBackWorkflowResultLauncher =
+                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
+                    showFrontBackMrzImageWorkflowResult(resultEntity.workflow!!,
+                            ArrayList(resultEntity.result!!))
+                }
+
+        cropResultLauncher =
+                registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
+                    resultEntity.result!!.pageId
+                    // TODO: something more demonstrative here?
+                }
+
+        barcodeResultLauncher =
+                registerForActivityResultOk(BarcodeScannerActivity.ResultContract()) { resultEntity ->
+                    BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
+                            resultEntity.result!!,
+                            resultEntity.barcodeImagePath,
+                            resultEntity.barcodePreviewFramePath
+                    )
+
+                    val intent = Intent(this, BarcodeResultActivity::class.java)
+                    startActivity(intent)
+                }
+
+        batchBarcodeResultLauncher =
+                registerForActivityResultOk(BatchBarcodeScannerActivity.ResultContract()) { resultEntity ->
+                    BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(resultEntity.result!!)
+
+                    val intent = Intent(this, BarcodeResultActivity::class.java)
+                    startActivity(intent)
+                }
+
+        barcodeAndDocWorkflowResultLauncher =
+                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
+                    showBarcodeAndDocumentWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
+                }
+
+        dcWorkflowResultLauncher =
+                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
+                    showDCWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
+                }
+
+        payformWorkflowResultLauncher =
+                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
+                    showPayFormWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
+                }
+
+        selectPictureFromGalleryResultLauncher =
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+                    if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+                        if (!scanbotSDK.licenseInfo.isValid) {
+                            showLicenseDialog()
+                        } else {
+                            ProcessImageForAutoDocumentDetection(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+                            // If you wish to crop selected document instead - switch to commented code below
+                            ProcessImageForCroppingUI(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+                        }
+                    }
+                }
+
+        multipleObjectsDetectorResultLauncher =
+                registerForActivityResultOk(MultipleObjectsDetectorActivity.ResultContract()) { resultEntity ->
+                    PageRepository.addPages(resultEntity.result!!)
+                    val intent = Intent(this, PagePreviewActivity::class.java)
+                    startActivity(intent)
+                }
+
+        documentScannerResultLauncher =
+                registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
+                    PageRepository.addPages(resultEntity.result!!)
+
+                    val intent = Intent(this, PagePreviewActivity::class.java)
+                    startActivity(intent)
+                }
+
+        ehicScannerResultLauncher =
+                registerForActivityResultOk(HealthInsuranceCardScannerActivity.ResultContract()) { resultEntity ->
+                    showEHICResultDialog(resultEntity.result!!)
+                }
+
+        genericDocumentRecognizerResultLauncher =
+                registerForActivityResultOk(GenericDocumentRecognizerActivity.ResultContract()) { resultEntity ->
+                    handleGeneriDocRecognizerResult(resultEntity.result!!)
+                }
+    }
+
+    /** Imports a selected image as original image, creates a new page and opens the Cropping UI on it. */
+    internal inner class ProcessImageForCroppingUI(private var data: Intent) : AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -590,7 +586,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void): List<Page> {
-            val processGalleryResult = processGalleryResult(data!!)
+            val processGalleryResult = processGalleryResult(data)
 
             val pageFileStorage = ExampleSingletonImpl(this@MainActivity).pageFileStorageInstance()
 
@@ -609,20 +605,13 @@ class MainActivity : AppCompatActivity() {
 
                 editPolygonConfiguration.setPage(page)
 
-                val intent = io.scanbot.sdk.ui.view.edit.CroppingActivity.newIntent(
-                        applicationContext,
-                        editPolygonConfiguration
-                )
-                startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
+                cropResultLauncher.launch(editPolygonConfiguration)
             }
         }
     }
 
-
-    /**
-     * Imports a selected image as original image and performs auto document detection on it.
-     */
-    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent?) : AsyncTask<Void, Void, List<Page>>() {
+    /** Imports a selected image as original image and performs auto document detection on it. */
+    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent) : AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -632,7 +621,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void): List<Page> {
-            val processGalleryResult = processGalleryResult(data!!)
+            val processGalleryResult = processGalleryResult(data)
 
             val singleton = ExampleSingletonImpl(this@MainActivity)
             val pageFileStorage = singleton.pageFileStorageInstance()
@@ -658,5 +647,4 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 }

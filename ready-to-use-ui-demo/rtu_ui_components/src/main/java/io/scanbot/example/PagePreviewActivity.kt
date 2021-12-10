@@ -1,6 +1,5 @@
 package io.scanbot.example
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -25,7 +25,6 @@ import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.docprocessing.draft.DocumentDraftExtractor
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -33,6 +32,7 @@ import io.scanbot.sdk.persistence.cleanup.Cleaner
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.util.thread.MimeUtils
@@ -43,19 +43,17 @@ import kotlin.coroutines.CoroutineContext
 
 
 class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, CoroutineScope {
+
     private lateinit var adapter: PagesAdapter
     private lateinit var recycleView: RecyclerView
 
     companion object {
-        const val FILTER_UI_REQUEST_CODE = 7777
-        private const val CAMERA_ACTIVITY: Int = 8888
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
         private const val SAVE_MENU_TAG = "SAVE_MENU_TAG"
 
         var selectedPage: Page? = null
     }
 
-    private lateinit var documentDraftExtractor: DocumentDraftExtractor
     private lateinit var cleaner: Cleaner
     private lateinit var textRecognition: OpticalCharacterRecognizer
     private lateinit var pdfRenderer: PDFRenderer
@@ -67,6 +65,19 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
+
+    private val documentScannerResultLauncher =
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
+                PageRepository.addPages(resultEntity.result!!)
+                adapter.setItems(PageRepository.getPages())
+                checkVisibility()
+            }
+
+    private val filtersActivityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+                adapter.setItems(PageRepository.getPages())
+                adapter.notifyDataSetChanged()
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,10 +115,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
 
-            val intent = DocumentScannerActivity.newIntent(this@PagePreviewActivity,
-                    cameraConfiguration
-            )
-            startActivityForResult(intent, CAMERA_ACTIVITY)
+            documentScannerResultLauncher.launch(cameraConfiguration)
         }
         action_delete_all.setOnClickListener {
             PageRepository.clearPages(this)
@@ -180,7 +188,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
@@ -196,7 +204,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
     override fun onResume() {
         super.onResume()
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
         checkVisibility()
@@ -208,21 +216,6 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         action_filter.isEnabled = adapter.items.isNotEmpty()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            val pages = data!!.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)!!.toList().map {
-                it as Page
-            }
-            PageRepository.addPages(pages)
-            adapter.setItems(PageRepository.getPages())
-            checkVisibility()
-        } else {
-            adapter.setItems(PageRepository.getPages())
-            adapter.notifyDataSetChanged()
-        }
-    }
-
     private fun showLicenseDialog() {
         if (supportFragmentManager.findFragmentByTag(ErrorFragment.NAME) == null) {
             val dialogFragment = ErrorFragment.newInstance()
@@ -231,7 +224,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     }
 
     private fun saveDocument(withOcr: Boolean) {
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
@@ -318,7 +311,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             selectedPage = adapter.items[itemPosition]
 
             val intent = PageFiltersActivity.newIntent(this@PagePreviewActivity, selectedPage!!)
-            startActivityForResult(intent, FILTER_UI_REQUEST_CODE)
+            filtersActivityResultLauncher.launch(intent)
         }
     }
 

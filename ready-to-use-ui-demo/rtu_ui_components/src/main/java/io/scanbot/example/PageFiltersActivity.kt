@@ -23,6 +23,7 @@ import io.scanbot.example.util.PicassoHelper
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import kotlinx.android.synthetic.main.activity_filters.*
@@ -36,7 +37,6 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     companion object {
         const val PAGE_DATA = "PAGE_DATA"
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
-        const val CROP_DEFAULT_UI_REQUEST_CODE = 9999
 
         @JvmStatic
         fun newIntent(context: Context, page: Page): Intent {
@@ -56,6 +56,11 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
+
+    private val croppingActivityResultLauncher = registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity->
+        selectedPage = PageRepository.updatePage(resultEntity.result!!)
+        initPagePreview()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,8 +104,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
             //croppingConfig.setDetectResetButtonHidden(true)
             // Customize further colors, text resources, behavior flags ...
 
-            val intent = CroppingActivity.newIntent(this, croppingConfig)
-            startActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE)
+            croppingActivityResultLauncher.launch(croppingConfig)
         }
 
         initPagePreview()
@@ -114,18 +118,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     override fun onResume() {
         super.onResume()
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            selectedPage = PageRepository.updatePage(data!!.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA)!!)
-            initPagePreview()
-            return
         }
     }
 
@@ -176,7 +170,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     }
 
     private fun initPagePreview() {
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             generateFilteredPreview()
@@ -211,7 +205,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     }
 
     private fun applyFilter(imageFilterType: ImageFilterType) {
-        if (!scanbotSDK.isLicenseValid) {
+        if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             progress.visibility = View.VISIBLE
