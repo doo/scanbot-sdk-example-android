@@ -499,8 +499,10 @@ class MainActivity : AppCompatActivity() {
 
         cropResultLauncher =
                 registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
-                    resultEntity.result!!.pageId
-                    // TODO: something more demonstrative here?
+                    PageRepository.addPage(resultEntity.result!!)
+
+                    val intent = Intent(this, PagePreviewActivity::class.java)
+                    startActivity(intent)
                 }
 
         barcodeResultLauncher =
