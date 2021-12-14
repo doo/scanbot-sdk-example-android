@@ -5,7 +5,7 @@ buildscript {
     ext.targetSdkVersion = 30
     ext.minSdkVersion = 21
 
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.6.10'
     ext.coroutines_version = '1.4.3'
 
     ext.scanbotSdkVersion = '1.89.1'
