@@ -546,7 +546,7 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             ProcessImageForAutoDocumentDetection(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                             // If you wish to crop selected document instead - switch to commented code below
-                            ProcessImageForCroppingUI(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
+//                            ProcessImageForCroppingUI(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                         }
                     }
                 }
