@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
                 // and must not touch fields or methods of enclosing class/method
                 override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
                     // TODO: use barcodeItem appropriately here as needed
-                    return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.text)
+                    return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.textWithExtension)
                 }
             }
 
