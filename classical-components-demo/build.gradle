@@ -21,7 +21,7 @@ allprojects {
         minSdkVersion = 21
         targetSdkVersion = 30
 
-        scanbotSdkVersion = '1.89.1'
+        scanbotSdkVersion = '1.90.0'
 
         constraintLayoutVersion = "2.0.4"
         coroutinesAndroidVersion = "1.4.3"
@@ -46,5 +46,4 @@ allprojects {
         // Hack to let Gradle pickup latest SNAPSHOTS
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
-
 }

@@ -18,24 +18,22 @@ import io.scanbot.sdk.ui.entity.workflow.ScanPayFormWorkflowStep
 import io.scanbot.sdk.ui.entity.workflow.Workflow
 import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
-import java.util.*
-
 
 class PayFormResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
         const val NAME = "PayFormResultDialogFragment"
 
-        val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
-        val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
+        const val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
+        const val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
 
-        fun newInstance(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>): PayFormResultDialogFragment {
+        fun newInstance(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>): PayFormResultDialogFragment {
             val f = PayFormResultDialogFragment()
 
             // Supply num input as an argument.
             val args = Bundle()
             args.putParcelable(WORKFLOW_EXTRA, workflow)
-            args.putParcelableArrayList(WORKFLOW_RESULT_EXTRA, workflowStepResults)
+            args.putParcelableArrayList(WORKFLOW_RESULT_EXTRA, ArrayList(workflowStepResults))
             f.arguments = args
 
             return f

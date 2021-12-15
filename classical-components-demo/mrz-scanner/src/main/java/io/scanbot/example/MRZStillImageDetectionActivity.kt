@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
@@ -25,6 +26,7 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
 import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
@@ -43,6 +45,30 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     private lateinit var mrzScanner: MRZScanner
     private lateinit var pageFileStorage: PageFileStorage
     private lateinit var pageProcessor: PageProcessor
+
+    private val docScannerResultLauncher =
+        registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
+            val parcelablePages = resultEntity.result!!
+            page = parcelablePages[0]
+            displayPreviewImage()
+            cropBtn.visibility = View.VISIBLE
+            runRecognitionBtn.visibility = View.VISIBLE
+        }
+
+    private val croppingResultLauncher =
+        registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
+            page = resultEntity.result!!
+            displayPreviewImage()
+        }
+
+    private val chooseFromGalleryResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+        if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+            val imageUri = activityResult.data!!.data
+            ImportImageToPageTask(imageUri!!).execute()
+            progressView.visibility = View.VISIBLE
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +89,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
             configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
             configuration.setIgnoreBadAspectRatio(true)
-            val intent = DocumentScannerActivity.newIntent(this@MRZStillImageDetectionActivity, configuration)
-            startActivityForResult(intent, DOCUMENT_SCANNER_REQUEST_CODE)
+            docScannerResultLauncher.launch(configuration)
         }
 
         findViewById<View>(R.id.import_from_lib_btn).setOnClickListener { openGallery() }
@@ -73,37 +98,11 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
         cropBtn.setOnClickListener {
             val configuration = CroppingConfiguration()
             configuration.setPage(page!!)
-            val intent = CroppingActivity.newIntent(this@MRZStillImageDetectionActivity, configuration)
-            startActivityForResult(intent, CROP_REQUEST_CODE)
+            croppingResultLauncher.launch(configuration)
         }
 
         runRecognitionBtn = findViewById(R.id.run_recognition_btn)
         runRecognitionBtn.setOnClickListener { runRecognition() }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.let {
-            if (requestCode == DOCUMENT_SCANNER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                val parcelablePages = data.getParcelableArrayExtra(DocumentScannerActivity.SNAPPED_PAGE_EXTRA)!!
-                page = parcelablePages[0] as Page
-                displayPreviewImage()
-                cropBtn.visibility = View.VISIBLE
-                runRecognitionBtn.visibility = View.VISIBLE
-                return
-            }
-            if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                val imageUri = data.data
-                ImportImageToPageTask(imageUri!!).execute()
-                progressView.visibility = View.VISIBLE
-                return
-            }
-            if (requestCode == CROP_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                page = data.getParcelableExtra(CroppingActivity.EDITED_PAGE_EXTRA)
-                displayPreviewImage()
-                return
-            }
-        }
     }
 
     private fun openGallery() {
@@ -111,7 +110,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-        startActivityForResult(Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE)
+        chooseFromGalleryResultLauncher.launch(Intent.createChooser(intent, "Select picture"))
     }
 
     private fun displayPreviewImage() {
@@ -148,7 +147,6 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
                 ).show()
             }
         }
-
     }
 
     private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Any?, Any?, Any?>() {
@@ -174,12 +172,5 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
                 runRecognitionBtn.visibility = View.VISIBLE
             }
         }
-
-    }
-
-    companion object {
-        private const val DOCUMENT_SCANNER_REQUEST_CODE = 4711
-        private const val PHOTOLIB_REQUEST_CODE = 5711
-        private const val CROP_REQUEST_CODE = 6711
     }
 }
