@@ -41,7 +41,10 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         mrzScannerFrameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
                 val mrzRecognitionResult = result.value
-                if (mrzRecognitionResult.recognitionSuccessful) {
+
+                // It is recommended to use a frame accumulation as well and expect at least 2 of 4 frames to be equal
+                if (mrzRecognitionResult.recognitionSuccessful &&
+                        mrzRecognitionResult.checkDigitsCount == mrzRecognitionResult.validCheckDigitsCount) {
                     startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
                 }
             }

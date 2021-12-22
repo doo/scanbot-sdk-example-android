@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.90.0
+Open Source libraries used in the Scanbot SDK for Android version 1.90.1
 
 Apache Commons Codec
 
