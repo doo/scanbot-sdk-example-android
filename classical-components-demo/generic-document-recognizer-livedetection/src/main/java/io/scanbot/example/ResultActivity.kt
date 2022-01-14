@@ -107,7 +107,7 @@ private class Adapter(
         }
     }
 
-    override fun getItemCount(): Int = fieldsList()?.size ?: 0 + 1
+    override fun getItemCount(): Int = (fieldsList()?.size ?: 0) + 1
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
