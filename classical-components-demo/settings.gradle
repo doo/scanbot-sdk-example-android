@@ -9,7 +9,7 @@ include(
         ':barcode-scanner',
         ':mrz-scanner',
         ':blur-estimator',
-        ':dc-scanner',
+        ':mc-scanner',
         ':generic-document-recognizer-autosnapping',
         ':generic-document-recognizer-livedetection',
         ':generic-text-recognizer',

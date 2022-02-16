@@ -28,9 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DCScannerActivity" />
-        <activity android:name=".ManualDCScannerActivity" />
-        <activity android:name=".DCResultActivity" />
+        <activity android:name=".MedicalCertificateScannerActivity" />
+        <activity android:name=".ManualMedicalCertificateScannerActivity" />
+        <activity android:name=".MedicalCertificateResultActivity" />
     </application>
 
 </manifest>
