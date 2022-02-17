@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +14,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
-import io.scanbot.dcscanner.model.DCInfoBoxSubtype
-import io.scanbot.dcscanner.model.DateRecordType
-import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
 import io.scanbot.example.R
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
+import io.scanbot.mcscanner.model.DateRecordType
+import io.scanbot.mcscanner.model.McInfoBoxSubtype
+import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.ui.entity.workflow.DisabilityCertificateWorkflowStepResult
@@ -28,16 +29,18 @@ import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import kotlinx.android.synthetic.main.fragment_workflow_result_dialog.view.*
 import java.io.File
 
-class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
+class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
-        const val NAME = "DCResultDialogFragment"
+        const val NAME = "MedicalCertificateResultDialogFragment"
 
         const val WORKFLOW_EXTRA = "WORKFLOW_EXTRA"
         const val WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA"
 
-        fun newInstance(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>): DCResultDialogFragment {
-            val f = DCResultDialogFragment()
+        const val MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA"
+
+        fun newInstance(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>): MedicalCertificateResultDialogFragment {
+            val f = MedicalCertificateResultDialogFragment()
 
             // Supply num input as an argument.
             val args = Bundle()
@@ -47,26 +50,51 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
             return f
         }
+
+        fun newInstance(medicalCertificateScanResult: MedicalCertificateRecognizerResult): MedicalCertificateResultDialogFragment {
+            val f = MedicalCertificateResultDialogFragment()
+
+            // Supply num input as an argument.
+            val args = Bundle()
+            args.putParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, medicalCertificateScanResult)
+            f.arguments = args
+
+            return f
+        }
     }
 
     private var workflow: Workflow? = null
     private var workflowStepResults: List<WorkflowStepResult>? = null
 
+    private var medicalCertificateResult: MedicalCertificateRecognizerResult? = null
+
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
         workflow = arguments?.getParcelable(WORKFLOW_EXTRA)
         workflowStepResults = arguments?.getParcelableArrayList(WORKFLOW_RESULT_EXTRA)
 
+        medicalCertificateResult = arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
+
         val view = inflater.inflate(R.layout.fragment_workflow_result_dialog, container)
 
-        view.title.text = "Detected DC Form"
+        view.title.text = "Detected Medical Certificate Form"
 
-        val dcScanStepResult = workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
-        if (dcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
-            view.findViewById<TextView>(R.id.tv_data).text = dcScanStepResult.disabilityCertificateResult?.let { extractData(it) }
+        if (workflow != null) {
+            val medicalCertificateScanResult =
+                workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
+            if (medicalCertificateScanResult.step is ScanDisabilityCertificateWorkflowStep) {
+                view.findViewById<TextView>(R.id.tv_data).text =
+                    medicalCertificateScanResult.medicalCertificateResult?.let { extractData(it) }
 
-            dcScanStepResult.capturedPage?.let {
+                medicalCertificateScanResult.capturedPage?.let {
+                    view.images_container.visibility = View.VISIBLE
+                    showPageImage(it, view.front_snap_result)
+                }
+            }
+        } else {
+            medicalCertificateResult?.let { result ->
+                view.findViewById<TextView>(R.id.tv_data).text = extractData(result)
                 view.images_container.visibility = View.VISIBLE
-                showPageImage(it, view.front_snap_result)
+                result.croppedImage?.let { showBitmapImage(it, view.front_snap_result) }
             }
         }
 
@@ -86,6 +114,11 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                 .centerInside()
                 .into(imageView)
+    }
+
+    private fun showBitmapImage(mcImage: Bitmap, imageView: ImageView) {
+        imageView.visibility = View.VISIBLE
+        imageView.setImageBitmap(mcImage)
     }
 
 
@@ -112,14 +145,19 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
                 R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val dcScanStepResult = workflowStepResults?.get(0) as DisabilityCertificateWorkflowStepResult
-                if (dcScanStepResult.disabilityCertificateResult != null && dcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
-                    val data = extractData(dcScanStepResult.disabilityCertificateResult!!)
-
-                    val clip = ClipData.newPlainText(data, data)
-
-                    clipboard.setPrimaryClip(clip)
+                val data = medicalCertificateResult?.let { extractData(it) } ?: workflowStepResults?.let {
+                    val mcScanStepResult = it[0] as DisabilityCertificateWorkflowStepResult
+                    if (mcScanStepResult.medicalCertificateResult != null && mcScanStepResult.step is ScanDisabilityCertificateWorkflowStep) {
+                        extractData(mcScanStepResult.medicalCertificateResult!!)
+                    } else {
+                        medicalCertificateResult?.let { extractData(it) }
+                    }
                 }
+
+
+                val clip = ClipData.newPlainText(data, data)
+
+                clipboard.setPrimaryClip(clip)
                 dismiss()
             }
         }
@@ -129,26 +167,26 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: DisabilityCertificateRecognizerResultInfo): String {
+    private fun extractData(result: MedicalCertificateRecognizerResult): String {
         return StringBuilder()
                 .append("Type: ").append(if (result.checkboxes
-                                ?.find { disabilityCertificateInfoBox -> disabilityCertificateInfoBox.subType == DCInfoBoxSubtype.DCBoxInitialCertificate }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxInitialCertificate }
                                 ?.hasContents == true)
                     "Initial"
                 else if (result.checkboxes
-                                ?.find { disabilityCertificateInfoBox -> disabilityCertificateInfoBox.subType == DCInfoBoxSubtype.DCBoxRenewedCertificate }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxRenewedCertificate }
                                 ?.hasContents == true)
                     "Renewed"
                 else
                     "Unknown").append("\n")
                 .append("Work Accident: ").append(if (result.checkboxes
-                                ?.find { disabilityCertificateInfoBox -> disabilityCertificateInfoBox.subType == DCInfoBoxSubtype.DCBoxWorkAccident }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxWorkAccident }
                                 ?.hasContents == true)
                     "Yes"
                 else "No").append("\n")
                 .append("Accident Consultant: ").append(
                         if (result.checkboxes
-                                        ?.find { disabilityCertificateInfoBox -> disabilityCertificateInfoBox.subType == DCInfoBoxSubtype.DCBoxAssignedToAccidentInsuranceDoctor }
+                                        ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxAssignedToAccidentInsuranceDoctor }
                                         ?.hasContents == true)
                             "Yes"
                         else "No"
@@ -163,7 +201,7 @@ class DCResultDialogFragment : androidx.fragment.app.DialogFragment() {
                         result.dates?.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordDiagnosedOn }?.dateString
                 )
                 .append("\n")
-                .append("Form type: ${result.dcFormType.name}")
+                .append("Form type: ${result.mcFormType.name}")
                 .append("\n")
                 .append(result.patientInfoFields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
                 .toString()

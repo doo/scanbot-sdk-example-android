@@ -77,20 +77,20 @@ class WorkflowFactory {
             return Workflow(steps, "Scanning MRZ Code & 2 Sides")
         }
 
-        fun disabilityCertificate(): Workflow {
+        fun medicalCertificate(): Workflow {
             val ratios = listOf(
-                    PageAspectRatio(148.0, 210.0), // DC form A5 portrait (e.g. white sheet, AUB Muster 1b/E (1/2018))
-                    PageAspectRatio(148.0, 105.0)  // DC form A6 landscape (e.g. yellow sheet, AUB Muster 1b (1.2018))
+                    PageAspectRatio(148.0, 210.0), // Medical Certificate form A5 portrait (e.g. white sheet, AUB Muster 1b/E (1/2018))
+                    PageAspectRatio(148.0, 105.0)  // Medical Certificate form A6 landscape (e.g. yellow sheet, AUB Muster 1b (1.2018))
             )
             val steps = listOf(
                     ScanDisabilityCertificateWorkflowStep(
-                            message = "Please align the DC form in the frame.",
+                            message = "Please align the Medical Certificate form in the frame.",
                             requiredAspectRatios = ratios,
                             wantsCapturedPage = true,
                             workflowStepValidation = object : WorkflowStep.WorkflowStepValidationHandler<DisabilityCertificateWorkflowStepResult> {
                                 override fun invoke(stepResult: DisabilityCertificateWorkflowStepResult): WorkflowStepError? {
-                                    return if (stepResult.disabilityCertificateResult == null
-                                            || !stepResult.disabilityCertificateResult!!.recognitionSuccessful) {
+                                    return if (stepResult.medicalCertificateResult == null
+                                            || !stepResult.medicalCertificateResult!!.recognitionSuccessful) {
                                         WorkflowStepError(
                                                 1,
                                                 "This does not seem to be the correct page.",
@@ -102,7 +102,7 @@ class WorkflowFactory {
                             }
                     )
             )
-            return Workflow(steps, "Disability Certificate")
+            return Workflow(steps, "Medical Certificate")
         }
 
         fun barcodeAndDocumentImage(): Workflow {
