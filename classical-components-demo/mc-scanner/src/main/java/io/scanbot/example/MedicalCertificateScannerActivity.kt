@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.example.MedicalCertificateResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
@@ -49,6 +50,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
+        cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSDK = ScanbotSDK(this)
         medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
@@ -95,7 +97,8 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
             0,
             shouldCropDocument = true,
             returnCroppedDocument = true,
-            recognizePatientInfo = true)
+            recognizePatientInfo = true,
+            recognizeBarcode = true)
 
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             // Show the cropped image as thumbnail preview
