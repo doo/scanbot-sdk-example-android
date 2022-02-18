@@ -402,7 +402,7 @@ class MainActivity : AppCompatActivity() {
             barcodeAndDocWorkflowResultLauncher.launch(rtuInput)
         }
 
-        findViewById<View>(R.id.dc_default_ui).setOnClickListener {
+        findViewById<View>(R.id.mc_workflow_ui).setOnClickListener {
             val workflowScannerConfiguration = WorkflowScannerConfiguration()
             workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
             workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))

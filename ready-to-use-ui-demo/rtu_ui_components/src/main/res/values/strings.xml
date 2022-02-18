@@ -14,7 +14,7 @@
     <string name="scan_mrz_image">Scan MRZ + Image</string>
     <string name="scan_mrz_back_and_front_image">Scan MRZ + Front and Back Image</string>
     <string name="scan_bar_code_and_doc_image">Scan QR-/Barcode + Document Image</string>
-    <string name="scan_dc_form">Scan Medical Certificate Form</string>
+    <string name="scan_mc_form_workflow">Scan Medical Certificate Form</string>
     <string name="scan_pay_form">Scan SEPA Pay Form</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
     <string name="multiple_object_detector">Multiple objects detector</string>
