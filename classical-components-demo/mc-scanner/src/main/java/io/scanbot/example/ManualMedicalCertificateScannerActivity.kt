@@ -18,10 +18,7 @@ import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
-import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
-import io.scanbot.sdk.process.CropOperation
-import io.scanbot.sdk.process.ImageProcessor
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -36,7 +33,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_manual_mc_scanner)
+        setContentView(R.layout.activity_manual_mc_recognizer)
         supportActionBar!!.hide()
 
         val scanbotSDK = ScanbotSDK(this)

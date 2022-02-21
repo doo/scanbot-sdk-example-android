@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.scanbot.example.MedicalCertificateScannerActivity.Companion.newIntent
+import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -18,11 +18,11 @@ import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateAutoSnappingController
+import io.scanbot.sdk.mcrecognizer.MedicalCertificateFrameHandler
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateScannerFrameHandler
 import kotlin.math.roundToInt
 
-class MedicalCertificateScannerActivity : AppCompatActivity() {
+class MedicalCertificateRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultImageView: ImageView
 
@@ -33,7 +33,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mc_scanner)
+        setContentView(R.layout.activity_mc_recognizer)
         supportActionBar!!.hide()
 
         resultImageView = findViewById(R.id.resultImageView)
@@ -55,8 +55,8 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
         medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
 
-        // Attach `FrameHandler`, that will be detecting Medical Certificate document of the camera frames
-        val frameHandler = MedicalCertificateScannerFrameHandler.attach(cameraView, medicalCertificateRecognizer)
+        // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
+        val frameHandler = MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
         // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
         val autoSnappingController = MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler)
 
@@ -139,7 +139,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, MedicalCertificateScannerActivity::class.java)
+            return Intent(context, MedicalCertificateRecognizerActivity::class.java)
         }
     }
 }

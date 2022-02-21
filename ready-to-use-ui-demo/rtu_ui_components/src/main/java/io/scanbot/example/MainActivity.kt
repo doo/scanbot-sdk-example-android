@@ -59,7 +59,7 @@ import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfig
 import io.scanbot.sdk.ui.view.licenseplate.LicensePlateScannerActivity
 import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConfiguration
 import io.scanbot.sdk.ui.view.mc.MedicalCertificateRecognizerActivity
-import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerrConfiguration
+import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
     private val barcodeAndDocWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
     private val dcWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
-    private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerrConfiguration>
+    private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val payformWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val multipleObjectsDetectorResultLauncher: ActivityResultLauncher<MultipleObjectsDetectorConfiguration>
@@ -167,10 +167,10 @@ class MainActivity : AppCompatActivity() {
         // This call will also remove the result from the repository (to make the memory usage less)
         val medicalCertificateRecognizerResult = resultRepository.getResultAndErase(resultWrapper.resultId)
 
-        showMedicalCertificateScannerResult(medicalCertificateRecognizerResult!!)
+        showMedicalCertificateRecognizerResult(medicalCertificateRecognizerResult!!)
     }
 
-    private fun showMedicalCertificateScannerResult(recognitionResult: MedicalCertificateRecognizerResult) {
+    private fun showMedicalCertificateRecognizerResult(recognitionResult: MedicalCertificateRecognizerResult) {
         val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
@@ -457,12 +457,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.mc_scanner_ui).setOnClickListener {
-            val config = MedicalCertificateRecognizerrConfiguration().apply {
+            val config = MedicalCertificateRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
                 setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
             }
 
-            medicalCertificateScannerActivityResultLauncher.launch(config)
+            medicalCertificateRecognizerActivityResultLauncher.launch(config)
         }
     }
 
@@ -608,7 +608,7 @@ class MainActivity : AppCompatActivity() {
                     handleGeneriDocRecognizerResult(resultEntity.result!!)
                 }
 
-        medicalCertificateScannerActivityResultLauncher =
+        medicalCertificateRecognizerActivityResultLauncher =
             registerForActivityResultOk(MedicalCertificateRecognizerActivity.ResultContract()) { resultEntity ->
                 handleMedicalCertificateResult(resultEntity.result!!)
             }
