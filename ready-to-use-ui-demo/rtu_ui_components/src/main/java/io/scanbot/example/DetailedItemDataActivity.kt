@@ -3,7 +3,7 @@ package io.scanbot.example
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDocument
-import io.scanbot.barcodescanner.model.DisabilityCertificate.DisabilityCertificateDocument
+import io.scanbot.barcodescanner.model.MedicalCertificate.MedicalCertificateDocument
 import io.scanbot.barcodescanner.model.IDCardPDF417.IDCardPDF417Document
 import io.scanbot.barcodescanner.model.SEPA.SEPADocument
 import io.scanbot.barcodescanner.model.VCard.VCardDocument
@@ -88,8 +88,8 @@ class DetailedItemDataActivity : AppCompatActivity() {
                             barcodesResult.append("${it.type.name}: ${it.value}\n")
                         }
             }
-            is DisabilityCertificateDocument -> {
-                barcodesResult.append("\nDisability Certificate Document\n")
+            is MedicalCertificateDocument -> {
+                barcodesResult.append("\nMedical Certificate Document\n")
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type?.name}: ${it.value}\n")

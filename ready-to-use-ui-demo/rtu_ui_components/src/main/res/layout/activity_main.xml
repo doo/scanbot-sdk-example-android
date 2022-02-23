@@ -338,13 +338,13 @@
             app:layout_constraintTop_toBottomOf="@+id/barcode_and_doc_default_ui" />
 
         <Button
-            android:id="@+id/dc_default_ui"
+            android:id="@+id/mc_workflow_ui"
             style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="@string/scan_dc_form"
+            android:text="@string/scan_mc_form_workflow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/barcode_and_doc_default_ui" />
@@ -357,7 +357,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/dc_default_ui" />
+            app:layout_constraintTop_toBottomOf="@+id/mc_workflow_ui" />
 
         <Button
             android:id="@+id/generic_document_default_ui"
@@ -369,7 +369,7 @@
             android:text="@string/scan_generic_document"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/dc_default_ui" />
+            app:layout_constraintTop_toBottomOf="@+id/mc_workflow_ui" />
 
         <View
             android:layout_width="0dp"
@@ -491,6 +491,28 @@
             app:layout_constraintStart_toStartOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/multiple_object_detector_ui" />
 
+        <Button
+            android:id="@+id/mc_scanner_ui"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/scan_mc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/multiple_object_detector_ui" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#1effffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/mc_scanner_ui" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -507,7 +529,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/multiple_object_detector_ui" />
+            app:layout_constraintTop_toBottomOf="@id/mc_scanner_ui" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

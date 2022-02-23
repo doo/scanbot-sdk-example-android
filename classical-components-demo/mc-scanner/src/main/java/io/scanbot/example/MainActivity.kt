@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.scanbot.example.DCScannerActivity.Companion.newIntent
+import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         scannerBtn.setOnClickListener { startActivity(newIntent(this@MainActivity)) }
 
         val manualScannerBtn = findViewById<View>(R.id.manual_scanner_btn) as Button
-        manualScannerBtn.setOnClickListener { startActivity(ManualDCScannerActivity.newIntent(this@MainActivity)) }
+        manualScannerBtn.setOnClickListener { startActivity(ManualMedicalCertificateScannerActivity.newIntent(this@MainActivity)) }
     }
 
     private fun askPermission() {

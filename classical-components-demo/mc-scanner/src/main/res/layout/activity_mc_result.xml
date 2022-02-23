@@ -11,7 +11,7 @@
 
 
         <LinearLayout
-            android:id="@+id/dc_result_checkboxes_layout"
+            android:id="@+id/mc_result_checkboxes_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -27,7 +27,7 @@
 
 
         <LinearLayout
-            android:id="@+id/dc_result_dates_layout"
+            android:id="@+id/mc_result_dates_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -43,7 +43,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/dc_result_patient_info_layout"
+            android:id="@+id/mc_result_patient_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -60,7 +60,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/dc_result_other_layout"
+            android:id="@+id/mc_result_other_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

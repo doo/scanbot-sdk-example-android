@@ -8,20 +8,20 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.dcscanner.model.DCInfoBoxSubtype
-import io.scanbot.dcscanner.model.DCPatientInfoField
-import io.scanbot.dcscanner.model.DateRecordType
-import io.scanbot.dcscanner.model.DisabilityCertificateRecognizerResultInfo
+import io.scanbot.mcscanner.model.DateRecordType
+import io.scanbot.mcscanner.model.McInfoBoxSubtype
+import io.scanbot.mcscanner.model.McPatientInfoField
+import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 
-class DCResultActivity : AppCompatActivity() {
+class MedicalCertificateResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dc_result)
+        setContentView(R.layout.activity_mc_result)
 
-        val checkboxesLayout = findViewById<LinearLayout>(R.id.dc_result_checkboxes_layout)
-        val datesLayout = findViewById<LinearLayout>(R.id.dc_result_dates_layout)
-        val patientInfoLayout = findViewById<LinearLayout>(R.id.dc_result_patient_info_layout)
-        val otherLayout = findViewById<LinearLayout>(R.id.dc_result_other_layout)
+        val checkboxesLayout = findViewById<LinearLayout>(R.id.mc_result_checkboxes_layout)
+        val datesLayout = findViewById<LinearLayout>(R.id.mc_result_dates_layout)
+        val patientInfoLayout = findViewById<LinearLayout>(R.id.mc_result_patient_info_layout)
+        val otherLayout = findViewById<LinearLayout>(R.id.mc_result_other_layout)
 
 
         addValueView(checkboxesLayout, "Work accident", intent.getBooleanExtra(EXTRA_workAccident, false))
@@ -48,7 +48,7 @@ class DCResultActivity : AppCompatActivity() {
         intent.getStringExtra(EXTRA_formType)?.let { addValueView(otherLayout, "Form type", it) }
         val parcelableArrayExtra = intent.getParcelableArrayExtra(EXTRA_patientInfo) as Array<Parcelable>
         parcelableArrayExtra.forEach {
-            if (it is DCPatientInfoField) {
+            if (it is McPatientInfoField) {
                 addValueView(patientInfoLayout, it.patientInfoFieldType.name, it.value)
                 addConfidenceValueView(patientInfoLayout, it.confidenceValue)
             }
@@ -103,25 +103,25 @@ class DCResultActivity : AppCompatActivity() {
         const val EXTRA_formType = "formType"
 
         @JvmStatic
-        fun newIntent(context: Context?, result: DisabilityCertificateRecognizerResultInfo): Intent {
-            val intent = Intent(context, DCResultActivity::class.java)
+        fun newIntent(context: Context?, result: MedicalCertificateRecognizerResult): Intent {
+            val intent = Intent(context, MedicalCertificateResultActivity::class.java)
             for (checkbox in result.checkboxes) {
                 when (checkbox.subType) {
-                    DCInfoBoxSubtype.DCBoxUnknown, DCInfoBoxSubtype.DCBoxPatientInfo -> {
+                    McInfoBoxSubtype.McBoxUnknown, McInfoBoxSubtype.McBoxPatientInfo -> {
                     }
-                    DCInfoBoxSubtype.DCBoxWorkAccident -> {
+                    McInfoBoxSubtype.McBoxWorkAccident -> {
                         intent.putExtra(EXTRA_workAccident, checkbox.hasContents)
                         intent.putExtra(EXTRA_workAccidentConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    DCInfoBoxSubtype.DCBoxAssignedToAccidentInsuranceDoctor -> {
+                    McInfoBoxSubtype.McBoxAssignedToAccidentInsuranceDoctor -> {
                         intent.putExtra(EXTRA_assignedInsDoctor, checkbox.hasContents)
                         intent.putExtra(EXTRA_assignedInsDoctorConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    DCInfoBoxSubtype.DCBoxInitialCertificate -> {
+                    McInfoBoxSubtype.McBoxInitialCertificate -> {
                         intent.putExtra(EXTRA_initialCertificate, checkbox.hasContents)
                         intent.putExtra(EXTRA_initialCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    DCInfoBoxSubtype.DCBoxRenewedCertificate -> {
+                    McInfoBoxSubtype.McBoxRenewedCertificate -> {
                         intent.putExtra(EXTRA_renewedCertificate, checkbox.hasContents)
                         intent.putExtra(EXTRA_renewedCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
@@ -149,7 +149,7 @@ class DCResultActivity : AppCompatActivity() {
                 }
             }
 
-            intent.putExtra(EXTRA_formType, result.dcFormType.name)
+            intent.putExtra(EXTRA_formType, result.mcFormType.name)
             intent.putExtra(EXTRA_patientInfo, result.patientInfoFields.toTypedArray())
 
             return intent
