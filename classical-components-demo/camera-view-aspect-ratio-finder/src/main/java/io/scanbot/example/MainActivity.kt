@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
-    private val requiredPageAspectRatios = listOf(FinderAspectRatio(21.0, 29.7))
+    private val requiredPageAspectRatios = listOf(FinderAspectRatio(4.0, 3.0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
