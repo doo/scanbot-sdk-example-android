@@ -1,6 +1,7 @@
 package io.scanbot.example
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -316,16 +317,25 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     }
 
     private fun openDocument(pdfFile: File) {
+        val uriForFile = androidx.core.content.FileProvider.getUriForFile(this@PagePreviewActivity,
+                this@PagePreviewActivity.applicationContext.packageName + ".provider", pdfFile)
         val openIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, androidx.core.content.FileProvider.getUriForFile(this@PagePreviewActivity,
-                    this@PagePreviewActivity.applicationContext.packageName + ".provider", pdfFile))
+            putExtra(Intent.EXTRA_STREAM, uriForFile)
             type = MimeUtils.getMimeByName(pdfFile.name)
         }
         openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         if (openIntent.resolveActivity(packageManager) != null) {
-            startActivity(Intent.createChooser(openIntent, pdfFile.name))
+            val chooser = Intent.createChooser(openIntent, pdfFile.name)
+            val resInfoList = this.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo.packageName
+                grantUriPermission(packageName, uriForFile, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(chooser)
+
         } else {
             Toast.makeText(this@PagePreviewActivity, getString(R.string.error_openning_document), Toast.LENGTH_LONG).show()
         }
