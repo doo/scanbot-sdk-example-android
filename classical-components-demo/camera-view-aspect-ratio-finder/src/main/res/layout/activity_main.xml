@@ -15,9 +15,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:id="@+id/finder_top_placeholder"
             android:layout_width="match_parent"
+            android:background="#55FFFFaa"
             android:layout_height="match_parent">
 
             <TextView
@@ -25,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:background="#cccccc"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:paddingLeft="16dp"
                 android:paddingTop="6dp"
                 android:paddingRight="16dp"
@@ -37,10 +38,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:id="@+id/finder_center_placeholder"
+            android:background="#55FFffaa"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -62,10 +64,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:id="@+id/finder_bottom_placeholder"
+            android:background="#55FFff56"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -88,7 +91,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
     </io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView>
 
     <Button
