@@ -638,9 +638,7 @@ class MainActivity : AppCompatActivity() {
         override fun onPostExecute(pages: List<Page>) {
             progressBar.visibility = View.GONE
             pages.first().also { page ->
-                val editPolygonConfiguration = CroppingConfiguration()
-
-                editPolygonConfiguration.setPage(page)
+                val editPolygonConfiguration = CroppingConfiguration(page)
 
                 cropResultLauncher.launch(editPolygonConfiguration)
             }
