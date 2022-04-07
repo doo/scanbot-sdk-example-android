@@ -89,8 +89,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }
 
         action_crop_and_rotate.setOnClickListener {
-            val croppingConfig = CroppingConfiguration()
-            croppingConfig.setPage(this.selectedPage)
+            val croppingConfig = CroppingConfiguration(this.selectedPage)
             croppingConfig.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             croppingConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             croppingConfig.setBottomBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
