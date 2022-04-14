@@ -96,8 +96,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
         cropBtn = findViewById(R.id.crop_btn)
         cropBtn.setOnClickListener {
-            val configuration = CroppingConfiguration()
-            configuration.setPage(page!!)
+            val configuration = CroppingConfiguration(page!!)
             croppingResultLauncher.launch(configuration)
         }
 
