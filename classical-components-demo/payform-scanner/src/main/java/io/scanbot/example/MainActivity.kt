@@ -1,34 +1,76 @@
 package io.scanbot.example
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.scanbot.sdk.ScanbotSDK
+import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        private const val IMPORT_IMAGE_REQUEST_CODE = 911
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         askPermission()
-        initDependencies()
 
         val scannerBtn = findViewById<View>(R.id.scanner_btn) as Button
         scannerBtn.setOnClickListener { startActivity(PayformScannerActivity.newIntent(this@MainActivity)) }
     }
 
     private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
 
-    private fun initDependencies() {
-        val scanbotSDK = ScanbotSDK(this)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val sdk = ScanbotSDK(this)
+            if (!sdk.licenseInfo.isValid) {
+                Toast.makeText(
+                    this,
+                    "License has expired!",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                processGalleryResult(data!!)?.let { bitmap ->
+                    val payformScanner = sdk.createPayFormScanner()
+                    val stream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    val byteArray: ByteArray = stream.toByteArray()
+                    bitmap.recycle()
+                    val result =
+                        payformScanner.recognizeFormJPEG(byteArray, bitmap.width, bitmap.height, 0)
+
+                    runOnUiThread {
+                        result?.let { PayformResultActivity.newIntent(this, it.payformFields) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun processGalleryResult(data: Intent): Bitmap? {
+        val imageUri = data.data
+        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
     }
 }
