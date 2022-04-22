@@ -39,7 +39,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_autosnapping_cheque_scanner)
+        setContentView(R.layout.activity_autosnapping_check_scanner)
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->
             cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
             cameraView.setCameraOpenCallback {
@@ -75,6 +75,9 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
                 contourDetectorFrameHandler.isEnabled = false
                 processPictureTaken(image)
+                runOnUiThread {
+                    polygonView.visibility = View.GONE
+                }
             }
         })
 
@@ -114,6 +117,14 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
                 if (result != null && result.fields.isNotEmpty()) {
                     CheckScannerResultActivity.tempDocumentImage = imageCopy
                     startActivity(CheckScannerResultActivity.newIntent(this, result))
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this,
+                            "Check is not recognized - please, try agian",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
@@ -123,6 +134,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
             cameraView.continuousFocus()
             cameraView.startPreview()
             contourDetectorFrameHandler.isEnabled = true
+            polygonView.visibility = View.VISIBLE
         }, 1000)
     }
 
