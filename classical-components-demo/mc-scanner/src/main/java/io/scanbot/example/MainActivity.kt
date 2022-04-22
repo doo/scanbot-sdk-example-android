@@ -40,17 +40,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.pick_image_btn)?.run {
-            val imageIntent = Intent()
-            imageIntent.type = "image/*"
-            imageIntent.action = Intent.ACTION_GET_CONTENT
-            imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
-            imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-            startActivityForResult(
-                Intent.createChooser(
-                    imageIntent,
-                    "import image for detect"
-                ), IMPORT_IMAGE_REQUEST_CODE
-            )
+            setOnClickListener {
+                val imageIntent = Intent()
+                imageIntent.type = "image/*"
+                imageIntent.action = Intent.ACTION_GET_CONTENT
+                imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
+                imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+                startActivityForResult(
+                    Intent.createChooser(
+                        imageIntent,
+                        "import image for detect"
+                    ), IMPORT_IMAGE_REQUEST_CODE
+                )
+            }
         }
     }
 
