@@ -9,17 +9,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <io.scanbot.sdk.ui.PolygonView
+            android:id="@+id/polygonView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:polygonStrokeColor="#cccccc"
+            app:polygonStrokeColorOK="#cccccc"
+            app:polygonStrokeWidth="5dp" />
+
     </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
 
     <TextView
         android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:background="#fff"
         android:gravity="center"
-        android:visibility="gone"
         android:text="Result will be there"
-        android:layout_gravity="bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/flash"
