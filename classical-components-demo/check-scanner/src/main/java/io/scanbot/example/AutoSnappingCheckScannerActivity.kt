@@ -19,6 +19,7 @@ import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
+import io.scanbot.sdk.process.ResizeOperation
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
@@ -109,8 +110,14 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
         contourDetector.detect(originalBitmap)
+
+
+
         contourDetector.polygonF?.let { polygon ->
-            imageProcessor.processBitmap(originalBitmap, CropOperation(polygon), false)?.let { documentImage ->
+            imageProcessor.processBitmap(
+                originalBitmap,
+                listOf(CropOperation(polygon), ResizeOperation(1920)), false
+            )?.let { documentImage ->
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)
                 val result = checkScanner.recognizeCheckBitmap(documentImage, 0)
