@@ -90,14 +90,17 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
                     processPictureTaken(image, captureInfo.imageOrientation)
+
+                    // continue scanning
+                    documentScannerView.postDelayed({
+                        documentScannerView.viewController.startPreview()
+                    }, 1000)
                 }
             }
         )
 
-        // TODO
-        // documentScannerView.cameraConfiguration.setAcceptedAngleScore(60.0)
-        // documentScannerView.cameraConfiguration.setAcceptedSizeScore(75.0)
-
+        documentScannerView.cameraConfiguration.setAcceptedAngleScore(60.0)
+        documentScannerView.cameraConfiguration.setAcceptedSizeScore(75.0)
         documentScannerView.cameraConfiguration.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
         // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
