@@ -59,12 +59,8 @@ class MainActivity : AppCompatActivity() {
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
-        // In this example we demonstrate how to lock the orientation of the UI (Activity)
-        // as well as the orientation of the taken picture to portrait.
-        documentScannerView.cameraConfiguration.setCameraOrientationMode(CameraOrientationMode.PORTRAIT)
-
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
-//        documentScannerView.cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
+        // documentScannerView.cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
 
         resultView = findViewById<View>(R.id.result) as ImageView
 
@@ -85,6 +81,10 @@ class MainActivity : AppCompatActivity() {
             },
             object : IDocumentScannerViewCallback {
                 override fun onCameraOpen() {
+                    // In this example we demonstrate how to lock the orientation of the UI (Activity)
+                    // as well as the orientation of the taken picture to portrait.
+                    documentScannerView.cameraConfiguration.setCameraOrientationMode(CameraOrientationMode.PORTRAIT)
+
                     documentScannerView.viewController.useFlash(flashEnabled)
                 }
 
