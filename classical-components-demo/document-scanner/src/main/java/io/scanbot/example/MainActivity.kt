@@ -64,47 +64,53 @@ class MainActivity : AppCompatActivity() {
 
         resultView = findViewById<View>(R.id.result) as ImageView
 
-        documentScannerView.polygonConfiguration.setPolygonFillColor(POLYGON_FILL_COLOR)
-        documentScannerView.polygonConfiguration.setPolygonFillColorOK(POLYGON_FILL_COLOR_OK)
+        documentScannerView.polygonConfiguration.apply {
+            setPolygonFillColor(POLYGON_FILL_COLOR)
+            setPolygonFillColorOK(POLYGON_FILL_COLOR_OK)
+        }
 
-        documentScannerView.initCamera(CameraUiSettings(true))
-        documentScannerView.initDetectionBehavior(contourDetector,
-            { result ->
-                // Here you are continuously notified about contour detection results.
-                // For example, you can show a user guidance text depending on the current detection status.
-                userGuidanceHint.post {
-                    if (result is FrameHandlerResult.Success<*>) {
-                        showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+        documentScannerView.apply {
+            initCamera(CameraUiSettings(true))
+            initDetectionBehavior(contourDetector,
+                { result ->
+                    // Here you are continuously notified about contour detection results.
+                    // For example, you can show a user guidance text depending on the current detection status.
+                    userGuidanceHint.post {
+                        if (result is FrameHandlerResult.Success<*>) {
+                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+                        }
+                    }
+                    false // typically you need to return false
+                },
+                object : IDocumentScannerViewCallback {
+                    override fun onCameraOpen() {
+                        // In this example we demonstrate how to lock the orientation of the UI (Activity)
+                        // as well as the orientation of the taken picture to portrait.
+                        documentScannerView.cameraConfiguration.setCameraOrientationMode(CameraOrientationMode.PORTRAIT)
+
+                        documentScannerView.viewController.useFlash(flashEnabled)
+                    }
+
+                    override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                        processPictureTaken(image, captureInfo.imageOrientation)
+
+                        // continue scanning
+                        documentScannerView.postDelayed({
+                            documentScannerView.viewController.startPreview()
+                        }, 1000)
                     }
                 }
-                false // typically you need to return false
-            },
-            object : IDocumentScannerViewCallback {
-                override fun onCameraOpen() {
-                    // In this example we demonstrate how to lock the orientation of the UI (Activity)
-                    // as well as the orientation of the taken picture to portrait.
-                    documentScannerView.cameraConfiguration.setCameraOrientationMode(CameraOrientationMode.PORTRAIT)
+            )
+        }
 
-                    documentScannerView.viewController.useFlash(flashEnabled)
-                }
+        documentScannerView.cameraConfiguration.apply {
+            setAcceptedAngleScore(60.0)
+            setAcceptedSizeScore(75.0)
+            setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
-                override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                    processPictureTaken(image, captureInfo.imageOrientation)
-
-                    // continue scanning
-                    documentScannerView.postDelayed({
-                        documentScannerView.viewController.startPreview()
-                    }, 1000)
-                }
-            }
-        )
-
-        documentScannerView.cameraConfiguration.setAcceptedAngleScore(60.0)
-        documentScannerView.cameraConfiguration.setAcceptedSizeScore(75.0)
-        documentScannerView.cameraConfiguration.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
-
-        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
-        documentScannerView.cameraConfiguration.setAutoSnappingSensitivity(0.85f)
+            // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
+            setAutoSnappingSensitivity(0.85f)
+        }
 
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
 
@@ -216,8 +222,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAutoSnapEnabled(enabled: Boolean) {
-        documentScannerView.viewController.autoSnappingEnabled = enabled
-        documentScannerView.viewController.isFrameProcessingEnabled = enabled
+        documentScannerView.viewController.apply {
+            autoSnappingEnabled = enabled
+            isFrameProcessingEnabled = enabled
+        }
         documentScannerView.polygonConfiguration.setPolygonViewVisible(enabled)
 
         autoSnappingToggleButton.text = "Automatic ${if (enabled) "ON" else "OFF"}"

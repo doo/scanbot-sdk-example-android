@@ -42,35 +42,39 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
             setSaveCameraPreviewFrame(false)
         }
 
-        barcodeScannerView.initCamera(CameraUiSettings(false))
-        barcodeScannerView.initDetectionBehavior(barcodeDetector,
-            { result ->
-                if (result is FrameHandlerResult.Success) {
-                    handleSuccess(result)
-                } else {
-                    barcodeScannerView.post {
-                        Toast.makeText(
-                            this@BarcodeScannerViewActivity,
-                            "License has expired!",
-                            Toast.LENGTH_LONG
-                        ).show()
+        barcodeScannerView.apply {
+            initCamera(CameraUiSettings(false))
+            initDetectionBehavior(barcodeDetector,
+                { result ->
+                    if (result is FrameHandlerResult.Success) {
+                        handleSuccess(result)
+                    } else {
+                        barcodeScannerView.post {
+                            Toast.makeText(
+                                this@BarcodeScannerViewActivity,
+                                "License has expired!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                    false
+                },
+                object : IBarcodeScannerViewCallback {
+                    override fun onCameraOpen() {
+                        barcodeScannerView.viewController.useFlash(flashEnabled)
+                    }
+
+                    override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                        // we don't need full size pictures in this example
                     }
                 }
-                false
-            },
-            object : IBarcodeScannerViewCallback {
-                override fun onCameraOpen() {
-                    barcodeScannerView.viewController.useFlash(flashEnabled)
-                }
+            )
+        }
 
-                override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                    // we don't need full size pictures in this example
-                }
-            }
-        )
-
-        barcodeScannerView.viewController.barcodeDetectionInterval = 1000
-        barcodeScannerView.viewController.autoSnappingEnabled = false
+        barcodeScannerView.viewController.apply {
+            barcodeDetectionInterval = 1000
+            autoSnappingEnabled = false
+        }
     }
 
     override fun onResume() {
