@@ -9,8 +9,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.checkscanner.model.CheckFieldType
 import io.scanbot.checkscanner.model.Result
+import io.scanbot.genericdocument.entity.GenericDocument
 
 class CheckScannerResultActivity : AppCompatActivity() {
     private lateinit var checkResultImageView: ImageView
@@ -22,16 +22,20 @@ class CheckScannerResultActivity : AppCompatActivity() {
         val fieldsLayout = findViewById<LinearLayout>(R.id.check_result_fields_layout)
         checkResultImageView = findViewById(R.id.check_result_image)
 
-        val fields = intent.getSerializableExtra(EXTRA_FIELDS) as ArrayList<Pair<CheckFieldType, String>>
+        intent.getParcelableExtra<GenericDocument>(EXTRA_CHECK_DOCUMENT)?.also { checkDocument ->
+            addValueView(fieldsLayout, "Type", checkDocument.type.name)
+            checkDocument.fields.forEach { field ->
+                field.value?.let { ocrResult ->
+                    addValueView(fieldsLayout, field.type.name, ocrResult.text)
+                }
+            }
+        }
 
         tempDocumentImage?.let {
             checkResultImageView.visibility = View.VISIBLE
             checkResultImageView.setImageBitmap(it)
         }
 
-        fields.forEach { field ->
-            addValueView(fieldsLayout, field.first.name, field.second)
-        }
         findViewById<View>(R.id.retry).setOnClickListener {
             tempDocumentImage = null
             finish()
@@ -46,7 +50,7 @@ class CheckScannerResultActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_FIELDS = "fields"
+        const val EXTRA_CHECK_DOCUMENT = "CheckDocument"
 
         // TODO: handle image more carefully in production code
         var tempDocumentImage: Bitmap? = null
@@ -54,14 +58,7 @@ class CheckScannerResultActivity : AppCompatActivity() {
         @JvmStatic
         fun newIntent(context: Context?, result: Result): Intent {
             val intent = Intent(context, CheckScannerResultActivity::class.java)
-
-            val listOf = ArrayList<Pair<CheckFieldType, String>>()
-            for (field in result.fields) {
-                val pair = field.key to field.value.value
-                listOf.add(pair)
-            }
-
-            intent.putExtra(EXTRA_FIELDS, listOf)
+            intent.putExtra(EXTRA_CHECK_DOCUMENT, result.check)
             return intent
         }
     }

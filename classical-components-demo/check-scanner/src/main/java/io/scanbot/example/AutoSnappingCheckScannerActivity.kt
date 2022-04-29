@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.checkscanner.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.checkscanner.CheckScanner
@@ -121,7 +122,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)
                 val result = checkScanner.recognizeCheckBitmap(documentImage, 0)
-                if (result != null && result.fields.isNotEmpty()) {
+                if (result?.status == CheckRecognizerStatus.SUCCESS) {
                     CheckScannerResultActivity.tempDocumentImage = imageCopy
                     startActivity(CheckScannerResultActivity.newIntent(this, result))
                 } else {

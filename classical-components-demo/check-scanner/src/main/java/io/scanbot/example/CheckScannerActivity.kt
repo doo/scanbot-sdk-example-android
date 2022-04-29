@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.checkscanner.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -45,7 +46,7 @@ class CheckScannerActivity : AppCompatActivity() {
         checkScannerFrameHandler.addResultHandler { result: FrameHandlerResult<Result?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
                 val recognitionResult = (result as FrameHandlerResult.Success<*>).value as Result?
-                if (recognitionResult != null && recognitionResult.fields.isNotEmpty()) {
+                if (recognitionResult?.status == CheckRecognizerStatus.SUCCESS) {
                     checkScannerFrameHandler.isEnabled = false
                     startActivity(CheckScannerResultActivity.newIntent(this, recognitionResult))
                 }
