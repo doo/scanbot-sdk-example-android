@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -13,14 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.checkscanner.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.*
+import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.camera.CaptureInfo
+import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.checkscanner.CheckScanner
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
-import io.scanbot.sdk.process.ResizeOperation
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
@@ -112,17 +113,15 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
 
         contourDetector.detect(originalBitmap)
 
-
-
         contourDetector.polygonF?.let { polygon ->
             imageProcessor.processBitmap(
                 originalBitmap,
-                listOf(CropOperation(polygon), ResizeOperation(1920)), false
+                listOf(CropOperation(polygon)), false
             )?.let { documentImage ->
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)
                 val result = checkScanner.recognizeCheckBitmap(documentImage, 0)
-                if (result?.status == CheckRecognizerStatus.SUCCESS) {
+                if (result?.check != null) {
                     CheckScannerResultActivity.tempDocumentImage = imageCopy
                     startActivity(CheckScannerResultActivity.newIntent(this, result))
                 } else {
