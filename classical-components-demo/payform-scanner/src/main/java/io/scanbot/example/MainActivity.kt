@@ -13,7 +13,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
@@ -58,26 +62,34 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val sdk = ScanbotSDK(this)
-            if (!sdk.licenseInfo.isValid) {
-                Toast.makeText(
-                    this,
-                    "License has expired!",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                processGalleryResult(data!!)?.let { bitmap ->
-                    val payformScanner = sdk.createPayFormScanner()
-                    val stream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                    val byteArray: ByteArray = stream.toByteArray()
-                    bitmap.recycle()
-                    val result =
-                        payformScanner.recognizeFormJPEG(byteArray, bitmap.width, bitmap.height, 0)
+        lifecycleScope.launch(Dispatchers.Default) {
+            if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                val activity = this@MainActivity
+                val sdk = ScanbotSDK(activity)
+                if (!sdk.licenseInfo.isValid) {
+                    Toast.makeText(
+                        activity,
+                        "License has expired!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    processGalleryResult(data!!)?.let { bitmap ->
+                        val payformScanner = sdk.createPayFormScanner()
+                        val stream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                        val byteArray: ByteArray = stream.toByteArray()
+                        bitmap.recycle()
+                        val result =
+                            payformScanner.recognizeFormJPEG(
+                                byteArray,
+                                bitmap.width,
+                                bitmap.height,
+                                0
+                            )
 
-                    runOnUiThread {
-                        result?.let { PayformResultActivity.newIntent(this, it.payformFields) }
+                        withContext(Dispatchers.Main) {
+                            result?.let { PayformResultActivity.newIntent(activity, it.payformFields) }
+                        }
                     }
                 }
             }

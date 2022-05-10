@@ -13,8 +13,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -68,23 +72,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val sdk = ScanbotSDK(this)
-            if (!sdk.licenseInfo.isValid) {
-                Toast.makeText(
-                    this,
-                    "License has expired!",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                processGalleryResult(data!!)?.let { bitmap ->
-                    val medicalCertificateRecognizer = sdk.createMedicalCertificateRecognizer()
+        lifecycleScope.launch(Dispatchers.Default) {
+            if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                val activity = this@MainActivity
+                val sdk = ScanbotSDK(activity)
+                if (!sdk.licenseInfo.isValid) {
+                    Toast.makeText(
+                        activity,
+                        "License has expired!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    processGalleryResult(data!!)?.let { bitmap ->
+                        val medicalCertificateRecognizer = sdk.createMedicalCertificateRecognizer()
 
-                    val result =
-                        medicalCertificateRecognizer.recognizeMcBitmap(bitmap, 0, true, true, true)
+                        val result =
+                            medicalCertificateRecognizer.recognizeMcBitmap(
+                                bitmap,
+                                0,
+                                true,
+                                true,
+                                true
+                            )
 
-                    runOnUiThread {
-                        result?.let { MedicalCertificateResultActivity.newIntent(this, it) }
+                        withContext(Dispatchers.Main) {
+                            result?.let { MedicalCertificateResultActivity.newIntent(activity, it) }
+                        }
                     }
                 }
             }
