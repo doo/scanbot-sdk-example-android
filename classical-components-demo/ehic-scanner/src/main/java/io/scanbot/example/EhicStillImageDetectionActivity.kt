@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -15,9 +14,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.EhicResultActivity.Companion.newIntent
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
-import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
@@ -33,6 +32,9 @@ import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class EhicStillImageDetectionActivity : AppCompatActivity() {
@@ -65,12 +67,14 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
 
     private val chooseFromGalleryResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-        if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
-            val imageUri = activityResult.data!!.data
-            ImportImageToPageTask(imageUri!!).execute()
-            progressView.visibility = View.VISIBLE
+            if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+                val imageUri = activityResult.data!!.data
+                lifecycleScope.launch(Dispatchers.Default) {
+                    importImageToPageTask(imageUri!!)
+                }
+                progressView.visibility = View.VISIBLE
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,19 +129,18 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun runRecognition() {
-        RecognizeEhicTask(page).execute()
+        lifecycleScope.launch(Dispatchers.Default) {
+            recognizeEhicTask(page)
+        }
         progressView.visibility = View.VISIBLE
     }
 
-    private inner class RecognizeEhicTask(private val page: Page?) : AsyncTask<Void, Void, HealthInsuranceCardRecognitionResult?>() {
-        override fun doInBackground(objects: Array<Void>): HealthInsuranceCardRecognitionResult? {
-            val imageUri = pageFileStorage.getImageURI(page!!.pageId, PageFileType.DOCUMENT)
-            val documentImage = loadImage(imageUri)!!
-            return healthInsuranceCardScanner.recognizeBitmap(documentImage, 0)
-        }
+    private suspend fun recognizeEhicTask(page: Page?) {
+        val imageUri = pageFileStorage.getImageURI(page!!.pageId, PageFileType.DOCUMENT)
+        val documentImage = loadImage(imageUri)!!
+        val result = healthInsuranceCardScanner.recognizeBitmap(documentImage, 0)
 
-        override fun onPostExecute(result: HealthInsuranceCardRecognitionResult?) {
-            super.onPostExecute(result)
+        withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
             if (result != null && result.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
@@ -150,22 +153,19 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
         }
     }
 
-    private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Void, Void, Page?>() {
-        override fun doInBackground(objects: Array<Void>): Page? {
-            val pageId = pageFileStorage.add(loadImage(imageUri)!!)
-            val emptyPolygon = emptyList<PointF>()
-            val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
+    private suspend fun importImageToPageTask(imageUri: Uri) {
+        val pageId = pageFileStorage.add(loadImage(imageUri)!!)
+        val emptyPolygon = emptyList<PointF>()
+        val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
 
-            return try {
-                pageProcessor.detectDocument(newPage)
-            } catch (ex: IOException) {
-                Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
-                null
-            }
+        val resultPage = try {
+            pageProcessor.detectDocument(newPage)
+        } catch (ex: IOException) {
+            Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
+            null
         }
 
-        override fun onPostExecute(resultPage: Page?) {
-            super.onPostExecute(resultPage)
+        withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
             page = resultPage
             if (resultPage != null) {

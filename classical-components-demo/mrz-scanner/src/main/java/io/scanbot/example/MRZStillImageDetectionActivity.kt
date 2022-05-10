@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -15,8 +14,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
-import io.scanbot.mrzscanner.model.MRZRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.core.contourdetector.DetectionResult
@@ -32,6 +31,9 @@ import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class MRZStillImageDetectionActivity : AppCompatActivity() {
@@ -63,12 +65,14 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
     private val chooseFromGalleryResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-        if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
-            val imageUri = activityResult.data!!.data
-            ImportImageToPageTask(imageUri!!).execute()
-            progressView.visibility = View.VISIBLE
+            if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+                val imageUri = activityResult.data!!.data
+                lifecycleScope.launch(Dispatchers.Default) {
+                    importImageToPageTask(imageUri!!)
+                }
+                progressView.visibility = View.VISIBLE
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,21 +126,20 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun runRecognition() {
-        RecognizeMrzTask(page!!).execute()
+        lifecycleScope.launch(Dispatchers.Default) {
+            recognizeMrzTask(page!!)
+        }
         progressView.visibility = View.VISIBLE
     }
 
-    private inner class RecognizeMrzTask(private val page: Page) : AsyncTask<Any?, Any?, Any?>() {
-        override fun doInBackground(objects: Array<Any?>): Any? {
-            val imageUri = pageFileStorage.getImageURI(page.pageId, PageFileType.DOCUMENT)
-            val documentImage = loadImage(imageUri)
-            return mrzScanner.recognizeMRZBitmap(documentImage, 0)
-        }
+    private suspend fun recognizeMrzTask(page: Page) {
+        val imageUri = pageFileStorage.getImageURI(page.pageId, PageFileType.DOCUMENT)
+        val documentImage = loadImage(imageUri)
+        val mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(documentImage, 0)
 
-        override fun onPostExecute(o: Any?) {
-            super.onPostExecute(o)
+
+        withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
-            val mrzRecognitionResult = o as MRZRecognitionResult?
             if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
                 startActivity(newIntent(this@MRZStillImageDetectionActivity, mrzRecognitionResult))
             } else {
@@ -148,21 +151,18 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
         }
     }
 
-    private inner class ImportImageToPageTask(private val imageUri: Uri) : AsyncTask<Any?, Any?, Any?>() {
-        override fun doInBackground(objects: Array<Any?>): Any? {
-            val pageId = pageFileStorage.add(loadImage(imageUri)!!)
-            val emptyPolygon = emptyList<PointF>()
-            val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
-            return try {
-                pageProcessor.detectDocument(newPage)
-            } catch (ex: IOException) {
-                Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
-                null
-            }
+    private suspend fun importImageToPageTask(imageUri: Uri) {
+        val pageId = pageFileStorage.add(loadImage(imageUri)!!)
+        val emptyPolygon = emptyList<PointF>()
+        val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
+        val result = try {
+            pageProcessor.detectDocument(newPage)
+        } catch (ex: IOException) {
+            Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
+            null
         }
 
-        override fun onPostExecute(result: Any?) {
-            super.onPostExecute(result)
+        withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
             if (result != null) {
                 page = result as Page?
