@@ -1,10 +1,7 @@
 package io.scanbot.example.ui
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,18 +13,48 @@ import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.common.ImportImageContract
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        private const val IMPORT_IMAGE_REQUEST_CODE = 911
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val galleryImageLauncher =
+            registerForActivityResult(ImportImageContract(this)) { resultEntity ->
+                lifecycleScope.launch(Dispatchers.Default) {
+                    val activity = this@MainActivity
+                    val sdk = ScanbotSDK(activity)
+                    if (!sdk.licenseInfo.isValid) {
+                        Toast.makeText(
+                            activity,
+                            "License has expired!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        resultEntity?.let { bitmap ->
+                            val barcodeDetector = sdk.createBarcodeDetector()
+                            barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
+                            val result = barcodeDetector.detectFromBitmap(bitmap, 0)
+
+                            BarcodeResultRepository.barcodeResultBundle =
+                                result?.let { BarcodeResultBundle(it, null, null) }
+
+                            withContext(Dispatchers.Main) {
+                                startActivity(
+                                    Intent(
+                                        activity,
+                                        BarcodeResultActivity::class.java
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         setContentView(R.layout.activity_main)
 
         findViewById<View>(R.id.qr_demo).setOnClickListener {
@@ -47,62 +74,12 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.import_image).setOnClickListener {
             // select an image from photo library and run document detection on it:
-            val imageIntent = Intent()
-            imageIntent.type = "image/*"
-            imageIntent.action = Intent.ACTION_GET_CONTENT
-            imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
-            imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-            startActivityForResult(
-                Intent.createChooser(
-                    imageIntent,
-                    getString(R.string.share_title)
-                ), IMPORT_IMAGE_REQUEST_CODE
-            )
+            galleryImageLauncher.launch(Unit)
         }
     }
 
     override fun onResume() {
         super.onResume()
         warning_view.isVisible = ScanbotSDK(this).licenseInfo.status == Status.StatusTrial
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        lifecycleScope.launch(Dispatchers.Default) {
-            if (requestCode == IMPORT_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                val activity = this@MainActivity
-                val sdk = ScanbotSDK(activity)
-                if (!sdk.licenseInfo.isValid) {
-                    Toast.makeText(
-                        activity,
-                        "License has expired!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    processGalleryResult(data!!)?.let { bitmap ->
-                        val barcodeDetector = sdk.createBarcodeDetector()
-                        barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
-                        val result = barcodeDetector.detectFromBitmap(bitmap, 0)
-
-                        BarcodeResultRepository.barcodeResultBundle =
-                            result?.let { BarcodeResultBundle(it, null, null) }
-
-                        withContext(Dispatchers.Main) {
-                            startActivity(
-                                Intent(
-                                    activity,
-                                    BarcodeResultActivity::class.java
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun processGalleryResult(data: Intent): Bitmap? {
-        val imageUri = data.data
-        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
     }
 }

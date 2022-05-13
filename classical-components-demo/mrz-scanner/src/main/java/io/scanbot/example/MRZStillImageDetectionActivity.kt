@@ -1,7 +1,5 @@
 package io.scanbot.example
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PointF
 import android.net.Uri
@@ -12,12 +10,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.common.ImportImageContract
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.mrzscanner.MRZScanner
@@ -63,16 +61,16 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
             displayPreviewImage()
         }
 
-    private val chooseFromGalleryResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
-                val imageUri = activityResult.data!!.data
-                lifecycleScope.launch(Dispatchers.Default) {
-                    importImageToPageTask(imageUri!!)
-                }
-                progressView.visibility = View.VISIBLE
+    private val chooseFromGalleryResultLauncher = registerForActivityResult(
+        ImportImageContract(this)
+    ) { resultEntity ->
+        lifecycleScope.launch(Dispatchers.Default) {
+            lifecycleScope.launch(Dispatchers.Default) {
+                resultEntity?.let { importImageToPage(it) }
             }
+            progressView.visibility = View.VISIBLE
         }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,11 +107,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private fun openGallery() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-        chooseFromGalleryResultLauncher.launch(Intent.createChooser(intent, "Select picture"))
+        chooseFromGalleryResultLauncher.launch(Unit)
     }
 
     private fun displayPreviewImage() {
@@ -127,12 +121,12 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
 
     private fun runRecognition() {
         lifecycleScope.launch(Dispatchers.Default) {
-            recognizeMrzTask(page!!)
+            recognizeMrz(page!!)
         }
         progressView.visibility = View.VISIBLE
     }
 
-    private suspend fun recognizeMrzTask(page: Page) {
+    private suspend fun recognizeMrz(page: Page) {
         val imageUri = pageFileStorage.getImageURI(page.pageId, PageFileType.DOCUMENT)
         val documentImage = loadImage(imageUri)
         val mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(documentImage, 0)
@@ -151,8 +145,8 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun importImageToPageTask(imageUri: Uri) {
-        val pageId = pageFileStorage.add(loadImage(imageUri)!!)
+    private suspend fun importImageToPage(bitmap: Bitmap) {
+        val pageId = pageFileStorage.add(bitmap)
         val emptyPolygon = emptyList<PointF>()
         val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
         val result = try {

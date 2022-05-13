@@ -15,11 +15,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.common.ImportImageContract
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.entity.Language
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
-import io.scanbot.sdk.ocr.process.OcrResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
@@ -42,36 +42,16 @@ class MainActivity : AppCompatActivity() {
 
         askPermission()
         initDependencies()
-
-        findViewById<View>(R.id.scanButton).setOnClickListener { v: View? -> openGallery() }
+        val galleryImageLauncher =
+            registerForActivityResult(ImportImageContract(this)) { resultEntity ->
+                lifecycleScope.launch(Dispatchers.Default) {
+                    resultEntity?.let { recognizeTextWithoutPDF(it) }
+                    // Alternative OCR examples - PDF + OCR (sandwiched PDF):
+                    //new RecognizeTextWithPDF(imageUri).execute();
+                    progressView.visibility = View.VISIBLE
+                }}
+        findViewById<View>(R.id.scanButton).setOnClickListener { v: View? -> galleryImageLauncher.launch(Unit) }
         progressView = findViewById(R.id.progressBar)
-    }
-
-    private fun openGallery() {
-        val intent = Intent().apply {
-            type = IMAGE_TYPE
-            action = Intent.ACTION_GET_CONTENT
-            putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-        }
-
-        startActivityForResult(
-            Intent.createChooser(intent, "Select picture"),
-            SELECT_PICTURE_REQUEST
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (requestCode != SELECT_PICTURE_REQUEST || resultCode != Activity.RESULT_OK) {
-            return
-        }
-        val imageUri = intent?.data ?: return
-        lifecycleScope.launch(Dispatchers.Default) {
-            recognizeTextWithoutPDFTask(imageUri)
-        }
-        // Alternative OCR examples - PDF + OCR (sandwiched PDF):
-        //new RecognizeTextWithPDFTask(imageUri).execute();
-        progressView.visibility = View.VISIBLE
     }
 
     private fun initDependencies() {
@@ -102,15 +82,9 @@ class MainActivity : AppCompatActivity() {
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
      */
-    private suspend fun recognizeTextWithoutPDFTask(imageUri: Uri) {
-        @Throws(IOException::class)
-        fun loadImage(): Bitmap {
-            return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-        }
+    private suspend fun recognizeTextWithoutPDF(bitmap: Bitmap) {
 
         val ocrResult = try {
-            val bitmap = loadImage()
-
             val newPageId = pageFileStorage.add(bitmap)
             val page = Page(newPageId, emptyList(), DetectionResult.OK, ImageFilterType.BINARIZED)
 
@@ -126,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
-            ocrResult?.let {
+            ocrResult.let {
                 if (it.ocrPages.isNotEmpty()) {
                     Toast.makeText(
                         this@MainActivity,
@@ -145,15 +119,9 @@ class MainActivity : AppCompatActivity() {
     This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
     AsyncTasks in your application
      */
-    private suspend fun recognizeTextWithPDFTask(imageUri: Uri) {
-        @Throws(IOException::class)
-        fun loadImage(): Bitmap {
-            return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-        }
+    private suspend fun recognizeTextWithPDF(bitmap: Bitmap) {
 
         val ocrResult = try {
-            val bitmap = loadImage()
-
             val newPageId = pageFileStorage.add(bitmap)
             val page =
                 Page(newPageId, emptyList(), DetectionResult.OK, ImageFilterType.BINARIZED)
@@ -188,8 +156,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        private const val SELECT_PICTURE_REQUEST = 100
-        private const val IMAGE_TYPE = "image/*"
-    }
 }

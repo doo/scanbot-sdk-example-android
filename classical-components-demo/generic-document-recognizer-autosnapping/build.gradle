@@ -31,4 +31,5 @@ dependencies {
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-genericdocument-assets:$project.ext.scanbotSdkVersion"
     implementation "androidx.recyclerview:recyclerview:$project.ext.recyclerViewVersion"
+    implementation project(path: ':common')
 }
