@@ -10,13 +10,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import io.scanbot.checkscanner.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.checkscanner.CheckScanner
+import io.scanbot.sdk.check.CheckRecognizer
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
@@ -34,7 +33,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var contourDetector: ContourDetector
-    private lateinit var checkScanner: CheckScanner
+    private lateinit var checkRecognizer: CheckRecognizer
     private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
@@ -56,7 +55,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        checkScanner = scanbotSDK.createCheckScanner()
+        checkRecognizer = scanbotSDK.createCheckRecognizer()
         contourDetector = scanbotSDK.createContourDetector()
         imageProcessor = scanbotSDK.imageProcessor()
 
@@ -120,7 +119,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
             )?.let { documentImage ->
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)
-                val result = checkScanner.recognizeCheckBitmap(documentImage, 0)
+                val result = checkRecognizer.recognizeBitmap(documentImage, 0)
                 if (result?.check != null) {
                     CheckScannerResultActivity.tempDocumentImage = imageCopy
                     startActivity(CheckScannerResultActivity.newIntent(this, result))

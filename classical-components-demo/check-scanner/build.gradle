@@ -36,4 +36,5 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-check-assets:$project.ext.scanbotSdkVersion"
 }
