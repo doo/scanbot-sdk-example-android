@@ -31,5 +31,4 @@ dependencies {
     implementation "io.scanbot:sdk-mc-assets:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-barcode-assets:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
-    implementation project(path: ':common')
 }

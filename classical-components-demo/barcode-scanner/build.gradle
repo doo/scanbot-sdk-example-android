@@ -32,7 +32,6 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':common')
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-barcode-assets:$project.ext.scanbotSdkVersion"

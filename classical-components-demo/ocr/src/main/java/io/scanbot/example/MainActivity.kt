@@ -78,10 +78,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissionNotGranted(permission: String) =
         ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
 
-    /*
-    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
-    AsyncTasks in your application
-     */
+
     private suspend fun recognizeTextWithoutPDF(bitmap: Bitmap) {
 
         val ocrResult = try {
@@ -115,10 +112,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*
-    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
-    AsyncTasks in your application
-     */
     private suspend fun recognizeTextWithPDF(bitmap: Bitmap) {
 
         val ocrResult = try {

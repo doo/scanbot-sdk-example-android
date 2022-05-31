@@ -35,5 +35,4 @@ dependencies {
     implementation "io.scanbot:sdk-package-3:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-package-ui:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-ehic-assets:$project.ext.scanbotSdkVersion"
-    implementation project(path: ':common')
 }
