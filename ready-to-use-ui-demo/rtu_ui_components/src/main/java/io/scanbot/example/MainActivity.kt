@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import io.scanbot.check.entity.CheckDocumentLibrary.wrap
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.*
 import io.scanbot.example.model.BarcodeResultBundle
@@ -31,6 +32,7 @@ import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.ZoomRange
+import io.scanbot.sdk.check.entity.CheckRecognizerResult
 import io.scanbot.sdk.core.contourdetector.DetectionResult
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
@@ -47,6 +49,8 @@ import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
+import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
+import io.scanbot.sdk.ui.view.check.configuration.CheckRecognizerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
 import io.scanbot.sdk.ui.view.genericdocument.GenericDocumentRecognizerActivity
@@ -95,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
+    private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckRecognizerConfiguration>
 
     private fun handleGeneriDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
         // For simplicity we will take only the first document
@@ -173,6 +178,23 @@ class MainActivity : AppCompatActivity() {
     private fun showMedicalCertificateRecognizerResult(recognitionResult: MedicalCertificateRecognizerResult) {
         val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
+    }
+
+    private fun handleCheckRecognizerResult(resultWrapper: ResultWrapper<CheckRecognizerResult>) {
+        // Get the ResultRepository from the ScanbotSDK instance
+        // scanbotSDK was created in onCreate via ScanbotSDK(context)
+        val resultRepository = scanbotSDK.resultRepositoryForClass(resultWrapper.clazz)
+
+        // Receive an instance of CheckRecognizerResult class from the repository
+        // This call will also remove the result from the repository (to make the memory usage less)
+        val result = resultRepository.getResultAndErase(resultWrapper.resultId)
+
+        showCheckRecognizerResult(result!!)
+    }
+
+    private fun showCheckRecognizerResult(recognitionResult: CheckRecognizerResult) {
+        recognitionResult.check?.wrap()
+        Toast.makeText(this, recognitionResult.toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -456,7 +478,16 @@ class MainActivity : AppCompatActivity() {
             multipleObjectsDetectorResultLauncher.launch(config)
         }
 
-        findViewById<View>(R.id.mc_scanner_ui).setOnClickListener {
+        check_recognizer_ui.setOnClickListener {
+            val config = CheckRecognizerConfiguration().apply {
+                setTopBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
+                setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
+            }
+
+            checkRecognizerResultLauncher.launch(config)
+        }
+
+        mc_scanner_ui.setOnClickListener {
             val config = MedicalCertificateRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
                 setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
@@ -611,6 +642,11 @@ class MainActivity : AppCompatActivity() {
         medicalCertificateRecognizerActivityResultLauncher =
             registerForActivityResultOk(MedicalCertificateRecognizerActivity.ResultContract()) { resultEntity ->
                 handleMedicalCertificateResult(resultEntity.result!!)
+            }
+
+        checkRecognizerResultLauncher =
+            registerForActivityResultOk(CheckRecognizerActivity.ResultContract()) { resultEntity ->
+                handleCheckRecognizerResult(resultEntity.result!!)
             }
     }
 

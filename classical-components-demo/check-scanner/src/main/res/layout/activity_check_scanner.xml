@@ -4,12 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.scanbot.sdk.camera.ScanbotCameraView
+    <io.scanbot.sdk.ui.camera.ScanbotCameraXView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </io.scanbot.sdk.camera.ScanbotCameraView>
+    </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
+
+    <TextView
+        android:id="@+id/result"
+        android:background="#fff"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="Result will be there"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/flash"

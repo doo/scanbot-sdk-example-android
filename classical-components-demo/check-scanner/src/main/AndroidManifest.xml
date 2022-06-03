@@ -25,7 +25,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChequeScannerActivity" />
+        <activity
+            android:name=".CheckScannerActivity"
+            android:screenOrientation="landscape" />
+        <activity android:name=".CheckScannerResultActivity" />
+        <activity
+            android:name=".AutoSnappingCheckScannerActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
