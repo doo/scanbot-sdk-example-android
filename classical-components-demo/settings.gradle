@@ -6,6 +6,7 @@ include(
         ':edit-polygon-view',
         ':camera-fragment',
         ':payform-scanner',
+        ':document-scanner',
         ':barcode-scanner',
         ':mrz-scanner',
         ':blur-estimator',
