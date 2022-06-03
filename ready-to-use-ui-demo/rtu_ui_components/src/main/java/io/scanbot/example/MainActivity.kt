@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import io.scanbot.check.entity.CheckDocumentLibrary.wrap
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.*
 import io.scanbot.example.model.BarcodeResultBundle
@@ -21,7 +22,6 @@ import io.scanbot.example.repository.PageRepository
 import io.scanbot.genericdocument.entity.DePassport
 import io.scanbot.genericdocument.entity.FieldProperties
 import io.scanbot.genericdocument.entity.GenericDocument
-import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
 import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZRecognitionResult
