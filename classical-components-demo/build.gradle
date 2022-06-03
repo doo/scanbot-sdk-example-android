@@ -21,7 +21,7 @@ allprojects {
         minSdkVersion = 21
         targetSdkVersion = 30
 
-        scanbotSdkVersion = '1.94.0.450-SNAPSHOT'
+        scanbotSdkVersion = '1.94.0.481-SNAPSHOT'
 
         constraintLayoutVersion = "2.0.4"
         coroutinesAndroidVersion = "1.4.3"

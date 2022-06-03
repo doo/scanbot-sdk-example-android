@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        documentScannerView.cameraConfiguration.apply {
+        documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
             setAcceptedSizeScore(75.0)
             setIgnoreBadAspectRatio(ignoreBadAspectRatio)
@@ -194,17 +194,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // Here we get the full image from the camera.
-        // Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Handling-camera-picture
-        // This is just a demo showing the detected document image as a downscaled(!) preview image.
-
-        // Decode Bitmap from bytes of original image:
-        val options = BitmapFactory.Options()
-        // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
-        options.inSampleSize = 8
-        // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
-        //options.inSampleSize = 1;
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
+        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
 
         // Rotate the original image based on the imageOrientation value.
         // Required for some Android devices like Samsung!
