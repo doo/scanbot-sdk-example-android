@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CheckScannerActivity"
+            android:name=".CheckRecognizerActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".CheckScannerResultActivity" />
+        <activity android:name=".CheckRecognizerResultActivity" />
         <activity
-            android:name=".AutoSnappingCheckScannerActivity"
+            android:name=".AutoSnappingCheckRecognizerActivity"
             android:screenOrientation="landscape" />
     </application>
 

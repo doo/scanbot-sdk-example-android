@@ -14,11 +14,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         askPermission()
         setContentView(R.layout.activity_main)
-        findViewById<View>(R.id.check_scanner).setOnClickListener {
-            startActivity(CheckScannerActivity.newIntent(this))
+        findViewById<View>(R.id.check_recognizer).setOnClickListener {
+            startActivity(CheckRecognizerActivity.newIntent(this))
         }
-        findViewById<View>(R.id.check_scanner_auto_snapping).setOnClickListener {
-            startActivity(AutoSnappingCheckScannerActivity.newIntent(this))
+        findViewById<View>(R.id.check_recognizer_auto_snapping).setOnClickListener {
+            startActivity(AutoSnappingCheckRecognizerActivity.newIntent(this))
         }
     }
 

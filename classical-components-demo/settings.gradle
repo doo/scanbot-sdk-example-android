@@ -16,7 +16,7 @@ include(
         ':generic-text-recognizer',
         ':licenseplate-scanner',
         ':tiff-writer',
-        ':check-scanner',
+        ':check-recognizer',
         ':manual-processing',
         ':camera-view-aspect-ratio-finder',
         ':multiple-objects-detector',

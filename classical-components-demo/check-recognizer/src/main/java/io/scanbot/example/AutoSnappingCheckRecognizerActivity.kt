@@ -24,7 +24,7 @@ import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
-class AutoSnappingCheckScannerActivity : AppCompatActivity() {
+class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: TextView
@@ -41,7 +41,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_autosnapping_check_scanner)
+        setContentView(R.layout.activity_autosnapping_check_recognizer)
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->
             cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
             cameraView.setCameraOpenCallback {
@@ -121,8 +121,8 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
                 val imageCopy = Bitmap.createBitmap(documentImage)
                 val result = checkRecognizer.recognizeBitmap(documentImage, 0)
                 if (result?.check != null) {
-                    CheckScannerResultActivity.tempDocumentImage = imageCopy
-                    startActivity(CheckScannerResultActivity.newIntent(this, result))
+                    CheckRecognizerResultActivity.tempDocumentImage = imageCopy
+                    startActivity(CheckRecognizerResultActivity.newIntent(this, result))
                 } else {
                     runOnUiThread {
                         Toast.makeText(
@@ -147,7 +147,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, AutoSnappingCheckScannerActivity::class.java)
+            return Intent(context, AutoSnappingCheckRecognizerActivity::class.java)
         }
     }
 }

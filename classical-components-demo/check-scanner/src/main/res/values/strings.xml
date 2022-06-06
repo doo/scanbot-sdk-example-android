@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">Check scanner demo</string>
-    <string name="menu_check_scanner">Check scanner</string>
-    <string name="menu_check_scanner_autosnapping">Check scanner with Snapping</string>
-</resources>

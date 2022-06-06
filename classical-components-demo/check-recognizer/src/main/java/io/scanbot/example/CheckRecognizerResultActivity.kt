@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
 
-class CheckScannerResultActivity : AppCompatActivity() {
+class CheckRecognizerResultActivity : AppCompatActivity() {
     private lateinit var checkResultImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +57,7 @@ class CheckScannerResultActivity : AppCompatActivity() {
 
         @JvmStatic
         fun newIntent(context: Context?, result: CheckRecognizerResult): Intent {
-            val intent = Intent(context, CheckScannerResultActivity::class.java)
+            val intent = Intent(context, CheckRecognizerResultActivity::class.java)
             intent.putExtra(EXTRA_CHECK_DOCUMENT, result.check)
             return intent
         }

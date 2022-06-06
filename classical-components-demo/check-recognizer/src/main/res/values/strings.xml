@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Check recognizer demo</string>
+    <string name="menu_check_recognizer">Check recognizer</string>
+    <string name="menu_check_recognizer_autosnapping">Check recognizer with Snapping</string>
+</resources>

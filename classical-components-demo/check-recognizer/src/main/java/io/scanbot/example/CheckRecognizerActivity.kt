@@ -18,7 +18,7 @@ import io.scanbot.sdk.check.CheckRecognizerFrameHandler.Companion.attach
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
 
-class CheckScannerActivity : AppCompatActivity() {
+class CheckRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: TextView
     private lateinit var frameHandler: CheckRecognizerFrameHandler
@@ -27,7 +27,7 @@ class CheckScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_check_scanner)
+        setContentView(R.layout.activity_check_recognizer)
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->
             cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
             cameraView.setCameraOpenCallback {
@@ -48,7 +48,7 @@ class CheckScannerActivity : AppCompatActivity() {
                 val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckRecognizerResult?
                 if (recognitionResult?.status == CheckRecognizerStatus.SUCCESS) {
                     frameHandler.isEnabled = false
-                    startActivity(CheckScannerResultActivity.newIntent(this, recognitionResult))
+                    startActivity(CheckRecognizerResultActivity.newIntent(this, recognitionResult))
                 }
             } else if (!scanbotSDK.isLicenseActive) {
                 frameHandler.isEnabled = false
@@ -82,7 +82,7 @@ class CheckScannerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, CheckScannerActivity::class.java)
+            return Intent(context, CheckRecognizerActivity::class.java)
         }
     }
 
