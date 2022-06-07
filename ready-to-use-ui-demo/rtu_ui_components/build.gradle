@@ -82,7 +82,7 @@ dependencies {
     // This dependency is only needed if you plan to use EHIC scanner feature
     implementation "io.scanbot:sdk-ehic-assets:$scanbotSdkVersion"
 
-    // This dependency is only needed if you plan to use EHIC scanner feature
+    // This dependency is only needed if you plan to use Check recognizer feature
     implementation "io.scanbot:sdk-check-assets:$scanbotSdkVersion"
 
     // This dependency is only needed if you plan to use the encryption feature
