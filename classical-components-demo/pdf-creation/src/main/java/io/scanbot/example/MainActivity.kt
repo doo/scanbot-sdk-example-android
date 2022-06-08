@@ -98,18 +98,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openDocument(processedDocument: File) {
-        val openIntent = Intent()
-        openIntent.action = Intent.ACTION_VIEW
+    private fun openDocument(pdfFile: File) {
+        val uriForFile = androidx.core.content.FileProvider.getUriForFile(this,
+            this.applicationContext.packageName + ".provider", pdfFile)
+        val openIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, uriForFile)
+            type = MimeUtils.getMimeByName(pdfFile.name)
+        }
         openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        openIntent.setDataAndType(
-                FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", processedDocument),
-                MimeUtils.getMimeByName(processedDocument.name)
-        )
+
         if (openIntent.resolveActivity(packageManager) != null) {
-            startActivity(openIntent)
+            val chooser = Intent.createChooser(openIntent, pdfFile.name)
+            val resInfoList = this.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo.packageName
+                grantUriPermission(packageName, uriForFile, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(chooser)
+
         } else {
-            Toast.makeText(this@MainActivity, "Error while opening the document", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "error opening document", Toast.LENGTH_LONG).show()
         }
     }
 
