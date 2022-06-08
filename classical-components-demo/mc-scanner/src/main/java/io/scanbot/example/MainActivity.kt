@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withCreated
 import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.common.ImportImageContract
@@ -30,11 +31,13 @@ class MainActivity : AppCompatActivity() {
                     val activity = this@MainActivity
                     val sdk = ScanbotSDK(activity)
                     if (!sdk.licenseInfo.isValid) {
-                        Toast.makeText(
-                            activity,
-                            "License has expired!",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                activity,
+                                "License has expired!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     } else {
                         resultEntity?.let { bitmap ->
                             val medicalCertificateRecognizer =

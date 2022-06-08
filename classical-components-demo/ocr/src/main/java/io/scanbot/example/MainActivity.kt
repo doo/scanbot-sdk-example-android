@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                     resultEntity?.let { recognizeTextWithoutPDF(it) }
                     // Alternative OCR examples - PDF + OCR (sandwiched PDF):
                     //new RecognizeTextWithPDF(imageUri).execute();
-                    progressView.visibility = View.VISIBLE
+                    withContext(Dispatchers.Main){progressView.visibility = View.VISIBLE}
                 }}
         findViewById<View>(R.id.scanButton).setOnClickListener { v: View? -> galleryImageLauncher.launch(Unit) }
         progressView = findViewById(R.id.progressBar)

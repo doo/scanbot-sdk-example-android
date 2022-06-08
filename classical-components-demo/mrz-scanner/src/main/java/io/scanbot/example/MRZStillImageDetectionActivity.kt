@@ -66,9 +66,13 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     ) { resultEntity ->
         lifecycleScope.launch(Dispatchers.Default) {
             lifecycleScope.launch(Dispatchers.Default) {
-                resultEntity?.let { importImageToPage(it) }
+                resultEntity?.let {
+                    importImageToPage(it)
+                    withContext(Dispatchers.Main){
+                        progressView.visibility = View.VISIBLE
+                    }
+                }
             }
-            progressView.visibility = View.VISIBLE
         }
     }
 
