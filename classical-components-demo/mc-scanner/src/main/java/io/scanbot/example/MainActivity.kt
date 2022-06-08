@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.withCreated
 import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.common.ImportImageContract
@@ -54,10 +53,12 @@ class MainActivity : AppCompatActivity() {
 
                             withContext(Dispatchers.Main) {
                                 result?.let {
-                                   startActivity(MedicalCertificateResultActivity.newIntent(
-                                       activity,
-                                       it
-                                   ))
+                                    startActivity(
+                                        MedicalCertificateResultActivity.newIntent(
+                                            activity,
+                                            it
+                                        )
+                                    )
                                 } ?: Toast.makeText(
                                     activity,
                                     "Nothing detected on image",
