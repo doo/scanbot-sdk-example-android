@@ -28,11 +28,13 @@ class MainActivity : AppCompatActivity() {
                     val activity = this@MainActivity
                     val sdk = ScanbotSDK(activity)
                     if (!sdk.licenseInfo.isValid) {
-                        Toast.makeText(
-                            activity,
-                            "License has expired!",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                activity,
+                                "License has expired!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     } else {
                         resultEntity?.let { bitmap ->
                             val documentRecognizer = sdk.createGenericDocumentRecognizer()
