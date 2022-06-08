@@ -54,11 +54,15 @@ class MainActivity : AppCompatActivity() {
 
                             withContext(Dispatchers.Main) {
                                 result?.let {
-                                    MedicalCertificateResultActivity.newIntent(
-                                        activity,
-                                        it
-                                    )
-                                }
+                                   startActivity(MedicalCertificateResultActivity.newIntent(
+                                       activity,
+                                       it
+                                   ))
+                                } ?: Toast.makeText(
+                                    activity,
+                                    "Nothing detected on image",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                     }
