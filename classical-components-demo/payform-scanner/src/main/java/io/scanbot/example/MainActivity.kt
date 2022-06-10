@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.common.ImportImageContract
@@ -37,6 +38,8 @@ class MainActivity : AppCompatActivity() {
                             ).show()
                         }
                     } else {
+                        val progressBar = findViewById<View>(R.id.progress_bar)
+                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
                         resultEntity?.let { bitmap ->
                             val payformScanner = sdk.createPayFormScanner()
                             val stream = ByteArrayOutputStream()
@@ -60,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
                         }
+                        withContext(Dispatchers.Main) { progressBar.isVisible = false }
                     }
                 }
             }

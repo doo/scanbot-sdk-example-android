@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
                             ).show()
                         }
                     } else {
+                        val progressBar = findViewById<View>(R.id.progress_bar)
+                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
                         resultEntity?.let { bitmap ->
                             val barcodeDetector = sdk.createBarcodeDetector()
                             barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                         }
+                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
                     }
                 }
             }

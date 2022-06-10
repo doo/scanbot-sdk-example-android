@@ -102,10 +102,10 @@ class MainActivity : AppCompatActivity() {
         } else if (intent.data != null) {
             imageUris.add(intent.data!!)
         }
+        progressView.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.Default) {
             processImageTask(imageUris)
         }
-        progressView.visibility = View.VISIBLE
     }
 
     private fun openDocument(processedDocument: File) {
