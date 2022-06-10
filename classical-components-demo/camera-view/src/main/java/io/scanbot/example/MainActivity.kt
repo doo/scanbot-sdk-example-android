@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
         // In this example we demonstrate how to lock the orientation of the UI (Activity)
         // as well as the orientation of the taken picture to portrait.
-//        cameraView.lockToPortrait(false)
+        cameraView.lockToPortrait(true)
 
         // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
         //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
@@ -211,11 +211,19 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
         // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
-//        options.inSampleSize = 8
+        options.inSampleSize = 8
         // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
         //options.inSampleSize = 1;
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
+        // Rotate the original image based on the imageOrientation value.
+        // Required for some Android devices like Samsung!
+        if (imageOrientation > 0) {
+            val matrix = Matrix()
+            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
+            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
+        }
+        // Run document detection on original image:
         contourDetector.detect(originalBitmap)
         val detectedPolygon = contourDetector.polygonF!!
 
