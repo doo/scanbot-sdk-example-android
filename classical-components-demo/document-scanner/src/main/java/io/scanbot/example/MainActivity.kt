@@ -59,9 +59,6 @@ class MainActivity : AppCompatActivity() {
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
-        // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
-        // documentScannerView.cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
-
         resultView = findViewById<View>(R.id.result) as ImageView
 
         documentScannerView.polygonConfiguration.apply {
@@ -101,6 +98,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             )
+
+            // See //https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
+            // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
         }
 
         documentScannerView.viewController.apply {
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             setAcceptedSizeScore(75.0)
             setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
-            // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
+            // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/autosnapping/#sensitivity
             setAutoSnappingSensitivity(0.85f)
         }
 
