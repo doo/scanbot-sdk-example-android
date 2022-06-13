@@ -99,8 +99,8 @@ class MainActivity : AppCompatActivity() {
                 }
             )
 
-            // See //https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
-            // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
+            // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
+            // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
         }
 
         documentScannerView.viewController.apply {
