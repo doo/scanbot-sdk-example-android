@@ -4,7 +4,6 @@ import android.app.Application
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class ExampleApplication : Application() {
@@ -31,9 +30,7 @@ class ExampleApplication : Application() {
                     LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
                 }
             }
-            .usePageStorageSettings(PageStorageSettings.Builder().imageQuality(100).build())
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
-            .prepareOCRLanguagesBlobs(true)
             .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

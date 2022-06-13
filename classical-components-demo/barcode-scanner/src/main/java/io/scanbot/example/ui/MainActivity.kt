@@ -31,6 +31,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        findViewById<View>(R.id.barcode_scanner_view_demo).setOnClickListener {
+            val intent = Intent(applicationContext, BarcodeScannerViewActivity::class.java)
+            startActivity(intent)
+        }
+
         findViewById<View>(R.id.settings).setOnClickListener {
             val intent = Intent(this@MainActivity, BarcodeTypesActivity::class.java)
             startActivity(intent)
