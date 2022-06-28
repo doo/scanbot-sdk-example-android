@@ -9,6 +9,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
     }
 }
 
@@ -21,7 +22,7 @@ allprojects {
         minSdkVersion = 21
         targetSdkVersion = 30
 
-        scanbotSdkVersion = '1.93.0.360-SNAPSHOT'
+        scanbotSdkVersion = '1.94.0'
 
         constraintLayoutVersion = "2.0.4"
         coroutinesAndroidVersion = "1.4.3"

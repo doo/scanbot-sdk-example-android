@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -22,11 +22,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
                 android:fontFamily="sans-serif-medium"
                 android:paddingLeft="16dp"
                 android:text="@string/scanbot_sdk_demo"
                 android:textColor="#ffffff"
-                android:layout_marginBottom="32dp"
                 android:textSize="34sp"
                 android:textStyle="normal" />
 
@@ -34,8 +34,8 @@
                 android:id="@+id/warning_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
                 android:layout_marginLeft="32dp"
+                android:layout_marginTop="0dp"
                 android:layout_marginRight="32dp"
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/warning_shape"
@@ -60,46 +60,67 @@
 
             <TextView
                 android:id="@+id/qr_demo"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="Start QR-/Barcode Scanner" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#50000000" />
+
+            <TextView
+                android:id="@+id/barcode_scanner_view_demo"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:gravity="center_vertical"
-                android:text="Start QR-/Barcode Scanner"
+                android:text="Start Barcode Scanner View demo"
                 android:layout_marginLeft="16dp"
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button" />
 
-            <FrameLayout
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#50000000" />
 
             <TextView
                 android:id="@+id/import_image"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:gravity="center_vertical"
                 android:layout_marginLeft="16dp"
-                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                android:gravity="center_vertical"
                 android:text="Pick image from library" />
 
-            <FrameLayout
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#50000000" />
 
             <TextView
                 android:id="@+id/settings"
+                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:gravity="center_vertical"
                 android:layout_marginLeft="16dp"
-                style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                android:gravity="center_vertical"
                 android:text="Set accepted barcodes" />
 
-            <FrameLayout
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#50000000" />
 
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+</FrameLayout>

@@ -26,7 +26,9 @@ class DetailedItemDataActivity : AppCompatActivity() {
             container?.also {
                 it.image.setImageBitmap(item.image)
                 it.barcodeFormat.text = item.barcodeFormat.name
-                it.docFormat.text = item.formattedResult?.documentFormat
+                it.docFormat.text = item.formattedResult?.let { formattedResult ->
+                    formattedResult::class.java.simpleName
+                } ?: "Unknown document"
                 it.description.text = printParsedFormat(item)
             }
         }

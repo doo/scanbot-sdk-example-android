@@ -49,7 +49,9 @@ class BarcodeResultActivity : AppCompatActivity() {
                         it.image.setImageBitmap(bitmap)
                     }
                     it.barcodeFormat.text = item.barcodeFormat.name
-                    it.docFormat.text = item.formattedResult?.documentFormat
+                    it.docFormat.text = item.formattedResult?.let { formattedResult ->
+                        formattedResult::class.java.simpleName
+                    } ?: "Unknown document"
                     it.docFormat.visibility = if (item.formattedResult != null) View.VISIBLE else View.GONE
                     it.docText.text = item.text
                     it.setOnClickListener {
