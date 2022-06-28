@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Camera Fragment</string>
     <string name="show_camera_dialog">Show camera dialog</string>
+    <string name="import_image">Import image</string>
 </resources>
