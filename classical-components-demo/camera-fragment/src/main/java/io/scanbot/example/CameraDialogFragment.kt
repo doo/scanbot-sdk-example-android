@@ -109,14 +109,12 @@ class CameraDialogFragment : DialogFragment() {
 
         // Run document detection on original image:
         val detectionResult = contourDetector.detect(originalBitmap)
-        if (detectionResult != null) {
-            contourDetector.polygonF?.let { polygon ->
-                val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygon), false)
-                if (documentImage != null) resultView.post {
-                    resultView.setImageBitmap(documentImage)
-                    cameraView.continuousFocus()
-                    cameraView.startPreview()
-                }
+        detectionResult?.polygonF?.let { polygon ->
+            val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygon), false)
+            if (documentImage != null) resultView.post {
+                resultView.setImageBitmap(documentImage)
+                cameraView.continuousFocus()
+                cameraView.startPreview()
             }
         }
     }

@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.core.contourdetector.Line2D
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
@@ -123,13 +124,14 @@ class MainActivity : AppCompatActivity() {
             originalBitmap = loadBitmapFromAssets("demo_image.jpg")!!
             previewBitmap = resizeForPreview(originalBitmap)
 
-            return when (contourDetector.detect(originalBitmap)) {
-                DetectionResult.OK,
-                DetectionResult.OK_BUT_BAD_ANGLES,
-                DetectionResult.OK_BUT_TOO_SMALL,
-                DetectionResult.OK_BUT_BAD_ASPECT_RATIO -> {
-                    val linesPair = Pair(contourDetector.horizontalLines, contourDetector.verticalLines)
-                    val polygon = contourDetector.polygonF!!
+            val result = contourDetector.detect(originalBitmap)
+            return when (result?.status) {
+                DetectionStatus.OK,
+                DetectionStatus.OK_BUT_BAD_ANGLES,
+                DetectionStatus.OK_BUT_TOO_SMALL,
+                DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+                    val linesPair = Pair(result?.horizontalLines ?: emptyList(), result?.verticalLines ?: emptyList())
+                    val polygon = result?.polygonF!!
 
                     InitImageResult(linesPair, polygon)
                 }
