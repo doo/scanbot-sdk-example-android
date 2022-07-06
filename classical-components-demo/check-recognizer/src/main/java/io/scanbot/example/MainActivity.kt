@@ -50,11 +50,16 @@ class MainActivity : AppCompatActivity() {
 
                             withContext(Dispatchers.Main) {
                                 result?.let {
-                                    CheckRecognizerResultActivity.newIntent(
-                                        activity,
-                                        it
+                                    startActivity(
+                                        CheckRecognizerResultActivity.newIntent(
+                                            activity,
+                                            it
+                                        )
                                     )
-                                }
+                                } ?: Toast.makeText(
+                                    this@MainActivity,
+                                    "No  data recognized!", Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                         withContext(Dispatchers.Main) { progressBar.isVisible = false }
