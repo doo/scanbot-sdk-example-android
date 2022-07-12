@@ -29,7 +29,7 @@ import io.scanbot.sdk.ui.camera.CameraUiSettings
 import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 
-class MainActivity : AppCompatActivity() {
+class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var documentScannerView: DocumentScannerView
 
     private lateinit var resultView: ImageView
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         askPermission()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_camera)
         supportActionBar!!.hide()
 
         scanbotSDK = ScanbotSDK(this)
