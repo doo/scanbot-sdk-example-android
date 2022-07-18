@@ -2,7 +2,7 @@
 
 ## Scanbot SDK example apps for Android
 
-These example apps show how to integrate the [Scanbot SDK](https://scanbot.io) for Android.
+These example apps show how to integrate the [Scanbot Document Scanner SDK for Android](https://scanbot.io/developer/android-document-scanner-sdk/).
 
 
 ## What is Scanbot SDK?

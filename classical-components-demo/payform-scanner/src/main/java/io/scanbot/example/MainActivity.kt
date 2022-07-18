@@ -55,12 +55,17 @@ class MainActivity : AppCompatActivity() {
                                 )
 
                             withContext(Dispatchers.Main) {
-                                result?.let {
-                                    PayformResultActivity.newIntent(
-                                        activity,
-                                        it.payformFields
+                                result?.takeIf {it.payformFields.isNotEmpty()}?.let {
+                                    startActivity(
+                                        PayformResultActivity.newIntent(
+                                            activity,
+                                            it.payformFields
+                                        )
                                     )
-                                }
+                                } ?: Toast.makeText(
+                                    this@MainActivity,
+                                    "No  data recognized!", Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                         withContext(Dispatchers.Main) { progressBar.isVisible = false }
