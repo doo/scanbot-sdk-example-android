@@ -16,7 +16,7 @@ import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.mrzscanner.MRZScanner
 import io.scanbot.sdk.persistence.Page
@@ -152,7 +152,7 @@ class MRZStillImageDetectionActivity : AppCompatActivity() {
     private suspend fun importImageToPage(bitmap: Bitmap) {
         val pageId = pageFileStorage.add(bitmap)
         val emptyPolygon = emptyList<PointF>()
-        val newPage = Page(pageId, emptyPolygon, DetectionResult.OK, ImageFilterType.NONE)
+        val newPage = Page(pageId, emptyPolygon, DetectionStatus.OK, ImageFilterType.NONE)
         val result = try {
             pageProcessor.detectDocument(newPage)
         } catch (ex: IOException) {

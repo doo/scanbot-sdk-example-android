@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.entity.Language
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         val ocrResult = try {
             val newPageId = pageFileStorage.add(bitmap)
-            val page = Page(newPageId, emptyList(), DetectionResult.OK, ImageFilterType.BINARIZED)
+            val page = Page(newPageId, emptyList(), DetectionStatus.OK, ImageFilterType.BINARIZED)
 
             val processedPage = pageProcessor.detectDocument(page)
 
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         val ocrResult = try {
             val newPageId = pageFileStorage.add(bitmap)
             val page =
-                Page(newPageId, emptyList(), DetectionResult.OK, ImageFilterType.BINARIZED)
+                Page(newPageId, emptyList(), DetectionStatus.OK, ImageFilterType.BINARIZED)
 
             val processedPage = pageProcessor.detectDocument(page)
 

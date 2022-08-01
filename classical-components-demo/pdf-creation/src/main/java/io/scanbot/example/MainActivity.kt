@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = loadImage(imageUri)
 
                     val newPageId = pageFileStorage.add(bitmap)
-                    val page = Page(newPageId, listOf(), DetectionResult.OK, ImageFilterType.GRAYSCALE)
+                    val page = Page(newPageId, listOf(), DetectionStatus.OK, ImageFilterType.GRAYSCALE)
 
                     val detectedPage = pageProcessor.detectDocument(page)
                     pages.add(detectedPage)

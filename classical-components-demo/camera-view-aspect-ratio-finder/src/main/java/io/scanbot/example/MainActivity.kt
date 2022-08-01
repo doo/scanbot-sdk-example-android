@@ -20,7 +20,7 @@ import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
@@ -144,31 +144,31 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             return
         }
         when (result) {
-            DetectionResult.OK -> {
+            DetectionStatus.OK -> {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_TOO_SMALL -> {
+            DetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_BAD_ANGLES -> {
+            DetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_OFF_CENTER -> {
+            DetectionStatus.OK_OFF_CENTER -> {
                 userGuidanceHint.text = "Move to the center"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_NOTHING_DETECTED -> {
+            DetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_NOISY -> {
+            DetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_DARK -> {
+            DetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
