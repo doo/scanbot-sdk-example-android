@@ -72,8 +72,8 @@ class Application : Application(), CoroutineScope {
                     Log.d("ScanbotSDKExample", errorMsg)
                     Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
                 })
-                // Uncomment to use new Camera X approach in Ready-To-Use UI screens (BETA)
-                // .useCameraXRtuUi(true)
+                // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
+                // .useCameraXRtuUi(false)
                 .license(this, LICENSE_KEY)
                 .initialize(this)
 
