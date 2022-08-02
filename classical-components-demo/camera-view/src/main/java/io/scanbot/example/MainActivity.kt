@@ -147,13 +147,13 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success<*>) {
-                showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+                showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
             }
         }
         return false // typically you need to return false
     }
 
-    private fun showUserGuidance(result: DetectionResult) {
+    private fun showUserGuidance(result: DetectionStatus) {
         if (!autoSnappingEnabled) {
             return
         }
@@ -224,8 +224,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        contourDetector.detect(originalBitmap)
-        val detectedPolygon = contourDetector.polygonF!!
+        val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
         val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
         resultView.post { resultView.setImageBitmap(documentImage) }

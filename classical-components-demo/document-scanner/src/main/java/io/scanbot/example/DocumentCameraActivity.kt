@@ -74,7 +74,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                     // For example, you can show a user guidance text depending on the current detection status.
                     userGuidanceHint.post {
                         if (result is FrameHandlerResult.Success<*>) {
-                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
                         }
                     }
                     false // typically you need to return false
@@ -147,7 +147,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.onPause()
     }
 
-    private fun showUserGuidance(result: DetectionResult) {
+    private fun showUserGuidance(result: DetectionStatus) {
         if (!autoSnappingEnabled) {
             return
         }
@@ -204,8 +204,8 @@ class DocumentCameraActivity : AppCompatActivity() {
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        contourDetector.detect(originalBitmap)
-        val detectedPolygon = contourDetector.polygonF!!
+        val result = contourDetector.detect(originalBitmap)!!
+        val detectedPolygon = result.polygonF
 
         val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
         resultView.post { resultView.setImageBitmap(documentImage) }
