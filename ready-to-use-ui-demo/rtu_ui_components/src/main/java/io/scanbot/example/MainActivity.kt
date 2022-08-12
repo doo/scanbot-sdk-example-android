@@ -332,11 +332,6 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
-
-            // Default value is 0.
-            barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
-            // Default value is ZoomRange(0, 1).
-            barcodeCameraConfiguration.setCameraZoomRange(ZoomRange(0.1f, 1f))
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
@@ -356,6 +351,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
             val barcodeCameraConfiguration = BatchBarcodeScannerConfiguration()
 
+            barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
             barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
