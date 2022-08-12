@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.94.0
+Open Source libraries used in the Scanbot SDK for Android version 1.95.0
 
 Apache Commons Codec
 
@@ -139,7 +139,7 @@ limitations under the License.
 
 Kotlin Standard Library
 
-Version 1.4.20
+Version 1.6.21
 (https://github.com/JetBrains/kotlin)
 
 Copyright 2010-2018 JetBrains s.r.o.
@@ -194,7 +194,7 @@ limitations under the License.
 
 Dagger
 
-Version 2.35
+Version 2.41
 (https://github.com/google/dagger)
 
 Copyright 2012 The Dagger Authors
@@ -235,7 +235,7 @@ limitations under the License.
 
 Boost C++
 
-Version 1.75.0
+Version 1.79.0
 (https://github.com/boostorg/boost)
 
 Boost Software License - Version 1.0 - August 17th, 2003

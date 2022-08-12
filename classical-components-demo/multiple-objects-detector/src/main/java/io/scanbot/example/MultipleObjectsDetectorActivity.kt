@@ -18,7 +18,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.multipleobjects.MultipleObjectsFrameHandler
 import io.scanbot.sdk.persistence.Page
@@ -115,7 +115,7 @@ class MultipleObjectsDetectorActivity : AppCompatActivity() {
         val polygons = multipleObjectsDetector.detectOnBitmap(resultBitmap)
         val detectedObjectsPages = polygons.map { polygon ->
             val pageId = pageFileStorage.add(resultBitmap)
-            val page = Page(pageId, Collections.emptyList(), DetectionResult.OK, ImageFilterType.NONE)
+            val page = Page(pageId, Collections.emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
             pageProcessor.cropAndRotate(page, 0, polygon.polygonF)
         }
 

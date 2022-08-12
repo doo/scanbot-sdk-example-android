@@ -1,37 +1,20 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.compileSdkVersion = 30
+    ext.compileSdkVersion = 31
     ext.targetSdkVersion = 30
     ext.minSdkVersion = 21
 
-    ext.kotlin_version = '1.4.20'
     ext.coroutines_version = '1.4.3'
 
-    ext.scanbotSdkVersion = '1.94.0'
+    ext.scanbotSdkVersion = '1.95.0'
+}
 
-    repositories {
-        google()
-        mavenCentral()
-
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+plugins {
+    id "com.android.application" version "7.2.1" apply false
+    id "org.jetbrains.kotlin.android" version "1.6.21" apply false
 }
 
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
-    }
-
     configurations.all {
         // Hack to let Gradle pickup latest SNAPSHOTS
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'

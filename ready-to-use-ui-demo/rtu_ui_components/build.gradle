@@ -1,3 +1,4 @@
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -88,12 +89,6 @@ dependencies {
     // This dependency is only needed if you plan to use the encryption feature
     implementation "io.scanbot:sdk-crypto-persistence:$scanbotSdkVersion"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
 }

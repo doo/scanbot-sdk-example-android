@@ -20,7 +20,7 @@ import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docdetection.ui.DocumentScannerView
 import io.scanbot.sdk.docdetection.ui.IDocumentScannerViewCallback
 import io.scanbot.sdk.process.CropOperation
@@ -74,7 +74,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                     // For example, you can show a user guidance text depending on the current detection status.
                     userGuidanceHint.post {
                         if (result is FrameHandlerResult.Success<*>) {
-                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionResult)
+                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
                         }
                     }
                     false // typically you need to return false
@@ -147,7 +147,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.onPause()
     }
 
-    private fun showUserGuidance(result: DetectionResult) {
+    private fun showUserGuidance(result: DetectionStatus) {
         if (!autoSnappingEnabled) {
             return
         }
@@ -156,27 +156,27 @@ class DocumentCameraActivity : AppCompatActivity() {
         }
 
         when (result) {
-            DetectionResult.OK -> {
+            DetectionStatus.OK -> {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_TOO_SMALL -> {
+            DetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_BAD_ANGLES -> {
+            DetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_NOTHING_DETECTED -> {
+            DetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_NOISY -> {
+            DetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_BAD_ASPECT_RATIO -> {
+            DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                 if (ignoreBadAspectRatio) {
                     userGuidanceHint.text = "Don't move"
                 } else {
@@ -184,7 +184,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                 }
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_DARK -> {
+            DetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
@@ -204,8 +204,8 @@ class DocumentCameraActivity : AppCompatActivity() {
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        contourDetector.detect(originalBitmap)
-        val detectedPolygon = contourDetector.polygonF!!
+        val result = contourDetector.detect(originalBitmap)!!
+        val detectedPolygon = result.polygonF
 
         val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
         resultView.post { resultView.setImageBitmap(documentImage) }

@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         val page = withContext(Dispatchers.Default) {
             // create a new Page object with given image as original image:
             val pageId = pageFileStorage.add(bitmap)
-            var page = Page(pageId, emptyList(), DetectionResult.OK, ImageFilterType.NONE)
+            var page = Page(pageId, emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
             // run auto document detection on it:
             page = pageProcessor.detectDocument(page)
             page

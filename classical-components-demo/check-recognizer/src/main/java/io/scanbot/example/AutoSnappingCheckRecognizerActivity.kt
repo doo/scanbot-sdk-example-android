@@ -110,19 +110,19 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         val options = BitmapFactory.Options()
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        contourDetector.detect(originalBitmap)
+        val result = contourDetector.detect(originalBitmap)
 
-        contourDetector.polygonF?.let { polygon ->
+        result?.polygonF?.let { polygon ->
             imageProcessor.processBitmap(
                 originalBitmap,
                 listOf(CropOperation(polygon)), false
             )?.let { documentImage ->
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)
-                val result = checkRecognizer.recognizeBitmap(documentImage, 0)
-                if (result?.check != null) {
+                val checkResult = checkRecognizer.recognizeBitmap(documentImage, 0)
+                if (checkResult?.check != null) {
                     CheckRecognizerResultActivity.tempDocumentImage = imageCopy
-                    startActivity(CheckRecognizerResultActivity.newIntent(this, result))
+                    startActivity(CheckRecognizerResultActivity.newIntent(this, checkResult))
                 } else {
                     runOnUiThread {
                         Toast.makeText(

@@ -18,9 +18,7 @@ import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
-import io.scanbot.sdk.process.Operation
 import io.scanbot.sdk.ui.PolygonView
-import java.util.*
 
 /**
  * [ScanbotCameraView] integrated in [DialogFragment] example
@@ -104,19 +102,18 @@ class CameraDialogFragment : DialogFragment() {
         if (imageOrientation > 0) {
             val matrix = Matrix()
             matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
+            originalBitmap =
+                Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
 
         // Run document detection on original image:
         val detectionResult = contourDetector.detect(originalBitmap)
-        if (detectionResult != null) {
-            contourDetector.polygonF?.let { polygon ->
-                val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygon), false)
-                if (documentImage != null) resultView.post {
-                    resultView.setImageBitmap(documentImage)
-                    cameraView.continuousFocus()
-                    cameraView.startPreview()
-                }
+        detectionResult?.polygonF?.let { polygonF ->
+            val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygonF), false)
+            if (documentImage != null) resultView.post {
+                resultView.setImageBitmap(documentImage)
+                cameraView.continuousFocus()
+                cameraView.startPreview()
             }
         }
     }

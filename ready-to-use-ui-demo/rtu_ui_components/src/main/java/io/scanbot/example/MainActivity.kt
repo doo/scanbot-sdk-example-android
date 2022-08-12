@@ -33,7 +33,7 @@ import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.ZoomRange
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
@@ -702,7 +702,7 @@ class MainActivity : AppCompatActivity() {
 
             return processGalleryResult.map {
                 val pageId = pageFileStorage.add(it)
-                var page = Page(pageId, emptyList(), DetectionResult.OK, ImageFilterType.NONE)
+                var page = Page(pageId, emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
 
                 // run auto document detection on it:
                 page = pageProcessor.detectDocument(page)

@@ -1,50 +1,31 @@
 
-buildscript {
-    ext.kotlin_version = '1.4.20'
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-    }
+plugins {
+    id "com.android.application" version "7.2.1" apply false
+    id "org.jetbrains.kotlin.android" version "1.6.21" apply false
 }
 
 allprojects {
-
     project.ext {
-        exampleAppId = 'io.scanbot.example.sdk.android'
+        exampleAppId = "io.scanbot.example.sdk.android"
 
-        compileSdkVersion = 30
+        compileSdkVersion = 31
         minSdkVersion = 21
         targetSdkVersion = 30
 
-        scanbotSdkVersion = '1.94.0'
+        scanbotSdkVersion = "1.95.0"
 
         constraintLayoutVersion = "2.0.4"
         coroutinesAndroidVersion = "1.4.3"
         coroutinesCoreVersion = "1.4.3"
 
-        androidxSupportVersion = '1.0.1'
+        androidxSupportVersion = "1.0.1"
         materialVersion = "1.4.0"
         recyclerViewVersion = "1.2.1"
         picassoVersion = "2.71828"
     }
 
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/releases/' }
-        maven { url 'https://nexus.scanbot.io/nexus/content/repositories/snapshots/' }
-    }
-
     configurations.all {
         // Hack to let Gradle pickup latest SNAPSHOTS
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        resolutionStrategy.cacheChangingModulesFor 0, "seconds"
     }
 }

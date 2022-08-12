@@ -36,7 +36,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "androidx.recyclerview:recyclerview:$project.ext.recyclerViewVersion"
     implementation "io.scanbot:sdk-package-4:${project.ext.scanbotSdkVersion}"

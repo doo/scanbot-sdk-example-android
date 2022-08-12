@@ -20,7 +20,7 @@ import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionResult
+import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
@@ -129,13 +129,13 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success) {
-                showUserGuidance(result.value.detectionResult)
+                showUserGuidance(result.value.detectionStatus)
             }
         }
         return false // typically you need to return false
     }
 
-    private fun showUserGuidance(result: DetectionResult) {
+    private fun showUserGuidance(result: DetectionStatus) {
         val autoSnappingEnabled = true
         if (!autoSnappingEnabled) {
             return
@@ -144,31 +144,31 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             return
         }
         when (result) {
-            DetectionResult.OK -> {
+            DetectionStatus.OK -> {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_TOO_SMALL -> {
+            DetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_BUT_BAD_ANGLES -> {
+            DetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.OK_OFF_CENTER -> {
+            DetectionStatus.OK_OFF_CENTER -> {
                 userGuidanceHint.text = "Move to the center"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_NOTHING_DETECTED -> {
+            DetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_NOISY -> {
+            DetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionResult.ERROR_TOO_DARK -> {
+            DetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
@@ -204,8 +204,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             list.add(PageAspectRatio(width, height))
         }
         contourDetector.setRequiredAspectRatios(list)
-        contourDetector.detect(originalBitmap)
-        val detectedPolygon = contourDetector.polygonF!!
+        val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
         val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
         resultView.post {
