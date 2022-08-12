@@ -4,7 +4,7 @@ buildscript {
     ext.targetSdkVersion = 30
     ext.minSdkVersion = 21
 
-    ext.coroutines_version = '1.4.3'
+    ext.coroutines_version = '1.6.4'
 
     ext.scanbotSdkVersion = '1.95.0'
 }
