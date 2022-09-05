@@ -1,0 +1,312 @@
+diff --git a/classical-components-demo/camera-fragment/build.gradle b/classical-components-demo/camera-fragment/build.gradle
+index eca2a588e99a480ca958ac2d0a33fe3b37c37069..edc1b3d0b60cf58a8d08dd238c7de69fc5ee870a 100644
+--- a/classical-components-demo/camera-fragment/build.gradle
++++ b/classical-components-demo/camera-fragment/build.gradle
+@@ -30,7 +30,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/ocr/build.gradle b/classical-components-demo/ocr/build.gradle
+index ab7062b91a512ed183b815c5d86730db4dd04a21..a8eef28f8aaabe1644fa5ee4daefe9d1d71699c8 100644
+--- a/classical-components-demo/ocr/build.gradle
++++ b/classical-components-demo/ocr/build.gradle
+@@ -24,7 +24,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/ehic-scanner/build.gradle b/classical-components-demo/ehic-scanner/build.gradle
+index 1fd18393734ae0a5a44f269a439e7ae8042166d9..cdd19ec7cf4384eb457afae134cf51be2209f444 100644
+--- a/classical-components-demo/ehic-scanner/build.gradle
++++ b/classical-components-demo/ehic-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/edit-polygon-view/build.gradle b/classical-components-demo/edit-polygon-view/build.gradle
+index 0f851435c56fb8792397834355bfe95a0ba1445f..306813550d7bc757b0fb4ac7d5257bba9af02afc 100644
+--- a/classical-components-demo/edit-polygon-view/build.gradle
++++ b/classical-components-demo/edit-polygon-view/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/multiple-objects-detector/build.gradle b/classical-components-demo/multiple-objects-detector/build.gradle
+index c5043d106a40a75561266be73c8375f91176a5d3..2849dc4df47716ba03be130c6b6c3a76ca6cf74b 100644
+--- a/classical-components-demo/multiple-objects-detector/build.gradle
++++ b/classical-components-demo/multiple-objects-detector/build.gradle
+@@ -30,7 +30,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/encryption/build.gradle b/classical-components-demo/encryption/build.gradle
+index a9dc98b61345e61bbb1c5da11a6b941072473741..f3823306c08b044beb721c578cf64feb1a6a94bd 100644
+--- a/classical-components-demo/encryption/build.gradle
++++ b/classical-components-demo/encryption/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/barcode-scanner/build.gradle b/classical-components-demo/barcode-scanner/build.gradle
+index f08aea74fcdedc90d0638efdaa813a3467ab5dc0..89482b0a2f048c0e9aab7ae0770a7eba6282dcff 100644
+--- a/classical-components-demo/barcode-scanner/build.gradle
++++ b/classical-components-demo/barcode-scanner/build.gradle
+@@ -34,7 +34,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/generic-document-recognizer-autosnapping/build.gradle b/classical-components-demo/generic-document-recognizer-autosnapping/build.gradle
+index 0e58573a07d3dd684a7fb452ad928077afc9218a..592813afa92dd8cd71c308cd1b538c30b95d34c6 100644
+--- a/classical-components-demo/generic-document-recognizer-autosnapping/build.gradle
++++ b/classical-components-demo/generic-document-recognizer-autosnapping/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/tiff-writer/build.gradle b/classical-components-demo/tiff-writer/build.gradle
+index 8e92e0783d4b2d5cfec12dff6e141414d01d3197..c9bfa258b0a8c41de40651955a03121852204255 100755
+--- a/classical-components-demo/tiff-writer/build.gradle
++++ b/classical-components-demo/tiff-writer/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/generic-text-recognizer/build.gradle b/classical-components-demo/generic-text-recognizer/build.gradle
+index 0330436c8429c9142688cfbbbba03373f21e375e..5e2b5a88fee767d571709d17c3d3f86b36cd1d93 100755
+--- a/classical-components-demo/generic-text-recognizer/build.gradle
++++ b/classical-components-demo/generic-text-recognizer/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/licenseplate-scanner/build.gradle b/classical-components-demo/licenseplate-scanner/build.gradle
+index 2b5aa5e6c44a476c9aac6dd4d341bfd9d676312c..a00a919c667462a39d1fe76c52cf5aa4e92873b7 100755
+--- a/classical-components-demo/licenseplate-scanner/build.gradle
++++ b/classical-components-demo/licenseplate-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/document-scanner/build.gradle b/classical-components-demo/document-scanner/build.gradle
+index 688e4c66c0f6afcfbf5446d6c6b94af9c6f4b757..f899fc3ce81be92cfa984e844a94e11ab3f7172c 100644
+--- a/classical-components-demo/document-scanner/build.gradle
++++ b/classical-components-demo/document-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/manual-processing/build.gradle b/classical-components-demo/manual-processing/build.gradle
+index 0f851435c56fb8792397834355bfe95a0ba1445f..306813550d7bc757b0fb4ac7d5257bba9af02afc 100644
+--- a/classical-components-demo/manual-processing/build.gradle
++++ b/classical-components-demo/manual-processing/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/blur-estimator/build.gradle b/classical-components-demo/blur-estimator/build.gradle
+index 8aa7e68eee7c5b8f34dd915e07741905425bf4da..430a65440f31e6d90b76762f5cddff9a1b829f99 100755
+--- a/classical-components-demo/blur-estimator/build.gradle
++++ b/classical-components-demo/blur-estimator/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/mrz-scanner/build.gradle b/classical-components-demo/mrz-scanner/build.gradle
+index 221f8e0c30d09823ef23754090cb4c80259bcaf1..2c1fab0daa3de9513fe8372f6b51b292193dacba 100644
+--- a/classical-components-demo/mrz-scanner/build.gradle
++++ b/classical-components-demo/mrz-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/payform-scanner/build.gradle b/classical-components-demo/payform-scanner/build.gradle
+index 2336d02c1e154aed59afb168257b752b5b969919..6d333d0823ec6f2b06f0d63ee228ac949fa1626b 100644
+--- a/classical-components-demo/payform-scanner/build.gradle
++++ b/classical-components-demo/payform-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/adjustable-filters/build.gradle b/classical-components-demo/adjustable-filters/build.gradle
+index 0675667fea67d656097f29d41c697dfc996596ca..ef024163afbf4288478a1adfdf69b4ba295a56d1 100644
+--- a/classical-components-demo/adjustable-filters/build.gradle
++++ b/classical-components-demo/adjustable-filters/build.gradle
+@@ -25,7 +25,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/generic-document-recognizer-livedetection/build.gradle b/classical-components-demo/generic-document-recognizer-livedetection/build.gradle
+index 7ea5d6950277f7f3eae0af9f012b146e4deeefb8..e736bff3adc187e03fce0003c8257a7ac73167f0 100644
+--- a/classical-components-demo/generic-document-recognizer-livedetection/build.gradle
++++ b/classical-components-demo/generic-document-recognizer-livedetection/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/check-recognizer/build.gradle b/classical-components-demo/check-recognizer/build.gradle
+index 9de66b3a3dcf12a22abd8bbbc6c1674ce170ae69..2856178906c5fd50d5fd66f31e76da33b16f79e0 100644
+--- a/classical-components-demo/check-recognizer/build.gradle
++++ b/classical-components-demo/check-recognizer/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/mc-scanner/build.gradle b/classical-components-demo/mc-scanner/build.gradle
+index a38e91849035904574a21086b7137f1d686c92cf..1dd3908927df9715c815e1a668490896521ea912 100644
+--- a/classical-components-demo/mc-scanner/build.gradle
++++ b/classical-components-demo/mc-scanner/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/camera-view-aspect-ratio-finder/build.gradle b/classical-components-demo/camera-view-aspect-ratio-finder/build.gradle
+index 688e4c66c0f6afcfbf5446d6c6b94af9c6f4b757..f899fc3ce81be92cfa984e844a94e11ab3f7172c 100644
+--- a/classical-components-demo/camera-view-aspect-ratio-finder/build.gradle
++++ b/classical-components-demo/camera-view-aspect-ratio-finder/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/pdf-creation/build.gradle b/classical-components-demo/pdf-creation/build.gradle
+index 0f851435c56fb8792397834355bfe95a0ba1445f..306813550d7bc757b0fb4ac7d5257bba9af02afc 100644
+--- a/classical-components-demo/pdf-creation/build.gradle
++++ b/classical-components-demo/pdf-creation/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/classical-components-demo/camera-view/build.gradle b/classical-components-demo/camera-view/build.gradle
+index 688e4c66c0f6afcfbf5446d6c6b94af9c6f4b757..f899fc3ce81be92cfa984e844a94e11ab3f7172c 100644
+--- a/classical-components-demo/camera-view/build.gradle
++++ b/classical-components-demo/camera-view/build.gradle
+@@ -23,7 +23,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
+diff --git a/ready-to-use-ui-demo/rtu_ui_components/build.gradle b/ready-to-use-ui-demo/rtu_ui_components/build.gradle
+index 50914ad847f8c64cf3d0d420c30f9b254474c176..04450a405c2f53c4cee9964a4f7aa80a704961cb 100644
+--- a/ready-to-use-ui-demo/rtu_ui_components/build.gradle
++++ b/ready-to-use-ui-demo/rtu_ui_components/build.gradle
+@@ -33,7 +33,7 @@ android {
+     buildTypes {
+         debug {
+             // set this to `false` to allow debugging and run a "non-release" build
+-            minifyEnabled = false
++            minifyEnabled = true
+             debuggable = true
+             signingConfig = signingConfigs.getByName("debug")
+         }
