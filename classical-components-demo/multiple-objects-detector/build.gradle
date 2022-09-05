@@ -19,10 +19,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../../scanbot_debug_keystore.jks")
+            storePassword = "scanbot_debug_keystore"
+            keyAlias = "scanbot_debug_keystore"
+            keyPassword = "scanbot_debug_keystore"
+        }
+    }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        debug {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     packagingOptions {
