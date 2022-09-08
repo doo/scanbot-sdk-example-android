@@ -22,11 +22,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        debug {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
         }
     }
 }

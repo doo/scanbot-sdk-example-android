@@ -20,10 +20,12 @@ android {
             // or if you need to support some rare devices with the Intel Atom architecture.
         }
     }
+
     buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        debug {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
         }
     }
 
