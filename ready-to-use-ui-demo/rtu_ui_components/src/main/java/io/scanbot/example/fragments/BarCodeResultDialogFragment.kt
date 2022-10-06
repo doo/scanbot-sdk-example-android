@@ -129,7 +129,7 @@ class BarCodeResultDialogFragment : androidx.fragment.app.DialogFragment() {
         return StringBuilder()
                 .append("QR-/Barcode Result:").append("\n")
                 .append("Format: ").append(barcodeItem.barcodeFormat.name).append("\n")
-                .append("Value: ").append(barcodeItem.text).append("\n")
+                .append("Value: ").append(barcodeItem.textWithExtension).append("\n")
                 .toString()
     }
 }
