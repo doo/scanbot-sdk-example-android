@@ -30,6 +30,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
 import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
+import io.scanbot.sdk.barcode.ui.BarcodeOverlayTextFormat
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.ZoomRange
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
@@ -42,6 +43,7 @@ import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.result.ResultWrapper
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui.view.barcode.SelectionOverlayConfiguration
 import io.scanbot.sdk.ui.view.barcode.batch.BatchBarcodeScannerActivity
 import io.scanbot.sdk.ui.view.barcode.batch.configuration.BatchBarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
@@ -344,6 +346,21 @@ class MainActivity : AppCompatActivity() {
             barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
+
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
+        }
+
+        findViewById<View>(R.id.qr_camera_default_ui_with_selection_overlay).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
+
+            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setSelectionOverlayConfiguration(
+                SelectionOverlayConfiguration(
+                    overlayEnabled = true,
+                    textFormat = BarcodeOverlayTextFormat.CODE_AND_TYPE // Select NONE to hide the value
+                )
+            )
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }

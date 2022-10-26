@@ -9,6 +9,7 @@
     <string name="data_detectors">Data Detectors</string>
     <string name="scan_qr_code">Scan QR-/Barcode</string>
     <string name="scan_qr_code_with_image">Scan QR-/Barcode with image</string>
+    <string name="scan_qr_code_with_selection_overlay">Scan QR-/Barcode with selection overlay</string>
     <string name="scan_qr_batch_mode">Scan Multiple QR-/Barcodes</string>
     <string name="scan_mrz">Scan MRZ</string>
     <string name="scan_mrz_image">Scan MRZ + Image</string>
