@@ -1,7 +1,6 @@
 package io.scanbot.example.util
 
 import android.content.Context
-import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 
@@ -11,7 +10,7 @@ class SharingCopier {
 
         fun clear(context: Context) {
             val sharedDocsDir = sharedDocsDirectory(context)
-            FileUtils.cleanDirectory(sharedDocsDir)
+            sharedDocsDir.deleteRecursively()
         }
 
         @Throws(IOException::class)
@@ -25,7 +24,7 @@ class SharingCopier {
         fun copyFile(context: Context, sourceFile: File): File {
             val sharedDocsDir = sharedDocsDirectory(context)
             val destFile = File(sharedDocsDir, sourceFile.name)
-            FileUtils.copyFile(sourceFile, destFile)
+            sourceFile.copyTo(destFile, overwrite = true)
             return destFile
         }
 
@@ -37,7 +36,5 @@ class SharingCopier {
             }
             return dir
         }
-
     }
-
 }
