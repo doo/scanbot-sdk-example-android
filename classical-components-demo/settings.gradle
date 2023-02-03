@@ -22,8 +22,8 @@ include(
         ":pdf-creation",
         ":camera-view",
         ":edit-polygon-view",
-        ":camera-fragment",
-        ":payform-scanner",
+        ":camera-fragment"
+        ,
         ":document-scanner",
         ":barcode-scanner",
         ":mrz-scanner",
