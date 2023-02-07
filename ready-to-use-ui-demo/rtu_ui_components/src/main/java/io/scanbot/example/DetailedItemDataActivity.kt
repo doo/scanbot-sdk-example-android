@@ -9,6 +9,7 @@ import io.scanbot.barcodescanner.model.SEPA.SEPADocument
 import io.scanbot.barcodescanner.model.VCard.VCardDocument
 import io.scanbot.barcodescanner.model.aamva.AAMVADocument
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument
+import io.scanbot.barcodescanner.model.gs1.Gs1Document
 import io.scanbot.barcodescanner.model.swissqr.SwissQRDocument
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.entity.BarcodeItem
@@ -124,6 +125,13 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type.name}: ${it.rawText}\n")
+                }
+            }
+            is Gs1Document -> {
+                barcodesResult.append("\nGs1 Document\n")
+
+                barcodeDocumentFormat.fields.forEach { field ->
+                    barcodesResult.append("${field.dataTitle}: ${field.rawValue}\n")
                 }
             }
         }
