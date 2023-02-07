@@ -1,6 +1,7 @@
 package io.scanbot.example
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDocument
 import io.scanbot.barcodescanner.model.MedicalCertificate.MedicalCertificateDocument
@@ -25,7 +26,11 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
             container?.also {
-                it.image.setImageBitmap(item.image)
+                if (item.image != null) {
+                    it.image.setImageBitmap(item.image)
+                } else {
+                    it.image.visibility = View.GONE
+                }
                 it.barcodeFormat.text = item.barcodeFormat.name
                 it.docFormat.text = item.formattedResult?.let { formattedResult ->
                     formattedResult::class.java.simpleName
