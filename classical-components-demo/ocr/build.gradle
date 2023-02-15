@@ -37,6 +37,9 @@ android {
         javaMaxHeapSize "4g"
     }
 
+    sourceSets.getByName("main") {
+        java.srcDirs(file("../common/src/main/java"))
+    }
 }
 
 dependencies {

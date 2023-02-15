@@ -29,6 +29,9 @@ android {
             debuggable = true
         }
     }
+    sourceSets.getByName("main") {
+        java.srcDirs(file("../common/src/main/java"))
+    }
 }
 
 dependencies {

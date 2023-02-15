@@ -30,6 +30,9 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/DEPENDENCIES'
     }
+    sourceSets.getByName("main") {
+        java.srcDirs(file("../common/src/main/java"))
+    }
 }
 
 dependencies {
