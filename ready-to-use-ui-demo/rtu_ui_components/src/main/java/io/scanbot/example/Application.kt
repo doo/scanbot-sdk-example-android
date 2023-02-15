@@ -58,7 +58,6 @@ class Application : Application(), CoroutineScope {
                 )
                 .prepareOCRLanguagesBlobs(true)
                 .prepareMRZBlobs(true)
-                .preparePayFormBlobs(true)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.

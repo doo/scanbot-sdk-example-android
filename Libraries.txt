@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 1.98.0
+Open Source libraries used in the Scanbot SDK for Android version 2.0.0
 
 CWAC-Camera
 
@@ -1342,7 +1342,7 @@ and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/
 
 Tensorflow
 
-Version 339ccc2b03
+Version v2.10.0
 (https://github.com/tensorflow/tensorflow)
 
                                  Apache License

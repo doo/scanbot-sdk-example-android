@@ -15,7 +15,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
 import io.scanbot.example.di.ExampleSingletonImpl
-import io.scanbot.example.fragments.*
+import io.scanbot.example.fragments.EHICResultDialogFragment
+import io.scanbot.example.fragments.ErrorFragment
+import io.scanbot.example.fragments.MRZDialogFragment
+import io.scanbot.example.fragments.MedicalCertificateResultDialogFragment
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.PageRepository
@@ -32,14 +35,11 @@ import io.scanbot.sdk.barcode.entity.BarcodeItem
 import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
 import io.scanbot.sdk.barcode.ui.BarcodeOverlayTextFormat
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.ZoomRange
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.ui.entity.workflow.Workflow
-import io.scanbot.sdk.ui.entity.workflow.WorkflowStepResult
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.result.ResultWrapper
 import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
@@ -70,12 +70,6 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
 import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
-import io.scanbot.sdk.ui.view.nfc.NfcPassportScannerActivity
-import io.scanbot.sdk.ui.view.nfc.PassportPhotoSaveCallback
-import io.scanbot.sdk.ui.view.nfc.configuration.NfcPassportConfiguration
-import io.scanbot.sdk.ui.view.nfc.entity.NfcPassportScanningResult
-import io.scanbot.sdk.ui.view.workflow.WorkflowScannerActivity
-import io.scanbot.sdk.ui.view.workflow.configuration.WorkflowScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
@@ -86,16 +80,10 @@ class MainActivity : AppCompatActivity() {
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerActivity.InputParams>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
-    private val nfcPassportScannerResultLauncher: ActivityResultLauncher<NfcPassportConfiguration>
-    private val mrzSnapWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
-    private val mrzFrontBackWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
     private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
-    private val barcodeAndDocWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
-    private val dcWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
-    private val payformWorkflowResultLauncher: ActivityResultLauncher<WorkflowScannerActivity.InputParams>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val multipleObjectsDetectorResultLauncher: ActivityResultLauncher<MultipleObjectsDetectorConfiguration>
     private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
@@ -128,36 +116,6 @@ class MainActivity : AppCompatActivity() {
     private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
         val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
-    }
-
-    private fun showNfcPassportDialog(nfcPassportScanningResult: NfcPassportScanningResult) {
-        val dialogFragment = NfcPassportResultDialogFragment.newInstance(nfcPassportScanningResult)
-        dialogFragment.show(supportFragmentManager, NfcPassportResultDialogFragment.NAME)
-    }
-
-    private fun showMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = MRZImageResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, MRZImageResultDialogFragment.NAME)
-    }
-
-    private fun showFrontBackMrzImageWorkflowResult(workflow: Workflow, workflowStepResults: ArrayList<WorkflowStepResult>) {
-        val dialogFragment = MRZFrontBackImageResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, MRZFrontBackImageResultDialogFragment.NAME)
-    }
-
-    private fun showBarcodeAndDocumentWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
-        val dialogFragment = BarCodeResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, BarCodeResultDialogFragment.NAME)
-    }
-
-    private fun showDCWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
-        val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
-    }
-
-    private fun showPayFormWorkflowResult(workflow: Workflow, workflowStepResults: List<WorkflowStepResult>) {
-        val dialogFragment = PayFormResultDialogFragment.newInstance(workflow, workflowStepResults)
-        dialogFragment.show(supportFragmentManager, PayFormResultDialogFragment.NAME)
     }
 
     private fun showEHICResultDialog(recognitionResult: HealthInsuranceCardRecognitionResult) {
@@ -249,31 +207,6 @@ class MainActivity : AppCompatActivity() {
             mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
             mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
-        }
-
-        findViewById<View>(R.id.nfc_passport_default_ui).setOnClickListener {
-            val nfcPassportConfiguration = NfcPassportConfiguration()
-
-            nfcPassportConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            nfcPassportConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
-            nfcPassportConfiguration.setSuccessBeepEnabled(false)
-
-            // TODO: if you need to load an image from the NFC chip enable line below
-            // nfcPassportConfiguration.setShouldSavePhotoImageInStorage(true)
-
-            // if for some reason (e.g. security) you need to retrieve passport photo from NFC chip
-            // without getting it stored on device disk, you can enable the following configuration
-            class PhotoSaveCallback : PassportPhotoSaveCallback {
-                // NOTE: callback implementation class must be static (in case of Java)
-                // or non-inner (in case of Kotlin), have default (empty) constructor
-                // and must not touch fields or methods of enclosing class/method
-                override fun onImageRetrieved(photo: Bitmap?) {
-                    // TODO: use photo from this callback
-                }
-            }
-            nfcPassportConfiguration.setPassportPhotoSaveCallback(PhotoSaveCallback::class.java)
-
-            nfcPassportScannerResultLauncher.launch(nfcPassportConfiguration)
         }
 
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
@@ -397,72 +330,6 @@ class MainActivity : AppCompatActivity() {
             batchBarcodeResultLauncher.launch(rtuInput)
         }
 
-        findViewById<View>(R.id.mrz_image_default_ui).setOnClickListener {
-            val workflowScannerConfiguration = WorkflowScannerConfiguration()
-            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
-            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-
-            val rtuInput = WorkflowScannerActivity.InputParams(
-                    workflowScannerConfiguration, WorkflowFactory.scanMRZAndSnap()
-            )
-            mrzSnapWorkflowResultLauncher.launch(rtuInput)
-        }
-
-        findViewById<View>(R.id.mrz_front_back_image_default_ui).setOnClickListener {
-            val workflowScannerConfiguration = WorkflowScannerConfiguration()
-            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
-            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-
-            val rtuInput = WorkflowScannerActivity.InputParams(
-                    workflowScannerConfiguration, WorkflowFactory.scanMRZAndFrontBackSnap()
-            )
-            mrzFrontBackWorkflowResultLauncher.launch(rtuInput)
-        }
-
-        findViewById<View>(R.id.barcode_and_doc_default_ui).setOnClickListener {
-            val workflowScannerConfiguration = WorkflowScannerConfiguration()
-            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
-            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-
-            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.barcodeAndDocumentImage())
-            barcodeAndDocWorkflowResultLauncher.launch(rtuInput)
-        }
-
-        findViewById<View>(R.id.mc_workflow_ui).setOnClickListener {
-            val workflowScannerConfiguration = WorkflowScannerConfiguration()
-            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
-            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
-
-            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.medicalCertificate())
-            dcWorkflowResultLauncher.launch(rtuInput)
-        }
-
-        payform_default_ui.setOnClickListener {
-            val workflowScannerConfiguration = WorkflowScannerConfiguration()
-            workflowScannerConfiguration.setIgnoreBadAspectRatio(true)
-            workflowScannerConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            workflowScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            workflowScannerConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
-
-            val rtuInput = WorkflowScannerActivity.InputParams(workflowScannerConfiguration, WorkflowFactory.payFormWithClassicalDocPolygonDetection())
-            payformWorkflowResultLauncher.launch(rtuInput)
-        }
-
         ehic_default_ui.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
@@ -555,22 +422,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, getString(R.string.license_plate_flow_finished), Toast.LENGTH_LONG).show()
                 }
 
-        nfcPassportScannerResultLauncher =
-                registerForActivityResultOk(NfcPassportScannerActivity.ResultContract()) { resultEntity ->
-                    showNfcPassportDialog(resultEntity.result!!)
-                }
-
-        mrzSnapWorkflowResultLauncher =
-                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
-                    showMrzImageWorkflowResult(resultEntity.workflow!!, ArrayList(resultEntity.result!!))
-                }
-
-        mrzFrontBackWorkflowResultLauncher =
-                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
-                    showFrontBackMrzImageWorkflowResult(resultEntity.workflow!!,
-                            ArrayList(resultEntity.result!!))
-                }
-
         cropResultLauncher =
                 registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
                     PageRepository.addPage(resultEntity.result!!)
@@ -597,21 +448,6 @@ class MainActivity : AppCompatActivity() {
 
                     val intent = Intent(this, BarcodeResultActivity::class.java)
                     startActivity(intent)
-                }
-
-        barcodeAndDocWorkflowResultLauncher =
-                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
-                    showBarcodeAndDocumentWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
-                }
-
-        dcWorkflowResultLauncher =
-                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
-                    showDCWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
-                }
-
-        payformWorkflowResultLauncher =
-                registerForActivityResultOk(WorkflowScannerActivity.ResultContract()) { resultEntity ->
-                    showPayFormWorkflowResult(resultEntity.workflow!!, resultEntity.result!!)
                 }
 
         selectPictureFromGalleryResultLauncher =
