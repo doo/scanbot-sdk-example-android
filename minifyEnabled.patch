@@ -63,19 +63,6 @@ index e72c0d94b2651c583cf076d8c228bf87f261ee7d..35b477c2cb1af8f11ff2257c2d32f95a
              debuggable = true
          }
      }
-diff --git a/classical-components-demo/payform-scanner/build.gradle b/classical-components-demo/payform-scanner/build.gradle
-index 0b5c02069859ac89a8595102415db37c5e9d0d71..962990792ed5480d6f3320fc34c4e1e83b3ab509 100644
---- a/classical-components-demo/payform-scanner/build.gradle
-+++ b/classical-components-demo/payform-scanner/build.gradle
-@@ -15,7 +15,7 @@ android {
-     buildTypes {
-         debug {
-             // set this to `false` to allow debugging and run a "non-release" build
--            minifyEnabled = false
-+            minifyEnabled = true
-             debuggable = true
-         }
-     }
 diff --git a/classical-components-demo/blur-estimator/build.gradle b/classical-components-demo/blur-estimator/build.gradle
 index f3832e208e67046832b96f5e82f5c5b1225f9947..479b99e523ba2133d2c221435c7c4d7b46c49179 100755
 --- a/classical-components-demo/blur-estimator/build.gradle

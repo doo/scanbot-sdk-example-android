@@ -1,6 +1,7 @@
 package io.scanbot.example
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDocument
 import io.scanbot.barcodescanner.model.MedicalCertificate.MedicalCertificateDocument
@@ -9,6 +10,7 @@ import io.scanbot.barcodescanner.model.SEPA.SEPADocument
 import io.scanbot.barcodescanner.model.VCard.VCardDocument
 import io.scanbot.barcodescanner.model.aamva.AAMVADocument
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument
+import io.scanbot.barcodescanner.model.gs1.Gs1Document
 import io.scanbot.barcodescanner.model.swissqr.SwissQRDocument
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.entity.BarcodeItem
@@ -24,7 +26,11 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
             container?.also {
-                it.image.setImageBitmap(item.image)
+                if (item.image != null) {
+                    it.image.setImageBitmap(item.image)
+                } else {
+                    it.image.visibility = View.GONE
+                }
                 it.barcodeFormat.text = item.barcodeFormat.name
                 it.docFormat.text = item.formattedResult?.let { formattedResult ->
                     formattedResult::class.java.simpleName
@@ -124,6 +130,13 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type.name}: ${it.rawText}\n")
+                }
+            }
+            is Gs1Document -> {
+                barcodesResult.append("\nGs1 Document\n")
+
+                barcodeDocumentFormat.fields.forEach { field ->
+                    barcodesResult.append("${field.dataTitle}: ${field.rawValue}\n")
                 }
             }
         }

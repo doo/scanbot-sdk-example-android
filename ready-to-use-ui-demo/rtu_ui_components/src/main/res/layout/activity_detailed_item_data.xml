@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.scanbot.example.sdk.barcode.DetailedItemDataActivity">
+    tools:context="io.scanbot.example.DetailedItemDataActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -17,7 +17,6 @@
             android:layout_height="?attr/actionBarSize"
             app:title="Details"
             android:theme="@style/Scanbot.Demo.ActionBar" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -79,6 +78,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/barcodeFormat"
                 tools:text="document type" />
 
+            <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="docFormat,image"
+                    />
+
             <TextView
                 android:id="@+id/description"
                 android:layout_width="0dp"
@@ -92,11 +99,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image"
+                app:layout_constraintTop_toBottomOf="@+id/barrier"
                 tools:text="description" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
-
 </LinearLayout>
