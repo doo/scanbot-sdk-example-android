@@ -17,17 +17,21 @@ import io.scanbot.example.R
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.camera.*
+import io.scanbot.sdk.ui.camera.FinderAspectRatio
+import io.scanbot.sdk.ui.camera.FinderOverlayView
 
 
 class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraView
     private lateinit var resultView: ImageView
+    private lateinit var finderOverlay: FinderOverlayView
 
     private var flashEnabled = false
     private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
@@ -39,6 +43,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
 
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
+        finderOverlay = findViewById(R.id.finder_overlay)
 
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
@@ -47,18 +52,21 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             }, 300)
         }
 
+        finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
         val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
         barcodeDetector.modifyConfig {
             setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
             setSaveCameraPreviewFrame(true)
         }
-        barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
+        barcodeDetectorFrameHandler =
+            BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
 
         barcodeDetectorFrameHandler?.let { frameHandler ->
             frameHandler.setDetectionInterval(1000)
             frameHandler.addResultHandler(this)
 
-            val barcodeAutoSnappingController = BarcodeAutoSnappingController.attach(cameraView, frameHandler)
+            val barcodeAutoSnappingController =
+                BarcodeAutoSnappingController.attach(cameraView, frameHandler)
             barcodeAutoSnappingController.setSensitivity(1f)
 
         }
@@ -72,9 +80,17 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
     override fun onResume() {
         super.onResume()
         cameraView.onResume()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Use onActivityResult to handle permission rejection
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSION_CODE
+            )
         }
     }
 
@@ -98,7 +114,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         val matrix = Matrix()
         matrix.setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)
         val resultBitmap =
-                Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
 
         resultView.post {
             resultView.setImageBitmap(resultBitmap)
@@ -113,9 +129,9 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         } else {
             cameraView.post {
                 Toast.makeText(
-                        this,
-                        "License has expired!",
-                        Toast.LENGTH_LONG
+                    this,
+                    "License has expired!",
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }

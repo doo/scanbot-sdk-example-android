@@ -16,14 +16,10 @@
 
     </io.scanbot.sdk.camera.ScanbotCameraView>
 
-    <View
+    <io.scanbot.sdk.ui.camera.FinderOverlayView
         android:id="@+id/finder_overlay"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/mrz_finder_bg"/>
+        android:layout_height="match_parent" />
 
     <TextView
         android:layout_width="wrap_content"

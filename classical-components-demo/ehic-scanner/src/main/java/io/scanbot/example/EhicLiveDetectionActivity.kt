@@ -8,14 +8,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler
+import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class EhicLiveDetectionActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraView
+    private lateinit var finderOverlay: FinderOverlayView
 
     private val logger = LoggerProvider.logger
 
@@ -33,6 +36,9 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
                 cameraView.continuousFocus()
             }, 700)
         }
+
+        finderOverlay = findViewById(R.id.finder_overlay)
+        finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(3.0, 2.0)))
 
         val scanbotSDK = ScanbotSDK(this)
         val healthInsuranceCardScanner = scanbotSDK.createHealthInsuranceCardScanner()
