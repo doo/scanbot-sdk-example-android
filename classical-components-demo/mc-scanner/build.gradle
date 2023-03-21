@@ -12,6 +12,7 @@ android {
         versionName "1.0"
         multiDexEnabled true
     }
+
     buildTypes {
         debug {
             // set this to `false` to allow debugging and run a "non-release" build
@@ -19,20 +20,20 @@ android {
             debuggable = true
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
-    }
-    sourceSets.getByName("main") {
-        java.srcDirs(file("../common/src/main/java"))
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(project(":common"))
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
     implementation "io.scanbot:sdk-mc-assets:$project.ext.scanbotSdkVersion"

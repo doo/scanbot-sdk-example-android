@@ -12,6 +12,7 @@ android {
         versionName "1.0"
         multiDexEnabled true
     }
+
     buildTypes {
         debug {
             // set this to `false` to allow debugging and run a "non-release" build
@@ -19,10 +20,12 @@ android {
             debuggable = true
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/LICENSE'
@@ -30,12 +33,10 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/DEPENDENCIES'
     }
-    sourceSets.getByName("main") {
-        java.srcDirs(file("../common/src/main/java"))
-    }
 }
 
 dependencies {
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
+    implementation(project(":common"))
 }
