@@ -50,7 +50,9 @@ import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
 import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
+import io.scanbot.sdk.ui.view.camera.FinderDocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
+import io.scanbot.sdk.ui.view.camera.configuration.FinderDocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
 import io.scanbot.sdk.ui.view.check.configuration.CheckRecognizerConfiguration
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
@@ -87,6 +89,7 @@ class MainActivity : AppCompatActivity() {
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val multipleObjectsDetectorResultLauncher: ActivityResultLauncher<MultipleObjectsDetectorConfiguration>
     private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
+    private val finderDocumentScannerResultLauncher: ActivityResultLauncher<FinderDocumentScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
     private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckRecognizerConfiguration>
@@ -192,6 +195,22 @@ class MainActivity : AppCompatActivity() {
             // see further customization configs ...
 
             documentScannerResultLauncher.launch(cameraConfiguration)
+        }
+
+        findViewById<View>(R.id.camera_finder_ui).setOnClickListener {
+            // Customize text resources, behavior and UI:
+            val cameraConfiguration = FinderDocumentScannerConfiguration()
+            cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
+            cameraConfiguration.setIgnoreBadAspectRatio(true)
+            cameraConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
+            cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setAutoSnappingSensitivity(0.75f)
+            cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
+            // see further customization configs ...
+
+            finderDocumentScannerResultLauncher.launch(cameraConfiguration)
         }
 
         findViewById<View>(R.id.page_preview_activity).setOnClickListener {
@@ -473,6 +492,14 @@ class MainActivity : AppCompatActivity() {
         documentScannerResultLauncher =
                 registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
                     PageRepository.addPages(resultEntity.result!!)
+
+                    val intent = Intent(this, PagePreviewActivity::class.java)
+                    startActivity(intent)
+                }
+
+        finderDocumentScannerResultLauncher =
+                registerForActivityResultOk(FinderDocumentScannerActivity.ResultContract()) { resultEntity ->
+                    PageRepository.addPages(listOf(resultEntity.result!!))
 
                     val intent = Intent(this, PagePreviewActivity::class.java)
                     startActivity(intent)
