@@ -52,6 +52,7 @@ import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.FinderDocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
+import io.scanbot.sdk.ui.view.camera.configuration.FinderDocumentScannerAccessibilityConfiguration
 import io.scanbot.sdk.ui.view.camera.configuration.FinderDocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
 import io.scanbot.sdk.ui.view.check.configuration.CheckRecognizerConfiguration
@@ -207,7 +208,6 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
-            cameraConfiguration.setAcc
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
             // see further customization configs ...
             finderDocumentScannerResultLauncher.launch(cameraConfiguration)
