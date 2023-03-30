@@ -207,9 +207,9 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
             cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
+            cameraConfiguration.setAcc
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
             // see further customization configs ...
-
             finderDocumentScannerResultLauncher.launch(cameraConfiguration)
         }
 

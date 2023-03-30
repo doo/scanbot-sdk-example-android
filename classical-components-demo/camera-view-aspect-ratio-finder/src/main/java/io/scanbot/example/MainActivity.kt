@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
-    private val requiredPageAspectRatios = listOf(FinderAspectRatio(4.0, 3.0))
+    private val requiredPageAspectRatios = listOf(AspectRatio(4.0, 3.0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -77,12 +78,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
-        val list = ArrayList<PageAspectRatio>()
-        for ((width, height) in requiredPageAspectRatios) {
-            list.add(PageAspectRatio(width, height))
-        }
 
-        contourDetectorFrameHandler.setRequiredAspectRatios(list)
+        contourDetectorFrameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
         contourDetectorFrameHandler.addResultHandler(finderOverlayView.contourDetectorFrameHandler)
         contourDetectorFrameHandler.addResultHandler(this)
 
@@ -198,12 +195,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
 
-        // Run document detection on original image:
-        val list = ArrayList<PageAspectRatio>()
-        for ((width, height) in requiredPageAspectRatios) {
-            list.add(PageAspectRatio(width, height))
-        }
-        contourDetector.setRequiredAspectRatios(list)
+        contourDetector.setRequiredAspectRatios(requiredPageAspectRatios)
         val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
         val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
