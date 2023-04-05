@@ -4,6 +4,7 @@
     <string name="no_license_found_the_app_will_terminate_after_one_minute">No license key set. Trial mode is active. The app will stop working after one minute.</string>
     <string name="document_scanner">Document Scanner</string>
     <string name="scan_document">Scan Document</string>
+    <string name="scan_document_finder">Scan Document with Finder</string>
     <string name="import_image">Import Image</string>
     <string name="view_images">View Images</string>
     <string name="data_detectors">Data Detectors</string>

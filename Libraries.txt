@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 2.0.0
+Open Source libraries used in the Scanbot SDK for Android version 2.1.0
 
 CWAC-Camera
 
@@ -67,7 +67,7 @@ permissions and limitations under the License.
 
 Kotlin Standard Library
 
-Version 1.6.21
+Version 1.7.10
 (https://github.com/JetBrains/kotlin)
 
 Copyright 2010-2018 JetBrains s.r.o.
@@ -122,7 +122,7 @@ limitations under the License.
 
 Dagger
 
-Version 2.41
+Version 2.45
 (https://github.com/google/dagger)
 
 Copyright 2012 The Dagger Authors
@@ -156,9 +156,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-
-
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 backward-cpp
@@ -485,12 +482,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 JSON for Modern C++
 
-Version v3.10.2
+Version v3.11.2
 (https://github.com/nlohmann/json)
 
 MIT License 
 
-Copyright (c) 2013-2021 Niels Lohmann
+Copyright (c) 2013-2022 Niels Lohmann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
