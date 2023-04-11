@@ -15,13 +15,16 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     buildTypes {
         debug {
             // set this to `false` to allow debugging and run a "non-release" build
@@ -32,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
     implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
     implementation "io.scanbot:sdk-barcode-assets:$project.ext.scanbotSdkVersion"
