@@ -24,7 +24,6 @@ import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
 import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.ui.camera.FinderAspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 
 
