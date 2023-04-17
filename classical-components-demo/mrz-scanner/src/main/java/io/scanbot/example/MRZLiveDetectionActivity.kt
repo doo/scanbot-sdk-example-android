@@ -7,16 +7,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler
+import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class MRZLiveDetectionActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
 
     private lateinit var cameraView: ScanbotCameraView
+    private lateinit var finderOverlay: FinderOverlayView
 
     private var flashEnabled = false
 
@@ -33,6 +36,10 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
                 cameraView.continuousFocus()
             }, 700)
         }
+
+        finderOverlay = findViewById(R.id.finder_overlay)
+        finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(5.0, 1.0)))
+
         val scanbotSDK = ScanbotSDK(this)
 
         val mrzScanner = scanbotSDK.createMrzScanner()
