@@ -13,7 +13,7 @@ import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.common.ImportImageContract
+import io.scanbot.example.common.ImportImageContract
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

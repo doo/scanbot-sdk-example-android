@@ -15,7 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.common.ImportImageContract
+import io.scanbot.example.common.ImportImageContract
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.mrzscanner.MRZScanner

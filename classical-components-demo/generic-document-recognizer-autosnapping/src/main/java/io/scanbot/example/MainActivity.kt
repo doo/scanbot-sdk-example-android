@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.common.ImportImageContract
+import io.scanbot.example.common.ImportImageContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
