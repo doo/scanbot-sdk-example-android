@@ -1,4 +1,4 @@
-package io.scanbot.sdk.common
+package io.scanbot.example.common
 
 import android.app.Activity
 import android.content.Context

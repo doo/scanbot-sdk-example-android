@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.mcscanner.model.DateRecordType
-import io.scanbot.mcscanner.model.McInfoBoxSubtype
+import io.scanbot.mcscanner.model.CheckBoxType
 import io.scanbot.mcscanner.model.McPatientInfoField
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 
@@ -106,22 +106,22 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
         fun newIntent(context: Context?, result: MedicalCertificateRecognizerResult): Intent {
             val intent = Intent(context, MedicalCertificateResultActivity::class.java)
             for (checkbox in result.checkboxes) {
-                when (checkbox.subType) {
-                    McInfoBoxSubtype.McBoxUnknown, McInfoBoxSubtype.McBoxPatientInfo -> {
+                when (checkbox.type) {
+                    CheckBoxType.McBoxUnknown -> {
                     }
-                    McInfoBoxSubtype.McBoxWorkAccident -> {
+                    CheckBoxType.McBoxWorkAccident -> {
                         intent.putExtra(EXTRA_workAccident, checkbox.hasContents)
                         intent.putExtra(EXTRA_workAccidentConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    McInfoBoxSubtype.McBoxAssignedToAccidentInsuranceDoctor -> {
+                    CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor -> {
                         intent.putExtra(EXTRA_assignedInsDoctor, checkbox.hasContents)
                         intent.putExtra(EXTRA_assignedInsDoctorConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    McInfoBoxSubtype.McBoxInitialCertificate -> {
+                    CheckBoxType.McBoxInitialCertificate -> {
                         intent.putExtra(EXTRA_initialCertificate, checkbox.hasContents)
                         intent.putExtra(EXTRA_initialCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
-                    McInfoBoxSubtype.McBoxRenewedCertificate -> {
+                    CheckBoxType.McBoxRenewedCertificate -> {
                         intent.putExtra(EXTRA_renewedCertificate, checkbox.hasContents)
                         intent.putExtra(EXTRA_renewedCertificateConf, checkbox.contentsValidationConfidenceValue)
                     }
@@ -132,17 +132,14 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
                     DateRecordType.DateRecordIncapableOfWorkSince -> {
                         intent.putExtra(EXTRA_incapableSince, date.dateString)
                         intent.putExtra(EXTRA_incapableSinceRC, date.recognitionConfidenceValue)
-                        intent.putExtra(EXTRA_incapableSinceVC, date.validationConfidenceValue)
                     }
                     DateRecordType.DateRecordIncapableOfWorkUntil -> {
                         intent.putExtra(EXTRA_incapableUntil, date.dateString)
                         intent.putExtra(EXTRA_incapableUntilRC, date.recognitionConfidenceValue)
-                        intent.putExtra(EXTRA_incapableUntilVC, date.validationConfidenceValue)
                     }
                     DateRecordType.DateRecordDiagnosedOn -> {
                         intent.putExtra(EXTRA_diagnosedOn, date.dateString)
                         intent.putExtra(EXTRA_diagnosedOnRC, date.recognitionConfidenceValue)
-                        intent.putExtra(EXTRA_diagnosedOnVC, date.validationConfidenceValue)
                     }
                     DateRecordType.DateRecordUndefined -> {
                     }
@@ -150,7 +147,7 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
             }
 
             intent.putExtra(EXTRA_formType, result.mcFormType.name)
-            intent.putExtra(EXTRA_patientInfo, result.patientInfoFields.toTypedArray())
+            intent.putExtra(EXTRA_patientInfo, result.patientInfoBox.fields.toTypedArray())
 
             return intent
         }

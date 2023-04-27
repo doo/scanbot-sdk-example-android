@@ -31,7 +31,6 @@ class ExampleApplication : Application() {
                 }
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
-            .prepareMRZBlobs(true)
             .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

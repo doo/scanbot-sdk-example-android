@@ -17,8 +17,8 @@ import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
+import io.scanbot.mcscanner.model.CheckBoxType
 import io.scanbot.mcscanner.model.DateRecordType
-import io.scanbot.mcscanner.model.McInfoBoxSubtype
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
@@ -124,23 +124,23 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
     private fun extractData(result: MedicalCertificateRecognizerResult): String {
         return StringBuilder()
                 .append("Type: ").append(if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxInitialCertificate }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxInitialCertificate }
                                 ?.hasContents == true)
                     "Initial"
                 else if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxRenewedCertificate }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxRenewedCertificate }
                                 ?.hasContents == true)
                     "Renewed"
                 else
                     "Unknown").append("\n")
                 .append("Work Accident: ").append(if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxWorkAccident }
+                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxWorkAccident }
                                 ?.hasContents == true)
                     "Yes"
                 else "No").append("\n")
                 .append("Accident Consultant: ").append(
                         if (result.checkboxes
-                                        ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.subType == McInfoBoxSubtype.McBoxAssignedToAccidentInsuranceDoctor }
+                                        ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor }
                                         ?.hasContents == true)
                             "Yes"
                         else "No"
@@ -157,7 +157,7 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
                 .append("\n")
                 .append("Form type: ${result.mcFormType.name}")
                 .append("\n")
-                .append(result.patientInfoFields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
+                .append(result.patientInfoBox.fields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
                 .toString()
     }
 }
