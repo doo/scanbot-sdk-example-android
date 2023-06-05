@@ -21,6 +21,7 @@
     <string name="filter">FILTER</string>
     <string name="delete_all">DELETE ALL</string>
     <string name="low_light_binarization_filter">Low Light Binarization Filter</string>
+    <string name="sensitive_binarization_filter">Sensitive Binarization Filter</string>
     <string name="low_light_binarization_filter_2">Low Light Binarization Filter 2</string>
     <string name="edge_highlight_filter">Edge Highlight Filter</string>
     <string name="deep_binarization_filter">Deep Binarization Filter</string>

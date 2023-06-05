@@ -228,6 +228,24 @@
         app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />
 
     <Button
+        android:id="@+id/sensitiveBinarizationFilter"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="@string/sensitive_binarization_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sensitiveBinarizationFilter" />
+
+    <Button
         android:id="@+id/none"
         style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
         android:layout_width="0dp"
@@ -235,6 +253,6 @@
         android:text="@string/none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/blackAndWhiteFilter" />
+        app:layout_constraintTop_toBottomOf="@+id/sensitiveBinarizationFilter" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

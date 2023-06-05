@@ -52,7 +52,6 @@ import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.FinderDocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
-import io.scanbot.sdk.ui.view.camera.configuration.FinderDocumentScannerAccessibilityConfiguration
 import io.scanbot.sdk.ui.view.camera.configuration.FinderDocumentScannerConfiguration
 import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
 import io.scanbot.sdk.ui.view.check.configuration.CheckRecognizerConfiguration
