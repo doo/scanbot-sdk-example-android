@@ -11,6 +11,7 @@ import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
+import io.scanbot.sdk.process.ImageProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -72,6 +73,7 @@ class Application : Application(), CoroutineScope {
                 })
                 // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
                 // .useCameraXRtuUi(false)
+//                .imageProcessorType(ImageProcessor.Type.ML_BASED) // TODO: uncomment this to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
                 .license(this, LICENSE_KEY)
                 .initialize(this)
 

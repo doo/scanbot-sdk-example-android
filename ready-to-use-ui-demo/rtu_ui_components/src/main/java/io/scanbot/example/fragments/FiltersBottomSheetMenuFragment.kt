@@ -56,6 +56,9 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         view.findViewById<Button>(R.id.blackAndWhiteFilter).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.BLACK_AND_WHITE)
         }
+        view.findViewById<Button>(R.id.sensitiveBinarizationFilter).setOnClickListener {
+            callListenerAndDismiss(ImageFilterType.SENSITIVE_BINARIZATION) // this relies on ImageProcessor.Type.ML_BASED - see comment in Application class
+        }
         view.findViewById<Button>(R.id.none).setOnClickListener {
             callListenerAndDismiss(ImageFilterType.NONE)
         }
