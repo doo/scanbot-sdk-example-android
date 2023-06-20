@@ -27,7 +27,7 @@ import io.scanbot.genericdocument.entity.FieldProperties
 import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
-import io.scanbot.mrzscanner.model.MRZRecognitionResult
+import io.scanbot.mrzscanner.model.MRZGenericDocument
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
@@ -70,8 +70,6 @@ import io.scanbot.sdk.ui.view.mc.MedicalCertificateRecognizerActivity
 import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
-import io.scanbot.sdk.ui.view.multiple_objects.MultipleObjectsDetectorActivity
-import io.scanbot.sdk.ui.view.multiple_objects.configuration.MultipleObjectsDetectorConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
@@ -87,7 +85,6 @@ class MainActivity : AppCompatActivity() {
     private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
-    private val multipleObjectsDetectorResultLauncher: ActivityResultLauncher<MultipleObjectsDetectorConfiguration>
     private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
     private val finderDocumentScannerResultLauncher: ActivityResultLauncher<FinderDocumentScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
@@ -116,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMrzDialog(mrzRecognitionResult: MRZRecognitionResult) {
+    private fun showMrzDialog(mrzRecognitionResult: MRZGenericDocument) {
         val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
@@ -270,8 +267,8 @@ class MainActivity : AppCompatActivity() {
                         "My passport photo",
                         FieldProperties.DisplayState.AlwaysVisible
                     ),
-                    MRZ.NormalizedFieldNames.CHECK_DIGIT to FieldProperties(
-                        "Check digit",
+                    MRZ.NormalizedFieldNames.CHECK_DIGIT_GENERAL to FieldProperties(
+                        "Check digit general",
                         FieldProperties.DisplayState.AlwaysVisible
                     )
                 )
@@ -356,24 +353,6 @@ class MainActivity : AppCompatActivity() {
             // ...
 
             ehicScannerResultLauncher.launch(ehicScannerConfig)
-        }
-
-        multiple_object_detector_ui.setOnClickListener {
-            val config = MultipleObjectsDetectorConfiguration().apply {
-                setCameraPreviewMode(CameraPreviewMode.FIT_IN)
-                setBottomBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
-                setBottomBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
-                setTopBarButtonsActiveColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
-                setCameraBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimary))
-                // aspect ratio below: from 2x1 (landscape-oriented object) to 1x2 (portrait)
-                setAspectRatioRange(MultipleObjectsDetectorConfiguration.AspectRatioRange(0.5F, 2.0F))
-                setCancelButtonTitle("Abort")
-                setBatchButtonTitle("Batch")
-                setBatchModeEnabled(true)
-                setPageCounterButtonTitle("%d Page(s)")
-            }
-
-            multipleObjectsDetectorResultLauncher.launch(config)
         }
 
         check_recognizer_ui.setOnClickListener {
@@ -479,13 +458,6 @@ class MainActivity : AppCompatActivity() {
 //                            ProcessImageForCroppingUI(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
                         }
                     }
-                }
-
-        multipleObjectsDetectorResultLauncher =
-                registerForActivityResultOk(MultipleObjectsDetectorActivity.ResultContract()) { resultEntity ->
-                    PageRepository.addPages(resultEntity.result!!)
-                    val intent = Intent(this, PagePreviewActivity::class.java)
-                    startActivity(intent)
                 }
 
         documentScannerResultLauncher =

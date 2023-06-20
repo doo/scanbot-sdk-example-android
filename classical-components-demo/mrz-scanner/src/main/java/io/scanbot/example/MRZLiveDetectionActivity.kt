@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
+import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -50,8 +52,10 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
                 val mrzRecognitionResult = result.value
 
                 // It is recommended to use a frame accumulation as well and expect at least 2 of 4 frames to be equal
-                if (mrzRecognitionResult.recognitionSuccessful &&
-                        mrzRecognitionResult.checkDigitsCount == mrzRecognitionResult.validCheckDigitsCount) {
+                val mrzDocument = mrzRecognitionResult.document?.wrap() as MRZ?
+                if (mrzRecognitionResult.recognitionSuccessful
+                    && mrzDocument?.checkDigitGeneral?.isValid == true
+                ) {
                     startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
                 }
             }
@@ -62,7 +66,11 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }
-        Toast.makeText(this, if (scanbotSDK.isLicenseActive) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun onResume() {

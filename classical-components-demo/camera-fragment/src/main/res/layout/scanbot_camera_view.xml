@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <io.scanbot.sdk.camera.ScanbotCameraView
+    <io.scanbot.sdk.ui.camera.ScanbotCameraXView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,7 +17,7 @@
             app:polygonStrokeColor="@color/material_deep_teal_200"
             app:polygonFillColor="#55009688"/>
 
-    </io.scanbot.sdk.camera.ScanbotCameraView>
+    </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
 
     <ImageView
         android:id="@+id/result"

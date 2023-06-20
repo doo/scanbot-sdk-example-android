@@ -382,28 +382,6 @@
             app:layout_constraintTop_toBottomOf="@+id/ehic_default_ui" />
 
         <Button
-            android:id="@+id/multiple_object_detector_ui"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/multiple_object_detector"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/ehic_default_ui" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/multiple_object_detector_ui" />
-
-        <Button
             android:id="@+id/mc_scanner_ui"
             style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
             android:layout_width="0dp"
@@ -413,7 +391,7 @@
             android:text="@string/scan_mc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/multiple_object_detector_ui" />
+            app:layout_constraintTop_toBottomOf="@+id/ehic_default_ui" />
 
         <View
             android:layout_width="0dp"

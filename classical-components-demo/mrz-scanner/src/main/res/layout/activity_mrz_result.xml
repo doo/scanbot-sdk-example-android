@@ -25,10 +25,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Document code"
+            android:text="Document number"
             android:layout_marginTop="8dp" />
         <TextView
-            android:id="@+id/document_code"
+            android:id="@+id/document_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
@@ -169,10 +169,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Discreet issuing state or organization"
+            android:text="Date of issuance"
             android:layout_marginTop="8dp" />
         <TextView
-            android:id="@+id/discreetIssuingStateOrOrganization"
+            android:id="@+id/dateOfIssuance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
@@ -181,10 +181,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Valid check digits count"
+            android:text="Date type code"
             android:layout_marginTop="8dp" />
         <TextView
-            android:id="@+id/validCheckDigitsCount"
+            android:id="@+id/documentTypeCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
@@ -193,10 +193,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Check digits count"
+            android:text="Language code"
             android:layout_marginTop="8dp" />
         <TextView
-            android:id="@+id/checkDigitsCount"
+            android:id="@+id/languageCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
@@ -205,14 +205,97 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Check digits:"
+            android:text="PIN code"
             android:layout_marginTop="8dp" />
         <TextView
-            android:id="@+id/checkDigits"
+            android:id="@+id/pinCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Travel document type variant"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/travelDocTypeVariant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Version number"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/versionNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Check Digit Birth Date"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/checkDigitBirthDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Check Digit Document Number"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/checkDigitDocumentNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Check Digit Expiry Date"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/checkDigitExpiryDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Check Digit General"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/checkDigitGeneral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Check Digit Personal Number"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/checkDigitPersonalNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
 
         <Button
             android:id="@+id/retry"

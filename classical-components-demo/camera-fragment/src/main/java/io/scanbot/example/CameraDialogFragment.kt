@@ -19,12 +19,13 @@ import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 /**
  * [ScanbotCameraView] integrated in [DialogFragment] example
  */
 class CameraDialogFragment : DialogFragment() {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
 
     private lateinit var contourDetector: ContourDetector
@@ -41,7 +42,7 @@ class CameraDialogFragment : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val baseView = requireActivity().layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
-        cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraView
+        cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.continuousFocus()
@@ -75,16 +76,6 @@ class CameraDialogFragment : DialogFragment() {
             val height = ViewGroup.LayoutParams.MATCH_PARENT
             it.setLayout(width, height)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cameraView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {

@@ -34,7 +34,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:$project.ext.androidxSupportVersion")
     implementation("io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion")
     // This dependency is only needed if you plan to use the encryption feature
-    implementation "io.scanbot:sdk-crypto-persistence:$scanbotSdkVersion"
+    implementation "io.scanbot:bundle-sdk-crypto-persistence:$scanbotSdkVersion"
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$project.ext.coroutinesCoreVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$project.ext.coroutinesAndroidVersion")

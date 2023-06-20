@@ -38,7 +38,6 @@ include(
         ":check-recognizer",
         ":manual-processing",
         ":camera-view-aspect-ratio-finder",
-        ":multiple-objects-detector",
         ":ehic-scanner",
         ":adjustable-filters",
         ":encryption",
