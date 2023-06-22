@@ -231,19 +231,25 @@ class MainActivity : AppCompatActivity() {
             textDataScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
 
             val step = TextDataScannerStep(
-                    stepTag = "Date",
-                    title = "6-digit string",
-                    guidanceText = "Scan a 6-digit string which starts with 1 or 2",
-                    // For the pattern: # - digits, ? - for any character. Other characters represent themselves
-                    pattern = "######",
-                    // TODO: set validation string and validation callback which matches the need of the task
-                    // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-                    validationCallback = { text ->
-                        text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
-                    },
-                    preferredZoom = 1.6f)
+                stepTag = "One-line text",
+                title = "One-line text scanning",
+                guidanceText = "Scan any one-line text",
+                // You may set a pattern for the expected text or use validation callback for that
+                // For the pattern: # - digits, ? - for any character. Other characters represent themselves
+                // pattern = "######",
+                // TODO: set validation string and validation callback which matches the need of the task
+                // For example we may be waiting for a string which starts with 1 or 2, and then 5 more digits
+                // validationCallback = { text ->
+                //     text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                // },
+                // preferredZoom = 1.6f
+                // You may also set a cleaner callback to clean the recognized text before validation
+                // For example, we may want to remove all whitespaces from the recognized text or apply the regex
+                // cleanRecognitionResultCallback = ...
+            )
+
             val rtuInput = TextDataScannerActivity.InputParams(
-                    textDataScannerConfiguration, step
+                textDataScannerConfiguration, step
             )
             textDataScannerResultLauncher.launch(rtuInput)
         }
