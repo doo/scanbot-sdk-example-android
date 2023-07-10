@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="200dp"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:id="@+id/custom_ar_view"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:src="@drawable/baseline_cloud_done_24" />
+
+        <TextView
+            android:id="@+id/custom_ar_view_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxWidth="100dp"
+            android:background="#000000"
+            android:gravity="center"
+            android:lines="1"
+            android:textColor="#ffffff" />
+    </FrameLayout>
+</FrameLayout>

@@ -31,6 +31,7 @@
         </activity>
         <activity android:name=".ui.BarcodeScannerActivity" />
         <activity android:name=".ui.BarcodeScannerViewActivity" />
+        <activity android:name=".ui.BarcodeScanAndCountViewActivity" />
         <activity android:name=".ui.BarcodeTypesActivity" />
 
     </application>
