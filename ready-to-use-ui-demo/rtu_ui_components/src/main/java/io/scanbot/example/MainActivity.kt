@@ -71,6 +71,7 @@ import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfi
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity() {
     private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
+    private val selectPdfFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val documentScannerResultLauncher: ActivityResultLauncher<DocumentScannerConfiguration>
     private val finderDocumentScannerResultLauncher: ActivityResultLauncher<FinderDocumentScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
@@ -103,7 +105,11 @@ class MainActivity : AppCompatActivity() {
         // This call will also remove the result from the repository (to make the memory usage less)
         val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
 
-        Toast.makeText(this, genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun showLicenseDialog() {
@@ -130,7 +136,8 @@ class MainActivity : AppCompatActivity() {
 
         // Receive an instance of MedicalCertificateRecognizerResult class from the repository
         // This call will also remove the result from the repository (to make the memory usage less)
-        val medicalCertificateRecognizerResult = resultRepository.getResultAndErase(resultWrapper.resultId)
+        val medicalCertificateRecognizerResult =
+            resultRepository.getResultAndErase(resultWrapper.resultId)
 
         showMedicalCertificateRecognizerResult(medicalCertificateRecognizerResult!!)
     }
@@ -162,7 +169,8 @@ class MainActivity : AppCompatActivity() {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
-        warning_view.visibility = if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
+        warning_view.visibility =
+            if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,17 +182,52 @@ class MainActivity : AppCompatActivity() {
             importImageWithDetect()
         }
 
+        findViewById<View>(R.id.doc_detection_on_pdf_btn).setOnClickListener {
+            // select an image from photo library and run document detection on it:
+            importPdfWithDetect()
+        }
+
         findViewById<View>(R.id.camera_default_ui).setOnClickListener {
             // Customize text resources, behavior and UI:
             val cameraConfiguration = DocumentScannerConfiguration()
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
-            cameraConfiguration.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            cameraConfiguration.setBottomBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
-            cameraConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
-            cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setBottomBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
+            cameraConfiguration.setBottomBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.greyColor
+                )
+            )
+            cameraConfiguration.setTopBarButtonsActiveColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            cameraConfiguration.setCameraBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimary
+                )
+            )
+            cameraConfiguration.setUserGuidanceBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.black
+                )
+            )
+            cameraConfiguration.setUserGuidanceTextColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
             cameraConfiguration.setMultiPageEnabled(true)
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
             cameraConfiguration.setPageCounterButtonTitle("%d Page(s)")
@@ -199,10 +242,30 @@ class MainActivity : AppCompatActivity() {
             val cameraConfiguration = FinderDocumentScannerConfiguration()
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
-            cameraConfiguration.setTopBarButtonsActiveColor(ContextCompat.getColor(this, android.R.color.white))
-            cameraConfiguration.setCameraBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            cameraConfiguration.setUserGuidanceBackgroundColor(ContextCompat.getColor(this, android.R.color.black))
-            cameraConfiguration.setUserGuidanceTextColor(ContextCompat.getColor(this, android.R.color.white))
+            cameraConfiguration.setTopBarButtonsActiveColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            cameraConfiguration.setCameraBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimary
+                )
+            )
+            cameraConfiguration.setUserGuidanceBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.black
+                )
+            )
+            cameraConfiguration.setUserGuidanceTextColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
             // see further customization configs ...
@@ -217,8 +280,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.mrz_camera_default_ui).setOnClickListener {
             val mrzCameraConfiguration = MRZScannerConfiguration()
 
-            mrzCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            mrzCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            mrzCameraConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
+            mrzCameraConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.greyColor
+                )
+            )
             mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
             mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
@@ -227,8 +300,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
             val textDataScannerConfiguration = TextDataScannerConfiguration()
 
-            textDataScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            textDataScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            textDataScannerConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
+            textDataScannerConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.greyColor
+                )
+            )
 
             val step = TextDataScannerStep(
                 stepTag = "One-line text",
@@ -257,16 +340,36 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
             val licensePlateScannerConfiguration = LicensePlateScannerConfiguration()
 
-            licensePlateScannerConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            licensePlateScannerConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, R.color.greyColor))
+            licensePlateScannerConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
+            licensePlateScannerConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.greyColor
+                )
+            )
 
             licensePlateScannerResultLauncher.launch(licensePlateScannerConfiguration)
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
             val genericDocumentConfiguration = GenericDocumentRecognizerConfiguration()
-            genericDocumentConfiguration.setTopBarButtonsInactiveColor(ContextCompat.getColor(this, android.R.color.white))
-            genericDocumentConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            genericDocumentConfiguration.setTopBarButtonsInactiveColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            genericDocumentConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
             genericDocumentConfiguration.setFieldsDisplayConfiguration(
                 hashMapOf(
                     DePassport.NormalizedFieldNames.PHOTO to FieldProperties(
@@ -285,8 +388,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
-            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
 
@@ -296,8 +409,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.qr_camera_default_ui_with_image).setOnClickListener {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
-            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
 
@@ -307,8 +430,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.qr_camera_default_ui_with_selection_overlay).setOnClickListener {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
-            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
             barcodeCameraConfiguration.setSelectionOverlayConfiguration(
                 SelectionOverlayConfiguration(
                     overlayEnabled = true,
@@ -323,15 +456,50 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BatchBarcodeScannerConfiguration()
 
             barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
-            barcodeCameraConfiguration.setTopBarButtonsColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            barcodeCameraConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
 
-            barcodeCameraConfiguration.setDetailsBackgroundColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setDetailsActionColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setDetailsBackgroundColor(ContextCompat.getColor(this, R.color.sheetColor))
-            barcodeCameraConfiguration.setDetailsPrimaryColor(ContextCompat.getColor(this, android.R.color.white))
-            barcodeCameraConfiguration.setBarcodesCountTextColor(ContextCompat.getColor(this, android.R.color.white))
+            barcodeCameraConfiguration.setDetailsBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setDetailsActionColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setDetailsBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.sheetColor
+                )
+            )
+            barcodeCameraConfiguration.setDetailsPrimaryColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
+            barcodeCameraConfiguration.setBarcodesCountTextColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.white
+                )
+            )
             barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
 
             class CustomFormattedBarcodeDataMapper : FormattedBarcodeDataMapper {
@@ -340,13 +508,16 @@ class MainActivity : AppCompatActivity() {
                 // and must not touch fields or methods of enclosing class/method
                 override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
                     // TODO: use barcodeItem appropriately here as needed
-                    return BarcodeFormattedData(barcodeItem.barcodeFormat.name, barcodeItem.textWithExtension)
+                    return BarcodeFormattedData(
+                        barcodeItem.barcodeFormat.name,
+                        barcodeItem.textWithExtension
+                    )
                 }
             }
 
             val rtuInput = BatchBarcodeScannerActivity.InputParams(
-                    barcodeCameraConfiguration,
-                    CustomFormattedBarcodeDataMapper::class.java
+                barcodeCameraConfiguration,
+                CustomFormattedBarcodeDataMapper::class.java
             )
             batchBarcodeResultLauncher.launch(rtuInput)
         }
@@ -363,7 +534,12 @@ class MainActivity : AppCompatActivity() {
 
         check_recognizer_ui.setOnClickListener {
             val config = CheckRecognizerConfiguration().apply {
-                setTopBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
+                setTopBarBackgroundColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.colorPrimaryDark
+                    )
+                )
                 setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
             }
 
@@ -372,7 +548,12 @@ class MainActivity : AppCompatActivity() {
 
         mc_scanner_ui.setOnClickListener {
             val config = MedicalCertificateRecognizerConfiguration().apply {
-                setTopBarBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
+                setTopBarBackgroundColor(
+                    ContextCompat.getColor(
+                        this@MainActivity,
+                        R.color.colorPrimaryDark
+                    )
+                )
                 setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
             }
 
@@ -380,18 +561,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun importImageWithDetect() {
         val imageIntent = Intent()
         imageIntent.type = "image/*"
         imageIntent.action = Intent.ACTION_GET_CONTENT
         imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
         imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        selectPictureFromGalleryResultLauncher.launch(Intent.createChooser(imageIntent, getString(R.string.share_title)))
+        selectPictureFromGalleryResultLauncher.launch(
+            Intent.createChooser(
+                imageIntent,
+                getString(R.string.share_title)
+            )
+        )
+    }
+
+    private fun importPdfWithDetect() {
+        // select an image from photo library and run document detection on it:
+        val imageIntent = Intent()
+        imageIntent.type = "application/pdf"
+        imageIntent.action = Intent.ACTION_GET_CONTENT
+        imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
+        imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+        val wrappedIntent = Intent.createChooser(imageIntent, getString(R.string.share_title))
+        selectPdfFromGalleryResultLauncher.launch(wrappedIntent)
     }
 
     private fun processGalleryResult(data: Intent): List<Bitmap> {
         val imageUris = data.data?.let { listOf(it) }
-                ?: (0 until data.clipData!!.itemCount).toList().map { data.clipData!!.getItemAt(it).uri }
+            ?: (0 until data.clipData!!.itemCount).toList()
+                .map { data.clipData!!.getItemAt(it).uri }
 
         return imageUris.mapNotNull {
             var bitmap: Bitmap? = null
@@ -403,94 +602,136 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun processPdfGalleryResult(data: Intent): File? {
+        val uri = data.data
+        if (uri != null) {
+            try {
+                return contentResolver.openInputStream(uri).use { inputStream ->
+                    val file = File.createTempFile("temp", ".pdf")
+                    file.outputStream().use { outputStream ->
+                        inputStream?.copyTo(outputStream)
+                    }
+                    file
+                }
+            } catch (e: IOException) {
+            }
+        }
+        return null
+    }
+
     private fun initDependencies() {
         scanbotSDK = ScanbotSDK(this)
     }
 
     init {
         mrzDefaultUiResultLauncher =
-                registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
-                    showMrzDialog(resultEntity.result!!)
-                }
+            registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
+                showMrzDialog(resultEntity.result!!)
+            }
         textDataScannerResultLauncher =
-                registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
-                    val textDataScannerStepResult = resultEntity.result!!.first()
-                    Toast.makeText(this@MainActivity, "Scanned: ${textDataScannerStepResult.text}", Toast.LENGTH_LONG).show()
-                }
+            registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
+                val textDataScannerStepResult = resultEntity.result!!.first()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Scanned: ${textDataScannerStepResult.text}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
 
         licensePlateScannerResultLauncher =
-                registerForActivityResultOk(LicensePlateScannerActivity.ResultContract()) { resultEntity ->
-                    // TODO: Process data from
-                    // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
-                    Toast.makeText(this@MainActivity, getString(R.string.license_plate_flow_finished), Toast.LENGTH_LONG).show()
-                }
+            registerForActivityResultOk(LicensePlateScannerActivity.ResultContract()) { resultEntity ->
+                // TODO: Process data from
+                // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.license_plate_flow_finished),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
 
         cropResultLauncher =
-                registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
-                    PageRepository.addPage(resultEntity.result!!)
+            registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
+                PageRepository.addPage(resultEntity.result!!)
 
-                    val intent = Intent(this, PagePreviewActivity::class.java)
-                    startActivity(intent)
-                }
+                val intent = Intent(this, PagePreviewActivity::class.java)
+                startActivity(intent)
+            }
 
         barcodeResultLauncher =
-                registerForActivityResultOk(BarcodeScannerActivity.ResultContract()) { resultEntity ->
-                    BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
-                            resultEntity.result!!,
-                            resultEntity.barcodeImagePath,
-                            resultEntity.barcodePreviewFramePath
-                    )
+            registerForActivityResultOk(BarcodeScannerActivity.ResultContract()) { resultEntity ->
+                BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
+                    resultEntity.result!!,
+                    resultEntity.barcodeImagePath,
+                    resultEntity.barcodePreviewFramePath
+                )
 
-                    val intent = Intent(this, BarcodeResultActivity::class.java)
-                    startActivity(intent)
-                }
+                val intent = Intent(this, BarcodeResultActivity::class.java)
+                startActivity(intent)
+            }
 
         batchBarcodeResultLauncher =
-                registerForActivityResultOk(BatchBarcodeScannerActivity.ResultContract()) { resultEntity ->
-                    BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(resultEntity.result!!)
+            registerForActivityResultOk(BatchBarcodeScannerActivity.ResultContract()) { resultEntity ->
+                BarcodeResultRepository.barcodeResultBundle =
+                    BarcodeResultBundle(resultEntity.result!!)
 
-                    val intent = Intent(this, BarcodeResultActivity::class.java)
-                    startActivity(intent)
-                }
+                val intent = Intent(this, BarcodeResultActivity::class.java)
+                startActivity(intent)
+            }
 
         selectPictureFromGalleryResultLauncher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-                    if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
-                        if (!scanbotSDK.licenseInfo.isValid) {
-                            showLicenseDialog()
-                        } else {
-                            ProcessImageForAutoDocumentDetection(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-                            // If you wish to crop selected document instead - switch to commented code below
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+                if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+                    if (!scanbotSDK.licenseInfo.isValid) {
+                        showLicenseDialog()
+                    } else {
+                        ProcessImageForAutoDocumentDetection(activityResult.data!!).executeOnExecutor(
+                            AsyncTask.SERIAL_EXECUTOR
+                        )
+                        // If you wish to crop selected document instead - switch to commented code below
 //                            ProcessImageForCroppingUI(activityResult.data!!).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR)
-                        }
                     }
                 }
+            }
+
+        selectPdfFromGalleryResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+                if (activityResult.resultCode == Activity.RESULT_OK && activityResult.data != null) {
+                    if (!scanbotSDK.licenseInfo.isValid) {
+                        showLicenseDialog()
+                    } else {
+                        ProcessPdfForAutoDocumentDetection(activityResult.data!!).executeOnExecutor(
+                            AsyncTask.SERIAL_EXECUTOR
+                        )
+                    }
+                }
+            }
 
         documentScannerResultLauncher =
-                registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
-                    PageRepository.addPages(resultEntity.result!!)
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
+                PageRepository.addPages(resultEntity.result!!)
 
-                    val intent = Intent(this, PagePreviewActivity::class.java)
-                    startActivity(intent)
-                }
+                val intent = Intent(this, PagePreviewActivity::class.java)
+                startActivity(intent)
+            }
 
         finderDocumentScannerResultLauncher =
-                registerForActivityResultOk(FinderDocumentScannerActivity.ResultContract()) { resultEntity ->
-                    PageRepository.addPages(listOf(resultEntity.result!!))
+            registerForActivityResultOk(FinderDocumentScannerActivity.ResultContract()) { resultEntity ->
+                PageRepository.addPages(listOf(resultEntity.result!!))
 
-                    val intent = Intent(this, PagePreviewActivity::class.java)
-                    startActivity(intent)
-                }
+                val intent = Intent(this, PagePreviewActivity::class.java)
+                startActivity(intent)
+            }
 
         ehicScannerResultLauncher =
-                registerForActivityResultOk(HealthInsuranceCardScannerActivity.ResultContract()) { resultEntity ->
-                    showEHICResultDialog(resultEntity.result!!)
-                }
+            registerForActivityResultOk(HealthInsuranceCardScannerActivity.ResultContract()) { resultEntity ->
+                showEHICResultDialog(resultEntity.result!!)
+            }
 
         genericDocumentRecognizerResultLauncher =
-                registerForActivityResultOk(GenericDocumentRecognizerActivity.ResultContract()) { resultEntity ->
-                    handleGeneriDocRecognizerResult(resultEntity.result!!)
-                }
+            registerForActivityResultOk(GenericDocumentRecognizerActivity.ResultContract()) { resultEntity ->
+                handleGeneriDocRecognizerResult(resultEntity.result!!)
+            }
 
         medicalCertificateRecognizerActivityResultLauncher =
             registerForActivityResultOk(MedicalCertificateRecognizerActivity.ResultContract()) { resultEntity ->
@@ -504,7 +745,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Imports a selected image as original image, creates a new page and opens the Cropping UI on it. */
-    internal inner class ProcessImageForCroppingUI(private var data: Intent) : AsyncTask<Void, Void, List<Page>>() {
+    internal inner class ProcessImageForCroppingUI(private var data: Intent) :
+        AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -535,13 +777,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Imports a selected image as original image and performs auto document detection on it. */
-    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent) : AsyncTask<Void, Void, List<Page>>() {
+    internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent) :
+        AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             progressBar.visibility = View.VISIBLE
-            Toast.makeText(this@MainActivity,
-                    getString(R.string.importing_and_processing), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this@MainActivity,
+                getString(R.string.importing_and_processing), Toast.LENGTH_LONG
+            ).show()
         }
 
         override fun doInBackground(vararg params: Void): List<Page> {
@@ -563,6 +808,48 @@ class MainActivity : AppCompatActivity() {
                 PageRepository.addPage(page)
                 page
             }
+        }
+
+        override fun onPostExecute(pages: List<Page>) {
+            progressBar.visibility = View.GONE
+            val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    /** Imports a selected image as original image and performs auto document detection on it. */
+    internal inner class ProcessPdfForAutoDocumentDetection(private var data: Intent) :
+        AsyncTask<Void, Void, List<Page>>() {
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressBar.visibility = View.VISIBLE
+            Toast.makeText(
+                this@MainActivity,
+                getString(R.string.importing_and_processing), Toast.LENGTH_LONG
+            ).show()
+        }
+
+        override fun doInBackground(vararg params: Void): List<Page> {
+            val processGalleryResult = processPdfGalleryResult(data)
+
+            val singleton = ExampleSingletonImpl(this@MainActivity)
+            val pageProcessor = singleton.pageProcessorInstance()
+            val pdfExtractor = singleton.pagePdfExtractorInstance()
+
+            // create a new Pages objects with given pdf file as original image:
+            val result = processGalleryResult?.let { pdfExtractor.pagesFromPdf(it) }
+
+            return result?.map { pageId ->
+
+                var page = Page(pageId, emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
+
+                // run auto document detection on it:
+                page = pageProcessor.detectDocument(page)
+
+                PageRepository.addPage(page)
+                page
+            } ?: emptyList()
         }
 
         override fun onPostExecute(pages: List<Page>) {

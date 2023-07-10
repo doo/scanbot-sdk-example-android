@@ -3,6 +3,8 @@ package io.scanbot.example.di
 import android.content.Context
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.PageProcessor
+import io.scanbot.sdk.docprocessing.PdfPagesExtractor
+import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.PageFileStorage
 
 /**
@@ -11,6 +13,7 @@ import io.scanbot.sdk.persistence.PageFileStorage
 interface ExampleSingleton {
     fun pageFileStorageInstance(): PageFileStorage
     fun pageProcessorInstance(): PageProcessor
+    fun pagePdfExtractorInstance(): PdfPagesExtractor
 }
 
 /**
@@ -31,8 +34,16 @@ class ExampleSingletonImpl(val context: Context) : ExampleSingleton {
         return pageProcessor!!
     }
 
+    override fun pagePdfExtractorInstance(): PdfPagesExtractor {
+        if (pdfExtractor == null) {
+            pdfExtractor = ScanbotSDK(context.applicationContext).createPdfPagesExtractor()
+        }
+        return pdfExtractor!!
+    }
+
     companion object {
         private var pageProcessor: PageProcessor? = null
         private var pageFileStorage: PageFileStorage? = null
+        private var pdfExtractor: PdfPagesExtractor? = null
     }
 }

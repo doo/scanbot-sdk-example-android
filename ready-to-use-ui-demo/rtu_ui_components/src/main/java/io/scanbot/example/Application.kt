@@ -8,6 +8,7 @@ import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
@@ -58,6 +59,7 @@ class Application : Application(), CoroutineScope {
                                 .build()
                 )
                 .prepareOCRLanguagesBlobs(true)
+            .pdfImagesExtractorType(PdfImagesExtractor.Type.PDFIUM)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
