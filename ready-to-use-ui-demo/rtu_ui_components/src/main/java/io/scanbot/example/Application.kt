@@ -47,7 +47,7 @@ class Application : Application(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
-        val sdkLicenseInfo = ScanbotSDKInitializer()
+        val sdkLicenseInfo = ScanbotSDKInitializer()  .imageProcessorType(ImageProcessor.Type.ML_BASED)
                 .withLogging(BuildConfig.DEBUG)
                 // Optional, custom SDK files directory. Please see the comments below!
                 .sdkFilesDirectory(this, customStorageDirectory())
@@ -75,7 +75,7 @@ class Application : Application(), CoroutineScope {
                 })
                 // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
                 // .useCameraXRtuUi(false)
-//                .imageProcessorType(ImageProcessor.Type.ML_BASED) // TODO: uncomment this to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
+                .imageProcessorType(ImageProcessor.Type.ML_BASED) // TODO: uncomment this to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
                 .license(this, LICENSE_KEY)
                 .initialize(this)
 
