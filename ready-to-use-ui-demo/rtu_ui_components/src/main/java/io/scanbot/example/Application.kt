@@ -47,7 +47,7 @@ class Application : Application(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
-        val sdkLicenseInfo = ScanbotSDKInitializer()  .imageProcessorType(ImageProcessor.Type.ML_BASED)
+        val sdkLicenseInfo = ScanbotSDKInitializer()
                 .withLogging(BuildConfig.DEBUG)
                 // Optional, custom SDK files directory. Please see the comments below!
                 .sdkFilesDirectory(this, customStorageDirectory())
@@ -59,7 +59,7 @@ class Application : Application(), CoroutineScope {
                                 .build()
                 )
                 .prepareOCRLanguagesBlobs(true)
-            .pdfImagesExtractorType(PdfImagesExtractor.Type.PDFIUM)
+                .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
@@ -73,9 +73,13 @@ class Application : Application(), CoroutineScope {
                     Log.d("ScanbotSDKExample", errorMsg)
                     Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
                 })
+
                 // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
                 // .useCameraXRtuUi(false)
-                .imageProcessorType(ImageProcessor.Type.ML_BASED) // TODO: uncomment this to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
+
+                .imageProcessorType(ImageProcessor.Type.ML_BASED) // this is to be set only to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
+                // otherwise use ImageProcessor.Type.ML_BASED
+
                 .license(this, LICENSE_KEY)
                 .initialize(this)
 
