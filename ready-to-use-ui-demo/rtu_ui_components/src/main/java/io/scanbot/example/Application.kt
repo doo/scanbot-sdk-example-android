@@ -8,6 +8,7 @@ import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
@@ -58,6 +59,7 @@ class Application : Application(), CoroutineScope {
                                 .build()
                 )
                 .prepareOCRLanguagesBlobs(true)
+                .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
@@ -71,9 +73,13 @@ class Application : Application(), CoroutineScope {
                     Log.d("ScanbotSDKExample", errorMsg)
                     Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
                 })
+
                 // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
                 // .useCameraXRtuUi(false)
-//                .imageProcessorType(ImageProcessor.Type.ML_BASED) // TODO: uncomment this to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
+
+                .imageProcessorType(ImageProcessor.Type.ML_BASED) // this is to be set only to use ML-based image processing like ImageFilterType.SENSITIVE_BINARIZATION
+                // otherwise use ImageProcessor.Type.ML_BASED
+
                 .license(this, LICENSE_KEY)
                 .initialize(this)
 

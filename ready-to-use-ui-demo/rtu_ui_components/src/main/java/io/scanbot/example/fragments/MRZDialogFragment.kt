@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
-import io.scanbot.mrzscanner.model.MRZRecognitionResult
+import io.scanbot.mrzscanner.model.MRZGenericDocument
 
 
 class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -22,7 +22,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
-        fun newInstance(data: MRZRecognitionResult): MRZDialogFragment {
+        fun newInstance(data: MRZGenericDocument): MRZDialogFragment {
             val frag = MRZDialogFragment()
             val args = Bundle()
             args.putParcelable(MRZ_DATA, data)
@@ -31,19 +31,19 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         }
     }
 
-    private var mrzRecognitionResult: MRZRecognitionResult? = null
+    private var mrzGenericDocument: MRZGenericDocument? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
-        mrzRecognitionResult = arguments!!.getParcelable(MRZ_DATA)
+        mrzGenericDocument = requireArguments().getParcelable(MRZ_DATA)
 
         val view = inflater.inflate(R.layout.fragment_mrz_dialog, container)
-        view.findViewById<TextView>(R.id.tv_data).text = extractData(mrzRecognitionResult!!)
+        view.findViewById<TextView>(R.id.tv_data).text = extractData(mrzGenericDocument!!)
         return view
     }
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(this.requireActivity())
         val inflater = LayoutInflater.from(activity)
         val contentContainer = inflater.inflate(R.layout.holo_dialog_frame, null, false) as ViewGroup
 
@@ -57,8 +57,8 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
 
         builder.setNegativeButton(R.string.copy_dialog_button) { _, _ ->
             val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            if (mrzRecognitionResult != null) {
-                val data = extractData(mrzRecognitionResult!!)
+            if (mrzGenericDocument != null) {
+                val data = extractData(mrzGenericDocument!!)
                 val clip = ClipData.newPlainText(data, data)
                 clipboard.setPrimaryClip(clip)
             }
@@ -71,24 +71,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: MRZRecognitionResult): String {
-        return StringBuilder()
-                .append(getString(R.string.mrz_document_code)).append(result.documentCodeField().value).append("\n")
-                .append(getString(R.string.mrz_first_name)).append(result.firstNameField().value).append("\n")
-                .append(getString(R.string.mrz_last_name)).append(result.lastNameField().value).append("\n")
-                .append(getString(R.string.mrz_issuing_organization)).append(result.issuingStateOrOrganizationField().value).append("\n")
-                .append(getString(R.string.mrz_document_of_issue)).append(result.departmentOfIssuanceField().value).append("\n")
-                .append(getString(R.string.mrz_nationality)).append(result.nationalityField().value).append("\n")
-                .append(getString(R.string.mrz_dob)).append(result.dateOfBirthField().value).append("\n")
-                .append(getString(R.string.mrz_gender)).append(result.genderField().value).append("\n")
-                .append(getString(R.string.mrz_date_expiry)).append(result.dateOfExpiryField().value).append("\n")
-                .append(getString(R.string.mrz_personal_number)).append(result.personalNumberField().value).append("\n")
-                .append(getString(R.string.mrz_optional1)).append(result.optional1Field().value).append("\n")
-                .append(getString(R.string.mrz_optional2)).append(result.optional2Field().value).append("\n")
-                .append(getString(R.string.mrz_discreet_issuing_organization)).append(result.discreetIssuingStateOrOrganizationField().value).append("\n")
-                .append(getString(R.string.mrz_valid_check_digits_count)).append(result.validCheckDigitsCount).append("\n")
-                .append(getString(R.string.mrz_check_digits_count)).append(result.checkDigitsCount).append("\n")
-                .append(getString(R.string.travel_doc_type)).append(result.travelDocTypeField().value).append("\n")
-                .toString()
+    private fun extractData(result: MRZGenericDocument): String {
+        return result.document?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
     }
 }

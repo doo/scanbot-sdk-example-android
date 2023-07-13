@@ -94,6 +94,9 @@ dependencies {
     // This dependency is only needed if you plan to use ImageProcessor feature on ML assets. See comment in Application class.
     implementation "io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion"
 
+    // This dependency is only needed if you plan to use Pdfium processor for import export of pdfs. See comment in Application class.
+    implementation "io.scanbot:bundle-sdk-pdfium:$scanbotSdkVersion"
+
     // This dependency is only needed if you plan to use the encryption feature
     implementation "io.scanbot:bundle-sdk-crypto-persistence:$scanbotSdkVersion"
 
