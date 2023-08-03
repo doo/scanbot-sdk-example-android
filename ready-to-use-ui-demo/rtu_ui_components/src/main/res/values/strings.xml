@@ -73,6 +73,7 @@
     <string name="bitmap_is_null_error">Bitmap is null</string>
     <string name="license_plate_flow_finished">License plate scanning flow finished</string>
     <string name="scan_text_data">Scan data</string>
+    <string name="scan_vin">Scan VIN</string>
     <string name="scan_license_plate">Scan EU license plate</string>
     <string name="scan_generic_document">Scan Generic Document</string>
     <string name="scan_check">Scan check</string>

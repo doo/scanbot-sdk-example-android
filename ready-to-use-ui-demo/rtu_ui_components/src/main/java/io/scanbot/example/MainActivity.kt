@@ -70,6 +70,8 @@ import io.scanbot.sdk.ui.view.mc.MedicalCertificateRecognizerActivity
 import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
+import io.scanbot.sdk.ui.view.vin.VinScannerActivity
+import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.IOException
@@ -80,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerActivity.InputParams>
+    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
@@ -335,6 +338,25 @@ class MainActivity : AppCompatActivity() {
                 textDataScannerConfiguration, step
             )
             textDataScannerResultLauncher.launch(rtuInput)
+        }
+
+        findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
+            val vinScannerConfiguration = VinScannerConfiguration()
+
+            vinScannerConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimaryDark
+                )
+            )
+            vinScannerConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.greyColor
+                )
+            )
+
+            vinScannerResultLauncher.launch(vinScannerConfiguration)
         }
 
         findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
@@ -629,12 +651,23 @@ class MainActivity : AppCompatActivity() {
             registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
                 showMrzDialog(resultEntity.result!!)
             }
+
         textDataScannerResultLauncher =
             registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
                 val textDataScannerStepResult = resultEntity.result!!.first()
                 Toast.makeText(
                     this@MainActivity,
                     "Scanned: ${textDataScannerStepResult.text}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        vinScannerResultLauncher =
+            registerForActivityResultOk(VinScannerActivity.ResultContract()) { resultEntity ->
+                val vinScanResult = resultEntity.result!!
+                Toast.makeText(
+                    this@MainActivity,
+                    "VIN Scanned: ${vinScanResult.rawText}",
                     Toast.LENGTH_LONG
                 ).show()
             }
