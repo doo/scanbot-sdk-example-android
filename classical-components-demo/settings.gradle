@@ -33,6 +33,7 @@ include(
         ":generic-document-recognizer-autosnapping",
         ":generic-document-recognizer-livedetection",
         ":generic-text-recognizer",
+        ":vin-scanner",
         ":licenseplate-scanner",
         ":tiff-writer",
         ":check-recognizer",
