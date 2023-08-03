@@ -22,13 +22,10 @@ import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.core.contourdetector.PageAspectRatio
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
-import io.scanbot.sdk.ui.camera.FinderAspectRatio
 import io.scanbot.sdk.ui.camera.ShutterButton
-import java.util.*
 
 class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraView

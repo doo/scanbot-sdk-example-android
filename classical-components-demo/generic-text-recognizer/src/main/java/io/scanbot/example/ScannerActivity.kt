@@ -7,10 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.entity.Language
 import io.scanbot.sdk.generictext.GenericTextRecognizer
 import io.scanbot.sdk.generictext.GenericTextRecognizerFrameHandler
-import io.scanbot.sdk.ui.camera.FinderAspectRatio
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
@@ -33,7 +32,7 @@ class ScannerActivity : AppCompatActivity() {
 
         val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
         // The smaller finder view brings better performance and allows user to detect text more precise
-        zoomFinderOverlay.setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 1.0)))
+        zoomFinderOverlay.setRequiredAspectRatios(listOf(AspectRatio(4.0, 1.0)))
         zoomFinderOverlay.zoomLevel = 1.8f
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
@@ -64,8 +63,6 @@ class ScannerActivity : AppCompatActivity() {
         //         return extractValuableDataFromText(rawText)
         //     }
         // })
-
-        textRecognizer.supportedLanguages = setOf(Language.ENG, Language.DEU)
 
         textRecognizerFrameHandler = GenericTextRecognizerFrameHandler.attach(cameraView, textRecognizer)
         textRecognizerFrameHandler.addResultHandler { result ->

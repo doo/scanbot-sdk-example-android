@@ -10,7 +10,7 @@ import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.licenseplate.LicensePlateScanner
 import io.scanbot.sdk.licenseplate.LicensePlateScannerFrameHandler
-import io.scanbot.sdk.ui.camera.FinderAspectRatio
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
@@ -35,7 +35,7 @@ class ScannerActivity : AppCompatActivity() {
 
         val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
         // The smaller finder view brings better performance and allows user to detect text more precise
-        zoomFinderOverlay.setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 1.0)))
+        zoomFinderOverlay.setRequiredAspectRatios(listOf(AspectRatio(4.0, 1.0)))
         zoomFinderOverlay.zoomLevel = 1.4f
         zoomFinderOverlay.setFixedFinderHeight(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
