@@ -43,7 +43,7 @@ class ScannerActivity : AppCompatActivity() {
         // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
         textRecognizer.setValidator("######", object : GenericTextRecognizer.GenericTextValidationCallback {
             override fun validate(text: String): Boolean {
-                return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                return text.firstOrNull() in listOf('1', '2') // TODO: add additional validation for the recognized text
             }
         })
 
