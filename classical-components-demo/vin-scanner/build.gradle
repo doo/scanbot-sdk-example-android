@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk = project.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        debug {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
+    implementation "io.scanbot:sdk-package-2:$project.ext.scanbotSdkVersion"
+    implementation "io.scanbot:sdk-generictext-assets:$project.ext.scanbotSdkVersion"
+}

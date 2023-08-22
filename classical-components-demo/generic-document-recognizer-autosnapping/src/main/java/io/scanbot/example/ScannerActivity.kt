@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
@@ -33,7 +34,7 @@ class ScannerActivity : AppCompatActivity() {
         documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
-        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 3.0)))
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(AspectRatio(4.0, 3.0)))
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 

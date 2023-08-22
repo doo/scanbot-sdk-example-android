@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -29,7 +30,7 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
-        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(FinderAspectRatio(4.0, 3.0)))
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(AspectRatio(4.0, 3.0)))
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
@@ -41,22 +42,29 @@ class ScannerActivity : AppCompatActivity() {
         frameHandler = GenericDocumentRecognizerFrameHandler.attach(cameraView, documentRecognizer, true)
 
         frameHandler.addResultHandler { result ->
+            var successLowConfidence = false // when status is `Success` but confidence is low
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
-                    if (result.value.status == GenericDocumentRecognitionResult.RecognitionStatus.Success &&
-                        result.value.document?.confidence ?: 0f > 0.8f
-                    ) {
-                        frameHandler.isEnabled = false
-                        DocumentsResultsStorage.result = result.value
-                        startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
-                        finish()
+                    if (result.value.status == GenericDocumentRecognitionResult.RecognitionStatus.Success) {
+                        if (result.value.document?.confidence ?: 0f > 0.8f) {
+                            frameHandler.isEnabled = false
+                            DocumentsResultsStorage.result = result.value
+                            startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
+                            finish()
+                        } else {
+                            successLowConfidence = true
+                        }
                     }
                     result.value.status.toString()
                 }
                 is FrameHandlerResult.Failure -> "Check your setup or license"
             }
 
-            runOnUiThread { resultTextView.text = resultText }
+            runOnUiThread { resultTextView.text = if (successLowConfidence) {
+                "$resultText\n(but confidence low - try again)"
+            } else {
+                resultText
+            }}
 
             false
         }

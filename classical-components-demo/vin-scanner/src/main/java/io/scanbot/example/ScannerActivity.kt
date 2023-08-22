@@ -5,54 +5,53 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.licenseplate.LicensePlateScanner
-import io.scanbot.sdk.licenseplate.LicensePlateScannerFrameHandler
-import io.scanbot.sdk.AspectRatio
+import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
+import io.scanbot.sdk.vin.VinScanner
+import io.scanbot.sdk.vin.VinScannerFrameHandler
 
 class ScannerActivity : AppCompatActivity() {
-    private lateinit var licensePlateScanner: LicensePlateScanner
+    private lateinit var vinScanner: VinScanner
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var resultTextView: TextView
 
     private var useFlash = false
 
-    private lateinit var licensePlateScannerFrameHandler: LicensePlateScannerFrameHandler
+    private lateinit var vinScannerFrameHandler: VinScannerFrameHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
-        licensePlateScanner = ScanbotSDK(this).createLicensePlateScanner()
+        vinScanner = ScanbotSDK(this).createVinScanner()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
 
-        val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
-        // The smaller finder view brings better performance and allows user to detect text more precise
-        zoomFinderOverlay.setRequiredAspectRatios(listOf(AspectRatio(4.0, 1.0)))
-        zoomFinderOverlay.zoomLevel = 1.4f
-        zoomFinderOverlay.setFixedFinderHeight(
+        val finderOverlay = findViewById<FinderOverlayView>(R.id.finder_overlay)
+        // The smaller finder view brings better performance and allows user to detect VIN more precise
+        finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(9.0, 1.0)))
+        finderOverlay.setFixedFinderHeight(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        70f, resources.displayMetrics).toInt()
+                        50f, resources.displayMetrics).toInt()
         )
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        licensePlateScannerFrameHandler = LicensePlateScannerFrameHandler.attach(cameraView, licensePlateScanner)
+        vinScannerFrameHandler = VinScannerFrameHandler.attach(cameraView, vinScanner)
 
-        licensePlateScannerFrameHandler.addResultHandler { result ->
+        vinScannerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
                     if (result.value.validationSuccessful) {
-                        result.value.rawString
+                        "VIN scanned:\n${result.value.rawText}"
                     } else {
-                        "License plate not found"
+                        "VIN not validated"
                     }
                 }
                 is FrameHandlerResult.Failure -> "Check your setup or license"

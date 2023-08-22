@@ -70,6 +70,8 @@ import io.scanbot.sdk.ui.view.mc.MedicalCertificateRecognizerActivity
 import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfiguration
 import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
+import io.scanbot.sdk.ui.view.vin.VinScannerActivity
+import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.IOException
@@ -80,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerActivity.InputParams>
+    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
@@ -193,40 +196,22 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
             cameraConfiguration.setBottomBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             cameraConfiguration.setBottomBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.greyColor
-                )
+                ContextCompat.getColor(this, R.color.greyColor)
             )
             cameraConfiguration.setTopBarButtonsActiveColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             cameraConfiguration.setCameraBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimary
-                )
+                ContextCompat.getColor(this, R.color.colorPrimary)
             )
             cameraConfiguration.setUserGuidanceBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.black
-                )
+                ContextCompat.getColor(this, android.R.color.black)
             )
             cameraConfiguration.setUserGuidanceTextColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             cameraConfiguration.setMultiPageEnabled(true)
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
@@ -243,28 +228,16 @@ class MainActivity : AppCompatActivity() {
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
             cameraConfiguration.setIgnoreBadAspectRatio(true)
             cameraConfiguration.setTopBarButtonsActiveColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             cameraConfiguration.setCameraBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimary
-                )
+                ContextCompat.getColor(this, R.color.colorPrimary)
             )
             cameraConfiguration.setUserGuidanceBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.black
-                )
+                ContextCompat.getColor(this, android.R.color.black)
             )
             cameraConfiguration.setUserGuidanceTextColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             cameraConfiguration.setAutoSnappingSensitivity(0.75f)
             cameraConfiguration.setTextHintOK("Don't move.\nCapturing document...")
@@ -281,16 +254,10 @@ class MainActivity : AppCompatActivity() {
             val mrzCameraConfiguration = MRZScannerConfiguration()
 
             mrzCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             mrzCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.greyColor
-                )
+                ContextCompat.getColor(this, R.color.greyColor)
             )
             mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
@@ -301,16 +268,10 @@ class MainActivity : AppCompatActivity() {
             val textDataScannerConfiguration = TextDataScannerConfiguration()
 
             textDataScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             textDataScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.greyColor
-                )
+                ContextCompat.getColor(this, R.color.greyColor)
             )
 
             val step = TextDataScannerStep(
@@ -337,20 +298,27 @@ class MainActivity : AppCompatActivity() {
             textDataScannerResultLauncher.launch(rtuInput)
         }
 
+        findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
+            val vinScannerConfiguration = VinScannerConfiguration()
+
+            vinScannerConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
+            )
+            vinScannerConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(this, R.color.greyColor)
+            )
+
+            vinScannerResultLauncher.launch(vinScannerConfiguration)
+        }
+
         findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
             val licensePlateScannerConfiguration = LicensePlateScannerConfiguration()
 
             licensePlateScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             licensePlateScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.greyColor
-                )
+                ContextCompat.getColor(this, R.color.greyColor)
             )
 
             licensePlateScannerResultLauncher.launch(licensePlateScannerConfiguration)
@@ -359,16 +327,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
             val genericDocumentConfiguration = GenericDocumentRecognizerConfiguration()
             genericDocumentConfiguration.setTopBarButtonsInactiveColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             genericDocumentConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             genericDocumentConfiguration.setFieldsDisplayConfiguration(
                 hashMapOf(
@@ -389,16 +351,10 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
             barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
@@ -410,16 +366,10 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
             barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
             barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
@@ -431,16 +381,10 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration()
 
             barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             barcodeCameraConfiguration.setSelectionOverlayConfiguration(
                 SelectionOverlayConfiguration(
@@ -457,48 +401,27 @@ class MainActivity : AppCompatActivity() {
 
             barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
             barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorPrimaryDark
-                )
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
             barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
 
             barcodeCameraConfiguration.setDetailsBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setDetailsActionColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setDetailsBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.sheetColor
-                )
+                ContextCompat.getColor(this, R.color.sheetColor)
             )
             barcodeCameraConfiguration.setDetailsPrimaryColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setBarcodesCountTextColor(
-                ContextCompat.getColor(
-                    this,
-                    android.R.color.white
-                )
+                ContextCompat.getColor(this, android.R.color.white)
             )
             barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
 
@@ -629,12 +552,23 @@ class MainActivity : AppCompatActivity() {
             registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
                 showMrzDialog(resultEntity.result!!)
             }
+
         textDataScannerResultLauncher =
             registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
                 val textDataScannerStepResult = resultEntity.result!!.first()
                 Toast.makeText(
                     this@MainActivity,
                     "Scanned: ${textDataScannerStepResult.text}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        vinScannerResultLauncher =
+            registerForActivityResultOk(VinScannerActivity.ResultContract()) { resultEntity ->
+                val vinScanResult = resultEntity.result!!
+                Toast.makeText(
+                    this@MainActivity,
+                    "VIN Scanned: ${vinScanResult.rawText}",
                     Toast.LENGTH_LONG
                 ).show()
             }
