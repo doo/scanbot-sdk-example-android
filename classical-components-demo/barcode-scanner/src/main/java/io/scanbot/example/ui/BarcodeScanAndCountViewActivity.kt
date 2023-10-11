@@ -93,7 +93,6 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         }
 
         // Setting the Selection Overlay (AR)
-        scanCountView.counterOverlayController.setPolygonPolygonEnabled(true)
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :
             BarcodePolygonsStaticView.BarcodeItemViewFactory {
             override fun createView(): View {

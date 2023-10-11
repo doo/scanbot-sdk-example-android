@@ -15,13 +15,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import io.scanbot.pdf.model.PageSize
+import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
 import io.scanbot.sdk.util.thread.MimeUtils
 import java.io.File
@@ -143,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                     pages.add(detectedPage)
                 }
 
-                return pdfRenderer.renderDocumentFromPages(pages, PDFPageSize.FIXED_A4)
+                return pdfRenderer.renderDocumentFromPages(pages, PdfConfig.defaultConfig().copy(pageSize = PageSize.A4))
             } catch (e: IOException) {
                 e.printStackTrace()
             }

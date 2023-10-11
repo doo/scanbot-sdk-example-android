@@ -1,29 +1,24 @@
 package io.scanbot.example
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.example.common.ImportImageContract
+import io.scanbot.pdf.model.PageSize
+import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.entity.Language
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.process.PDFPageSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,9 +43,14 @@ class MainActivity : AppCompatActivity() {
                     resultEntity?.let { recognizeTextWithoutPDF(it) }
                     // Alternative OCR examples - PDF + OCR (sandwiched PDF):
                     //new RecognizeTextWithPDF(imageUri).execute();
-                    withContext(Dispatchers.Main){progressView.visibility = View.VISIBLE}
-                }}
-        findViewById<View>(R.id.scanButton).setOnClickListener { v: View? -> galleryImageLauncher.launch(Unit) }
+                    withContext(Dispatchers.Main) { progressView.visibility = View.VISIBLE }
+                }
+            }
+        findViewById<View>(R.id.scanButton).setOnClickListener { v: View? ->
+            galleryImageLauncher.launch(
+                Unit
+            )
+        }
         progressView = findViewById(R.id.progressBar)
     }
 
@@ -83,14 +83,13 @@ class MainActivity : AppCompatActivity() {
 
         val ocrResult = try {
             val newPageId = pageFileStorage.add(bitmap)
-            val page = Page(newPageId, emptyList(), DetectionStatus.OK, ImageFilterType.BINARIZED)
+            val page = Page(newPageId, emptyList(), DetectionStatus.OK)
 
             val processedPage = pageProcessor.detectDocument(page)
 
             val pages = listOf(processedPage)
-            val languages = setOf(Language.ENG)
 
-            opticalCharacterRecognizer.recognizeTextFromPages(pages, languages)
+            opticalCharacterRecognizer.recognizeTextFromPages(pages)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
@@ -117,17 +116,15 @@ class MainActivity : AppCompatActivity() {
         val ocrResult = try {
             val newPageId = pageFileStorage.add(bitmap)
             val page =
-                Page(newPageId, emptyList(), DetectionStatus.OK, ImageFilterType.BINARIZED)
+                Page(newPageId, emptyList(), DetectionStatus.OK)
 
             val processedPage = pageProcessor.detectDocument(page)
 
             val pages = listOf(processedPage)
-            val languages = setOf(Language.ENG)
 
             opticalCharacterRecognizer.recognizeTextWithPdfFromPages(
                 pages,
-                PDFPageSize.A4,
-                languages
+                PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
             )
         } catch (e: IOException) {
             throw RuntimeException(e)
