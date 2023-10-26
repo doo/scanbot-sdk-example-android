@@ -93,6 +93,16 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         }
 
         // Setting the Selection Overlay (AR)
+        scanCountView.counterOverlayController.setBarcodeAppearanceDelegate(object :
+            BarcodePolygonsStaticView.BarcodeAppearanceDelegate {
+            override fun getPolygonStyle(
+                defaultStyle: BarcodePolygonsStaticView.BarcodePolygonStyle,
+                barcodeItem: BarcodeItem
+            ): BarcodePolygonsStaticView.BarcodePolygonStyle {
+                // you can customize the style of the barcode polygon here
+                return defaultStyle
+            }
+        })
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :
             BarcodePolygonsStaticView.BarcodeItemViewFactory {
             override fun createView(): View {
@@ -105,9 +115,9 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
             override fun bindView(view: View, barcodeItem: BarcodeItem, shouldHighlight: Boolean) {
                 val valueTextView = view.findViewById<TextView>(R.id.custom_ar_view_value)
                 val imageView = view.findViewById<ImageView>(R.id.custom_ar_view)
-                valueTextView.isVisible = false //uncomment to show barcode value
-                valueTextView.text = barcodeItem.textWithExtension
-                valueTextView.maxLines = 2
+//                valueTextView.isVisible = false //uncomment to show barcode value
+//                valueTextView.text = barcodeItem.textWithExtension
+//                valueTextView.maxLines = 2
             }
         })
 
