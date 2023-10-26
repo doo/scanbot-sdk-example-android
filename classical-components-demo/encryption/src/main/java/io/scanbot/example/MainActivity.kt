@@ -7,9 +7,10 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.pdf.model.PageSize
+import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
 import java.io.File
 
@@ -57,7 +58,12 @@ class MainActivity : AppCompatActivity() {
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = pdfRenderer.renderDocumentFromImages(imageFileUris, false, PDFPageSize.A4) ?: return
+        val encryptedDestination = pdfRenderer.renderDocumentFromImages(
+            imageFileUris,
+            false,
+            PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
+        ) ?: return
+
         showToast("The encrypted pdf was written to: $encryptedDestination")
 
         // TODO: to open it you should use

@@ -81,12 +81,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scanbotSDK: ScanbotSDK
 
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
-    private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerActivity.InputParams>
+    private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
-    private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerActivity.InputParams>
+    private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerConfiguration>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val selectPdfFromGalleryResultLauncher: ActivityResultLauncher<Intent>
@@ -265,15 +265,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
-            val textDataScannerConfiguration = TextDataScannerConfiguration()
-
-            textDataScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            textDataScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
-
             val step = TextDataScannerStep(
                 stepTag = "One-line text",
                 title = "One-line text scanning",
@@ -292,10 +283,16 @@ class MainActivity : AppCompatActivity() {
                 // cleanRecognitionResultCallback = ...
             )
 
-            val rtuInput = TextDataScannerActivity.InputParams(
-                textDataScannerConfiguration, step
+            val textDataScannerConfiguration = TextDataScannerConfiguration(step)
+
+            textDataScannerConfiguration.setTopBarBackgroundColor(
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
-            textDataScannerResultLauncher.launch(rtuInput)
+            textDataScannerConfiguration.setTopBarButtonsColor(
+                ContextCompat.getColor(this, R.color.greyColor)
+            )
+
+            textDataScannerResultLauncher.launch(textDataScannerConfiguration)
         }
 
         findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
@@ -437,12 +434,9 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+            barcodeCameraConfiguration.setFormattedBarcodeDataMapper(CustomFormattedBarcodeDataMapper())
 
-            val rtuInput = BatchBarcodeScannerActivity.InputParams(
-                barcodeCameraConfiguration,
-                CustomFormattedBarcodeDataMapper::class.java
-            )
-            batchBarcodeResultLauncher.launch(rtuInput)
+            batchBarcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
         ehic_default_ui.setOnClickListener {

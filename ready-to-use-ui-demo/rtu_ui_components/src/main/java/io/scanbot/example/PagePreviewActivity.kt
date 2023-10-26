@@ -24,6 +24,7 @@ import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
+import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
@@ -31,7 +32,6 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.persistence.cleanup.Cleaner
 import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.process.PDFPageSize
 import io.scanbot.sdk.process.PDFRenderer
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
@@ -232,9 +232,9 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
             launch {
                 var pdfFile: File? =
                         if (withOcr) {
-                            textRecognition.recognizeTextWithPdfFromPages(adapter.items, PDFPageSize.AUTO, textRecognition.getInstalledLanguages()).sandwichedPdfDocumentFile
+                            textRecognition.recognizeTextWithPdfFromPages(adapter.items, PdfConfig.defaultConfig()).sandwichedPdfDocumentFile
                         } else {
-                            pdfRenderer.renderDocumentFromPages(adapter.items, PDFPageSize.AUTO)
+                            pdfRenderer.renderDocumentFromPages(adapter.items, PdfConfig.defaultConfig())
                         }
                 if (pdfFile != null) {
                     pdfFile = SharingCopier.moveFile(this@PagePreviewActivity, pdfFile)
