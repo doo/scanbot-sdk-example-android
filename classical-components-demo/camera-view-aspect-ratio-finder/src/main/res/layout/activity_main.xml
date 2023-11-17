@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <io.scanbot.sdk.camera.ScanbotCameraView
+    <io.scanbot.sdk.ui.camera.ScanbotCameraXView
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

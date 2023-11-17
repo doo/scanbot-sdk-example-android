@@ -17,16 +17,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.process.BlurEstimator
+import io.scanbot.sdk.process.DocumentQualityAnalyzer
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
 
     private lateinit var stillImageImageView: ImageView
-    private lateinit var stillImageBlurCaption: TextView
+    private lateinit var stillImageQualityCaption: TextView
 
-    private lateinit var blurEstimator: BlurEstimator
+    private lateinit var documentQualityAnalyzer: DocumentQualityAnalyzer
 
     private val parentJob = Job()
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
 
         val scanbotSDK = ScanbotSDK(this)
-        blurEstimator = scanbotSDK.createBlurEstimator()
+        documentQualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer()
 
         supportActionBar!!.hide()
         setContentView(R.layout.activity_main)
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
 
         stillImageImageView = findViewById(R.id.still_image_image_view)
-        stillImageBlurCaption = findViewById(R.id.still_image_blur_caption)
+        stillImageQualityCaption = findViewById(R.id.still_image_quality_caption)
 
         findViewById<Button>(R.id.gallery_button).setOnClickListener { openGallery() }
         findViewById<Button>(R.id.still_image_close).setOnClickListener { close() }
@@ -104,9 +104,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             withContext(Dispatchers.Main) {
                 stillImageImageView.setImageBitmap(bitmap)
             }
-            val result = blurEstimator.estimateInBitmap(bitmap, 0)
+            val result = documentQualityAnalyzer.analyzeInBitmap(bitmap, 0)
             withContext(Dispatchers.Main) {
-                stillImageBlurCaption.text = String.format(BLURRINESS_CAPTION_FORMAT, result)
+                stillImageQualityCaption.text =
+                    "Image quality: ${result?.name ?: "UNKNOWN"}"
             }
         }
     }
@@ -121,6 +122,5 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
     private companion object {
         private const val PHOTOLIB_REQUEST_CODE = 5712
-        private const val BLURRINESS_CAPTION_FORMAT = "Image blurriness: %.2f"
     }
 }

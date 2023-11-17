@@ -207,7 +207,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         val result = contourDetector.detect(originalBitmap)!!
         val detectedPolygon = result.polygonF
 
-        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
+        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon))
         resultView.post { resultView.setImageBitmap(documentImage) }
     }
 

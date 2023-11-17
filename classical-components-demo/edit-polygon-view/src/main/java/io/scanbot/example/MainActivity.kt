@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        var documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(editPolygonView.polygon), false)
+        var documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(editPolygonView.polygon))
         documentImage?.let {
             if (rotationDegrees > 0) {
                 // rotate the final cropped image result based on current rotation value:

@@ -20,7 +20,6 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
@@ -29,10 +28,11 @@ import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
 class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: ImageView
     private lateinit var userGuidanceHint: TextView
@@ -62,19 +62,17 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         contourDetector = scanbotSDK.createContourDetector()
         imageProcessor = scanbotSDK.imageProcessor()
 
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
+        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
         // In this example we demonstrate how to lock the orientation of the UI (Activity)
         // as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true)
 
-        // See https://github.com/doo/scanbot-sdk-example-android/wiki/Using-ScanbotCameraView#preview-mode
+        // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#preview-mode
         //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
 
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
-                cameraView.setAutoFocusSound(false)
-
                 // Shutter sound is ON by default. You can disable it:
                 // cameraView.setShutterSound(false);
 
@@ -90,7 +88,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
         contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
 
-        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
+        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
         contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         autoSnappingController.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
-        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
+        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
 
         cameraView.addPictureCallback(object : PictureCallback() {
@@ -130,16 +128,6 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cameraView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     override fun handle(result: FrameHandlerResult<DetectedFrame, SdkLicenseError>): Boolean {
@@ -205,7 +193,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
-        // Please see https://github.com/doo/Scanbot-SDK-Examples/wiki/Handling-camera-picture
+        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#handling-camera-picture
         // This is just a demo showing the detected document image as a downscaled(!) preview image.
 
         // Decode Bitmap from bytes of original image:
@@ -226,7 +214,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Run document detection on original image:
         val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
-        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
+        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon))
         resultView.post { resultView.setImageBitmap(documentImage) }
 
         // continue scanning

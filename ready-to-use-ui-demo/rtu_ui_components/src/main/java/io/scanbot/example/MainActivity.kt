@@ -396,7 +396,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
             val barcodeCameraConfiguration = BatchBarcodeScannerConfiguration()
 
-            barcodeCameraConfiguration.setCameraZoomFactor(0.1f)
+            barcodeCameraConfiguration.setCameraZoomRatio(1f)
             barcodeCameraConfiguration.setTopBarButtonsColor(
                 ContextCompat.getColor(this, android.R.color.white)
             )
