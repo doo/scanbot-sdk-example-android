@@ -274,8 +274,10 @@ class MainActivity : AppCompatActivity() {
                 // pattern = "######",
                 // TODO: set validation string and validation callback which matches the need of the task
                 // For example we may be waiting for a string which starts with 1 or 2, and then 5 more digits
-                // validationCallback = { text ->
-                //     text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                // validationCallback = object : TextDataScannerStep.GenericTextValidationCallback {
+                //     override fun validate(text: String): Boolean {
+                //         return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
+                //     }
                 // },
                 // preferredZoom = 1.6f
                 // You may also set a cleaner callback to clean the recognized text before validation
