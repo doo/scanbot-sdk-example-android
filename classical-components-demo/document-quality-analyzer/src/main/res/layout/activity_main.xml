@@ -19,7 +19,7 @@
         android:id="@+id/still_image_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/still_image_blur_caption"
+        android:layout_above="@id/still_image_quality_caption"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:scaleType="centerInside"
@@ -28,7 +28,7 @@
         tools:layout_height="550dp" />
 
     <TextView
-        android:id="@+id/still_image_blur_caption"
+        android:id="@+id/still_image_quality_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -42,7 +42,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Image blurriness: 0.0" />
+        android:text="Image quality: NO_DOCUMENT" />
 
     <Button
         android:id="@+id/still_image_close"

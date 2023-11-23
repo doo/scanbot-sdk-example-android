@@ -70,7 +70,7 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         autoSnappingController.setIgnoreBadAspectRatio(true)
 
-        // Please note: https://github.com/doo/Scanbot-SDK-Examples/wiki/Autosnapping#sensitivity
+        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
 
         cameraView.addPictureCallback(object : PictureCallback() {
@@ -115,7 +115,7 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         result?.polygonF?.let { polygon ->
             imageProcessor.processBitmap(
                 originalBitmap,
-                listOf(CropOperation(polygon)), false
+                listOf(CropOperation(polygon))
             )?.let { documentImage ->
                 // documentImage will be recycled inside recognizeCheckBitmap
                 val imageCopy = Bitmap.createBitmap(documentImage)

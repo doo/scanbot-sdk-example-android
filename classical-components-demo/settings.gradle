@@ -28,7 +28,6 @@ include(
         ":document-scanner",
         ":barcode-scanner",
         ":mrz-scanner",
-        ":blur-estimator",
         ":mc-scanner",
         ":generic-document-recognizer-autosnapping",
         ":generic-document-recognizer-livedetection",
@@ -42,4 +41,5 @@ include(
         ":ehic-scanner",
         ":adjustable-filters",
         ":encryption",
+        ":document-quality-analyzer",
 )

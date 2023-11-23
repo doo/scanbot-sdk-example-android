@@ -12,15 +12,15 @@ import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class MRZLiveDetectionActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
 
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
 
     private var flashEnabled = false
@@ -30,7 +30,7 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mrz_live_scanner)
         supportActionBar!!.hide()
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
+        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
@@ -71,16 +71,6 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
             if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
             Toast.LENGTH_LONG
         ).show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cameraView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     companion object {

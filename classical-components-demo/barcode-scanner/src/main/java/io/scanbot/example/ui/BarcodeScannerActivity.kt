@@ -25,10 +25,11 @@ import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.ui.camera.FinderOverlayView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 
 class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
     private lateinit var finderOverlay: FinderOverlayView
 
@@ -78,7 +79,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
 
     override fun onResume() {
         super.onResume()
-        cameraView.onResume()
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
@@ -91,11 +91,6 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
                 REQUEST_PERMISSION_CODE
             )
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {

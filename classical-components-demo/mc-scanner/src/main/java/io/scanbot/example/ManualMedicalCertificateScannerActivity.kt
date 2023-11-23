@@ -17,13 +17,13 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import java.util.*
 import kotlin.math.roundToInt
 
 class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultImageView: ImageView
 
     private lateinit var medicalCertificateRecognizer: MedicalCertificateRecognizer
@@ -39,7 +39,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
         medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
 
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
+        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.useFlash(flashEnabled)
@@ -70,14 +70,8 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        cameraView.onResume()
 
         Toast.makeText(this, "Scanning Medical Certificate...", Toast.LENGTH_LONG)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {

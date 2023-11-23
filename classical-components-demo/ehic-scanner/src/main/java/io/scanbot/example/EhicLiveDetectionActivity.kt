@@ -11,13 +11,13 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
 import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.util.log.LoggerProvider
 
 class EhicLiveDetectionActivity : AppCompatActivity() {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
 
     private val logger = LoggerProvider.logger
@@ -65,16 +65,6 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         }
 
         Toast.makeText(this, if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cameraView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     companion object {

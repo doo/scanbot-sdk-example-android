@@ -25,10 +25,11 @@ import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
 class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
-    private lateinit var cameraView: ScanbotCameraView
+    private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
     private lateinit var userGuidanceHint: TextView
     private lateinit var shutterButton: ShutterButton
@@ -52,15 +53,13 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         askPermission()
         setContentView(R.layout.activity_main)
         supportActionBar!!.hide()
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraView
+        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setPreviewMode(CameraPreviewMode.FILL_IN)
 
         // Lock the orientation of the UI (Activity) as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true)
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
-                cameraView.setAutoFocusSound(false)
-
                 // Shutter sound is ON by default. You can disable it:
                 // cameraView.setShutterSound(false);
 
@@ -106,16 +105,6 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cameraView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cameraView.onPause()
     }
 
     override fun handle(result: FrameHandlerResult<DetectedFrame, SdkLicenseError>): Boolean {
@@ -195,7 +184,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         contourDetector.setRequiredAspectRatios(requiredPageAspectRatios)
         val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
-        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon), false)
+        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon))
         resultView.post {
             resultView.setImageBitmap(documentImage)
             cameraView.continuousFocus()
