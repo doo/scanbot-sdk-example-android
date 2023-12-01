@@ -76,12 +76,12 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
 
         contourDetectorFrameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
+        contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
         contourDetectorFrameHandler.addResultHandler(finderOverlayView.contourDetectorFrameHandler)
         contourDetectorFrameHandler.addResultHandler(this)
 
         val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
         // autoSnappingController.setSensitivity(0.4f);
-        autoSnappingController.setIgnoreBadAspectRatio(true)
 
         cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {

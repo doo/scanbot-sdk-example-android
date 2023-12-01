@@ -93,9 +93,9 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
         contourDetectorFrameHandler.addResultHandler(this)
+        contourDetectorFrameHandler.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
         autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
-        autoSnappingController.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
