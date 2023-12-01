@@ -34,7 +34,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:$project.ext.androidxSupportVersion")
     implementation("androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion")
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion")
+    implementation("io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion")
     implementation("io.scanbot:sdk-docqualityanalyzer-assets:$project.ext.scanbotSdkVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$project.ext.coroutinesCoreVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$project.ext.coroutinesAndroidVersion")
