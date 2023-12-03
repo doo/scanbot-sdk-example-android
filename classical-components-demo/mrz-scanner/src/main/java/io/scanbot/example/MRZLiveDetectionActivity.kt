@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
 import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.sdk.AspectRatio
@@ -25,6 +26,8 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
 
     private var flashEnabled = false
 
+    private var accumulatedResults = LinkedHashSet<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
@@ -41,6 +44,7 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
 
         finderOverlay = findViewById(R.id.finder_overlay)
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(5.0, 1.0)))
+        finderOverlay.isVisible = false
 
         val scanbotSDK = ScanbotSDK(this)
 
@@ -56,7 +60,15 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
                 if (mrzRecognitionResult.recognitionSuccessful
                     && mrzDocument?.checkDigitGeneral?.isValid == true
                 ) {
-                    startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
+                    if (accumulatedResults.contains(result.value.rawMrz)) {
+                        startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
+                        accumulatedResults.clear()
+                        return@addResultHandler false
+                    }
+                    accumulatedResults.add(result.value.rawMrz)
+                    if (accumulatedResults.size > 4) {
+                        accumulatedResults.remove(accumulatedResults.first())
+                    }
                 }
             }
             false
