@@ -7,12 +7,12 @@ import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
 import io.scanbot.example.Application
 import io.scanbot.sdk.ScanbotSDK
-import okio.Okio
+import okio.source
 import java.io.IOException
 
 object PicassoHelper {
 
-    lateinit var encryptionRequestHandler: RequestHandler
+    private lateinit var encryptionRequestHandler: RequestHandler
 
     @Synchronized
     fun with(context: Context): Picasso {
@@ -28,7 +28,7 @@ object PicassoHelper {
                         if (uri != null) {
                             // it is possible to read the file from encrypted storage this way
                             val openFileInputStream = fileIOProcessor.openFileInputStream(uri.toFile())
-                            val imageSource = Okio.source(openFileInputStream)
+                            val imageSource = openFileInputStream!!.source()
                             return Result(imageSource, Picasso.LoadedFrom.DISK)
                         } else {
                             throw IOException("Image download failed")

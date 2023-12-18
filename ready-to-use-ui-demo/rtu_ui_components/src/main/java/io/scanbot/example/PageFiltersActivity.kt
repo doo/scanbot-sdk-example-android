@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
+import io.scanbot.example.databinding.ActivityFiltersBinding
 import io.scanbot.example.di.ExampleSingleton
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.ErrorFragment
@@ -26,7 +27,6 @@ import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
-import kotlinx.android.synthetic.main.activity_filters.*
 import kotlinx.coroutines.*
 import java.io.File
 import java.lang.Exception
@@ -46,6 +46,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }
     }
 
+    private lateinit var binding: ActivityFiltersBinding
+
     lateinit var selectedPage: Page
     lateinit var scanbotSDK: ScanbotSDK
     lateinit var singletonInstance: ExampleSingleton
@@ -64,7 +66,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_filters)
+        binding = ActivityFiltersBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initActionBar()
 
         val page = intent.getParcelableExtra(PAGE_DATA) as? Page ?: throw IllegalStateException("No page to filter provided!")
@@ -80,15 +83,15 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         scanbotSDK = ScanbotSDK(application)
         singletonInstance = ExampleSingletonImpl(this@PageFiltersActivity)
 
-        action_filter.setOnClickListener {
+        binding.actionFilter.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
-        action_delete.setOnClickListener {
+        binding.actionDelete.setOnClickListener {
             PageRepository.removePage(this, selectedPage)
             finish()
         }
 
-        action_crop_and_rotate.setOnClickListener {
+        binding.actionCropAndRotate.setOnClickListener {
             val croppingConfig = CroppingConfiguration(this.selectedPage)
             croppingConfig.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             croppingConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
@@ -177,7 +180,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     }
 
     private fun generateFilteredPreview() {
-        progress.visibility = View.VISIBLE
+        binding.progress.visibility = View.VISIBLE
         launch {
             val path = selectedPage.let {
                 val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance().getFilteredPreviewImageURI(it.pageId, it.filter).path
@@ -193,7 +196,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
-                            .into(image, ImageCallback())
+                            .into(binding.image, ImageCallback())
                 }
             }
         }
@@ -207,7 +210,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
-            progress.visibility = View.VISIBLE
+            binding.progress.visibility = View.VISIBLE
             selectedFilter = imageFilterType
             launch {
                 selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
@@ -218,8 +221,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
-                            .into(image, ImageCallback())
-                    progress.visibility = GONE
+                            .into(binding.image, ImageCallback())
+                    binding.progress.visibility = GONE
                 }
             }
         }
@@ -227,11 +230,11 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     inner class ImageCallback : Callback {
         override fun onSuccess() {
-            progress.visibility = GONE
+            binding.progress.visibility = GONE
         }
 
         override fun onError(e: Exception?) {
-            progress.visibility = GONE
+            binding.progress.visibility = GONE
         }
     }
 }

@@ -12,31 +12,29 @@ import io.scanbot.barcodescanner.model.aamva.AAMVADocument
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument
 import io.scanbot.barcodescanner.model.gs1.Gs1Document
 import io.scanbot.barcodescanner.model.swissqr.SwissQRDocument
+import io.scanbot.example.databinding.ActivityDetailedItemDataBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.entity.BarcodeItem
-import kotlinx.android.synthetic.main.activity_detailed_item_data.*
-import kotlinx.android.synthetic.main.activity_detailed_item_data.view.*
 
 class DetailedItemDataActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detailed_item_data)
-        setSupportActionBar(toolbar)
+        val binding = ActivityDetailedItemDataBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
-            container?.also {
-                if (item.image != null) {
-                    it.image.setImageBitmap(item.image)
-                } else {
-                    it.image.visibility = View.GONE
-                }
-                it.barcodeFormat.text = item.barcodeFormat.name
-                it.docFormat.text = item.formattedResult?.let { formattedResult ->
-                    formattedResult::class.java.simpleName
-                } ?: "Unknown document"
-                it.description.text = printParsedFormat(item)
+            if (item.image != null) {
+                binding.image.setImageBitmap(item.image)
+            } else {
+                binding.image.visibility = View.GONE
             }
+            binding.barcodeFormat.text = item.barcodeFormat.name
+            binding.docFormat.text = item.formattedResult?.let { formattedResult ->
+                formattedResult::class.java.simpleName
+            } ?: "Unknown document"
+            binding.description.text = printParsedFormat(item)
         }
     }
 

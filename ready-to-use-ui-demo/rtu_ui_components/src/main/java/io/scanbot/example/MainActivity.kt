@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.EHICResultDialogFragment
 import io.scanbot.example.fragments.ErrorFragment
@@ -72,7 +73,6 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.vin.VinScannerActivity
 import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.IOException
 
@@ -95,6 +95,8 @@ class MainActivity : AppCompatActivity() {
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
     private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckRecognizerConfiguration>
+
+    private lateinit var binding: ActivityMainBinding
 
     private fun handleGeneriDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
         // For simplicity we will take only the first document
@@ -172,14 +174,15 @@ class MainActivity : AppCompatActivity() {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
-        warning_view.visibility =
+        binding.warningView.visibility =
             if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
             // select an image from photo library and run document detection on it:
             importImageWithDetect()
@@ -441,7 +444,7 @@ class MainActivity : AppCompatActivity() {
             batchBarcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
-        ehic_default_ui.setOnClickListener {
+        binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
@@ -451,7 +454,7 @@ class MainActivity : AppCompatActivity() {
             ehicScannerResultLauncher.launch(ehicScannerConfig)
         }
 
-        check_recognizer_ui.setOnClickListener {
+        binding.checkRecognizerUi.setOnClickListener {
             val config = CheckRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
@@ -465,7 +468,7 @@ class MainActivity : AppCompatActivity() {
             checkRecognizerResultLauncher.launch(config)
         }
 
-        mc_scanner_ui.setOnClickListener {
+        binding.mcScannerUi.setOnClickListener {
             val config = MedicalCertificateRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
@@ -674,45 +677,13 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /** Imports a selected image as original image, creates a new page and opens the Cropping UI on it. */
-    internal inner class ProcessImageForCroppingUI(private var data: Intent) :
-        AsyncTask<Void, Void, List<Page>>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
-        }
-
-        override fun doInBackground(vararg params: Void): List<Page> {
-            val processGalleryResult = processGalleryResult(data)
-
-            val pageFileStorage = ExampleSingletonImpl(this@MainActivity).pageFileStorageInstance()
-
-            // create a new Page object with given image as original image:
-
-            return processGalleryResult.map {
-                val pageId = pageFileStorage.add(it)
-                Page(pageId)
-            }
-        }
-
-        override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
-            pages.first().also { page ->
-                val editPolygonConfiguration = CroppingConfiguration(page)
-
-                cropResultLauncher.launch(editPolygonConfiguration)
-            }
-        }
-    }
-
     /** Imports a selected image as original image and performs auto document detection on it. */
     internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent) :
         AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             Toast.makeText(
                 this@MainActivity,
                 getString(R.string.importing_and_processing), Toast.LENGTH_LONG
@@ -741,7 +712,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
@@ -753,7 +724,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             Toast.makeText(
                 this@MainActivity,
                 getString(R.string.importing_and_processing), Toast.LENGTH_LONG
@@ -783,7 +754,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
