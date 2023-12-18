@@ -11,6 +11,25 @@
 
     </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
 
+    <io.scanbot.sdk.ui.camera.FinderOverlayView
+        android:id="@+id/finder_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/finder_bottom_placeholder"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Align the check MICR line in the viewfinder"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/result"
         android:background="#fff"

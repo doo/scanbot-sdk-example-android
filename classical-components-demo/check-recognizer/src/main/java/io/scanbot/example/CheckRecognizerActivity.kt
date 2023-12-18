@@ -8,6 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.check.entity.CheckDocumentLibrary.wrap
+import io.scanbot.check.entity.ISRCheck
 import io.scanbot.check.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
@@ -17,6 +19,7 @@ import io.scanbot.sdk.check.CheckRecognizerFrameHandler
 import io.scanbot.sdk.check.CheckRecognizerFrameHandler.Companion.attach
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
+import io.scanbot.sdk.ui.camera.FinderOverlayView
 
 class CheckRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
@@ -37,6 +40,8 @@ class CheckRecognizerActivity : AppCompatActivity() {
                 }, 700)
             }
         }
+        val finderOverlayView = findViewById<FinderOverlayView>(R.id.finder_overlay)
+        finderOverlayView.setRequiredAspectRatios(listOf(io.scanbot.sdk.AspectRatio(8.0, 1.0)))
 
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
@@ -46,7 +51,7 @@ class CheckRecognizerActivity : AppCompatActivity() {
         frameHandler.addResultHandler { result: FrameHandlerResult<CheckRecognizerResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
                 val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckRecognizerResult?
-                if (recognitionResult?.status == CheckRecognizerStatus.SUCCESS) {
+                if (recognitionResult?.status == CheckRecognizerStatus.SUCCESS && recognitionResult.check?.wrap() is ISRCheck) {
                     frameHandler.isEnabled = false
                     startActivity(CheckRecognizerResultActivity.newIntent(this, recognitionResult))
                 }

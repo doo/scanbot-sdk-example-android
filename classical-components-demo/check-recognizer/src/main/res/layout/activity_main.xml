@@ -33,7 +33,8 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/menu_check_recognizer_autosnapping"
-            android:textAppearance="?textAppearanceListItem" />
+            android:textAppearance="?textAppearanceListItem"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/check_recognizer_pick_image"
