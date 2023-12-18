@@ -66,6 +66,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("io.scanbot:sdk-package-4:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-ui:$scanbotSdkVersion")
+    implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Generic Document Recognizer feature
     implementation("io.scanbot:sdk-genericdocument-assets:$scanbotSdkVersion")
