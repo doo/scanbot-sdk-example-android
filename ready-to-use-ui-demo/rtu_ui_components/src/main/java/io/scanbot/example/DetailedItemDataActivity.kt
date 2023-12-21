@@ -3,18 +3,17 @@ package io.scanbot.example
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.barcodescanner.model.DEMedicalPlan.DEMedicalPlanDocument
-import io.scanbot.barcodescanner.model.MedicalCertificate.MedicalCertificateDocument
-import io.scanbot.barcodescanner.model.IDCardPDF417.IDCardPDF417Document
-import io.scanbot.barcodescanner.model.SEPA.SEPADocument
-import io.scanbot.barcodescanner.model.VCard.VCardDocument
-import io.scanbot.barcodescanner.model.aamva.AAMVADocument
-import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument
-import io.scanbot.barcodescanner.model.gs1.Gs1Document
-import io.scanbot.barcodescanner.model.swissqr.SwissQRDocument
 import io.scanbot.example.databinding.ActivityDetailedItemDataBinding
 import io.scanbot.example.repository.BarcodeResultRepository
-import io.scanbot.sdk.barcode.entity.BarcodeItem
+import io.scanbot.sdk.ui_v2.barcode.configuration.AAMVADocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.BoardingPassDocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.GS1DocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.IDCardPDF417DocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.MedicalCertificateDocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.MedicalPlanDocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.SEPADocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.SwissQRCodeDocumentFormat
+import io.scanbot.sdk.ui_v2.barcode.configuration.VCardDocumentFormat
 
 class DetailedItemDataActivity : AppCompatActivity() {
 
@@ -25,12 +24,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
-            if (item.image != null) {
-                binding.image.setImageBitmap(item.image)
-            } else {
-                binding.image.visibility = View.GONE
-            }
-            binding.barcodeFormat.text = item.barcodeFormat.name
+            binding.barcodeFormat.text = item.type.name
             binding.docFormat.text = item.formattedResult?.let { formattedResult ->
                 formattedResult::class.java.simpleName
             } ?: "Unknown document"
@@ -38,16 +32,16 @@ class DetailedItemDataActivity : AppCompatActivity() {
         }
     }
 
-    private fun printParsedFormat(item: BarcodeItem): String {
+    private fun printParsedFormat(item: io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItem): String {
         val barcodeDocumentFormat = item.formattedResult
-                ?: return "${item.textWithExtension}\n\nBinary data:\n${item.rawBytes.toHexString()}" // for not supported by current barcode detector implementation
+                ?: return "${item.textWithExtension}\n\nBinary data:\n${item.rawBytes.toByteArray().toHexString()}" // for not supported by current barcode detector implementation
 
         val barcodesResult = StringBuilder()
         when (barcodeDocumentFormat) {
-            is AAMVADocument -> {
+            is AAMVADocumentFormat -> {
                 barcodesResult.append("\n")
                         .append("AAMVA Document\n")
-                        .append(barcodeDocumentFormat.AAMVAVersionNumber).append("\n")
+                        .append(barcodeDocumentFormat.aamvaVersionNumber).append("\n")
                         .append(barcodeDocumentFormat.issuerIdentificationNumber).append("\n")
                         .append(barcodeDocumentFormat.jurisdictionVersionNumber).append("\n")
                 barcodeDocumentFormat.subfiles.forEach { subfile ->
@@ -57,7 +51,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
                     }
                 }
             }
-            is BoardingPassDocument -> {
+            is BoardingPassDocumentFormat -> {
                 barcodesResult.append("\n")
                         .append("Boarding Pass Document\n")
                         .append("${barcodeDocumentFormat.name}\n")
@@ -67,7 +61,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
                     }
                 }
             }
-            is DEMedicalPlanDocument -> {
+            is MedicalPlanDocumentFormat -> {
                 barcodesResult.append("\nDE Medical Plan Document\n")
 
                 barcodesResult.append("Doctor Fields:\n")
@@ -94,28 +88,28 @@ class DetailedItemDataActivity : AppCompatActivity() {
                             barcodesResult.append("${it.type.name}: ${it.value}\n")
                         }
             }
-            is MedicalCertificateDocument -> {
+            is MedicalCertificateDocumentFormat -> {
                 barcodesResult.append("\nMedical Certificate Document\n")
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type?.name}: ${it.value}\n")
                 }
             }
-            is IDCardPDF417Document -> {
+            is IDCardPDF417DocumentFormat -> {
                 barcodesResult.append("\nId Card PDF417\n")
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type?.name}: ${it.value}\n")
                 }
             }
-            is SEPADocument -> {
+            is SEPADocumentFormat -> {
                 barcodesResult.append("\nSEPA Document\n")
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type.name}: ${it.value}\n")
                 }
             }
-            is SwissQRDocument -> {
+            is SwissQRCodeDocumentFormat -> {
                 barcodesResult.append("\nSwiss QR Document\n")
                 barcodesResult.append("Version: ${barcodeDocumentFormat.version.name}\n")
 
@@ -123,14 +117,14 @@ class DetailedItemDataActivity : AppCompatActivity() {
                     barcodesResult.append("${it.type.name}: ${it.value}\n")
                 }
             }
-            is VCardDocument -> {
+            is VCardDocumentFormat -> {
                 barcodesResult.append("\nVcard Document\n")
 
                 barcodeDocumentFormat.fields.forEach {
                     barcodesResult.append("${it.type.name}: ${it.rawText}\n")
                 }
             }
-            is Gs1Document -> {
+            is GS1DocumentFormat -> {
                 barcodesResult.append("\nGs1 Document\n")
 
                 barcodeDocumentFormat.fields.forEach { field ->

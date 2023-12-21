@@ -8,7 +8,7 @@ import io.scanbot.example.databinding.ActivityBarcodeResultBinding
 import io.scanbot.example.databinding.BarcodeItemBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.util.PicassoHelper
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerResult
 import java.io.File
 
 class BarcodeResultActivity : AppCompatActivity() {
@@ -17,7 +17,9 @@ class BarcodeResultActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_barcode_result)
+        binding = ActivityBarcodeResultBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         setSupportActionBar(binding.toolbar)
 
         showSnapImageIfExists(
@@ -42,15 +44,12 @@ class BarcodeResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScanningResult?) {
+    private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScannerResult?) {
 
         detectedBarcodes?.let {
-            detectedBarcodes.barcodeItems.asSequence().map { item ->
+            detectedBarcodes.items.asSequence().map { item ->
                 val itemViewBinding = BarcodeItemBinding.inflate(layoutInflater, binding.recognisedItems, false)
-                item.image?.let { bitmap ->
-                    itemViewBinding.image.setImageBitmap(bitmap)
-                }
-                itemViewBinding.barcodeFormat.text = item.barcodeFormat.name
+                itemViewBinding.barcodeFormat.text = item.type.name
                 itemViewBinding.docFormat.text = item.formattedResult?.let { formattedResult ->
                     formattedResult::class.java.simpleName
                 } ?: "Unknown document"

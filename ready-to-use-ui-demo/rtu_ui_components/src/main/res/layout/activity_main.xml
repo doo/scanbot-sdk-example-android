@@ -233,7 +233,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/data_detectors_title" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
 
         <Button
             android:id="@+id/qr_camera_default_ui_with_selection_overlay"
@@ -245,7 +245,7 @@
             android:text="@string/scan_qr_code_with_selection_overlay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/data_detectors_title" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
 
         <View
             android:layout_width="0dp"
