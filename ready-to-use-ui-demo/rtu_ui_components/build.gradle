@@ -35,9 +35,14 @@ android {
         jvmToolchain(17)
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.4"
+    }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
     }
 
     packagingOptions {

@@ -27,6 +27,7 @@
         <activity android:name=".PagePreviewActivity" />
         <activity android:name=".BarcodeResultActivity" />
         <activity android:name=".DetailedItemDataActivity" />
+        <activity android:name=".ARTUBarcodeScannerActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

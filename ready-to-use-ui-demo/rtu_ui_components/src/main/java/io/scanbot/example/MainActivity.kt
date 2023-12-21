@@ -409,6 +409,10 @@ class MainActivity : AppCompatActivity() {
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
+        findViewById<View>(R.id.qr_camera_artu).setOnClickListener {
+            val intent = Intent(this, ARTUBarcodeScannerActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
