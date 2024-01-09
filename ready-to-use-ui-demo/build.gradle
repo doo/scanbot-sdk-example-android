@@ -6,7 +6,7 @@ buildscript {
 
     ext.coroutines_version = '1.4.3'
 
-    ext.scanbotSdkVersion = '4.2.0.853-SNAPSHOT'
+    ext.scanbotSdkVersion = '4.2.0'
 }
 
 plugins {
