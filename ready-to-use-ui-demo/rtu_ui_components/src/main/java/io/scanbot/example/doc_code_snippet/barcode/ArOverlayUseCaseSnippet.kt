@@ -31,8 +31,8 @@ fun arOverlayUseCaseSnippet() {
         // Configure the usecase.
         this.useCase = MultipleScanningMode().apply {
             this.mode = MultipleBarcodesScanningMode.UNIQUE
-            this.scannedBarcodesPreview.mode = SheetMode.COLLAPSED_SHEET
-            this.scannedBarcodesPreview.collapsedVisibleHeight = CollapsedVisibleHeight.SMALL
+            this.sheet.mode = SheetMode.COLLAPSED_SHEET
+            this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.SMALL
 
             // Configure other parameters, pertaining to use case as needed.
         }

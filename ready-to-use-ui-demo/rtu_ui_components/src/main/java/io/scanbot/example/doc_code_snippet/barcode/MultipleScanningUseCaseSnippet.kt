@@ -31,10 +31,10 @@ fun multipleScanningUseCaseSnippet() {
             this.mode = MultipleBarcodesScanningMode.COUNTING
 
             // Set the sheet mode for the barcodes preview.
-            this.scannedBarcodesPreview.mode = SheetMode.COLLAPSED_SHEET
+            this.sheet.mode = SheetMode.COLLAPSED_SHEET
 
             // Set the height for the collapsed sheet.
-            this.scannedBarcodesPreview.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
+            this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
 
             // Enable manual count change.
             this.manualCountChangeEnabled = true
@@ -43,8 +43,8 @@ fun multipleScanningUseCaseSnippet() {
             this.countingRepeatDelay = 1000
 
             // Configure the submit button.
-            this.scannedBarcodesListSheet.submitButton.text = "Submit"
-            this.scannedBarcodesListSheet.submitButton.foreground.color = ScanbotColor("#000000")
+            this.sheetContent.submitButton.text = "Submit"
+            this.sheetContent.submitButton.foreground.color = ScanbotColor("#000000")
 
             // Configure other parameters, pertaining to multiple-scanning mode as needed.
         }

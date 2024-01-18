@@ -25,14 +25,14 @@ fun multipleScanningPreviewConfigSnippet() {
         // Initialize the use case for multiple scanning.
         this.useCase = MultipleScanningMode().apply {
             // Set the sheet mode for the barcodes preview.
-            this.scannedBarcodesPreview.mode = SheetMode.COLLAPSED_SHEET
+            this.sheet.mode = SheetMode.COLLAPSED_SHEET
 
             // Set the height for the collapsed sheet.
-            this.scannedBarcodesPreview.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
+            this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
 
             // Configure the submit button on the sheet.
-            this.scannedBarcodesListSheet.submitButton.text = "Submit"
-            this.scannedBarcodesListSheet.submitButton.foreground.color = ScanbotColor("#000000")
+            this.sheetContent.submitButton.text = "Submit"
+            this.sheetContent.submitButton.foreground.color = ScanbotColor("#000000")
 
             // Configure other parameters, pertaining to multiple-scanning mode as needed.
         }
