@@ -13,15 +13,19 @@ package io.scanbot.example.doc_code_snippet.barcode
 
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.ScanbotPalette
 
 fun paletteConfigSnippet() {
     // Create the default configuration object.
     val config = BarcodeScannerConfiguration().apply {
         // Configure parameters (use explicit `this.` receiver for better code completion):
 
-        // Set the entirely new palette set of colors.
-        this.palette = ScanbotPalette().apply {
+        // Simply alter one color and keep the other default.
+        this.palette.apply {
+            this.sbColorPrimary = ScanbotColor("#c86e19")
+        }
+
+        // ... or set an entirely new palette.
+        this.palette.apply {
             this.sbColorPrimary = ScanbotColor("#C8193C")
             this.sbColorPrimaryDisabled = ScanbotColor("#F5F5F5")
             this.sbColorNegative = ScanbotColor("#FF3737")
@@ -38,11 +42,6 @@ fun paletteConfigSnippet() {
             this.sbColorSurfaceLow = ScanbotColor("#26000000")
             this.sbColorSurfaceHigh = ScanbotColor("#7A000000")
             this.sbColorModalOverlay = ScanbotColor("#A3000000")
-        }
-
-        // ...or just alter one color and keep other default.
-        this.palette = ScanbotPalette().apply {
-            this.sbColorPrimary = ScanbotColor("#c86e19")
         }
     }
 }
