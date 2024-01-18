@@ -1,16 +1,6 @@
 
-buildscript {
-    ext.compileSdkVersion = 34
-    ext.targetSdkVersion = 30
-    ext.minSdkVersion = 21
-
-    ext.coroutines_version = '1.7.3'
-
-    ext.scanbotSdkVersion = '5.0.0.858-SNAPSHOT'
-}
-
 plugins {
-    id "com.android.application" version "8.2.1" apply false
+    id "com.android.application" version "7.4.2" apply false
     id "org.jetbrains.kotlin.android" version "1.8.10" apply false
 }
 
