@@ -68,7 +68,9 @@ import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItemMapper
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappedData
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappingResult
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
+import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleBarcodesScanningMode
 import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleScanningMode
+import io.scanbot.sdk.ui_v2.barcode.configuration.SheetMode
 import io.scanbot.sdk.ui_v2.common.OrientationLockMode
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk as registerForActivityResultOkV2
@@ -405,6 +407,23 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
+            }
+
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
+        }
+        findViewById<View>(R.id.multiple_unique_barcodes).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
+                this.useCase = MultipleScanningMode().apply {
+                    this.mode = MultipleBarcodesScanningMode.UNIQUE
+                    this.manualCountChangeEnabled = false
+                    this.sheet.mode = SheetMode.COLLAPSED_SHEET
+                }
+
+                this.arOverlay.visible = true
+                this.arOverlay.automaticSelectionEnabled = false
+
+                this.userGuidance.title.text =
+                        "Please align the QR-/Barcode in the frame above to scan it."
             }
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)

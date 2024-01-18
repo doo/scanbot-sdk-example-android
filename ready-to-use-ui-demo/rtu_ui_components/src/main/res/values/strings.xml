@@ -13,6 +13,7 @@
     <string name="scan_qr_code_with_image">Scan QR-/Barcode with image</string>
     <string name="scan_qr_code_with_selection_overlay">Scan QR-/Barcode with selection overlay</string>
     <string name="scan_qr_batch_mode">Scan Multiple QR-/Barcodes</string>
+    <string name="scan_qr_unique_batch_mode">Scan Unique Multiple QR-/Barcodes</string>
     <string name="scan_qr_artu">Scan QR-/Barcodes in Compose Barcode scanner view</string>
     <string name="scan_mrz">Scan MRZ</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
