@@ -25,15 +25,14 @@ fun arOverlayUseCaseSnippet() {
         // Configure parameters (use explicit `this.` receiver for better code completion):
 
         // Configure AR Overlay.
-        this.arOverlay.visible = true
-        this.arOverlay.automaticSelectionEnabled = false
 
         // Configure the usecase.
         this.useCase = MultipleScanningMode().apply {
             this.mode = MultipleBarcodesScanningMode.UNIQUE
             this.sheet.mode = SheetMode.COLLAPSED_SHEET
             this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.SMALL
-
+            this.arOverlay.visible = true
+            this.arOverlay.automaticSelectionEnabled = false
             // Configure other parameters, pertaining to use case as needed.
         }
 

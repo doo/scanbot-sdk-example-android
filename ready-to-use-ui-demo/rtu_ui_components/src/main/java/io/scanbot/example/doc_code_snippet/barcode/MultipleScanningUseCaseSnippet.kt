@@ -37,7 +37,7 @@ fun multipleScanningUseCaseSnippet() {
             this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
 
             // Enable manual count change.
-            this.manualCountChangeEnabled = true
+            this.sheetContent.manualCountChangeEnabled = true
 
             // Set the delay before same barcode counting repeat.
             this.countingRepeatDelay = 1000

@@ -68,6 +68,7 @@ import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItemMapper
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappedData
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappingResult
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeUseCase
 import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleBarcodesScanningMode
 import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleScanningMode
 import io.scanbot.sdk.ui_v2.barcode.configuration.SheetMode
@@ -364,9 +365,10 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
                 this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
                 this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
-
-                this.arOverlay.visible = true
-                this.arOverlay.automaticSelectionEnabled = false
+                this.useCase = BarcodeUseCase.singleScanningMode().apply {
+                    this.arOverlay.visible = true
+                    this.arOverlay.automaticSelectionEnabled = false
+                }
             }
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
@@ -374,7 +376,6 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-                this.useCase = MultipleScanningMode()
 
                 this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
                 this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
@@ -405,8 +406,10 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
+                this.useCase = MultipleScanningMode().apply {
+                    this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
+                }
 
-                this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
             }
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
@@ -415,12 +418,11 @@ class MainActivity : AppCompatActivity() {
             val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
                 this.useCase = MultipleScanningMode().apply {
                     this.mode = MultipleBarcodesScanningMode.UNIQUE
-                    this.manualCountChangeEnabled = false
+                    this.sheetContent.manualCountChangeEnabled = false
                     this.sheet.mode = SheetMode.COLLAPSED_SHEET
+                    this.arOverlay.visible = true
+                    this.arOverlay.automaticSelectionEnabled = false
                 }
-
-                this.arOverlay.visible = true
-                this.arOverlay.automaticSelectionEnabled = false
 
                 this.userGuidance.title.text =
                         "Please align the QR-/Barcode in the frame above to scan it."
