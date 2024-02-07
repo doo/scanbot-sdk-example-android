@@ -21,8 +21,10 @@ import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
+import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
@@ -52,7 +54,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     lateinit var scanbotSDK: ScanbotSDK
     lateinit var singletonInstance: ExampleSingleton
 
-    private var selectedFilter: ImageFilterType = ImageFilterType.NONE
+    private var selectedFilter: ParametricFilter? = null
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     private var job: Job = Job()
@@ -77,7 +79,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }!!
 
         selectedPage.let {
-            selectedFilter = it.filter
+            selectedFilter = it.parametricFilters.firstOrNull()
         }
 
         scanbotSDK = ScanbotSDK(application)
@@ -182,12 +184,21 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     private fun generateFilteredPreview() {
         binding.progress.visibility = View.VISIBLE
         launch {
-            val path = selectedPage.let {
-                val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance().getFilteredPreviewImageURI(it.pageId, it.filter).path
-                if (!File(filteredPreviewFilePath).exists()) {
-                    singletonInstance.pageProcessorInstance().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
+            val path = selectedPage.let { page ->
+                if (selectedFilter == null) {
+                    singletonInstance.pageFileStorageInstance().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
+                } else {
+                    val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance()
+                        .getFilteredPreviewImageURI(
+                            page.pageId,
+                            page.parametricFilters.first()
+                        ).path
+                    if (!File(filteredPreviewFilePath).exists()) {
+                        singletonInstance.pageProcessorInstance()
+                            .generateFilteredPreview(page, selectedFilter!!)
+                    }
+                    filteredPreviewFilePath
                 }
-                filteredPreviewFilePath
             }
             withContext(Dispatchers.Main) {
                 path?.let {
@@ -202,22 +213,22 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }
     }
 
-    override fun onFilterApplied(filterType: ImageFilterType) {
-        applyFilter(filterType)
+    override fun onFilterApplied(parametricFilter: ParametricFilter) {
+        applyFilter(parametricFilter)
     }
 
-    private fun applyFilter(imageFilterType: ImageFilterType) {
+    private fun applyFilter(parametricFilter: ParametricFilter) {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             binding.progress.visibility = View.VISIBLE
-            selectedFilter = imageFilterType
+            selectedFilter = parametricFilter
             launch {
-                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
+                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, parametricFilter)
                 withContext(Dispatchers.Main) {
                     val pageFileStorageInstance = singletonInstance.pageFileStorageInstance()
                     PicassoHelper.with(applicationContext)
-                            .load(File(pageFileStorageInstance.getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .load(File(pageFileStorageInstance.getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, parametricFilter).path))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
