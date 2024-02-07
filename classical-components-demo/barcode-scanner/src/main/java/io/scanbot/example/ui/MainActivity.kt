@@ -14,12 +14,16 @@ import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.example.common.ImportImageContract
-import kotlinx.android.synthetic.main.activity_main.*
+import io.scanbot.example.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +60,11 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                         }
-                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
+                        withContext(Dispatchers.Main) { progressBar.isVisible = false }
                     }
                 }
             }
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         findViewById<View>(R.id.qr_demo).setOnClickListener {
             val intent = Intent(applicationContext, BarcodeScannerActivity::class.java)
@@ -89,6 +93,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        warning_view.isVisible = ScanbotSDK(this).licenseInfo.status == Status.StatusTrial
+        binding.warningView.isVisible = ScanbotSDK(this).licenseInfo.status == Status.StatusTrial
     }
 }
