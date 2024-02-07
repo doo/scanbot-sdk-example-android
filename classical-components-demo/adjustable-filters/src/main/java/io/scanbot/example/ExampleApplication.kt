@@ -32,7 +32,6 @@ class ExampleApplication : Application() {
                 }
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
-            .imageProcessorType(ImageProcessor.Type.ML_BASED)
             .initialize(this)
 
         LoggerProvider.logger.d("ExampleApplication", "Scanbot SDK was initialized")

@@ -16,14 +16,15 @@
         <activity
             android:name=".SelectImageActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FilterTunesActivity" android:screenOrientation="portrait" />
+        <activity android:name=".FilterActivity" android:screenOrientation="portrait" />
     </application>
 
 </manifest>

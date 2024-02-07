@@ -105,40 +105,6 @@
 
             </LinearLayout>
 
-            <Switch
-                android:id="@+id/base_filter_first_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:text="Apply filter before tunes" />
-
-            <TextView
-                style="@style/SettingHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Light" />
-
-            <LinearLayout
-                android:id="@+id/light_tunes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <TextView
-                style="@style/SettingHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Color" />
-
-            <LinearLayout
-                android:id="@+id/color_tunes"
-                style="@style/SettingHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
         </LinearLayout>
 
     </ScrollView>

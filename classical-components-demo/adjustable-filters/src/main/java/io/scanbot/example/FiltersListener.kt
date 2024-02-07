@@ -1,7 +1,7 @@
 package io.scanbot.example
 
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.imagefilters.ParametricFilter
 
 interface FiltersListener {
-    fun onFilterApplied(filterType: ImageFilterType)
+    fun onFilterApplied(parametricFilter: ParametricFilter)
 }
