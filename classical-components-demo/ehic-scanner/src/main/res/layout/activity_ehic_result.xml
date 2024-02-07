@@ -113,6 +113,19 @@
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Country"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
+
         <Button
             android:id="@+id/retry"
             android:layout_width="wrap_content"
