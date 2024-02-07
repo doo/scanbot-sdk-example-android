@@ -24,6 +24,7 @@ import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
+import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -175,8 +176,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
-    override fun onFilterApplied(filterType: ImageFilterType) {
-        applyFilter(filterType)
+    override fun onFilterApplied(parametricFilter: ParametricFilter) {
+        applyFilter(parametricFilter)
     }
 
     override fun saveWithOcr() {
@@ -187,13 +188,13 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         saveDocument(false)
     }
 
-    private fun applyFilter(imageFilterType: ImageFilterType) {
+    private fun applyFilter(parametricFilter: ParametricFilter) {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
             binding.progressBar.visibility = View.VISIBLE
             launch {
-                PageRepository.applyFilter(this@PagePreviewActivity, imageFilterType)
+                PageRepository.applyFilter(this@PagePreviewActivity, parametricFilter)
                 withContext(Dispatchers.Main) {
                     adapter.notifyDataSetChanged()
                     binding.progressBar.visibility = View.GONE
