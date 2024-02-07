@@ -36,7 +36,7 @@ class ScannerActivity : AppCompatActivity() {
         val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
         // The smaller finder view brings better performance and allows user to detect text more precise
         zoomFinderOverlay.setRequiredAspectRatios(listOf(AspectRatio(4.0, 1.0)))
-//        zoomFinderOverlay.zoomLevel = 1.4f
+        zoomFinderOverlay.zoomLevel = 1.4f
         zoomFinderOverlay.setFixedFinderHeight(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                         70f, resources.displayMetrics).toInt()
