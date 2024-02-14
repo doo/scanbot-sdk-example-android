@@ -37,9 +37,7 @@ class BarcodeTypesAdapter : RecyclerView.Adapter<BarcodeTypesViewHolder>() {
             }
         }
 
-        if (BarcodeTypeRepository.selectedTypes.contains(barcodeFormat)) {
-            holder.barcodeTypeChecker.isChecked = true
-        }
+        holder.barcodeTypeChecker.isChecked = BarcodeTypeRepository.selectedTypes.contains(barcodeFormat)
     }
 
     override fun getItemCount(): Int {

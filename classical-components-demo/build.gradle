@@ -1,7 +1,7 @@
 
 plugins {
-    id "com.android.application" version "7.2.1" apply false
-    id "org.jetbrains.kotlin.android" version "1.6.21" apply false
+    id "com.android.application" version "7.4.2" apply false
+    id "org.jetbrains.kotlin.android" version "1.8.10" apply false
 }
 
 allprojects {
@@ -10,13 +10,13 @@ allprojects {
 
         compileSdkVersion = 33
         minSdkVersion = 21
-        targetSdkVersion = 30
+        targetSdkVersion = 33
 
-        scanbotSdkVersion = "4.2.0"
+        scanbotSdkVersion = "5.0.0.876-SNAPSHOT"
 
         constraintLayoutVersion = "2.0.4"
-        coroutinesAndroidVersion = "1.4.3"
-        coroutinesCoreVersion = "1.4.3"
+        coroutinesAndroidVersion = "1.7.3"
+        coroutinesCoreVersion = "1.7.3"
 
         androidxSupportVersion = "1.0.1"
         materialVersion = "1.4.0"

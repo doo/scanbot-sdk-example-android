@@ -15,7 +15,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import io.scanbot.example.FilterTunesActivity.Companion.newIntent
+import io.scanbot.example.FilterActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.docprocessing.PageProcessor

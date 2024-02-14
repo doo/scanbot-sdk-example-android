@@ -22,7 +22,8 @@
             android:name=".ui.BarcodeResultActivity"
             android:label="@string/title_activity_barcode_result"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

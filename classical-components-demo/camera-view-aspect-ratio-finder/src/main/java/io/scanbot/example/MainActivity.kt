@@ -22,7 +22,6 @@ import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -36,7 +35,6 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var contourDetector: ContourDetector
-    private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
@@ -48,7 +46,6 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
         scanbotSDK = ScanbotSDK(this)
         contourDetector = scanbotSDK.createContourDetector()
-        imageProcessor = scanbotSDK.imageProcessor()
 
         askPermission()
         setContentView(R.layout.activity_main)
@@ -184,7 +181,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         contourDetector.setRequiredAspectRatios(requiredPageAspectRatios)
         val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
 
-        val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(detectedPolygon))
+        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
         resultView.post {
             resultView.setImageBitmap(documentImage)
             cameraView.continuousFocus()
