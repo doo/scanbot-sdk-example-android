@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import io.scanbot.imagefilters.LegacyFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.tiff.TIFFWriter
@@ -149,8 +150,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 arrayListOf()
             }
-            val imageFilterType = if (binarize) ImageFilterType.PURE_BINARIZED else ImageFilterType.NONE
-            parameters = TIFFImageWriterParameters(imageFilterType, dpi, compression, userDefinedFields)
+            val binarizationFilter = if (binarize) LegacyFilter(ImageFilterType.PURE_BINARIZED.code) else null
+            parameters = TIFFImageWriterParameters(binarizationFilter, dpi, compression, userDefinedFields)
         }
 
         override fun doInBackground(vararg voids: Void): Boolean {

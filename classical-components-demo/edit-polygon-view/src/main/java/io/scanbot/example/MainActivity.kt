@@ -16,7 +16,6 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
 import io.scanbot.sdk.core.contourdetector.Line2D
-import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var originalBitmap: Bitmap
 
-    private lateinit var imageProcessor: ImageProcessor
     private lateinit var contourDetector: ContourDetector
 
     private var lastRotationEventTs = 0L
@@ -46,7 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         val scanbotSDK = ScanbotSDK(this)
         contourDetector = scanbotSDK.createContourDetector()
-        imageProcessor = scanbotSDK.imageProcessor()
 
         supportActionBar!!.hide()
 
@@ -97,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        var documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(editPolygonView.polygon))
+        var documentImage = ImageProcessor(originalBitmap).crop(editPolygonView.polygon).processedBitmap()
         documentImage?.let {
             if (rotationDegrees > 0) {
                 // rotate the final cropped image result based on current rotation value:

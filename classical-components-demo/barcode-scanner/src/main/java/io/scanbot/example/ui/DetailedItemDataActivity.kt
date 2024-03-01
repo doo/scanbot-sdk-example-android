@@ -10,27 +10,29 @@ import io.scanbot.barcodescanner.model.VCard.VCardDocument
 import io.scanbot.barcodescanner.model.aamva.AAMVADocument
 import io.scanbot.barcodescanner.model.boardingPass.BoardingPassDocument
 import io.scanbot.barcodescanner.model.swissqr.SwissQRDocument
-import io.scanbot.example.R
+import io.scanbot.example.databinding.ActivityDetailedItemDataBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.entity.BarcodeItem
-import kotlinx.android.synthetic.main.activity_detailed_item_data.*
-import kotlinx.android.synthetic.main.activity_detailed_item_data.view.*
 
 class DetailedItemDataActivity : AppCompatActivity() {
 
+    private val binding: ActivityDetailedItemDataBinding by lazy {
+        ActivityDetailedItemDataBinding.inflate(layoutInflater)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detailed_item_data)
-        setSupportActionBar(toolbar)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
-            container?.also {
-                it.image.setImageBitmap(item.image)
-                it.barcodeFormat.text = item.barcodeFormat.name
-                it.docFormat.text = item.formattedResult?.let {
+            binding.container?.also {
+                binding.image.setImageBitmap(item.image)
+                binding.barcodeFormat.text = item.barcodeFormat.name
+                binding.docFormat.text = item.formattedResult?.let {
                     it::class.java.simpleName
                 } ?: "Unknown document"
-                it.description.text = printParsedFormat(item)
+                binding.description.text = printParsedFormat(item)
             }
         }
     }

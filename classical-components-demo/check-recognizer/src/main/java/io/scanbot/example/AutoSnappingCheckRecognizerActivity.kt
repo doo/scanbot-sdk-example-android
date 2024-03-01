@@ -19,7 +19,6 @@ import io.scanbot.sdk.check.CheckRecognizer
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -34,7 +33,6 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
 
     private lateinit var contourDetector: ContourDetector
     private lateinit var checkRecognizer: CheckRecognizer
-    private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
 
@@ -57,18 +55,19 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
 
         checkRecognizer = scanbotSDK.createCheckRecognizer()
         contourDetector = scanbotSDK.createContourDetector()
-        imageProcessor = scanbotSDK.imageProcessor()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
+        contourDetectorFrameHandler =
+            ContourDetectorFrameHandler.attach(cameraView, contourDetector)
 
         contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
         contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
         contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
 
         contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
-        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        autoSnappingController =
+            DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
@@ -113,26 +112,24 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         val result = contourDetector.detect(originalBitmap)
 
         result?.polygonF?.let { polygon ->
-            imageProcessor.processBitmap(
-                originalBitmap,
-                listOf(CropOperation(polygon))
-            )?.let { documentImage ->
-                // documentImage will be recycled inside recognizeCheckBitmap
-                val imageCopy = Bitmap.createBitmap(documentImage)
-                val checkResult = checkRecognizer.recognizeBitmap(documentImage, 0)
-                if (checkResult?.check != null) {
-                    CheckRecognizerResultActivity.tempDocumentImage = imageCopy
-                    startActivity(CheckRecognizerResultActivity.newIntent(this, checkResult))
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this,
-                            "Check is not recognized - please, try agian",
-                            Toast.LENGTH_LONG
-                        ).show()
+            ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
+                ?.let { documentImage ->
+                    // documentImage will be recycled inside recognizeCheckBitmap
+                    val imageCopy = Bitmap.createBitmap(documentImage)
+                    val checkResult = checkRecognizer.recognizeBitmap(documentImage, 0)
+                    if (checkResult?.check != null) {
+                        CheckRecognizerResultActivity.tempDocumentImage = imageCopy
+                        startActivity(CheckRecognizerResultActivity.newIntent(this, checkResult))
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "Check is not recognized - please, try agian",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
-            }
         }
 
         // continue scanning

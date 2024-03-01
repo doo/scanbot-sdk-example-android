@@ -15,7 +15,6 @@ import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.process.CropOperation
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -28,7 +27,6 @@ class CameraDialogFragment : DialogFragment() {
     private lateinit var resultView: ImageView
 
     private lateinit var contourDetector: ContourDetector
-    private lateinit var imageProcessor: ImageProcessor
 
     private var flashEnabled = false
 
@@ -36,7 +34,6 @@ class CameraDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         val scanbotSDK = ScanbotSDK(requireContext())
         contourDetector = scanbotSDK.createContourDetector()
-        imageProcessor = scanbotSDK.imageProcessor()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -99,7 +96,7 @@ class CameraDialogFragment : DialogFragment() {
         // Run document detection on original image:
         val detectionResult = contourDetector.detect(originalBitmap)
         detectionResult?.polygonF?.let { polygonF ->
-            val documentImage = imageProcessor.processBitmap(originalBitmap, CropOperation(polygonF))
+            val documentImage = ImageProcessor(originalBitmap).crop(polygonF).processedBitmap()
             if (documentImage != null) resultView.post {
                 resultView.setImageBitmap(documentImage)
                 cameraView.continuousFocus()

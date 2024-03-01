@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -33,7 +32,7 @@
             android:background="@drawable/warning_shape"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView">
+            app:layout_constraintTop_toBottomOf="@id/textView">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -49,7 +48,6 @@
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 android:textStyle="normal" />
-
         </LinearLayout>
 
         <TextView
@@ -66,7 +64,7 @@
             android:textSize="12sp"
             android:textStyle="normal"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/warning_view" />
+            app:layout_constraintTop_toBottomOf="@id/warning_view" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -89,7 +87,7 @@
             android:text="@string/scan_document"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/document_scanner_title" />
+            app:layout_constraintTop_toBottomOf="@id/document_scanner_title" />
 
         <View
             android:layout_width="0dp"
@@ -99,7 +97,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/camera_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/camera_default_ui" />
 
         <Button
             android:id="@+id/camera_finder_ui"
@@ -111,7 +109,7 @@
             android:text="@string/scan_document_finder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/camera_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/camera_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -121,7 +119,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/camera_finder_ui" />
+            app:layout_constraintTop_toBottomOf="@id/camera_finder_ui" />
 
         <Button
             android:id="@+id/doc_detection_on_image_btn"
@@ -133,7 +131,7 @@
             android:text="@string/import_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/camera_finder_ui" />
+            app:layout_constraintTop_toBottomOf="@id/camera_finder_ui" />
 
         <View
             android:layout_width="0dp"
@@ -143,7 +141,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/camera_finder_ui" />
+            app:layout_constraintTop_toBottomOf="@id/camera_finder_ui" />
 
         <Button
             android:id="@+id/doc_detection_on_pdf_btn"
@@ -155,7 +153,7 @@
             android:text="@string/import_pdf"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/doc_detection_on_image_btn" />
+            app:layout_constraintTop_toBottomOf="@id/doc_detection_on_image_btn" />
 
         <View
             android:layout_width="0dp"
@@ -165,7 +163,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/doc_detection_on_image_btn" />
+            app:layout_constraintTop_toBottomOf="@id/doc_detection_on_image_btn" />
 
         <Button
             android:id="@+id/page_preview_activity"
@@ -177,7 +175,7 @@
             android:text="@string/view_images"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/doc_detection_on_pdf_btn" />
+            app:layout_constraintTop_toBottomOf="@id/doc_detection_on_pdf_btn" />
 
         <View
             android:layout_width="0dp"
@@ -187,7 +185,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/doc_detection_on_pdf_btn" />
+            app:layout_constraintTop_toBottomOf="@id/doc_detection_on_pdf_btn" />
 
         <View
             android:layout_width="0dp"
@@ -197,7 +195,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/page_preview_activity" />
+            app:layout_constraintTop_toBottomOf="@id/page_preview_activity" />
 
         <TextView
             android:id="@+id/data_detectors_title"
@@ -213,7 +211,7 @@
             android:textSize="12sp"
             android:textStyle="normal"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/page_preview_activity" />
+            app:layout_constraintTop_toBottomOf="@id/page_preview_activity" />
 
         <Button
             android:id="@+id/qr_camera_default_ui"
@@ -225,7 +223,7 @@
             android:text="@string/scan_qr_code"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/data_detectors_title" />
+            app:layout_constraintTop_toBottomOf="@id/data_detectors_title" />
 
         <View
             android:layout_width="0dp"
@@ -235,29 +233,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui" />
-
-        <Button
-            android:id="@+id/qr_camera_default_ui_with_image"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_code_with_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui_with_image" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
 
         <Button
             android:id="@+id/qr_camera_default_ui_with_selection_overlay"
@@ -269,7 +245,7 @@
             android:text="@string/scan_qr_code_with_selection_overlay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui_with_image" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -279,7 +255,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui_with_selection_overlay" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui_with_selection_overlay" />
 
         <Button
             android:id="@+id/qr_camera_batch_mode"
@@ -291,7 +267,30 @@
             android:text="@string/scan_qr_batch_mode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_default_ui_with_selection_overlay" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui_with_selection_overlay" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#1effffff"
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_batch_mode"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <Button
+            android:id="@+id/multiple_unique_barcodes"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/scan_qr_unique_batch_mode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_batch_mode" />
 
         <View
             android:layout_width="0dp"
@@ -301,7 +300,29 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_batch_mode" />
+            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
+
+        <Button
+            android:id="@+id/qr_camera_artu"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/scan_qr_artu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#1effffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_artu" />
 
         <Button
             android:id="@+id/mrz_camera_default_ui"
@@ -313,7 +334,7 @@
             android:text="@string/scan_mrz"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/qr_camera_batch_mode" />
+            app:layout_constraintTop_toBottomOf="@id/qr_camera_artu" />
 
         <View
             android:layout_width="0dp"
@@ -323,7 +344,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/mrz_camera_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/mrz_camera_default_ui" />
 
         <Button
             android:id="@+id/generic_document_default_ui"
@@ -335,7 +356,7 @@
             android:text="@string/scan_generic_document"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/mrz_camera_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/mrz_camera_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -345,7 +366,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/generic_document_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/generic_document_default_ui" />
 
         <Button
             android:id="@+id/text_data_scanner_default_ui"
@@ -357,7 +378,7 @@
             android:text="@string/scan_text_data"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/generic_document_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/generic_document_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -367,7 +388,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/text_data_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/text_data_scanner_default_ui" />
 
         <Button
             android:id="@+id/vin_scanner_default_ui"
@@ -379,7 +400,7 @@
             android:text="@string/scan_vin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/text_data_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/text_data_scanner_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -389,7 +410,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/vin_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/vin_scanner_default_ui" />
 
         <Button
             android:id="@+id/license_plate_scanner_default_ui"
@@ -401,7 +422,7 @@
             android:text="@string/scan_license_plate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/vin_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/vin_scanner_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -411,7 +432,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/license_plate_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/license_plate_scanner_default_ui" />
 
         <Button
             android:id="@+id/ehic_default_ui"
@@ -423,7 +444,7 @@
             android:text="@string/scan_ehic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/license_plate_scanner_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/license_plate_scanner_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -433,7 +454,7 @@
             android:background="#1effffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/ehic_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/ehic_default_ui" />
 
         <Button
             android:id="@+id/mc_scanner_ui"
@@ -445,7 +466,7 @@
             android:text="@string/scan_mc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/ehic_default_ui" />
+            app:layout_constraintTop_toBottomOf="@id/ehic_default_ui" />
 
         <View
             android:layout_width="0dp"
@@ -468,7 +489,7 @@
             android:text="@string/scan_check"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/mc_scanner_ui" />
+            app:layout_constraintTop_toBottomOf="@id/mc_scanner_ui" />
 
         <View
             android:layout_width="0dp"
@@ -507,6 +528,5 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="20dp"
             app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

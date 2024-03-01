@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.EHICResultDialogFragment
 import io.scanbot.example.fragments.ErrorFragment
@@ -30,10 +31,6 @@ import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 import io.scanbot.mrzscanner.model.MRZGenericDocument
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeFormattedData
-import io.scanbot.sdk.barcode.entity.BarcodeItem
-import io.scanbot.sdk.barcode.entity.FormattedBarcodeDataMapper
-import io.scanbot.sdk.barcode.ui.BarcodeOverlayTextFormat
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.check.entity.CheckRecognizerResult
 import io.scanbot.sdk.core.contourdetector.DetectionStatus
@@ -42,13 +39,6 @@ import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.result.ResultWrapper
-import io.scanbot.sdk.ui.view.barcode.BarcodeScannerActivity
-import io.scanbot.sdk.ui.view.barcode.SelectionOverlayConfiguration
-import io.scanbot.sdk.ui.view.barcode.batch.BatchBarcodeScannerActivity
-import io.scanbot.sdk.ui.view.barcode.batch.configuration.BatchBarcodeScannerConfiguration
-import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeImageGenerationType
-import io.scanbot.sdk.ui.view.barcode.configuration.BarcodeScannerConfiguration
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.FinderDocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
@@ -72,7 +62,19 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.vin.VinScannerActivity
 import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
-import kotlinx.android.synthetic.main.activity_main.*
+import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui_v2.barcode.common.mappers.getName
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItemMapper
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappedData
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappingResult
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeUseCase
+import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleBarcodesScanningMode
+import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleScanningMode
+import io.scanbot.sdk.ui_v2.barcode.configuration.SheetMode
+import io.scanbot.sdk.ui_v2.common.OrientationLockMode
+import io.scanbot.sdk.ui_v2.common.ScanbotColor
+import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk as registerForActivityResultOkV2
 import java.io.File
 import java.io.IOException
 
@@ -86,7 +88,6 @@ class MainActivity : AppCompatActivity() {
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
-    private val batchBarcodeResultLauncher: ActivityResultLauncher<BatchBarcodeScannerConfiguration>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val selectPdfFromGalleryResultLauncher: ActivityResultLauncher<Intent>
@@ -96,7 +97,9 @@ class MainActivity : AppCompatActivity() {
     private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
     private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckRecognizerConfiguration>
 
-    private fun handleGeneriDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
+    private lateinit var binding: ActivityMainBinding
+
+    private fun handleGenericDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
         // For simplicity we will take only the first document
         val firstResultWrapper = resultWrappers.first()
 
@@ -172,14 +175,15 @@ class MainActivity : AppCompatActivity() {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         }
-        warning_view.visibility =
+        binding.warningView.visibility =
             if (scanbotSDK.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initDependencies()
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         findViewById<View>(R.id.doc_detection_on_image_btn).setOnClickListener {
             // select an image from photo library and run document detection on it:
             importImageWithDetect()
@@ -347,101 +351,91 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
+                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
+                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
 
-            barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
-            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.NONE)
-
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-
-        findViewById<View>(R.id.qr_camera_default_ui_with_image).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
-
-            barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
-            barcodeCameraConfiguration.setBarcodeImageGenerationType(BarcodeImageGenerationType.VIDEO_FRAME)
-
+                this.userGuidance.title.text =
+                    "Please align the QR-/Barcode in the frame above to scan it."
+            }
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
         findViewById<View>(R.id.qr_camera_default_ui_with_selection_overlay).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration()
-
-            barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            barcodeCameraConfiguration.setSelectionOverlayConfiguration(
-                SelectionOverlayConfiguration(
-                    overlayEnabled = true,
-                    textFormat = BarcodeOverlayTextFormat.CODE_AND_TYPE // Select NONE to hide the value
-                )
-            )
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
+                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
+                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
+                this.useCase = BarcodeUseCase.singleScanningMode().apply {
+                    this.arOverlay.visible = true
+                    this.arOverlay.automaticSelectionEnabled = false
+                }
+            }
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
 
         findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
-            val barcodeCameraConfiguration = BatchBarcodeScannerConfiguration()
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
 
-            barcodeCameraConfiguration.setCameraZoomRatio(1f)
-            barcodeCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            barcodeCameraConfiguration.setFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.")
+                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
+                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
 
-            barcodeCameraConfiguration.setDetailsBackgroundColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setDetailsActionColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setDetailsBackgroundColor(
-                ContextCompat.getColor(this, R.color.sheetColor)
-            )
-            barcodeCameraConfiguration.setDetailsPrimaryColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setBarcodesCountTextColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            barcodeCameraConfiguration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
+                this.cameraConfiguration.defaultZoomFactor = 1.0
+                this.cameraConfiguration.orientationLockMode = OrientationLockMode.PORTRAIT
 
-            class CustomFormattedBarcodeDataMapper : FormattedBarcodeDataMapper {
-                // NOTE: callback implementation class must be static (in case of Java)
-                // or non-inner (in case of Kotlin), have default (empty) constructor
-                // and must not touch fields or methods of enclosing class/method
-                override fun decodeFormattedData(barcodeItem: BarcodeItem): BarcodeFormattedData {
-                    // TODO: use barcodeItem appropriately here as needed
-                    return BarcodeFormattedData(
-                        barcodeItem.barcodeFormat.name,
-                        barcodeItem.textWithExtension
-                    )
+                this.viewFinder.visible = true
+                this.userGuidance.title.text =
+                    "Please align the QR-/Barcode in the frame above to scan it."
+
+                class CustomBarcodeItemMapper : BarcodeItemMapper {
+
+                    // NOTE: callback implementation class must be static (in case of Java)
+                    // or non-inner (in case of Kotlin), have default (empty) constructor
+                    // and must not touch fields or methods of enclosing class/method
+                    override fun mapBarcodeItem(
+                        barcodeItem: io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItem,
+                        result: BarcodeMappingResult,
+                    ) {
+                        // TODO: use barcodeItem appropriately here as needed
+                        result.onResult(
+                            BarcodeMappedData(
+                                title = barcodeItem.textWithExtension,
+                                subtitle = barcodeItem.type.getName(),
+                                barcodeImage = ""
+                            )
+                        )
+                    }
                 }
-            }
-            barcodeCameraConfiguration.setFormattedBarcodeDataMapper(CustomFormattedBarcodeDataMapper())
+                this.useCase = BarcodeUseCase.multipleScanningMode().apply {
+                    this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
+                }
 
-            batchBarcodeResultLauncher.launch(barcodeCameraConfiguration)
+            }
+
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
+        }
+        findViewById<View>(R.id.multiple_unique_barcodes).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
+                this.useCase = MultipleScanningMode().apply {
+                    this.mode = MultipleBarcodesScanningMode.UNIQUE
+                    this.sheetContent.manualCountChangeEnabled = false
+                    this.sheet.mode = SheetMode.COLLAPSED_SHEET
+                    this.arOverlay.visible = true
+                    this.arOverlay.automaticSelectionEnabled = false
+                }
+
+                this.userGuidance.title.text =
+                        "Please align the QR-/Barcode in the frame above to scan it."
+            }
+
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
+        }
+        findViewById<View>(R.id.qr_camera_artu).setOnClickListener {
+            val intent = Intent(this, ARTUBarcodeScannerActivity::class.java)
+            startActivity(intent)
         }
 
-        ehic_default_ui.setOnClickListener {
+        binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
@@ -451,7 +445,7 @@ class MainActivity : AppCompatActivity() {
             ehicScannerResultLauncher.launch(ehicScannerConfig)
         }
 
-        check_recognizer_ui.setOnClickListener {
+        binding.checkRecognizerUi.setOnClickListener {
             val config = CheckRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
@@ -465,7 +459,7 @@ class MainActivity : AppCompatActivity() {
             checkRecognizerResultLauncher.launch(config)
         }
 
-        mc_scanner_ui.setOnClickListener {
+        binding.mcScannerUi.setOnClickListener {
             val config = MedicalCertificateRecognizerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
@@ -589,21 +583,12 @@ class MainActivity : AppCompatActivity() {
             }
 
         barcodeResultLauncher =
-            registerForActivityResultOk(BarcodeScannerActivity.ResultContract()) { resultEntity ->
+            registerForActivityResultOkV2(BarcodeScannerActivity.ResultContract()) { resultEntity ->
                 BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
                     resultEntity.result!!,
                     resultEntity.barcodeImagePath,
                     resultEntity.barcodePreviewFramePath
                 )
-
-                val intent = Intent(this, BarcodeResultActivity::class.java)
-                startActivity(intent)
-            }
-
-        batchBarcodeResultLauncher =
-            registerForActivityResultOk(BatchBarcodeScannerActivity.ResultContract()) { resultEntity ->
-                BarcodeResultRepository.barcodeResultBundle =
-                    BarcodeResultBundle(resultEntity.result!!)
 
                 val intent = Intent(this, BarcodeResultActivity::class.java)
                 startActivity(intent)
@@ -660,7 +645,7 @@ class MainActivity : AppCompatActivity() {
 
         genericDocumentRecognizerResultLauncher =
             registerForActivityResultOk(GenericDocumentRecognizerActivity.ResultContract()) { resultEntity ->
-                handleGeneriDocRecognizerResult(resultEntity.result!!)
+                handleGenericDocRecognizerResult(resultEntity.result!!)
             }
 
         medicalCertificateRecognizerActivityResultLauncher =
@@ -674,45 +659,13 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /** Imports a selected image as original image, creates a new page and opens the Cropping UI on it. */
-    internal inner class ProcessImageForCroppingUI(private var data: Intent) :
-        AsyncTask<Void, Void, List<Page>>() {
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
-        }
-
-        override fun doInBackground(vararg params: Void): List<Page> {
-            val processGalleryResult = processGalleryResult(data)
-
-            val pageFileStorage = ExampleSingletonImpl(this@MainActivity).pageFileStorageInstance()
-
-            // create a new Page object with given image as original image:
-
-            return processGalleryResult.map {
-                val pageId = pageFileStorage.add(it)
-                Page(pageId)
-            }
-        }
-
-        override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
-            pages.first().also { page ->
-                val editPolygonConfiguration = CroppingConfiguration(page)
-
-                cropResultLauncher.launch(editPolygonConfiguration)
-            }
-        }
-    }
-
     /** Imports a selected image as original image and performs auto document detection on it. */
     internal inner class ProcessImageForAutoDocumentDetection(private var data: Intent) :
         AsyncTask<Void, Void, List<Page>>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             Toast.makeText(
                 this@MainActivity,
                 getString(R.string.importing_and_processing), Toast.LENGTH_LONG
@@ -741,7 +694,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }
@@ -753,7 +706,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             Toast.makeText(
                 this@MainActivity,
                 getString(R.string.importing_and_processing), Toast.LENGTH_LONG
@@ -783,7 +736,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(pages: List<Page>) {
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
             val intent = Intent(this@MainActivity, PagePreviewActivity::class.java)
             startActivity(intent)
         }

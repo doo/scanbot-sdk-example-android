@@ -32,6 +32,7 @@
 
             <ImageView
                 android:id="@+id/image"
+                android:visibility="gone"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="8dp"

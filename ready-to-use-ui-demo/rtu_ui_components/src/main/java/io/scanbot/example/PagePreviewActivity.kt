@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.MemoryPolicy
+import io.scanbot.example.databinding.ActivityPagePreviewBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
@@ -24,6 +24,7 @@ import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
+import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -37,11 +38,9 @@ import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
 import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
 import io.scanbot.sdk.util.thread.MimeUtils
-import kotlinx.android.synthetic.main.activity_page_preview.*
 import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
-
 
 class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, CoroutineScope {
 
@@ -61,7 +60,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
     private lateinit var saveSheetFragment: SaveBottomSheetMenuFragment
     private lateinit var scanbotSDK: ScanbotSDK
-    lateinit var progress: ProgressBar
+
+    private lateinit var binding: ActivityPagePreviewBinding
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext
@@ -82,7 +82,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_page_preview)
+        binding = ActivityPagePreviewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initActionBar()
         initMenu()
         scanbotSDK = ScanbotSDK(application)
@@ -104,7 +105,6 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         // initialize items only once, so we can update items from onActivityResult
         adapter.setItems(PageRepository.getPages())
 
-        progress = findViewById(R.id.progressBar)
         findViewById<View>(R.id.action_add_page).setOnClickListener {
             val cameraConfiguration = DocumentScannerConfiguration()
             cameraConfiguration.setCameraPreviewMode(CameraPreviewMode.FILL_IN)
@@ -118,21 +118,21 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
 
             documentScannerResultLauncher.launch(cameraConfiguration)
         }
-        action_delete_all.setOnClickListener {
+        binding.actionDeleteAll.setOnClickListener {
             PageRepository.clearPages(this)
             adapter.notifyDataSetChanged()
-            action_save_document.isEnabled = false
-            action_delete_all.isEnabled = false
-            action_filter.isEnabled = false
+            binding.actionSaveDocument.isEnabled = false
+            binding.actionDeleteAll.isEnabled = false
+            binding.actionFilter.isEnabled = false
         }
-        action_filter.setOnClickListener {
+        binding.actionFilter.setOnClickListener {
             val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
             if (fragment == null) {
                 filtersSheetFragment.show(supportFragmentManager, FILTERS_MENU_TAG)
             }
         }
 
-        action_save_document.setOnClickListener {
+        binding.actionSaveDocument.setOnClickListener {
             val fragment = supportFragmentManager.findFragmentByTag(SAVE_MENU_TAG)
             if (fragment == null) {
                 saveSheetFragment.show(supportFragmentManager, SAVE_MENU_TAG)
@@ -176,8 +176,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
-    override fun onFilterApplied(filterType: ImageFilterType) {
-        applyFilter(filterType)
+    override fun onFilterApplied(parametricFilter: ParametricFilter) {
+        applyFilter(parametricFilter)
     }
 
     override fun saveWithOcr() {
@@ -188,16 +188,16 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         saveDocument(false)
     }
 
-    private fun applyFilter(imageFilterType: ImageFilterType) {
+    private fun applyFilter(parametricFilter: ParametricFilter) {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
-            progress.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             launch {
-                PageRepository.applyFilter(this@PagePreviewActivity, imageFilterType)
+                PageRepository.applyFilter(this@PagePreviewActivity, parametricFilter)
                 withContext(Dispatchers.Main) {
                     adapter.notifyDataSetChanged()
-                    progress.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
@@ -212,9 +212,9 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
     }
 
     private fun checkVisibility() {
-        action_save_document.isEnabled = adapter.items.isNotEmpty()
-        action_delete_all.isEnabled = adapter.items.isNotEmpty()
-        action_filter.isEnabled = adapter.items.isNotEmpty()
+        binding.actionSaveDocument.isEnabled = adapter.items.isNotEmpty()
+        binding.actionDeleteAll.isEnabled = adapter.items.isNotEmpty()
+        binding.actionFilter.isEnabled = adapter.items.isNotEmpty()
     }
 
     private fun showLicenseDialog() {
@@ -228,7 +228,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
-            progress.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             launch {
                 var pdfFile: File? =
                         if (withOcr) {
@@ -241,7 +241,7 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
                 }
 
                 withContext(Dispatchers.Main) {
-                    progress.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
 
                     //open first document
                     if (pdfFile != null) {
@@ -346,12 +346,9 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         Toast.makeText(this@PagePreviewActivity, getString(R.string.encrypted_document_saved, pdfFile.toString()), Toast.LENGTH_LONG).show()
     }
 
-    /**
-     * View holder for page and its number.
-     */
-    private inner class PageViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    /** View holder for page and its number. */
+    private inner class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        internal val imageView: ImageView = itemView.findViewById<View>(R.id.page) as ImageView
-
+        val imageView: ImageView = itemView.findViewById<View>(R.id.page) as ImageView
     }
 }

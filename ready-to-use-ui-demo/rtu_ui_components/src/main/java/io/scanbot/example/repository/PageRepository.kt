@@ -2,9 +2,8 @@ package io.scanbot.example.repository
 
 import android.content.Context
 import io.scanbot.example.di.ExampleSingletonImpl
+import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.process.TuneOperation
 
 class PageRepository {
     companion object {
@@ -27,43 +26,39 @@ class PageRepository {
             pages.clear()
         }
 
-        fun applyFilter(context: Context, imageFilterType: ImageFilterType) {
+        fun applyFilter(context: Context, parametricFilter: ParametricFilter) {
             pages.forEach {
-                ExampleSingletonImpl(context).pageProcessorInstance().applyFilterTunes(it, imageFilterType, it.tunes, it.filterOrder)
+                ExampleSingletonImpl(context).pageProcessorInstance().applyFilter(it, parametricFilter)
             }
             val list = pages.map {
                 Page(pageId = it.pageId,
                         polygon = it.polygon,
                         detectionStatus = it.detectionStatus,
-                        filter = imageFilterType,
-                        tunes = it.tunes,
-                        filterOrder = it.filterOrder)
+                        parametricFilter = parametricFilter,)
             }.toMutableList()
 
             pages.clear()
             pages.addAll(list)
         }
 
-        fun generatePreview(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int) {
+        fun generatePreview(context: Context, page: Page, parametricFilter: ParametricFilter) {
             pages.first { it.pageId == page.pageId }.apply {
-                ExampleSingletonImpl(context).pageProcessorInstance().generateFilteredPreview(this, imageFilterType, tunes, filterOrder)
+                ExampleSingletonImpl(context).pageProcessorInstance().generateFilteredPreview(this, parametricFilter)
             }
         }
 
-        fun applyFilter(context: Context, page: Page, imageFilterType: ImageFilterType, tunes: List<TuneOperation>, filterOrder: Int): Page {
+        fun applyFilter(context: Context, page: Page, parametricFilter: ParametricFilter): Page {
             val processor = ExampleSingletonImpl(context).pageProcessorInstance()
             pages.forEach {
                 if (it.pageId == page.pageId) {
-                    processor.applyFilterTunes(it, imageFilterType, tunes, filterOrder)
-                    processor.generateFilteredPreview(it, imageFilterType, tunes, filterOrder)
+                    processor.applyFilter(it, parametricFilter)
+                    processor.generateFilteredPreview(it, parametricFilter)
                 }
             }
             val result = Page(pageId = page.pageId,
                     polygon = page.polygon,
                     detectionStatus = page.detectionStatus,
-                    filter = imageFilterType,
-                    tunes = tunes,
-                    filterOrder = filterOrder)
+                    parametricFilter = parametricFilter,)
             val list = pages.map {
                 if (it.pageId == page.pageId) {
                     result

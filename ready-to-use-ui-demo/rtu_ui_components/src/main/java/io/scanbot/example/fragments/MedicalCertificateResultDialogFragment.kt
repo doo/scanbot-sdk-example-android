@@ -11,10 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
+import io.scanbot.example.databinding.FragmentMedicalCertificateResultDialogBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mcscanner.model.CheckBoxType
@@ -22,7 +22,6 @@ import io.scanbot.mcscanner.model.DateRecordType
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
 import io.scanbot.sdk.persistence.Page
 import io.scanbot.sdk.persistence.PageFileStorage
-import kotlinx.android.synthetic.main.fragment_medical_certificate_result_dialog.view.*
 import java.io.File
 
 class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -44,22 +43,25 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         }
     }
 
+    private var _binding: FragmentMedicalCertificateResultDialogBinding? = null
+    private val binding get() = _binding!!
+
     private var medicalCertificateResult: MedicalCertificateRecognizerResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
         medicalCertificateResult = arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
 
-        val view = inflater.inflate(R.layout.fragment_medical_certificate_result_dialog, container)
+        _binding = FragmentMedicalCertificateResultDialogBinding.inflate(inflater, container, false)
 
-        view.title.text = "Detected Medical Certificate Form"
+        binding.title.text = "Detected Medical Certificate Form"
 
         medicalCertificateResult?.let { result ->
-            view.findViewById<TextView>(R.id.tv_data).text = extractData(result)
-            view.images_container.visibility = View.VISIBLE
-            result.croppedImage?.let { showBitmapImage(it, view.front_snap_result) }
+            binding.tvData.text = extractData(result)
+            binding.imagesContainer.visibility = View.VISIBLE
+            result.croppedImage?.let { showBitmapImage(it, binding.frontSnapResult) }
         }
 
-        return view
+        return binding.root
     }
 
     private fun showPageImage(page: Page, imageView: ImageView) {
@@ -159,5 +161,10 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
                 .append("\n")
                 .append(result.patientInfoBox.fields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
                 .toString()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

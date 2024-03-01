@@ -14,19 +14,21 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
+import io.scanbot.example.databinding.ActivityFiltersBinding
 import io.scanbot.example.di.ExampleSingleton
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
+import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.persistence.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
-import kotlinx.android.synthetic.main.activity_filters.*
 import kotlinx.coroutines.*
 import java.io.File
 import java.lang.Exception
@@ -46,11 +48,13 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }
     }
 
+    private lateinit var binding: ActivityFiltersBinding
+
     lateinit var selectedPage: Page
     lateinit var scanbotSDK: ScanbotSDK
     lateinit var singletonInstance: ExampleSingleton
 
-    private var selectedFilter: ImageFilterType = ImageFilterType.NONE
+    private var selectedFilter: ParametricFilter? = null
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
     private var job: Job = Job()
@@ -64,7 +68,8 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_filters)
+        binding = ActivityFiltersBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initActionBar()
 
         val page = intent.getParcelableExtra(PAGE_DATA) as? Page ?: throw IllegalStateException("No page to filter provided!")
@@ -74,21 +79,21 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         }!!
 
         selectedPage.let {
-            selectedFilter = it.filter
+            selectedFilter = it.parametricFilters.firstOrNull()
         }
 
         scanbotSDK = ScanbotSDK(application)
         singletonInstance = ExampleSingletonImpl(this@PageFiltersActivity)
 
-        action_filter.setOnClickListener {
+        binding.actionFilter.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
-        action_delete.setOnClickListener {
+        binding.actionDelete.setOnClickListener {
             PageRepository.removePage(this, selectedPage)
             finish()
         }
 
-        action_crop_and_rotate.setOnClickListener {
+        binding.actionCropAndRotate.setOnClickListener {
             val croppingConfig = CroppingConfiguration(this.selectedPage)
             croppingConfig.setBottomBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             croppingConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
@@ -177,14 +182,23 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
     }
 
     private fun generateFilteredPreview() {
-        progress.visibility = View.VISIBLE
+        binding.progress.visibility = View.VISIBLE
         launch {
-            val path = selectedPage.let {
-                val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance().getFilteredPreviewImageURI(it.pageId, it.filter).path
-                if (!File(filteredPreviewFilePath).exists()) {
-                    singletonInstance.pageProcessorInstance().generateFilteredPreview(it, selectedFilter, it.tunes, it.filterOrder)
+            val path = selectedPage.let { page ->
+                if (selectedFilter == null) {
+                    singletonInstance.pageFileStorageInstance().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
+                } else {
+                    val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance()
+                        .getFilteredPreviewImageURI(
+                            page.pageId,
+                            page.parametricFilters.first()
+                        ).path
+                    if (!File(filteredPreviewFilePath).exists()) {
+                        singletonInstance.pageProcessorInstance()
+                            .generateFilteredPreview(page, selectedFilter!!)
+                    }
+                    filteredPreviewFilePath
                 }
-                filteredPreviewFilePath
             }
             withContext(Dispatchers.Main) {
                 path?.let {
@@ -193,33 +207,33 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
-                            .into(image, ImageCallback())
+                            .into(binding.image, ImageCallback())
                 }
             }
         }
     }
 
-    override fun onFilterApplied(filterType: ImageFilterType) {
-        applyFilter(filterType)
+    override fun onFilterApplied(parametricFilter: ParametricFilter) {
+        applyFilter(parametricFilter)
     }
 
-    private fun applyFilter(imageFilterType: ImageFilterType) {
+    private fun applyFilter(parametricFilter: ParametricFilter) {
         if (!scanbotSDK.licenseInfo.isValid) {
             showLicenseDialog()
         } else {
-            progress.visibility = View.VISIBLE
-            selectedFilter = imageFilterType
+            binding.progress.visibility = View.VISIBLE
+            selectedFilter = parametricFilter
             launch {
-                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, selectedFilter, listOf(), 0)
+                selectedPage = PageRepository.applyFilter(this@PageFiltersActivity, selectedPage, parametricFilter)
                 withContext(Dispatchers.Main) {
                     val pageFileStorageInstance = singletonInstance.pageFileStorageInstance()
                     PicassoHelper.with(applicationContext)
-                            .load(File(pageFileStorageInstance.getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, selectedFilter).path))
+                            .load(File(pageFileStorageInstance.getFilteredPreviewImageURI(this@PageFiltersActivity.selectedPage.pageId, parametricFilter).path))
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
                             .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
                             .centerInside()
-                            .into(image, ImageCallback())
-                    progress.visibility = GONE
+                            .into(binding.image, ImageCallback())
+                    binding.progress.visibility = GONE
                 }
             }
         }
@@ -227,11 +241,11 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
 
     inner class ImageCallback : Callback {
         override fun onSuccess() {
-            progress.visibility = GONE
+            binding.progress.visibility = GONE
         }
 
         override fun onError(e: Exception?) {
-            progress.visibility = GONE
+            binding.progress.visibility = GONE
         }
     }
 }
