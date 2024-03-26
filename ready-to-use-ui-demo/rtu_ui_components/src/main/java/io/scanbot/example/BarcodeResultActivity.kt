@@ -50,10 +50,10 @@ class BarcodeResultActivity : AppCompatActivity() {
             detectedBarcodes.items.asSequence().map { item ->
                 val itemViewBinding = BarcodeItemBinding.inflate(layoutInflater, binding.recognisedItems, false)
                 itemViewBinding.barcodeFormat.text = item.type.name
-                itemViewBinding.docFormat.text = item.formattedResult?.let { formattedResult ->
+                itemViewBinding.docFormat.text = item.parsedDocument?.let { formattedResult ->
                     formattedResult::class.java.simpleName
                 } ?: "Unknown document"
-                itemViewBinding.docFormat.visibility = if (item.formattedResult != null) View.VISIBLE else View.GONE
+                itemViewBinding.docFormat.visibility = if (item.parsedDocument != null) View.VISIBLE else View.GONE
                 itemViewBinding.docText.text = item.textWithExtension
                 itemViewBinding.root.setOnClickListener {
                     val intent = Intent(this, DetailedItemDataActivity::class.java)
