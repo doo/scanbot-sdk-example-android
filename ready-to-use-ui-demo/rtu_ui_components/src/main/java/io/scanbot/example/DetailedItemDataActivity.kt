@@ -36,7 +36,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
     private fun printParsedFormat(item: io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItem): String {
         val barcodeDocumentFormat = item.parsedDocument?.wrap()
             ?: return "${item.textWithExtension}\n\nBinary data:\n${
-                item.rawBytes.toByteArray().toHexString()
+                item.rawBytes.toHexString()
             }" // for not supported by current barcode detector implementation
 
         val barcodesResult = StringBuilder()

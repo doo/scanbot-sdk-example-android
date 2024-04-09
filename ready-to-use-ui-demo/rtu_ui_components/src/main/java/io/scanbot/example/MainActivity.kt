@@ -14,8 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
-import io.scanbot.ehicscanner.EHICRecognizerParameters
-import io.scanbot.ehicscanner.model.EHICCountryType
+import io.scanbot.ehicscanner.EhicRecognizerParameters
+import io.scanbot.ehicscanner.model.EhicCountryType
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.EHICResultDialogFragment
@@ -29,7 +29,7 @@ import io.scanbot.genericdocument.entity.DePassport
 import io.scanbot.genericdocument.entity.FieldProperties
 import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.ehicscanner.model.EHICRecognitionResult
+import io.scanbot.ehicscanner.model.EhicRecognitionResult
 import io.scanbot.mrzscanner.model.MRZGenericDocument
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
-    private fun showEHICResultDialog(recognitionResult: EHICRecognitionResult) {
+    private fun showEHICResultDialog(recognitionResult: EhicRecognitionResult) {
         val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
     }
@@ -440,7 +440,7 @@ class MainActivity : AppCompatActivity() {
         binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
-            ehicScannerConfig.setRecognizerParameters(EHICRecognizerParameters(
+            ehicScannerConfig.setRecognizerParameters(EhicRecognizerParameters(
 
             ))
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
