@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
+import io.scanbot.ehicscanner.model.EhicDetectionStatus
 import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -47,7 +47,7 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         frameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
                 val recognitionResult = result.value
-                if (recognitionResult != null && recognitionResult.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
+                if (recognitionResult != null && recognitionResult.status == EhicDetectionStatus.SUCCESS) {
                     val detectStart = System.currentTimeMillis()
                     try {
                         startActivity(EhicResultActivity.newIntent(this@EhicLiveDetectionActivity, recognitionResult))
