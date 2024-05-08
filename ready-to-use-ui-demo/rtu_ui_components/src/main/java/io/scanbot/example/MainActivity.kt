@@ -441,7 +441,7 @@ class MainActivity : AppCompatActivity() {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
             ehicScannerConfig.setRecognizerParameters(EhicRecognizerParameters(
-
+                // Add your parameters here if needed
             ))
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
             // ehicScannerConfig.setFinderTextHint("custom text")
