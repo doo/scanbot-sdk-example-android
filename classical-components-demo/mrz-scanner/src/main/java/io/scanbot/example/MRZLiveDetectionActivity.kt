@@ -68,7 +68,7 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         }
         Toast.makeText(
             this,
-            if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
+            if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
             Toast.LENGTH_LONG
         ).show()
     }

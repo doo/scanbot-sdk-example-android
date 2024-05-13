@@ -303,6 +303,28 @@
             app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
 
         <Button
+            android:id="@+id/find_and_pick_barcodes"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/scan_qr_find_and_pick_mode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#1effffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/find_and_pick_barcodes" />
+
+        <Button
             android:id="@+id/qr_camera_artu"
             style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
             android:layout_width="0dp"
@@ -312,7 +334,7 @@
             android:text="@string/scan_qr_artu"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
+            app:layout_constraintTop_toBottomOf="@id/find_and_pick_barcodes" />
 
         <View
             android:layout_width="0dp"

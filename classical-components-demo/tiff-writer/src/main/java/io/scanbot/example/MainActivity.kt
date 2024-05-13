@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode != SELECT_PICTURE_REQUEST || resultCode != Activity.RESULT_OK) {
             return
         }
-        if (!ScanbotSDK(this).isLicenseValid) {
+        if (!ScanbotSDK(this).licenseInfo.isValid) {
             Toast.makeText(this,
                     "Scanbot SDK license is not valid or the trial minute has expired.",
                     Toast.LENGTH_LONG).show()

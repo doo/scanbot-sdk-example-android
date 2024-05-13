@@ -32,7 +32,7 @@ fun itemMappingConfigSnippet() {
                      * See example below.
                      */
                     val title = "Some product ${barcodeItem.textWithExtension}"
-                    val subtitle = barcodeItem.type.getName()
+                    val subtitle = barcodeItem.type?.getName() ?: "Unknown"
                     val image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
 
                     /** TODO: call [BarcodeMappingResult.onError()] in case of error during obtaining mapped data. */
