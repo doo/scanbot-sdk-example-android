@@ -52,7 +52,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                 itemViewBinding.barcodeFormat.text = "${item.count}x " + (item.type?.name ?: "")
                 itemViewBinding.docFormat.text = item.parsedDocument?.let { formattedResult ->
                     formattedResult::class.java.simpleName
-                } ?: "Unknown document"
+                } ?: ""
                 itemViewBinding.docFormat.visibility = if (item.parsedDocument != null) View.VISIBLE else View.GONE
                 itemViewBinding.docText.text = item.textWithExtension
                 itemViewBinding.root.setOnClickListener {
