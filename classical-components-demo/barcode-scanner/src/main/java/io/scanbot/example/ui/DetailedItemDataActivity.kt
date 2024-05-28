@@ -32,7 +32,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
                 binding.barcodeFormat.text = item.barcodeFormat.name
                 binding.docFormat.text = item.formattedResult?.let {
                     it::class.java.simpleName
-                } ?: "Unknown document"
+                } ?: ""
                 binding.description.text = printParsedFormat(item)
             }
         }

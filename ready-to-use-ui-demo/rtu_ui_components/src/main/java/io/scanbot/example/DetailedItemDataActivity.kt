@@ -25,10 +25,10 @@ class DetailedItemDataActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
-            binding.barcodeFormat.text = item.type?.name ?: "Unknown"
+            binding.barcodeFormat.text = item.type?.name ?: ""
             binding.docFormat.text = item.parsedDocument?.let { formattedResult ->
                 formattedResult::class.java.simpleName
-            } ?: "Unknown document"
+            } ?: ""
             binding.description.text = printParsedFormat(item)
         }
     }
