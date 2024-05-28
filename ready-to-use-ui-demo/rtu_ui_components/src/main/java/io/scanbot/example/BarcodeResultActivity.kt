@@ -55,6 +55,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                 } ?: ""
                 itemViewBinding.docFormat.visibility = if (item.parsedDocument != null) View.VISIBLE else View.GONE
                 itemViewBinding.docText.text = item.textWithExtension
+                itemViewBinding.count.text = "x${item.count}"
                 itemViewBinding.root.setOnClickListener {
                     val intent = Intent(this, DetailedItemDataActivity::class.java)
                     BarcodeResultRepository.selectedBarcodeItem = item

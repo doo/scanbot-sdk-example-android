@@ -69,7 +69,7 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
         view.findViewById<Button>(R.id.legacyCleanBackgroundFilter).setOnClickListener {
             callListenerAndDismiss(LegacyFilter(ImageFilterType.BACKGROUND_CLEAN.code))
         }
-        view.findViewById<Button>(R.id.colorDocumentFilter).setOnClickListener {
+        view.findViewById<Button>(R.id.legacyColorDocumentFilter).setOnClickListener {
             callListenerAndDismiss(LegacyFilter(ImageFilterType.COLOR_DOCUMENT.code))
         }
         view.findViewById<Button>(R.id.legacyColorFilter).setOnClickListener {

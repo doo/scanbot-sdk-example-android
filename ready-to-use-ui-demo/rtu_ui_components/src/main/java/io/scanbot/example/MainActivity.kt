@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-                this.useCase = MultipleScanningMode().apply {
+                this.useCase = BarcodeUseCase.multipleScanningMode().apply {
                     this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
                 }
 

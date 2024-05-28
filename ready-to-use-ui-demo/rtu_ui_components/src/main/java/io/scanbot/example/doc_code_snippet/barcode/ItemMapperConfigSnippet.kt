@@ -24,16 +24,20 @@ fun itemMappingConfigSnippet() {
     val config = BarcodeScannerConfiguration().apply {
         // Configure parameters (use explicit `this.` receiver for better code completion):
         this.useCase = BarcodeUseCase.singleScanningMode().apply {
-            this.barcodeInfoMapping.barcodeItemMapper = object : BarcodeItemMapper {
+            class CustomMapper() : BarcodeItemMapper {
 
-                override fun mapBarcodeItem(barcodeItem: BarcodeItem, result: BarcodeMappingResult) {
+                override fun mapBarcodeItem(
+                    barcodeItem: BarcodeItem,
+                    result: BarcodeMappingResult
+                ) {
                     /** TODO: process scan result as needed to get your mapped data,
                      * e.g. query your server to get product image, title and subtitle.
                      * See example below.
                      */
                     val title = "Some product ${barcodeItem.textWithExtension}"
                     val subtitle = barcodeItem.type?.getName() ?: "Unknown"
-                    val image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                    val image =
+                        "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
 
                     /** TODO: call [BarcodeMappingResult.onError()] in case of error during obtaining mapped data. */
                     if (barcodeItem.textWithExtension == "Error occurred!") {
@@ -49,8 +53,9 @@ fun itemMappingConfigSnippet() {
                     }
                 }
             }
+            this.barcodeInfoMapping.barcodeItemMapper = CustomMapper()
         }
-        
+
         // Configure other parameters as needed.
     }
 }
