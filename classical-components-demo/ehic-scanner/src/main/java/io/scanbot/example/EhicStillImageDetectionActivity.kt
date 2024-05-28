@@ -12,8 +12,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.ehicscanner.model.EhicDetectionStatus
 import io.scanbot.example.EhicResultActivity.Companion.newIntent
-import io.scanbot.hicscanner.model.HealthInsuranceCardDetectionStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.example.common.ImportImageContract
@@ -137,7 +137,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             progressView.visibility = View.GONE
-            if (result != null && result.status == HealthInsuranceCardDetectionStatus.SUCCESS) {
+            if (result != null && result.status == EhicDetectionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
             } else {
                 Toast.makeText(

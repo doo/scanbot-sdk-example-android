@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import io.scanbot.ehicscanner.model.EhicRecognitionResult
 import io.scanbot.example.R
-import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
 
 
 class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -22,7 +22,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "EHICResultDialogFragment"
 
         @JvmStatic
-        fun newInstance(recognitionResult: HealthInsuranceCardRecognitionResult): EHICResultDialogFragment {
+        fun newInstance(recognitionResult: EhicRecognitionResult): EHICResultDialogFragment {
             val frag = EHICResultDialogFragment()
             val args = Bundle()
             args.putParcelable(EHIC_DATA, recognitionResult)
@@ -31,10 +31,10 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         }
     }
 
-    private var ehicRecognitionResult: HealthInsuranceCardRecognitionResult? = null
+    private var ehicRecognitionResult: EhicRecognitionResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
-        ehicRecognitionResult = arguments!!.getParcelable(EHIC_DATA)
+        ehicRecognitionResult = requireArguments().getParcelable(EHIC_DATA)
 
         val view = inflater.inflate(R.layout.fragment_ehic_result_dialog, container)
         view.findViewById<TextView>(R.id.ehic_data).text = extractData(ehicRecognitionResult!!)
@@ -43,7 +43,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 
@@ -80,7 +80,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: HealthInsuranceCardRecognitionResult): String {
+    private fun extractData(result: EhicRecognitionResult): String {
         val builder = StringBuilder()
         for (field in result.fields) {
             builder.append(field.type.name).append(": ").append(field.value).append("\n\n")

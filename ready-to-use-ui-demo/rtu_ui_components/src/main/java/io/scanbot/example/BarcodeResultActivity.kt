@@ -49,11 +49,11 @@ class BarcodeResultActivity : AppCompatActivity() {
         detectedBarcodes?.let {
             detectedBarcodes.items.asSequence().map { item ->
                 val itemViewBinding = BarcodeItemBinding.inflate(layoutInflater, binding.recognisedItems, false)
-                itemViewBinding.barcodeFormat.text = item.type.name
-                itemViewBinding.docFormat.text = item.formattedResult?.let { formattedResult ->
+                itemViewBinding.barcodeFormat.text = "${item.count}x " + (item.type?.name ?: "")
+                itemViewBinding.docFormat.text = item.parsedDocument?.let { formattedResult ->
                     formattedResult::class.java.simpleName
-                } ?: "Unknown document"
-                itemViewBinding.docFormat.visibility = if (item.formattedResult != null) View.VISIBLE else View.GONE
+                } ?: ""
+                itemViewBinding.docFormat.visibility = if (item.parsedDocument != null) View.VISIBLE else View.GONE
                 itemViewBinding.docText.text = item.textWithExtension
                 itemViewBinding.count.text = "x${item.count}"
                 itemViewBinding.root.setOnClickListener {

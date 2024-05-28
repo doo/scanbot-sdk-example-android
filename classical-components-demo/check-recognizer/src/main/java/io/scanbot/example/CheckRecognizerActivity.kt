@@ -50,7 +50,7 @@ class CheckRecognizerActivity : AppCompatActivity() {
                     frameHandler.isEnabled = false
                     startActivity(CheckRecognizerResultActivity.newIntent(this, recognitionResult))
                 }
-            } else if (!scanbotSDK.isLicenseActive) {
+            } else if (!scanbotSDK.licenseInfo.isValid) {
                 frameHandler.isEnabled = false
                 runOnUiThread {
                     Toast.makeText(
@@ -69,7 +69,7 @@ class CheckRecognizerActivity : AppCompatActivity() {
         }
         Toast.makeText(
             this,
-            if (scanbotSDK.isLicenseActive) "License is active" else "License is expired",
+            if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
             Toast.LENGTH_LONG
         ).show()
     }

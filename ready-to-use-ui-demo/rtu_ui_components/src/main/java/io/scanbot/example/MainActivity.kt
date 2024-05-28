@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
+import io.scanbot.ehicscanner.EhicRecognizerParameters
+import io.scanbot.ehicscanner.model.EhicCountryType
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.EHICResultDialogFragment
@@ -27,7 +29,7 @@ import io.scanbot.genericdocument.entity.DePassport
 import io.scanbot.genericdocument.entity.FieldProperties
 import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.hicscanner.model.HealthInsuranceCardRecognitionResult
+import io.scanbot.ehicscanner.model.EhicRecognitionResult
 import io.scanbot.mrzscanner.model.MRZGenericDocument
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
@@ -63,12 +65,16 @@ import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.vin.VinScannerActivity
 import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
 import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui_v2.barcode.common.mappers.COMMON_CODES
 import io.scanbot.sdk.ui_v2.barcode.common.mappers.getName
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeFormat
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItemMapper
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappedData
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappingResult
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
 import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeUseCase
+import io.scanbot.sdk.ui_v2.barcode.configuration.CollapsedVisibleHeight
+import io.scanbot.sdk.ui_v2.barcode.configuration.ExpectedBarcode
 import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleBarcodesScanningMode
 import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleScanningMode
 import io.scanbot.sdk.ui_v2.barcode.configuration.SheetMode
@@ -130,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
-    private fun showEHICResultDialog(recognitionResult: HealthInsuranceCardRecognitionResult) {
+    private fun showEHICResultDialog(recognitionResult: EhicRecognitionResult) {
         val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
     }
@@ -400,7 +406,7 @@ class MainActivity : AppCompatActivity() {
                         result.onResult(
                             BarcodeMappedData(
                                 title = barcodeItem.textWithExtension,
-                                subtitle = barcodeItem.type.getName(),
+                                subtitle = barcodeItem.type?.getName() ?: "Unknown",
                                 barcodeImage = ""
                             )
                         )
@@ -430,6 +436,49 @@ class MainActivity : AppCompatActivity() {
 
             barcodeResultLauncher.launch(barcodeCameraConfiguration)
         }
+        findViewById<View>(R.id.find_and_pick_barcodes).setOnClickListener {
+            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
+                this.useCase = BarcodeUseCase.findAndPickScanningMode().apply {
+
+                    this.sheet.mode = SheetMode.COLLAPSED_SHEET
+                    this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
+                    this.arOverlay.automaticSelectionEnabled = false
+
+                    this.allowPartialScan = false
+
+                    this.countingRepeatDelay = 1000
+
+                    this.sheetContent.manualCountChangeEnabled = true
+                    this.sheetContent.submitButton.text = "Submit"
+                    this.sheetContent.submitButton.foreground.color = ScanbotColor("#000000")
+
+                    // Configure other parameters, pertaining to findAndPick-scanning mode as needed.
+                    // Set the expected barcodes.
+                    expectedBarcodes = listOf(
+                            ExpectedBarcode(
+                                    barcodeValue = "123456",
+                                    title = "numeric barcode",
+                                    image = "",
+                                    count = 4
+                            ),
+                            ExpectedBarcode(
+                                    barcodeValue = "SCANBOT",
+                                    title = "value barcode",
+                                    image = "",
+                                    count = 3
+                            )
+                    )
+                }
+
+                // Set an array of accepted barcode types.
+                this.recognizerConfiguration.barcodeFormats = BarcodeFormat.COMMON_CODES
+
+                this.userGuidance.title.text =
+                        "Please align the QR-/Barcode in the frame above to scan it."
+            }
+
+            barcodeResultLauncher.launch(barcodeCameraConfiguration)
+        }
         findViewById<View>(R.id.qr_camera_artu).setOnClickListener {
             val intent = Intent(this, ARTUBarcodeScannerActivity::class.java)
             startActivity(intent)
@@ -438,6 +487,9 @@ class MainActivity : AppCompatActivity() {
         binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
+            ehicScannerConfig.setRecognizerParameters(EhicRecognizerParameters(
+                // Add your parameters here if needed
+            ))
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
             // ehicScannerConfig.setFinderTextHint("custom text")
             // ...

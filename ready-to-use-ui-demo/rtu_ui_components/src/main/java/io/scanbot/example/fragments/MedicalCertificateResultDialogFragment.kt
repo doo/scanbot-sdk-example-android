@@ -51,7 +51,7 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
         medicalCertificateResult = arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
 
-        _binding = FragmentMedicalCertificateResultDialogBinding.inflate(inflater, container, false)
+        _binding = FragmentMedicalCertificateResultDialogBinding.inflate(inflater, container, true)
 
         binding.title.text = "Detected Medical Certificate Form"
 

@@ -89,7 +89,7 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
 
         contourDetectorFrameHandler.addResultHandler {
             if (it !is FrameHandlerResult.Success) {
-                if (!scanbotSDK.isLicenseActive) {
+                if (!scanbotSDK.licenseInfo.isValid) {
                     contourDetectorFrameHandler.isEnabled = false
                     runOnUiThread {
                         Toast.makeText(
