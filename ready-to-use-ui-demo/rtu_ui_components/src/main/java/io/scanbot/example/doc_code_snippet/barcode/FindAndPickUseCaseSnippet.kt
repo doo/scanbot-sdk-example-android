@@ -52,17 +52,18 @@ fun findAndPickModeUseCaseSnippet() {
 
             // Configure other parameters, pertaining to findAndPick-scanning mode as needed.
             // Set the expected barcodes.
+            // Don't forget to add Internet permission to your AndroidManifest.xml to load images from the web.
             expectedBarcodes = listOf(
                 ExpectedBarcode(
                     barcodeValue = "123456",
                     title = " numeric barcode",
-                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", // or [BarcodeMappedDataExtension.barcodeFormatKey] to display barcode image
                     count = 4
                 ),
                 ExpectedBarcode(
                     barcodeValue = "SCANBOT",
                     title = "value barcode",
-                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", // or [BarcodeMappedDataExtension.barcodeFormatKey] to display barcode image
                     count = 3
                 )
             )
