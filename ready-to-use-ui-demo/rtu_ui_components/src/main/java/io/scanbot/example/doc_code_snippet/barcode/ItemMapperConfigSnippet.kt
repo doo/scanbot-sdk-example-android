@@ -24,6 +24,7 @@ fun itemMappingConfigSnippet() {
     val config = BarcodeScannerConfiguration().apply {
         // Configure parameters (use explicit `this.` receiver for better code completion):
         this.useCase = BarcodeUseCase.singleScanningMode().apply {
+            this.confirmationSheetEnabled = true
             class CustomMapper() : BarcodeItemMapper {
 
                 override fun mapBarcodeItem(
@@ -36,8 +37,13 @@ fun itemMappingConfigSnippet() {
                      */
                     val title = "Some product ${barcodeItem.textWithExtension}"
                     val subtitle = barcodeItem.type?.getName() ?: "Unknown"
+
+                    // Don't forget to add Internet permission to your AndroidManifest.xml to load images from the web.
                     val image =
                         "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+
+                    // or display barcode image:
+                    // val image = BarcodeMappedDataExtension.barcodeFormatKey
 
                     /** TODO: call [BarcodeMappingResult.onError()] in case of error during obtaining mapped data. */
                     if (barcodeItem.textWithExtension == "Error occurred!") {
