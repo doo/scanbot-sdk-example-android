@@ -39,16 +39,16 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
             callListenerAndDismiss(CustomBinarizationFilter())
         }
         view.findViewById<Button>(R.id.brightnessFilter).setOnClickListener {
-            callListenerAndDismiss(BrightnessFilter())
+            callListenerAndDismiss(BrightnessFilter(brightness = 0.5)) // custom filter parameters just for example
         }
         view.findViewById<Button>(R.id.contrastFilter).setOnClickListener {
-            callListenerAndDismiss(ContrastFilter())
+            callListenerAndDismiss(ContrastFilter(contrast = 125.0)) // custom filter parameters just for example
         }
         view.findViewById<Button>(R.id.grayscaleFilter).setOnClickListener {
             callListenerAndDismiss(GrayscaleFilter())
         }
         view.findViewById<Button>(R.id.whiteBlackPointFilter).setOnClickListener {
-            callListenerAndDismiss(WhiteBlackPointFilter())
+            callListenerAndDismiss(WhiteBlackPointFilter(blackPoint = 0.5, whitePoint = 0.5)) // custom filter parameters just for example
         }
 
         view.findViewById<Button>(R.id.legacyLowLightBinarizationFilter).setOnClickListener {
