@@ -638,8 +638,6 @@ class MainActivity : AppCompatActivity() {
             registerForActivityResultOkV2(BarcodeScannerActivity.ResultContract()) { resultEntity ->
                 BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
                     resultEntity.result!!,
-                    resultEntity.barcodeImagePath,
-                    resultEntity.barcodePreviewFramePath
                 )
 
                 val intent = Intent(this, BarcodeResultActivity::class.java)

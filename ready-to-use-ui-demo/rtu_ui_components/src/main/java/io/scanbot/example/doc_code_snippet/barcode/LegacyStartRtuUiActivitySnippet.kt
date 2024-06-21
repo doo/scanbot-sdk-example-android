@@ -45,8 +45,6 @@ class LegacyStartRtuUiActivitySnippet : AppCompatActivity() {
         when (resultCode) {
             RESULT_OK -> {
                 val resultEntity = BarcodeScannerActivity.extractResult(resultCode, data)
-                val imagePath = resultEntity.barcodeImagePath
-                val previewPath = resultEntity.barcodePreviewFramePath
 
                 // TODO: present barcode result as needed
             }

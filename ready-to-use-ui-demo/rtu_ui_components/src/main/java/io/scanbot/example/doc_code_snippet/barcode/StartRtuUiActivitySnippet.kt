@@ -24,8 +24,6 @@ class StartRtuUiActivitySnippetActivity : AppCompatActivity() {
 
     private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration> =
         registerForActivityResultOk(BarcodeScannerActivity.ResultContract()) { resultEntity ->
-            val imagePath = resultEntity.barcodeImagePath
-            val previewPath = resultEntity.barcodePreviewFramePath
 
             // TODO: present barcode result as needed
         }
