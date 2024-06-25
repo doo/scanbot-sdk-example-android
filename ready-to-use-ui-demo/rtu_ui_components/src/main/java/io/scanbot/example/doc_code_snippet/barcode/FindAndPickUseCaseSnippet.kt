@@ -56,13 +56,13 @@ fun findAndPickModeUseCaseSnippet() {
                 ExpectedBarcode(
                     barcodeValue = "123456",
                     title = " numeric barcode",
-                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                    image = "https://avatars.githubusercontent.com/u/1454920",
                     count = 4
                 ),
                 ExpectedBarcode(
                     barcodeValue = "SCANBOT",
                     title = "value barcode",
-                    image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                    image = "https://avatars.githubusercontent.com/u/1454920",
                     count = 3
                 )
             )
