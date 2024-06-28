@@ -34,10 +34,8 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        // TODO: adjust accepted sharpness score to control the accepted blurriness of the result image
         val scanbotSdk = ScanbotSDK(this)
         documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
-        documentRecognizer.acceptedSharpnessScore = 80f
 
         frameHandler = GenericDocumentRecognizerFrameHandler.attach(cameraView, documentRecognizer, true)
 

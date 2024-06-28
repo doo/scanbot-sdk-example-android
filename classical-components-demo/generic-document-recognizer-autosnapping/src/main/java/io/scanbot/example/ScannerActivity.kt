@@ -38,8 +38,6 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        // TODO: adjust accepted sharpness score to control the blurriness of the result image
-        documentRecognizer.acceptedSharpnessScore = 80f
         autoSnappingController = GenericDocumentAutoSnappingController.attach(cameraView, documentRecognizer)
 
         cameraView.setCameraOpenCallback {
