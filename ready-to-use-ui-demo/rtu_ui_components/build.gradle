@@ -74,7 +74,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
-    def scanbotSdkVersion = "5.2.1"
+    def scanbotSdkVersion = "5.2.2"
     implementation("io.scanbot:sdk-package-4:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-ui:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
