@@ -30,6 +30,7 @@
         <activity android:name=".BarcodeResultActivity" />
         <activity android:name=".DetailedItemDataActivity" />
         <activity android:name=".ARTUBarcodeScannerActivity" />
+        <activity android:name=".MrzScannerComposeActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

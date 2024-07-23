@@ -17,6 +17,7 @@
     <string name="scan_qr_find_and_pick_mode">Find and Pick QR-/Barcodes</string>
     <string name="scan_qr_artu">Scan QR-/Barcodes in Compose Barcode scanner view</string>
     <string name="scan_mrz">Scan MRZ</string>
+    <string name="scan_mrz_compose">Scan MRZ(Compose)</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
     <string name="multiple_object_detector">Multiple objects detector</string>
     <string name="scan_mc">Medical Certificate recognizer</string>

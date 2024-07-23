@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.check.entity.CheckDocumentLibrary.wrap
 import io.scanbot.ehicscanner.EhicRecognizerParameters
-import io.scanbot.ehicscanner.model.EhicCountryType
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.di.ExampleSingletonImpl
 import io.scanbot.example.fragments.EHICResultDialogFragment
@@ -272,6 +271,10 @@ class MainActivity : AppCompatActivity() {
             mrzCameraConfiguration.setSuccessBeepEnabled(false)
 
             mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
+        }
+        findViewById<View>(R.id.mrz_camera_compose_ui).setOnClickListener {
+            val intent = Intent(this, MrzScannerComposeActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
