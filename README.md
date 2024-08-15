@@ -13,7 +13,7 @@ The Scanbot SDK will run without a license for one minute per session!
 
 After the trial period has expired, all SDK functions and UI components will stop working. You have to restart the app to get another one-minute trial period.
 
-To test the Scanbot SDK without crashing, you can get a free “no-strings-attached” trial license. Please submit the [Trial License Form](https://scanbot.io/trial/) on our website.
+To try the Scanbot SDK without a one-minute limit, you can get a free “no-strings-attached” trial license. Please submit the [Trial License Form](https://scanbot.io/trial/) on our website.
 
 ## Free Developer Support
 
