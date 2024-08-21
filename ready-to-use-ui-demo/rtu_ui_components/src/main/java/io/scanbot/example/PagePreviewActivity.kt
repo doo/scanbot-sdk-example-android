@@ -24,14 +24,15 @@ import io.scanbot.example.fragments.SaveBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
 import io.scanbot.example.util.SharingCopier
-import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
+import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
+import io.scanbot.sdk.persistence.page.legacy.Page
+import io.scanbot.sdk.persistence.page.legacy.PageFileStorage
 import io.scanbot.sdk.persistence.cleanup.Cleaner
+import io.scanbot.sdk.persistence.page.PageFileType
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.process.PDFRenderer
 import io.scanbot.sdk.ui.registerForActivityResultOk
@@ -285,8 +286,8 @@ class PagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, 
         override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
             val page = items[position]
 
-            val imagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
-            val originalImagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path
+            val imagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileType.DOCUMENT).path
+            val originalImagePath = pageFileStorage.getPreviewImageURI(page.pageId, PageFileType.ORIGINAL).path
             val fileToShow = if (File(imagePath).exists()) File(imagePath) else File(originalImagePath)
             PicassoHelper.with(applicationContext)
                     .load(fileToShow)

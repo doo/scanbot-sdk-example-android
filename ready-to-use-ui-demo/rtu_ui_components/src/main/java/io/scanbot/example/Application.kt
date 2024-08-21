@@ -10,8 +10,8 @@ import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
-import io.scanbot.sdk.persistence.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
+import io.scanbot.sdk.persistence.page.PageStorageSettings
 import io.scanbot.sdk.process.ImageProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

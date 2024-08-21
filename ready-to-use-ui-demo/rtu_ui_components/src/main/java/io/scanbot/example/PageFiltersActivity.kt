@@ -21,17 +21,19 @@ import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.FiltersBottomSheetMenuFragment
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.PicassoHelper
-import io.scanbot.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.imagefilters.ParametricFilter
+import io.scanbot.sdk.persistence.page.PageFileType
+import io.scanbot.sdk.persistence.page.legacy.Page
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.edit.CroppingActivity
 import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener {
@@ -186,7 +188,7 @@ class PageFiltersActivity : AppCompatActivity(), CoroutineScope, FiltersListener
         launch {
             val path = selectedPage.let { page ->
                 if (selectedFilter == null) {
-                    singletonInstance.pageFileStorageInstance().getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path
+                    singletonInstance.pageFileStorageInstance().getPreviewImageURI(page.pageId, PageFileType.DOCUMENT).path
                 } else {
                     val filteredPreviewFilePath = singletonInstance.pageFileStorageInstance()
                         .getFilteredPreviewImageURI(

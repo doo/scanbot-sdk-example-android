@@ -18,6 +18,7 @@ import io.scanbot.sdk.ui_v2.common.StatusBarMode
 import io.scanbot.sdk.ui_v2.common.activity.AutoCancelTimeout
 import io.scanbot.sdk.ui_v2.common.activity.CanceledByUser
 import io.scanbot.sdk.ui_v2.common.activity.LicenseInvalid
+import io.scanbot.sdk.ui_v2.common.activity.SystemError
 
 class ARTUBarcodeScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +63,7 @@ class ARTUBarcodeScannerActivity : AppCompatActivity() {
                             ).show()
                             AutoCancelTimeout -> Unit // just close screen (below)
                             CanceledByUser -> Unit // just close screen (below)
+                            is SystemError -> TODO()
                         }
                         finish()
                     }

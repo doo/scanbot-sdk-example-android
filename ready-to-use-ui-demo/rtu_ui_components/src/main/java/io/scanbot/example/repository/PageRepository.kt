@@ -2,8 +2,8 @@ package io.scanbot.example.repository
 
 import android.content.Context
 import io.scanbot.example.di.ExampleSingletonImpl
-import io.scanbot.imagefilters.ParametricFilter
-import io.scanbot.sdk.persistence.Page
+import io.scanbot.sdk.imagefilters.ParametricFilter
+import io.scanbot.sdk.persistence.page.legacy.Page
 
 class PageRepository {
     companion object {

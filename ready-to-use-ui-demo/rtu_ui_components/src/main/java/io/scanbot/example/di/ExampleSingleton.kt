@@ -2,10 +2,10 @@ package io.scanbot.example.di
 
 import android.content.Context
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.PageProcessor
 import io.scanbot.sdk.docprocessing.PdfPagesExtractor
+import io.scanbot.sdk.docprocessing.legacy.PageProcessor
 import io.scanbot.sdk.pdf.PdfImagesExtractor
-import io.scanbot.sdk.persistence.PageFileStorage
+import io.scanbot.sdk.persistence.page.legacy.PageFileStorage
 
 /**
  * This singleton is used only for simplicity. Please, use Dagger or other DI framework in production code

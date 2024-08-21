@@ -20,8 +20,8 @@ import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mcscanner.model.CheckBoxType
 import io.scanbot.mcscanner.model.DateRecordType
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
+import io.scanbot.sdk.persistence.page.PageFileType
+import io.scanbot.sdk.persistence.page.legacy.Page
 import java.io.File
 
 class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -68,8 +68,8 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         val context = requireContext().applicationContext
         val pageFileStorage = ExampleSingletonImpl(requireContext()).pageFileStorageInstance()
         imageView.visibility = View.VISIBLE
-        val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
-        val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
+        val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileType.DOCUMENT).path)
+        val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileType.ORIGINAL).path)
         val fileToShow = if (docImageFile.exists()) docImageFile else origImageFile
         PicassoHelper.with(context)
                 .load(fileToShow)

@@ -8,15 +8,15 @@ import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.scanbot.example.FiltersListener
 import io.scanbot.example.R
-import io.scanbot.imagefilters.BrightnessFilter
-import io.scanbot.imagefilters.ColorDocumentFilter
-import io.scanbot.imagefilters.ContrastFilter
-import io.scanbot.imagefilters.CustomBinarizationFilter
-import io.scanbot.imagefilters.GrayscaleFilter
-import io.scanbot.imagefilters.LegacyFilter
-import io.scanbot.imagefilters.ParametricFilter
-import io.scanbot.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.imagefilters.WhiteBlackPointFilter
+import io.scanbot.sdk.imagefilters.BrightnessFilter
+import io.scanbot.sdk.imagefilters.ColorDocumentFilter
+import io.scanbot.sdk.imagefilters.ContrastFilter
+import io.scanbot.sdk.imagefilters.CustomBinarizationFilter
+import io.scanbot.sdk.imagefilters.GrayscaleFilter
+import io.scanbot.sdk.imagefilters.LegacyFilter
+import io.scanbot.sdk.imagefilters.ParametricFilter
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
 import io.scanbot.sdk.process.ImageFilterType
 
 /**
