@@ -8,22 +8,14 @@ package io.scanbot.example.doc_code_snippet.gdr
 // NOTE for maintainers: whenever changing this code,
 // ensure that links using it are still pointing to valid lines!
 // Pay attention to imports adding/removal/sorting!
-// Page URLs using this code:
-// TODO: add URLs here
 
 import android.content.Context
 import android.widget.Toast
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.barcode.entity.AustraliaPostCustomerFormat
-import io.scanbot.sdk.barcode.entity.BarcodeScannerAdditionalConfig
-import io.scanbot.sdk.barcode.entity.BarcodeScannerConfig
-import io.scanbot.sdk.barcode.entity.Gs1Handling
-import io.scanbot.sdk.barcode.entity.MSIPlesseyChecksumAlgorithm
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognizerFrameHandler
-import java.util.EnumSet
 
 fun useGenericDocumentRecognizerFrameHandler(context: Context) {
     val genericDocumentRecognizer = ScanbotSDK(context).createGenericDocumentRecognizer()
@@ -49,5 +41,3 @@ fun useGenericDocumentRecognizerFrameHandler(context: Context) {
         }
     })
 }
-
-

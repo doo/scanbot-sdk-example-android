@@ -1,9 +1,0 @@
-package io.scanbot.example.model
-
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerResult
-
-data class BarcodeResultBundle(
-    val barcodeScanningResult: BarcodeScannerResult,
-    val imagePath: String? = null,
-    val previewPath: String? = null
-)

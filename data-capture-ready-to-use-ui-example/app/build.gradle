@@ -91,9 +91,6 @@ dependencies {
     // This dependency is only needed if you plan to use license plate scanner feature
     implementation("io.scanbot:sdk-licenseplate-assets:$scanbotSdkVersion")
 
-    // This dependency is only needed if you plan to use the barcode scanner or Medical Certificate scanner feature
-    implementation("io.scanbot:bundle-sdk-barcode-assets:$scanbotSdkVersion")
-
     // This dependency is only needed if you plan to use Medical Certificate scanner feature
     implementation("io.scanbot:sdk-mc-assets:$scanbotSdkVersion")
 

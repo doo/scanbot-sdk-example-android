@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Scanbot SDK RTU UI Example</string>
     <string name="scanbot_sdk_demo">Scanbot SDK RTU UI Example</string>
+
     <string name="no_license_found_the_app_will_terminate_after_one_minute">No license key set. Trial mode is active. The app will stop working after one minute.</string>
     <string name="document_scanner">Document Scanner</string>
     <string name="scan_document">Scan Document</string>
@@ -9,16 +10,8 @@
     <string name="import_pdf">Import Pdf</string>
     <string name="view_images">View Images</string>
     <string name="data_detectors">Data Detectors</string>
-    <string name="scan_qr_code">Scan QR-/Barcode</string>
-    <string name="scan_qr_code_with_image">Scan QR-/Barcode with image</string>
-    <string name="scan_qr_code_with_selection_overlay">Scan QR-/Barcode with selection overlay</string>
-    <string name="scan_qr_batch_mode">Scan Multiple QR-/Barcodes</string>
-    <string name="scan_qr_unique_batch_mode">Scan Unique Multiple QR-/Barcodes</string>
-    <string name="scan_qr_find_and_pick_mode">Find and Pick QR-/Barcodes</string>
-    <string name="scan_qr_artu">Scan QR-/Barcodes in Compose Barcode scanner view</string>
     <string name="scan_mrz">Scan MRZ</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
-    <string name="multiple_object_detector">Multiple objects detector</string>
     <string name="scan_mc">Medical Certificate recognizer</string>
     <string name="copyright_note">© 2019 by doo GmbH. All rights reserved.</string>
     <string name="add_page">ADD PAGE</string>

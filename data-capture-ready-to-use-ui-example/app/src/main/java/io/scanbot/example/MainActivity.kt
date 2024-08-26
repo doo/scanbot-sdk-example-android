@@ -22,8 +22,6 @@ import io.scanbot.example.fragments.EHICResultDialogFragment
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.MRZDialogFragment
 import io.scanbot.example.fragments.MedicalCertificateResultDialogFragment
-import io.scanbot.example.model.BarcodeResultBundle
-import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.PageRepository
 import io.scanbot.genericdocument.entity.DePassport
 import io.scanbot.genericdocument.entity.FieldProperties
@@ -64,20 +62,6 @@ import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
 import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
 import io.scanbot.sdk.ui.view.vin.VinScannerActivity
 import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
-import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
-import io.scanbot.sdk.ui_v2.barcode.common.mappers.COMMON_CODES
-import io.scanbot.sdk.ui_v2.barcode.common.mappers.getName
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeFormat
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItemMapper
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappedData
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeMappingResult
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerConfiguration
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeUseCase
-import io.scanbot.sdk.ui_v2.barcode.configuration.CollapsedVisibleHeight
-import io.scanbot.sdk.ui_v2.barcode.configuration.ExpectedBarcode
-import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleBarcodesScanningMode
-import io.scanbot.sdk.ui_v2.barcode.configuration.MultipleScanningMode
-import io.scanbot.sdk.ui_v2.barcode.configuration.SheetMode
 import io.scanbot.sdk.ui_v2.common.OrientationLockMode
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk as registerForActivityResultOkV2
@@ -93,7 +77,6 @@ class MainActivity : AppCompatActivity() {
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val cropResultLauncher: ActivityResultLauncher<CroppingConfiguration>
-    private val barcodeResultLauncher: ActivityResultLauncher<BarcodeScannerConfiguration>
     private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
     private val selectPictureFromGalleryResultLauncher: ActivityResultLauncher<Intent>
     private val selectPdfFromGalleryResultLauncher: ActivityResultLauncher<Intent>
@@ -356,134 +339,6 @@ class MainActivity : AppCompatActivity() {
             genericDocumentRecognizerResultLauncher.launch(genericDocumentConfiguration)
         }
 
-        findViewById<View>(R.id.qr_camera_default_ui).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
-                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
-
-                this.userGuidance.title.text =
-                    "Please align the QR-/Barcode in the frame above to scan it."
-            }
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-
-        findViewById<View>(R.id.qr_camera_default_ui_with_selection_overlay).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
-                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
-                this.useCase = BarcodeUseCase.singleScanningMode().apply {
-                    this.arOverlay.visible = true
-                    this.arOverlay.automaticSelectionEnabled = false
-                }
-            }
-
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-
-        findViewById<View>(R.id.qr_camera_batch_mode).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-
-                this.topBar.cancelButton.background.fillColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
-                this.topBar.backgroundColor = ScanbotColor(ContextCompat.getColor(this@MainActivity, R.color.colorPrimaryDark))
-
-                this.cameraConfiguration.defaultZoomFactor = 1.0
-                this.cameraConfiguration.orientationLockMode = OrientationLockMode.PORTRAIT
-
-                this.viewFinder.visible = true
-                this.userGuidance.title.text =
-                    "Please align the QR-/Barcode in the frame above to scan it."
-
-                class CustomBarcodeItemMapper : BarcodeItemMapper {
-
-                    // NOTE: callback implementation class must be static (in case of Java)
-                    // or non-inner (in case of Kotlin), have default (empty) constructor
-                    // and must not touch fields or methods of enclosing class/method
-                    override fun mapBarcodeItem(
-                        barcodeItem: io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeItem,
-                        result: BarcodeMappingResult,
-                    ) {
-                        // TODO: use barcodeItem appropriately here as needed
-                        result.onResult(
-                            BarcodeMappedData(
-                                title = barcodeItem.textWithExtension,
-                                subtitle = barcodeItem.type?.getName() ?: "Unknown",
-                                barcodeImage = ""
-                            )
-                        )
-                    }
-                }
-                this.useCase = BarcodeUseCase.multipleScanningMode().apply {
-                    this.barcodeInfoMapping.barcodeItemMapper = CustomBarcodeItemMapper()
-                }
-
-            }
-
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-        findViewById<View>(R.id.multiple_unique_barcodes).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-                this.useCase = MultipleScanningMode().apply {
-                    this.mode = MultipleBarcodesScanningMode.UNIQUE
-                    this.sheetContent.manualCountChangeEnabled = false
-                    this.sheet.mode = SheetMode.COLLAPSED_SHEET
-                    this.arOverlay.visible = true
-                    this.arOverlay.automaticSelectionEnabled = false
-                }
-
-                this.userGuidance.title.text =
-                        "Please align the QR-/Barcode in the frame above to scan it."
-            }
-
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-        findViewById<View>(R.id.find_and_pick_barcodes).setOnClickListener {
-            val barcodeCameraConfiguration = BarcodeScannerConfiguration().apply {
-                this.useCase = BarcodeUseCase.findAndPickScanningMode().apply {
-
-                    this.sheet.mode = SheetMode.COLLAPSED_SHEET
-                    this.sheet.collapsedVisibleHeight = CollapsedVisibleHeight.LARGE
-                    this.arOverlay.automaticSelectionEnabled = false
-
-                    this.allowPartialScan = false
-
-                    this.countingRepeatDelay = 1000
-
-                    this.sheetContent.manualCountChangeEnabled = true
-                    this.sheetContent.submitButton.text = "Submit"
-                    this.sheetContent.submitButton.foreground.color = ScanbotColor("#000000")
-
-                    // Configure other parameters, pertaining to findAndPick-scanning mode as needed.
-                    // Set the expected barcodes.
-                    expectedBarcodes = listOf(
-                            ExpectedBarcode(
-                                    barcodeValue = "123456",
-                                    title = "numeric barcode",
-                                    image = "",
-                                    count = 4
-                            ),
-                            ExpectedBarcode(
-                                    barcodeValue = "SCANBOT",
-                                    title = "value barcode",
-                                    image = "",
-                                    count = 3
-                            )
-                    )
-                }
-
-                // Set an array of accepted barcode types.
-                this.recognizerConfiguration.barcodeFormats = BarcodeFormat.COMMON_CODES
-
-                this.userGuidance.title.text =
-                        "Please align the QR-/Barcode in the frame above to scan it."
-            }
-
-            barcodeResultLauncher.launch(barcodeCameraConfiguration)
-        }
-        findViewById<View>(R.id.qr_camera_artu).setOnClickListener {
-            val intent = Intent(this, ARTUBarcodeScannerActivity::class.java)
-            startActivity(intent)
-        }
-
         binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
@@ -631,16 +486,6 @@ class MainActivity : AppCompatActivity() {
                 PageRepository.addPage(resultEntity.result!!)
 
                 val intent = Intent(this, PagePreviewActivity::class.java)
-                startActivity(intent)
-            }
-
-        barcodeResultLauncher =
-            registerForActivityResultOkV2(BarcodeScannerActivity.ResultContract()) { resultEntity ->
-                BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(
-                    resultEntity.result!!,
-                )
-
-                val intent = Intent(this, BarcodeResultActivity::class.java)
                 startActivity(intent)
             }
 

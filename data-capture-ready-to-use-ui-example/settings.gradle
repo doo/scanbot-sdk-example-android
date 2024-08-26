@@ -18,3 +18,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+rootProject.name = "Scanbot Data Capture SDK RTU UI example"

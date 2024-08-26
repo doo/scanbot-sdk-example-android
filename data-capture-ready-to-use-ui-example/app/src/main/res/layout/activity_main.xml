@@ -214,139 +214,6 @@
             app:layout_constraintTop_toBottomOf="@id/page_preview_activity" />
 
         <Button
-            android:id="@+id/qr_camera_default_ui"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_code"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/data_detectors_title" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
-
-        <Button
-            android:id="@+id/qr_camera_default_ui_with_selection_overlay"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_code_with_selection_overlay"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui_with_selection_overlay" />
-
-        <Button
-            android:id="@+id/qr_camera_batch_mode"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_batch_mode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_default_ui_with_selection_overlay" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_batch_mode"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
-
-        <Button
-            android:id="@+id/multiple_unique_barcodes"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_unique_batch_mode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_batch_mode" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
-
-        <Button
-            android:id="@+id/find_and_pick_barcodes"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_find_and_pick_mode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/multiple_unique_barcodes" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/find_and_pick_barcodes" />
-
-        <Button
-            android:id="@+id/qr_camera_artu"
-            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/scan_qr_artu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/find_and_pick_barcodes" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="#1effffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_artu" />
-
-        <Button
             android:id="@+id/mrz_camera_default_ui"
             style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
             android:layout_width="0dp"
@@ -356,7 +223,7 @@
             android:text="@string/scan_mrz"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/qr_camera_artu" />
+            app:layout_constraintTop_toBottomOf="@id/data_detectors_title" />
 
         <View
             android:layout_width="0dp"
