@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="scanbot_brand">#FFC8193C</color>
+    <color name="scanbot_brand_highlight">#FFDA2150</color>
+    <color name="scanbot_secondary">#FFFFEDED</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+</resources>
