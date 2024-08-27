@@ -13,12 +13,14 @@ import javax.inject.Inject
 
 class GeneratePdfForSharingUseCase @Inject constructor(
     sharingDocumentStorage: ISharingDocumentStorage,
-    private val pdfRenderer: PDFRenderer
+    private val pdfRenderer: PDFRenderer,
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
+
     override suspend fun generateFilesForDocument(
         documentSharingDir: File,
-        pages: List<String>
+        pages: List<String>,
     ): List<File> {
+
         val renderedPdfDocumentFile = pdfRenderer.renderDocumentFromPages(pages.map { pageId ->
             Page(
                 pageId,

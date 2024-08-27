@@ -14,6 +14,7 @@ class GenerateTiffForSharingUseCase @Inject constructor(
     private val pageFileStorage: PageFileStorage,
     private val tiffWriter: TIFFWriter
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
+
     override suspend fun generateFilesForDocument(
         documentSharingDir: File,
         pages: List<String>

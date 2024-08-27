@@ -351,6 +351,5 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
     companion object {
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
         private const val SAVE_MENU_TAG = "SAVE_MENU_TAG"
-
     }
 }

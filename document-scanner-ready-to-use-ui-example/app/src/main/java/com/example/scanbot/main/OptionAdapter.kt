@@ -74,5 +74,4 @@ class OptionAdapter(
     }
 
     inner class SupportViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
 }

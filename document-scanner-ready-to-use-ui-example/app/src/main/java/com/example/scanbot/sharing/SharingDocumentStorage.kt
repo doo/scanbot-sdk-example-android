@@ -4,9 +4,8 @@ import android.content.Context
 import java.io.File
 import java.io.IOException
 
-class SharingDocumentStorage constructor(
-    private val context: Context
-) : ISharingDocumentStorage {
+class SharingDocumentStorage(private val context: Context) : ISharingDocumentStorage {
+
     override fun getSharingDir(): File {
         return context.externalCacheDir?.resolve("sharing")?.ensureFileExists()
             ?: throw IOException("Unable to create sharing dir")

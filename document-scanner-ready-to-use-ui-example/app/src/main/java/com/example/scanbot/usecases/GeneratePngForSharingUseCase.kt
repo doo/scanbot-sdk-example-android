@@ -10,12 +10,14 @@ import javax.inject.Inject
 
 class GeneratePngForSharingUseCase @Inject constructor(
     sharingDocumentStorage: ISharingDocumentStorage,
-    private val pageFileStorage: PageFileStorage
+    private val pageFileStorage: PageFileStorage,
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
+
     override suspend fun generateFilesForDocument(
         documentSharingDir: File,
-        pages: List<String>
+        pages: List<String>,
     ): List<File> {
+
         return pages.mapIndexed { index, page ->
             val pageFileName = if (pages.size == 1) "${page}.png" else "$page (${index + 1}).png"
             val sharingPngFile = documentSharingDir.ensureFileExists().resolve(pageFileName)

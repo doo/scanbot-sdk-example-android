@@ -10,18 +10,19 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.ScanbotExample"
-        tools:targetApi="31">
-
+        tools:targetApi="33">
 
         <activity
             android:name="com.example.scanbot.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name="com.example.scanbot.preview.PagesPreviewActivity" />
         <activity android:name="com.example.scanbot.preview.SinglePagePreviewActivity" />
 
@@ -35,5 +36,4 @@
                 android:resource="@xml/provider_paths" />
         </provider>
     </application>
-
 </manifest>

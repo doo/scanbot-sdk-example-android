@@ -185,7 +185,6 @@ class MainActivity : AppCompatActivity() {
         documentScannerResult.launch(config)
     }
 
-
     private fun runSinglePageAutoSnap() {
         val config = DocumentScannerConfiguration()
         config.setAutoSnappingButtonTitle("Auto-Snap")
@@ -193,5 +192,4 @@ class MainActivity : AppCompatActivity() {
         config.setAutoSnappingEnabled(true)
         documentScannerResult.launch(config)
     }
-    
 }

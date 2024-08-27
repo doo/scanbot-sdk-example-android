@@ -5,7 +5,7 @@ import java.io.File
 import java.io.IOException
 import java.util.UUID
 
-abstract class GenerateFilesForSharingUseCase constructor(
+abstract class GenerateFilesForSharingUseCase(
     private val sharingDocumentStorage: ISharingDocumentStorage,
 ) {
     @Throws(IOException::class)
@@ -21,6 +21,6 @@ abstract class GenerateFilesForSharingUseCase constructor(
 
     protected abstract suspend fun generateFilesForDocument(
         documentSharingDir: File,
-        pages: List<String>
+        pages: List<String>,
     ): List<File>
 }

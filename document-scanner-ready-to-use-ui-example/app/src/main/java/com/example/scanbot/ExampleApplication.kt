@@ -37,23 +37,16 @@ class ExampleApplication : Application() {
                     .imageQuality(80)
                     .build()
             )
-            .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, sdkFeature, s ->
+            .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, sdkFeature, errorMessage ->
                 when (status) {
                     Status.StatusFailureNotSet,
                     Status.StatusFailureCorrupted,
                     Status.StatusFailureWrongOS,
                     Status.StatusFailureAppIDMismatch,
                     Status.StatusFailureExpired -> {
-                        Toast.makeText(
-                            this,
-                            "License error: $status ",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(this, "License error: $status ", Toast.LENGTH_LONG).show()
                     }
-
-                    else -> {
-
-                    }
+                    else -> { /* Can be empty for the purpose of this example. */ }
                 }
 
             })

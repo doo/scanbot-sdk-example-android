@@ -9,8 +9,9 @@ import javax.inject.Inject
 
 class GenerateJpgForSharingUseCase @Inject constructor(
     sharingDocumentStorage: ISharingDocumentStorage,
-    private val pageFileStorage: PageFileStorage
+    private val pageFileStorage: PageFileStorage,
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
+
     override suspend fun generateFilesForDocument(documentSharingDir: File, pages: List<String>): List<File> {
         return pages.mapIndexed { index, page ->
             val pageFileName = if (pages.size == 1) "${page}.jpg" else "$page (${index + 1}).jpg"
@@ -21,5 +22,4 @@ class GenerateJpgForSharingUseCase @Inject constructor(
            sharingJpgFile
         }
     }
-
 }
