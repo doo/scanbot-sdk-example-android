@@ -5,19 +5,13 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui.registerForActivityResultOk
+import androidx.compose.ui.graphics.Color
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.StyledText
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.ui_v2.document.configuration.IntroImage
-import io.scanbot.sdk.ui_v2.document.configuration.IntroListEntry
-import io.scanbot.sdk.ui_v2.document.configuration.PageSnapFeedbackMode
-import io.scanbot.sdk.ui_v2.document.configuration.UserGuidanceVisibility
 
 
-private class SinglePageActivity : AppCompatActivity() {
+private class ReorderScreenSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -41,22 +35,25 @@ private class SinglePageActivity : AppCompatActivity() {
         // Create the default configuration object.
         val configuration = DocumentScanningFlow().apply {
 
-            // Set the page limit.
-            outputSettings.pagesScanLimit = 1
+            // Retrieve the instance of the reorder pages configuration from the main configuration object.
+            screens.reorderPages.apply {
 
-            // Disable the tutorial screen.
-            screens.camera.introduction.showAutomatically = false
+                // Hide the guidance view.
+                guidance.visible = false
 
-            // Enable the acknowledgment screen.
-            screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.ALWAYS
+                // Set the title for the reorder screen.
+                topBarTitle.text = "Reorder Pages Screen"
 
-            // Disable the review screen.
-            screens.review.enabled = false
+                // Set the title for the guidance.
+                guidance.title.text = "Reorder"
 
+                // Set the color for the page number text.
+                pageTextStyle.color = ScanbotColor(color = Color.Black)
+
+            }
         }
 
         // Start the recognizer activity.
         documentScannerResult.launch(configuration)
     }
 }
-

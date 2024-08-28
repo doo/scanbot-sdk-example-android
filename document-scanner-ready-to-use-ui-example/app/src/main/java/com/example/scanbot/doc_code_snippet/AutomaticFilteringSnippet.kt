@@ -5,19 +5,13 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.StyledText
+import io.scanbot.sdk.imagefilters.ParametricFilter
+import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.ui_v2.document.configuration.IntroImage
-import io.scanbot.sdk.ui_v2.document.configuration.IntroListEntry
-import io.scanbot.sdk.ui_v2.document.configuration.PageSnapFeedbackMode
-import io.scanbot.sdk.ui_v2.document.configuration.UserGuidanceVisibility
 
 
-private class ReorderScreenActivity : AppCompatActivity() {
+class AutomaticFilteringSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -40,26 +34,15 @@ private class ReorderScreenActivity : AppCompatActivity() {
     fun startScanning() {
         // Create the default configuration object.
         val configuration = DocumentScanningFlow().apply {
+            // Set default filter with default values for the document scanner.
+            outputSettings.defaultFilter = ParametricFilter.scanbotBinarizationFilter()
+            //or you can set custom filter with custom values
+            outputSettings.defaultFilter = WhiteBlackPointFilter(blackPoint = 0.1, whitePoint = 0.9)
 
-            // Retrieve the instance of the reorder pages configuration from the main configuration object.
-            screens.reorderPages.apply {
-
-                // Hide the guidance view.
-                guidance.visible = false
-
-                // Set the title for the reorder screen.
-                topBarTitle.text = "Reorder Pages Screen"
-
-                // Set the title for the guidance.
-                guidance.title.text = "Reorder"
-
-                // Set the color for the page number text.
-                pageTextStyle.color = ScanbotColor(color = Color.Black)
-
-            }
         }
 
         // Start the recognizer activity.
         documentScannerResult.launch(configuration)
     }
 }
+

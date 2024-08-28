@@ -5,19 +5,11 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.StyledText
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.ui_v2.document.configuration.IntroImage
-import io.scanbot.sdk.ui_v2.document.configuration.IntroListEntry
-import io.scanbot.sdk.ui_v2.document.configuration.PageSnapFeedbackMode
-import io.scanbot.sdk.ui_v2.document.configuration.UserGuidanceVisibility
 
 
-private class MultiPageActivity : AppCompatActivity() {
+private class LocalisationSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -41,11 +33,11 @@ private class MultiPageActivity : AppCompatActivity() {
         // Create the default configuration object.
         val configuration = DocumentScanningFlow().apply {
 
-            // Set the page limit.
-            outputSettings.pagesScanLimit = 0
-
-            // Enable the acknowledgment screen.
-            screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.NONE
+            // Configure the strings.
+            localization.cameraTopBarTitle = "document.camera.title"
+            localization.reviewScreenSubmitButtonTitle = "review.submit.title"
+            localization.cameraUserGuidanceNoDocumentFound = "camera.userGuidance.noDocumentFound"
+            localization.cameraUserGuidanceTooDark = "camera.userGuidance.tooDark"
 
         }
 

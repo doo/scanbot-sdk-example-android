@@ -5,12 +5,12 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-class LaunchActivity : AppCompatActivity() {
+private class MultiPageSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -32,7 +32,15 @@ class LaunchActivity : AppCompatActivity() {
 
     fun startScanning() {
         // Create the default configuration object.
-        val configuration = DocumentScanningFlow()
+        val configuration = DocumentScanningFlow().apply {
+
+            // Set the page limit.
+            outputSettings.pagesScanLimit = 0
+
+            // Enable the acknowledgment screen.
+            screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.NONE
+
+        }
 
         // Start the recognizer activity.
         documentScannerResult.launch(configuration)

@@ -12,7 +12,7 @@ import io.scanbot.sdk.ui_v2.document.CroppingActivity
 import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
 
 
-private class StandaloneCropScreenActivity : AppCompatActivity() {
+private class StandaloneCropScreenSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -26,8 +26,9 @@ private class StandaloneCropScreenActivity : AppCompatActivity() {
                 result.result?.let { result ->
                     // Retrieve the cropped document
                     val document =
-                        ScanbotSDK(this@StandaloneCropScreenActivity).documentApi.loadDocument(documentId = result.documentUuid)
-                            ?: return@let
+                        ScanbotSDK(this@StandaloneCropScreenSnippet).documentApi.loadDocument(
+                            documentId = result.documentUuid
+                        ) ?: return@let
                     val page = document.pageWithId(result.pageUuid) ?: return@let
 
                 }
@@ -40,7 +41,8 @@ private class StandaloneCropScreenActivity : AppCompatActivity() {
     fun startScanning() {
         // Retrieve the scanned document
         val document =
-            ScanbotSDK(this@StandaloneCropScreenActivity).documentApi.loadDocument(documentId = "SOME_SAVED_UUID")
+            ScanbotSDK(this@StandaloneCropScreenSnippet)
+                .documentApi.loadDocument(documentId = "SOME_SAVED_UUID")
                 ?: return
 
         // Retrieve the selected document page.
@@ -53,9 +55,9 @@ private class StandaloneCropScreenActivity : AppCompatActivity() {
 
                 // e.g. configure various colors.
                 appearance.topBarBackgroundColor =
-                    ScanbotColor(color= Color.RED)
+                    ScanbotColor(color = Color.RED)
                 cropping.topBarConfirmButton.foreground.color =
-                    ScanbotColor(color= Color.WHITE)
+                    ScanbotColor(color = Color.WHITE)
 
                 // e.g. customize a UI element's text
                 localization.croppingCancelButtonTitle = "Cancel"

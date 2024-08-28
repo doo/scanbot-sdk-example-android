@@ -5,13 +5,12 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-private class PalletteActivity : AppCompatActivity() {
+private class PalletteSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click

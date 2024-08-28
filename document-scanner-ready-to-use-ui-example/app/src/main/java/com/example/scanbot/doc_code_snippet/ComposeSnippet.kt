@@ -1,47 +1,39 @@
 package com.example.scanbot.doc_code_snippet
 
 
-import android.app.Activity
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui.registerForActivityResultOk
+import androidx.compose.ui.platform.ComposeView
 import io.scanbot.sdk.ui_v2.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.FinderStyle
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.StyledText
-import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.DocumentScannerView
 import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.ui_v2.document.configuration.IntroImage
-import io.scanbot.sdk.ui_v2.document.configuration.IntroListEntry
-import io.scanbot.sdk.ui_v2.document.configuration.PageSnapFeedbackMode
-import io.scanbot.sdk.ui_v2.document.configuration.UserGuidanceVisibility
 
 
-private class SinglePageWithFinderActivity : AppCompatActivity() {
+private class ComposeSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
-        startScanning()
+        setContentView(ComposeView(this).apply {
+            setContent {
+                DocumentScannerView(
+                    configuration = getConfiguration(),
+                    onDocumentSubmitted = { document ->
+                        // Handle the document.
+                    },
+                    onDocumentScannerClosed = { reason ->
+                        // Indicates that the cancel button was tapped.
+                    }
+                )
+            }
+        })
     }
 
-    private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =
-        registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.result?.let { document ->
-                    // Handle the document.
-                }
-            } else {
-                // Indicates that the cancel button was tapped.
-            }
-        }
 
-
-    fun startScanning() {
+    fun getConfiguration(): DocumentScanningFlow {
         // Create the default configuration object.
-        val configuration = DocumentScanningFlow().apply {
+        return DocumentScanningFlow().apply {
             // Set the visibility of the view finder.
             screens.camera.viewFinder.visible = true
 
@@ -75,9 +67,6 @@ private class SinglePageWithFinderActivity : AppCompatActivity() {
             // Disable the review screen.
             screens.review.enabled = false
         }
-
-        // Start the recognizer activity.
-        documentScannerResult.launch(configuration)
     }
 }
 
