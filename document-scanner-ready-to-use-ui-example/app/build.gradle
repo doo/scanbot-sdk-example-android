@@ -41,6 +41,7 @@ dependencies {
     implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-1:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-ui:$scanbotSdkVersion")
+    implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
