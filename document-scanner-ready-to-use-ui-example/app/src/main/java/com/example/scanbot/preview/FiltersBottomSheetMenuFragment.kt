@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.scanbot.imagefilters.ColorDocumentFilter
-import io.scanbot.imagefilters.GrayscaleFilter
-import io.scanbot.imagefilters.LegacyFilter
-import io.scanbot.imagefilters.ParametricFilter
-import io.scanbot.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.imagefilters.WhiteBlackPointFilter
+import io.scanbot.sdk.imagefilters.ColorDocumentFilter
+import io.scanbot.sdk.imagefilters.GrayscaleFilter
+import io.scanbot.sdk.imagefilters.LegacyFilter
+import io.scanbot.sdk.imagefilters.ParametricFilter
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
 import io.scanbot.sdk.process.ImageFilterType
 import io.scanbot.sdk.usecases.documents.R
 

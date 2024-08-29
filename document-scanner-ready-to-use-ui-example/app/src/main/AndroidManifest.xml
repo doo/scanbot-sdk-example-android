@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.scanbot.preview.PagesPreviewActivity" />
+        <activity android:name="com.example.scanbot.preview.DocumentPreviewActivity" />
         <activity android:name="com.example.scanbot.preview.SinglePagePreviewActivity" />
 
         <provider
