@@ -64,7 +64,7 @@ private class DocumentQualityCheckSnippet : AppCompatActivity() {
             // Run quality check on the created page
             val documentQuality =
                 qualityAnalyzer.analyzeInBitmap(page.originalImage!!, orientation = 0)
-// proceed the result
+            // proceed the result
             if (documentQuality != null) {
                 printResult(documentQuality)
             }
