@@ -1,4 +1,4 @@
-package com.example.scanbot.doc_code_snippet
+package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
 import android.app.Activity
@@ -6,10 +6,11 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-class LaunchSnippet : AppCompatActivity() {
+private class SinglePageSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -31,7 +32,21 @@ class LaunchSnippet : AppCompatActivity() {
 
     fun startScanning() {
         // Create the default configuration object.
-        val configuration = DocumentScanningFlow()
+        val configuration = DocumentScanningFlow().apply {
+
+            // Set the page limit.
+            outputSettings.pagesScanLimit = 1
+
+            // Disable the tutorial screen.
+            screens.camera.introduction.showAutomatically = false
+
+            // Enable the acknowledgment screen.
+            screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.ALWAYS
+
+            // Disable the review screen.
+            screens.review.enabled = false
+
+        }
 
         // Start the recognizer activity.
         documentScannerResult.launch(configuration)

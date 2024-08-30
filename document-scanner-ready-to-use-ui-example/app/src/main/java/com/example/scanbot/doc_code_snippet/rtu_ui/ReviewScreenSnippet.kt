@@ -1,4 +1,4 @@
-package com.example.scanbot.doc_code_snippet
+package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
 import android.app.Activity
