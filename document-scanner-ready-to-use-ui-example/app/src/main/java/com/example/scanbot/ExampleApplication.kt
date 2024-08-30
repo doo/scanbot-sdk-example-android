@@ -7,7 +7,7 @@ import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
-import io.scanbot.sdk.persistence.PageStorageSettings
+import io.scanbot.sdk.persistence.page.PageStorageSettings
 
 class ExampleApplication : Application() {
 
