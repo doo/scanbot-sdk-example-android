@@ -3,6 +3,7 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,12 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
 import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.processor.ImageProcessor
 import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.imagefilters.BrightnessFilter
+import io.scanbot.sdk.imagefilters.OutputMode
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.CroppingActivity
 import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
@@ -24,7 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-private class DocumentDetectionSnippet : AppCompatActivity() {
+private class ImageFilterSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +38,7 @@ private class DocumentDetectionSnippet : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@DocumentDetectionSnippet)
+    private val scanbotSDK = ScanbotSDK(this@ImageFilterSnippet)
     private val context = this
 
     private val pictureForDocDetectionResult =
@@ -44,18 +50,10 @@ private class DocumentDetectionSnippet : AppCompatActivity() {
                             val document = scanbotSDK.documentApi.createDocument()
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e(
-                                            "StandaloneCropSnippet",
-                                            "Failed to load bitmap from URI"
-                                        )
-                                        return@forEach
-                                    }
-                                    document.addPage(bitmap)
+                                .mapNotNull { it.toBitmap(contentResolver) }.apply {
+                                    startCropping(this.toList())
                                 }
-                            startCropping(document)
+
                         }
                     }
                 }
@@ -64,24 +62,42 @@ private class DocumentDetectionSnippet : AppCompatActivity() {
 
     // Create a document detector instance
     val documentDetector = scanbotSDK.createContourDetector()
+    fun startCropping(list: List<Bitmap>) {
+        list.forEach { image ->
+            // Run detection on the picked image
+            val detectionResult = documentDetector.detect(image)
 
-    fun startCropping(document: Document) {
-        document.pages.forEach { page ->
-            // Run detection on the created page
-            val detectionResult = documentDetector.detect(page.originalImage!!)
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
+                detectionResult.status == DocumentDetectionStatus.OK &&
                 detectionResult.polygonF.isNotEmpty() &&
                 !detectionResult.polygonF.isDefault()
             ) {
                 // If the result is an acceptable polygon, we warp the image into the polygon.
-                page.apply(newPolygon = detectionResult.polygonF)
-                // Set the source of the page to IMPORTED if needs
-                page.source = PageImageSource.IMPORTED
+                val imageProcessor = ImageProcessor(image)
+
+                // Perform operations like rotating, resizing and applying filters to the image.
+                // Rotate the image.
+                imageProcessor.rotate(ImageProcessor.ImageRotation.ROTATION_90_CLOCKWISE)
+
+                // You can crop the image using the polygon if you want.
+                imageProcessor.crop(detectionResult.polygonF)
+
+                // Resize the image.
+                imageProcessor.resize(700)
+
+                // Create the instances of the filters you want to apply.
+                val filter1 = ScanbotBinarizationFilter(outputMode = OutputMode.ANTIALIASED)
+                val filter2 = BrightnessFilter(brightness = 0.4)
+                imageProcessor.applyFilter(filter1)
+                imageProcessor.applyFilter(filter2)
+                // Retrieve the processed image.
+                imageProcessor.processedImage()?.let {
+                    // do something with the cropped image. eg. add it to a document save etc.
+                }
             }
         }
     }
-
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

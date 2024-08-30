@@ -15,6 +15,7 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
 import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import io.scanbot.sdk.core.processor.ImageProcessor
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
@@ -56,17 +57,26 @@ private class ImageProcessorSnippet : AppCompatActivity() {
             }
         }
 
-
+    // Create a document detector instance
     val documentDetector = scanbotSDK.createContourDetector()
     fun startCropping(list: List<Bitmap>) {
         list.forEach { image ->
+            // Run detection on the picked image
             val detectionResult = documentDetector.detect(image)
+
+            // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
+                detectionResult.status == DocumentDetectionStatus.OK &&
                 detectionResult.polygonF.isNotEmpty() &&
                 !detectionResult.polygonF.isDefault()
             ) {
+                // If the result is an acceptable polygon, we warp the image into the polygon.
                 val imageProcessor = ImageProcessor(image)
+
+                // You can crop the image using the polygon if you want.
                 imageProcessor.crop(detectionResult.polygonF)
+
+                // Retrieve the processed image.
                 imageProcessor.processedImage()?.let {
                     // do something with the cropped image. eg. add it to a document save etc.
                 }
