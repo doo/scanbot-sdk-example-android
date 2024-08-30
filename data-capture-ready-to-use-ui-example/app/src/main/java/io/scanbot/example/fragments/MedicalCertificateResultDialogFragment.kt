@@ -6,27 +6,23 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import com.squareup.picasso.MemoryPolicy
 import io.scanbot.example.R
 import io.scanbot.example.databinding.FragmentMedicalCertificateResultDialogBinding
-import io.scanbot.example.di.ExampleSingletonImpl
-import io.scanbot.example.util.PicassoHelper
 import io.scanbot.mcscanner.model.CheckBoxType
 import io.scanbot.mcscanner.model.DateRecordType
 import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import java.io.File
 
 class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
+
         const val NAME = "MedicalCertificateResultDialogFragment"
 
         const val MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA"
@@ -48,12 +44,17 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
 
     private var medicalCertificateResult: MedicalCertificateRecognizerResult? = null
 
-    private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
-        medicalCertificateResult = arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
+    private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View {
+        medicalCertificateResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, MedicalCertificateRecognizerResult::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
+        }
 
         _binding = FragmentMedicalCertificateResultDialogBinding.inflate(inflater, container, true)
 
-        binding.title.text = "Detected Medical Certificate Form"
+        binding.title.text = getString(R.string.mrz_result_caption)
 
         medicalCertificateResult?.let { result ->
             binding.tvData.text = extractData(result)
@@ -62,21 +63,6 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         }
 
         return binding.root
-    }
-
-    private fun showPageImage(page: Page, imageView: ImageView) {
-        val context = requireContext().applicationContext
-        val pageFileStorage = ExampleSingletonImpl(requireContext()).pageFileStorageInstance()
-        imageView.visibility = View.VISIBLE
-        val docImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.DOCUMENT).path)
-        val origImageFile = File(pageFileStorage.getPreviewImageURI(page.pageId, PageFileStorage.PageFileType.ORIGINAL).path)
-        val fileToShow = if (docImageFile.exists()) docImageFile else origImageFile
-        PicassoHelper.with(context)
-                .load(fileToShow)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                .centerInside()
-                .into(imageView)
     }
 
     private fun showBitmapImage(mcImage: Bitmap, imageView: ImageView) {
@@ -97,15 +83,13 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         builder.setView(contentContainer)
 
 
-        builder.setPositiveButton(
-                getString(R.string.cancel_dialog_button)) { _, _ ->
+        builder.setPositiveButton(getString(R.string.cancel_dialog_button)) { _, _ ->
             run {
                 dismiss()
             }
         }
 
-        builder.setNegativeButton(
-                R.string.copy_dialog_button) { _, _ ->
+        builder.setNegativeButton(R.string.copy_dialog_button) { _, _ ->
             run {
                 val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val data = medicalCertificateResult?.let { extractData(it) }
@@ -126,35 +110,35 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
     private fun extractData(result: MedicalCertificateRecognizerResult): String {
         return StringBuilder()
                 .append("Type: ").append(if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxInitialCertificate }
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxInitialCertificate }
                                 ?.hasContents == true)
                     "Initial"
                 else if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxRenewedCertificate }
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxRenewedCertificate }
                                 ?.hasContents == true)
                     "Renewed"
                 else
                     "Unknown").append("\n")
                 .append("Work Accident: ").append(if (result.checkboxes
-                                ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxWorkAccident }
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxWorkAccident }
                                 ?.hasContents == true)
                     "Yes"
                 else "No").append("\n")
                 .append("Accident Consultant: ").append(
                         if (result.checkboxes
-                                        ?.find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor }
+                                .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor }
                                         ?.hasContents == true)
                             "Yes"
                         else "No"
                 ).append("\n")
                 .append("Start Date: ").append(
-                        result.dates?.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkSince }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkSince }?.dateString
                 ).append("\n")
                 .append("End Date: ").append(
-                        result.dates?.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkUntil }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkUntil }?.dateString
                 ).append("\n")
                 .append("Issue Date: ").append(
-                        result.dates?.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordDiagnosedOn }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordDiagnosedOn }?.dateString
                 )
                 .append("\n")
                 .append("Form type: ${result.mcFormType.name}")
