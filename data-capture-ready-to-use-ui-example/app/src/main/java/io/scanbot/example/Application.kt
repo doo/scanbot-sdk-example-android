@@ -3,16 +3,15 @@ package io.scanbot.example
 import android.app.Application
 import android.util.Log
 import android.widget.Toast
-import io.scanbot.example.repository.PageRepository
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
+import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
-import io.scanbot.sdk.persistence.PageStorageSettings
+import io.scanbot.sdk.persistence.page.PageStorageSettings
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
-import io.scanbot.sdk.process.ImageProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -84,7 +83,8 @@ class Application : Application(), CoroutineScope {
         Log.d("ScanbotSDKExample", "License status " + sdkLicenseInfo.status.name)
 
         launch {
-            PageRepository.clearPages(this@Application)
+            // Leaving as is to clean end-users' storage for next several app updates.
+            ScanbotSDK(this@Application).getSdkComponent()!!.provideDocumentStorage().deleteAll()
             SharingCopier.clear(this@Application)
         }
     }
@@ -109,5 +109,4 @@ class Application : Application(), CoroutineScope {
         customDir.mkdirs()
         return customDir
     }
-
 }

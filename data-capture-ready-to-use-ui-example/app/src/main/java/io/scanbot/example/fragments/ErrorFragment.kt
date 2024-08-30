@@ -11,16 +11,14 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
 
-
 class ErrorFragment : androidx.fragment.app.DialogFragment() {
 
     companion object {
+
         const val NAME = "ErrorFragment"
 
         @JvmStatic
-        fun newInstance(): ErrorFragment {
-            return ErrorFragment()
-        }
+        fun newInstance(): ErrorFragment = ErrorFragment()
     }
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -29,7 +27,7 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(this.activity!!)
+        val builder = AlertDialog.Builder(requireActivity())
 
         val inflater = LayoutInflater.from(activity)
 
@@ -38,16 +36,14 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
 
         builder.setView(contentContainer)
 
-        builder.setNegativeButton(
-                getString(R.string.cancel_dialog_button)) { _, _ ->
+        builder.setNegativeButton(getString(R.string.cancel_dialog_button)) { _, _ ->
             run {
                 dismiss()
             }
         }
-        builder.setPositiveButton(
-                getString(R.string.get_license)) { _, _ ->
+        builder.setPositiveButton(getString(R.string.get_license)) { _, _ ->
             run {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://scanbot.io/en/sdk.html"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://scanbot.io/trial/"))
                 activity?.startActivity(Intent.createChooser(intent, "Choose Browser"))
                 dismiss()
             }

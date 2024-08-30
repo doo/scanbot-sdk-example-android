@@ -7,7 +7,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/backgroundColor">
 
         <TextView
@@ -15,10 +15,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.01"
             android:textColor="#ffffff"
@@ -33,37 +31,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            android:visibility="gone">
+            app:layout_constraintTop_toBottomOf="@id/title"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/front_snap_result"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/move_preview_size"
+                android:contentDescription=""
                 android:visibility="invisible"
-                app:layout_constraintEnd_toStartOf="@+id/back_snap_result"
+                app:layout_constraintEnd_toStartOf="@id/back_snap_result"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <ImageView
                 android:id="@+id/back_snap_result"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/move_preview_size"
+                android:contentDescription=""
                 android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/front_snap_result"
+                app:layout_constraintStart_toEndOf="@id/front_snap_result"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -71,10 +69,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
             android:fontFamily="sans-serif"
             android:letterSpacing="0.01"
             android:lineSpacingExtra="8sp"
@@ -83,8 +79,6 @@
             android:textStyle="normal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/images_container" />
-
-
+            app:layout_constraintTop_toBottomOf="@id/images_container" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
