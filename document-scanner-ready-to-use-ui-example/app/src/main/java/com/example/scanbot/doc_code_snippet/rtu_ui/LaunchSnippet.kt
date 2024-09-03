@@ -1,17 +1,15 @@
-package com.example.scanbot.doc_code_snippet
+package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-class AutomaticFilteringSnippet : AppCompatActivity() {
+class LaunchSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -33,13 +31,7 @@ class AutomaticFilteringSnippet : AppCompatActivity() {
 
     fun startScanning() {
         // Create the default configuration object.
-        val configuration = DocumentScanningFlow().apply {
-            // Set default filter with default values for the document scanner.
-            outputSettings.defaultFilter = ParametricFilter.scanbotBinarizationFilter()
-            //or you can set custom filter with custom values
-            outputSettings.defaultFilter = WhiteBlackPointFilter(blackPoint = 0.1, whitePoint = 0.9)
-
-        }
+        val configuration = DocumentScanningFlow()
 
         // Start the recognizer activity.
         documentScannerResult.launch(configuration)

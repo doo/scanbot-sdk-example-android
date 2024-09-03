@@ -1,4 +1,4 @@
-package com.example.scanbot.doc_code_snippet
+package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
 import android.app.Activity
@@ -6,11 +6,10 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-private class SinglePageSnippet : AppCompatActivity() {
+private class LocalizationSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //run this function on button click
@@ -34,17 +33,11 @@ private class SinglePageSnippet : AppCompatActivity() {
         // Create the default configuration object.
         val configuration = DocumentScanningFlow().apply {
 
-            // Set the page limit.
-            outputSettings.pagesScanLimit = 1
-
-            // Disable the tutorial screen.
-            screens.camera.introduction.showAutomatically = false
-
-            // Enable the acknowledgment screen.
-            screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.ALWAYS
-
-            // Disable the review screen.
-            screens.review.enabled = false
+            // Configure the strings.
+            localization.cameraTopBarTitle = "document.camera.title"
+            localization.reviewScreenSubmitButtonTitle = "review.submit.title"
+            localization.cameraUserGuidanceNoDocumentFound = "camera.userGuidance.noDocumentFound"
+            localization.cameraUserGuidanceTooDark = "camera.userGuidance.tooDark"
 
         }
 
