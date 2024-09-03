@@ -4,12 +4,22 @@ import android.app.Application
 import android.widget.Toast
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
+import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.core.contourdetector.ContourDetector
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.page.PageStorageSettings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class ExampleApplication : Application() {
+class ExampleApplication : Application(), CoroutineScope {
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     companion object {
         /**
@@ -53,5 +63,10 @@ class ExampleApplication : Application() {
             .useFileEncryption(USE_ENCRYPTION)
             .license(this, LICENSE_KEY)
             .initialize(this)
+
+        launch {
+            // Delete all existing documents on app start
+            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+        }
     }
 }

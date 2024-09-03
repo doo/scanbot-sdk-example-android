@@ -12,6 +12,7 @@ import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.util.thread.ExecutionUtils.showToast
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -58,8 +59,8 @@ class MainActivity : AppCompatActivity() {
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = pdfRenderer.renderDocumentFromImages(
-            imageFileUris,
+        val encryptedDestination = pdfRenderer.render(
+            imageFileUris.toTypedArray(),
             false,
             PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
         ) ?: return
@@ -79,8 +80,6 @@ class MainActivity : AppCompatActivity() {
         internalFile.writeBytes(assets.open(filename).readBytes())
         return internalFile
     }
-
-    private fun showToast(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
     private fun getExternalFile(filename: String) = getExternalFilesDir(null)?.resolve(filename)!!
 

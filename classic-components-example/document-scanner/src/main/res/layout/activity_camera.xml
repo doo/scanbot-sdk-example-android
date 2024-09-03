@@ -14,14 +14,14 @@
         android:id="@+id/flashToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        android:layout_gravity="top|end"
         android:text="Flash" />
 
     <Button
         android:id="@+id/autoSnappingToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
+        android:layout_gravity="top|start"
         android:text="Automatic" />
 
     <TextView
@@ -32,9 +32,9 @@
         android:animateLayoutChanges="true"
         android:background="#cccccc"
         android:gravity="center"
-        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
         android:paddingTop="6dp"
-        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="6dp"
         android:textColor="#000000"
         android:textSize="16sp"
@@ -44,7 +44,7 @@
         android:id="@+id/result"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginBottom="15dp" />
 
     <io.scanbot.sdk.ui.camera.ShutterButton
