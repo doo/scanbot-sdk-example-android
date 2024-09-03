@@ -76,7 +76,6 @@ private class TiffFromImageSnippet : AppCompatActivity() {
                 sourceFilesEncrypted = encryptionEnabled,
                 targetFile = file,
                 parameters = config
-
             )
 
             if (created && file.exists()) {
