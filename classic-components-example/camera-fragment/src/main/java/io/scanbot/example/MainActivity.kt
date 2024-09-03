@@ -14,22 +14,20 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.example.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.docprocessing.legacy.PageProcessor
+import io.scanbot.sdk.persistence.page.PageFileStorage
 import io.scanbot.sdk.process.ImageFilterType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+    val scanbotSDK = ScanbotSDK(this)
+    val contourDetector = scanbotSDK.createContourDetector()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val scanbotSDK = ScanbotSDK(this)
-        val pageFileStorage = scanbotSDK.createPageFileStorage()
-        val pageProcessor = scanbotSDK.createPageProcessor()
         val galleryImageLauncher =
             registerForActivityResult(ImportImageContract(this)) { resultEntity ->
                 lifecycleScope.launch(Dispatchers.Default) {
@@ -46,8 +44,6 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         resultEntity?.let { bitmap ->
                             processImageForAutoDocumentDetection(
-                                pageFileStorage,
-                                pageProcessor,
                                 bitmap
                             )
                         }
@@ -110,8 +106,6 @@ class MainActivity : AppCompatActivity() {
 
     /** Imports a selected image as original image and performs auto document detection on it. */
     suspend fun processImageForAutoDocumentDetection(
-        pageFileStorage: PageFileStorage,
-        pageProcessor: PageProcessor,
         bitmap: Bitmap
     ) {
         val progressBar = findViewById<View>(R.id.progress_bar)
@@ -125,20 +119,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         val page = withContext(Dispatchers.Default) {
-            // create a new Page object with given image as original image:
-            val pageId = pageFileStorage.add(bitmap)
-            var page = Page(pageId, emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
+            // create a new Document object with given image as original image:
+            val newDocument = scanbotSDK.documentApi.createDocument()
+            val page = newDocument.addPage(bitmap)
             // run auto document detection on it:
-            page = pageProcessor.detectDocument(page)
+            val detectionResult = contourDetector.detect(bitmap)
+            if (detectionResult != null && detectionResult.status == DocumentDetectionStatus.OK && detectionResult.polygonF.isNotEmpty()) {
+                // apply the detected polygon to the new page
+                page.apply(newPolygon = detectionResult.polygonF)
+            }
             page
         }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
-            val image = pageFileStorage.getImage(
-                page.pageId,
-                PageFileStorage.PageFileType.DOCUMENT //cropped image
-            )
+            val image = page.documentImage
             importResultImage.setImageBitmap(
                 image
             )
