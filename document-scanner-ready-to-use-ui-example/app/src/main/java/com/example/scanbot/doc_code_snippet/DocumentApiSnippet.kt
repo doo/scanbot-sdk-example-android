@@ -84,7 +84,7 @@ fun removePDFFromScannedDocument(scannedDocument: Document) {
 
 fun removeTIFFFromScannedDocument(scannedDocument: Document) {
     // Take a file from document and delete it
-    scannedDocument.pdfUri.toFile().delete()
+    scannedDocument.tiffUri.toFile().delete()
 }
 
 fun deleteScannedDocument(scannedDocument: Document) {
