@@ -62,7 +62,7 @@ private class PdfFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
-    // Create a document detector instance
+    // Create instance of PdfRenderer
     val pdfRenderer = scanbotSDK.createPdfRenderer()
 
     fun createPdfFromImages(document: Document) {

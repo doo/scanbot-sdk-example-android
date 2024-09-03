@@ -59,7 +59,7 @@ private class ImportDocumentFromPdfSnippet : AppCompatActivity() {
             }
         }
 
-    // Create a quality analyzer instance
+    // Create instance of PdfImagesExtractor
     val extractor = scanbotSDK.createPdfImagesExtractor()
     fun createDocumentFromPdf(list: List<Uri>) {
         list.forEach { pdfUri ->

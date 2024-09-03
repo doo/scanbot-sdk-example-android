@@ -52,7 +52,7 @@ private class PdfFromImageSnippet : AppCompatActivity() {
             }
         }
 
-    // Create a quality analyzer instance
+    // Create a PDF renderer instance
     val pdfRenderer = scanbotSDK.createPdfRenderer()
     fun createPdfFromImages(list: List<Uri>) {
         list.forEach { imageUri ->

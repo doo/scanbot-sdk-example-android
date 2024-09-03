@@ -59,8 +59,8 @@ private class TiffFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
-    // Create a document detector instance
-    val tiffRenderer = scanbotSDK.createTiffWriter()
+    // Create tiif writer instance
+    val tiffWriter = scanbotSDK.createTiffWriter()
 
     fun createPdfFromImages(document: Document) {
         val config = TIFFImageWriterParameters(
@@ -70,7 +70,7 @@ private class TiffFromDocumentSnippet : AppCompatActivity() {
             userDefinedFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
-        val pdfRendered = tiffRenderer.writeTIFF(
+        val pdfRendered = tiffWriter.writeTIFF(
             document,
             tiffFile,
             config
