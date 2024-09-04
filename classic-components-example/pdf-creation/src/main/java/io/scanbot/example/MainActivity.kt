@@ -1,170 +1,114 @@
 package io.scanbot.example
 
-import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
-import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
+import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.pdf.model.PageSize
 import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.process.PDFRenderer
-import io.scanbot.sdk.util.thread.MimeUtils
+import io.scanbot.sdk.util.PolygonHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.IOException
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var pdfRenderer: PDFRenderer
-    private lateinit var progressView: View
-    private lateinit var pageFileStorage: PageFileStorage
-    private lateinit var pageProcessor: PageProcessor
+
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+    private val pdfRenderer: PDFRenderer by lazy { scanbotSdk.createPdfRenderer() }
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val selectGalleryImageResultLauncher =
+        // limit to 5 images for example purposes
+        registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+            if (uris.isEmpty()) {
+                this@MainActivity.showToast("No images were selected!")
+                Log.w(Const.LOG_TAG, "No images were selected!")
+                return@registerForActivityResult
+            }
+
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("Scanbot SDK license (1-minute trial) has expired!")
+                Log.w(Const.LOG_TAG, "Scanbot SDK license (1-minute trial) has expired!")
+                return@registerForActivityResult
+            }
+
+            lifecycleScope.launch { processDocument(uris, isGrayscaleChecked) }
+        }
+
+    private val isGrayscaleChecked: Boolean
+        get() = binding.grayscaleCheckBox.isChecked
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        askPermission()
-        initializeDependencies()
-
-        findViewById<View>(R.id.scanButton).setOnClickListener { v: View? -> openGallery() }
-        progressView = findViewById(R.id.progressBar)
-    }
-
-    private fun askPermission() {
-        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE), 999)
+        binding.scanButton.setOnClickListener {
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    private fun checkPermissionNotGranted(permission: String) =
-            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+    private suspend fun processDocument(uris: List<Uri>, applyGrayscale: Boolean) {
+        val filters = if (applyGrayscale) listOf(ParametricFilter.grayscaleFilter()) else emptyList()
+        withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
-    private fun initializeDependencies() {
-        val scanbotSDK = ScanbotSDK(this)
-        pdfRenderer = scanbotSDK.createPdfRenderer()
-        pageFileStorage = scanbotSDK.createPageFileStorage()
-        pageProcessor = scanbotSDK.createPageProcessor()
-    }
-
-    private fun openGallery() {
-        val intent = Intent()
-        intent.type = IMAGE_TYPE
-        intent.action = Intent.ACTION_GET_CONTENT
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        startActivityForResult(
-                Intent.createChooser(intent, "Select picture"),
-                SELECT_PICTURE_REQUEST
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (requestCode != SELECT_PICTURE_REQUEST || resultCode != Activity.RESULT_OK) {
-            return
-        }
-        val imageUris = ArrayList<Uri>()
-        intent?.let {
-            intent.clipData?.let { clipData ->
-                for (i in 0 until clipData.itemCount) {
-                    val item = clipData.getItemAt(i)
-                    val uri = item.uri
-                    imageUris.add(uri)
-                }
-            } ?: intent.data?.let { data ->
-                imageUris.add(data)
+        val renderedPdfFile = withContext(Dispatchers.Default) {
+            val contourDetector = scanbotSdk.createContourDetector()
+            val document = scanbotSdk.documentApi.createDocument()
+            uris.asSequence().forEach { uri ->
+                val inputStream = contentResolver.openInputStream(uri)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                val pageDetected = contourDetector.detect(bitmap)?.polygonF ?: PolygonHelper.getFullPolygon()
+                document.addPage(bitmap).apply(newPolygon = pageDetected, newFilters = filters)
             }
 
-            ProcessDocumentTask(imageUris).execute()
-            progressView.visibility = View.VISIBLE
+            pdfRenderer.render(document, PdfConfig.defaultConfig().copy(pageSize = PageSize.A4))
+            document.pdfUri.toFile()
+        }
+
+        withContext(Dispatchers.Main) {
+            binding.progressBar.visibility = View.GONE
+            openPdfDocument(renderedPdfFile)
         }
     }
 
-    private fun openDocument(pdfFile: File) {
-        val uriForFile = androidx.core.content.FileProvider.getUriForFile(this,
-            this.applicationContext.packageName + ".provider", pdfFile)
-        val openIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, uriForFile)
-            type = MimeUtils.getMimeByName(pdfFile.name)
-        }
-        openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    private fun openPdfDocument(file: File) {
+        val uri = FileProvider.getUriForFile(this, "${this.packageName}.provider", file)
 
-        if (openIntent.resolveActivity(packageManager) != null) {
-            val chooser = Intent.createChooser(openIntent, pdfFile.name)
+        val openIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        if (intent.resolveActivity(packageManager) != null) {
+            val chooser = Intent.createChooser(openIntent, file.name)
             val resInfoList = this.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
 
             for (resolveInfo in resInfoList) {
                 val packageName = resolveInfo.activityInfo.packageName
-                grantUriPermission(packageName, uriForFile, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             startActivity(chooser)
-
         } else {
-            Toast.makeText(this, "error opening document", Toast.LENGTH_LONG).show()
+            // Handle the case where no app can open PDF files
+            showToast("No app found to open PDF files")
+            Log.w(Const.LOG_TAG, "No app found to open PDF files")
         }
-    }
-
-    /*
-    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
-    AsyncTasks in your application
-     */
-
-    private inner class ProcessDocumentTask(val imageUris: List<Uri>) : AsyncTask<Void, Void, File?>() {
-        override fun doInBackground(vararg voids: Void): File? {
-            try {
-                val pages = arrayListOf<Page>()
-                for (imageUri in imageUris) {
-
-                    val bitmap = loadImage(imageUri)
-
-                    val newPageId = pageFileStorage.add(bitmap)
-                    val page = Page(newPageId, listOf(), DetectionStatus.OK, ImageFilterType.GRAYSCALE)
-
-                    val detectedPage = pageProcessor.detectDocument(page)
-                    pages.add(detectedPage)
-                }
-
-                return pdfRenderer.renderDocumentFromPages(pages, PdfConfig.defaultConfig().copy(pageSize = PageSize.A4))
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return null
-        }
-
-        fun loadImage(imageUri: Uri): Bitmap {
-            return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-        }
-
-        override fun onPostExecute(processedDocument: File?) {
-            progressView.visibility = View.GONE
-
-            //open first document
-            processedDocument?.let { openDocument(it) }
-        }
-    }
-
-    companion object {
-        private const val SELECT_PICTURE_REQUEST = 100
-        private const val IMAGE_TYPE = "image/*"
     }
 }

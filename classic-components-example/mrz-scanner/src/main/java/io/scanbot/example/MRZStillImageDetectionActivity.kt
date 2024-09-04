@@ -1,173 +1,135 @@
 package io.scanbot.example
 
-import android.graphics.Bitmap
-import android.graphics.PointF
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMrzStillImageDetectionBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.example.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.mrzscanner.MRZScanner
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
-import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
-import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
-import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
-import io.scanbot.sdk.ui.view.edit.CroppingActivity
-import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
+import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 
-class MRZStillImageDetectionActivity : AppCompatActivity() {
-    private lateinit var resultImageView: ImageView
-    private lateinit var cropBtn: Button
-    private lateinit var runRecognitionBtn: Button
-    private lateinit var progressView: View
+class MrzStillImageDetectionActivity : AppCompatActivity() {
 
-    private var page: Page? = null
+    private val binding by lazy { ActivityMrzStillImageDetectionBinding.inflate(layoutInflater) }
+    private val scanbotSdk by lazy { ScanbotSDK(this) }
+    private val mrzScanner by lazy { scanbotSdk.createMrzScanner() }
 
-    private lateinit var mrzScanner: MRZScanner
-    private lateinit var pageFileStorage: PageFileStorage
-    private lateinit var pageProcessor: PageProcessor
+    private lateinit var page: Page
 
-    private val docScannerResultLauncher =
-        registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
-            val parcelablePages = resultEntity.result!!
-            page = parcelablePages[0]
-            displayPreviewImage()
-            cropBtn.visibility = View.VISIBLE
-            runRecognitionBtn.visibility = View.VISIBLE
-        }
-
-    private val croppingResultLauncher =
-        registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
-            page = resultEntity.result!!
-            displayPreviewImage()
-        }
-
-    private val chooseFromGalleryResultLauncher = registerForActivityResult(
-        ImportImageContract(this)
-    ) { resultEntity ->
-        lifecycleScope.launch(Dispatchers.Default) {
-            lifecycleScope.launch(Dispatchers.Default) {
-                resultEntity?.let {
-                    importImageToPage(it)
-                    withContext(Dispatchers.Main){
-                        progressView.visibility = View.VISIBLE
-                    }
-                }
+    private val docScannerResultLauncher by lazy {
+        registerForActivityResultOk(DocumentScannerActivity.ResultContract(this@MrzStillImageDetectionActivity)) { resultEntity ->
+            val document = resultEntity.result!!
+            page = document.pageAtIndex(0) ?: kotlin.run {
+                Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
+                this@MrzStillImageDetectionActivity.showToast("Error obtaining scanned page!")
+                return@registerForActivityResultOk
             }
+
+            binding.resultImageView.setImageBitmap(page.documentImage)
+            binding.cropBtn.visibility = View.VISIBLE
+            binding.runRecognitionBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@MrzStillImageDetectionActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
+        }
+
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
+        }
+
+        lifecycleScope.launch {
+            importImageToPage(uri)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mrz_still_image_detection)
-        resultImageView = findViewById(R.id.resultImageView)
-        progressView = findViewById(R.id.progressBar)
+        setContentView(binding.root)
 
-        val scanbotSDK = ScanbotSDK(this)
-        mrzScanner = scanbotSDK.createMrzScanner()
-        pageFileStorage = scanbotSDK.createPageFileStorage()
-        pageProcessor = scanbotSDK.createPageProcessor()
-
-        findViewById<View>(R.id.start_scanner_btn).setOnClickListener {
-            val configuration = DocumentScannerConfiguration()
-            configuration.setMultiPageEnabled(false)
-            configuration.setMultiPageButtonHidden(true)
-            configuration.setAutoSnappingEnabled(false)
-            configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
-            configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
-            configuration.setIgnoreBadAspectRatio(true)
-            docScannerResultLauncher.launch(configuration)
+        binding.startScannerBtn.setOnClickListener {
+            val config = DocumentScanningFlow().apply {
+                this.outputSettings.pagesScanLimit = 1
+                this.screens.camera.cameraConfiguration.autoSnappingEnabled = false
+                this.screens.camera.cameraConfiguration.ignoreBadAspectRatio = true
+            }
+            docScannerResultLauncher.launch(config)
         }
 
-        findViewById<View>(R.id.import_from_lib_btn).setOnClickListener { openGallery() }
-
-        cropBtn = findViewById(R.id.crop_btn)
-        cropBtn.setOnClickListener {
-            val configuration = CroppingConfiguration(page!!)
-            croppingResultLauncher.launch(configuration)
-        }
-
-        runRecognitionBtn = findViewById(R.id.run_recognition_btn)
-        runRecognitionBtn.setOnClickListener { runRecognition() }
+        binding.importFromLibBtn.setOnClickListener { openGallery() }
+        binding.runRecognitionBtn.setOnClickListener { runRecognition() }
     }
 
     private fun openGallery() {
-        chooseFromGalleryResultLauncher.launch(Unit)
-    }
-
-    private fun displayPreviewImage() {
-        val imageUri = pageFileStorage.getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
-        resultImageView.setImageBitmap(loadImage(imageUri))
-    }
-
-    private fun loadImage(imageUri: Uri): Bitmap? {
-        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+        selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private fun runRecognition() {
         lifecycleScope.launch(Dispatchers.Default) {
-            recognizeMrz(page!!)
+            recognizeMrz(page)
         }
-        progressView.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private suspend fun recognizeMrz(page: Page) {
-        val imageUri = pageFileStorage.getImageURI(page.pageId, PageFileType.DOCUMENT)
-        val documentImage = loadImage(imageUri)
-        val mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(documentImage, 0)
-
+        val mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(page.documentImage, 0)
 
         withContext(Dispatchers.Main) {
-            progressView.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
             if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
-                startActivity(newIntent(this@MRZStillImageDetectionActivity, mrzRecognitionResult))
+                startActivity(newIntent(this@MrzStillImageDetectionActivity, mrzRecognitionResult))
             } else {
                 Toast.makeText(
-                    this@MRZStillImageDetectionActivity,
+                    this@MrzStillImageDetectionActivity,
                     "No MRZ data recognized!", Toast.LENGTH_LONG
                 ).show()
             }
         }
     }
 
-    private suspend fun importImageToPage(bitmap: Bitmap) {
-        val pageId = pageFileStorage.add(bitmap)
-        val emptyPolygon = emptyList<PointF>()
-        val newPage = Page(pageId, emptyPolygon, DetectionStatus.OK, ImageFilterType.NONE)
-        val result = try {
-            pageProcessor.detectDocument(newPage)
-        } catch (ex: IOException) {
-            Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
-            null
+    private suspend fun importImageToPage(uri: Uri) {
+        val page = withContext(Dispatchers.Default) {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            val document = scanbotSdk.documentApi.createDocument()
+            val page = document.addPage(bitmap)
+
+            val contourResult = scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: kotlin.run {
+                Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
+                PolygonHelper.getFullPolygon()
+            }
+            page.apply(newPolygon = contourResult)
+            page
         }
 
         withContext(Dispatchers.Main) {
-            progressView.visibility = View.GONE
-            if (result != null) {
-                page = result as Page?
-                displayPreviewImage()
-                cropBtn.visibility = View.VISIBLE
-                runRecognitionBtn.visibility = View.VISIBLE
-            }
+            binding.progressBar.visibility = View.GONE
+            binding.resultImageView.setImageBitmap(page.documentImage)
+            binding.cropBtn.visibility = View.VISIBLE
+            binding.runRecognitionBtn.visibility = View.VISIBLE
         }
     }
 }

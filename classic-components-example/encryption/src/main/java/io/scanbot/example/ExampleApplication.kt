@@ -13,7 +13,7 @@ class ExampleApplication : Application() {
      * Please note: The Scanbot SDK will run without a license key for one minute per session!
      * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working.
      * You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
-     * Please submit the trial license form (https://scanbot.io/en/sdk/demo/trial) on our website by using
+     * Please submit the trial license form (https://scanbot.io/trial/) on our website by using
      * the app identifier "io.scanbot.example.sdk.android" of this example app.
      */
     val licenseKey = ""

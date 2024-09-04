@@ -1,3 +1,4 @@
+
 <resources>
     <string name="app_name">Scanbot SDK Example</string>
     <string name="color_document_filter">Color Document Filter</string>
@@ -7,19 +8,6 @@
     <string name="contrast_filter">Contrast Filter</string>
     <string name="grayscale_filter">Grayscale Filter</string>
     <string name="white_black_point_filter">White Black Point Filter</string>
-    <string name="legacy_low_light_binarization_filter">Legacy Low Light Binarization Filter</string>
-    <string name="legacy_sensitive_binarization_filter">Legacy Sensitive Binarization Filter</string>
-    <string name="legacy_low_light_binarization_filter_2">Legacy Low Light Binarization Filter 2</string>
-    <string name="legacy_edge_highlight_filter">Legacy Edge Highlight Filter</string>
-    <string name="legacy_deep_binarization_filter">Legacy Deep Binarization Filter</string>
-    <string name="legacy_otsu_binarization_filter">Legacy Otsu Binarization Filter</string>
-    <string name="legacy_clean_background_filter">Legacy Clean Background Filter</string>
-    <string name="legacy_color_document_filter">Legacy Color Document Filter</string>
-    <string name="legacy_color_filter">Legacy Color Filter</string>
-    <string name="legacy_grayscale_filter">Legacy Grayscale Filter</string>
-    <string name="legacy_binarized_filter">Legacy Binarized Filter</string>
-    <string name="legacy_pure_binarized_filter">Legacy Pure Binarized Filter</string>
-    <string name="legacy_black_amp_white_filter"><![CDATA[Legacy Black & White Filter]]></string>
     <string name="none">None</string>
     <string name="the_demo_expired">The demo app will terminate because of the missing license key. Get your free 30-day license today!</string>
     <string name="demo_expired">Demo Expired</string>

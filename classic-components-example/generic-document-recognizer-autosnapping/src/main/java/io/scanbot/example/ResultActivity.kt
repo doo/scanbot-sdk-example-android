@@ -55,9 +55,8 @@ object DocumentsResultsStorage {
         }
 }
 
-private class Adapter(
-        private val scanResult: GenericDocumentRecognitionResult
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+private class Adapter(private val scanResult: GenericDocumentRecognitionResult) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class FieldViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

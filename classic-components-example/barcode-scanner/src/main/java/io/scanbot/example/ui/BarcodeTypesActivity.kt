@@ -32,8 +32,6 @@ class BarcodeTypesActivity : AppCompatActivity() {
         val adapter = BarcodeTypesAdapter()
         typesList.adapter = adapter
 
-        findViewById<View>(R.id.apply).setOnClickListener { v ->
-            finish()
-        }
+        findViewById<View>(R.id.apply).setOnClickListener { finish() }
     }
 }

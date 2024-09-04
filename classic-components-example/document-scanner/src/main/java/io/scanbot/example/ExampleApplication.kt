@@ -5,14 +5,24 @@ import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.util.log.LoggerProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class ExampleApplication : Application() {
+class ExampleApplication : Application(), CoroutineScope {
+
+    private var job: Job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
     /*
      * TODO 1/2: Add the Scanbot SDK license key here.
      * Please note: The Scanbot SDK will run without a license key for one minute per session!
      * After the trial period is over all Scanbot SDK functions as well as the UI components will stop working.
      * You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
-     * Please submit the trial license form (https://scanbot.io/en/sdk/demo/trial) on our website by using
+     * Please submit the trial license form (https://scanbot.io/trial/) on our website by using
      * the app identifier "io.scanbot.example.sdk.android" of this example app.
      */
     val licenseKey = ""
@@ -39,5 +49,10 @@ class ExampleApplication : Application() {
         LoggerProvider.logger.d("ExampleApplication", "License status: ${licenseInfo.status}")
         LoggerProvider.logger.d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
         LoggerProvider.logger.d("ExampleApplication", "License expirationDate: ${licenseInfo.expirationDate}")
+
+        launch {
+            // Clear all previously created documents in storage
+            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+        }
     }
 }

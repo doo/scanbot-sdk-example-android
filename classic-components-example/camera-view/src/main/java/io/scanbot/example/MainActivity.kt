@@ -24,7 +24,7 @@ import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -66,12 +66,12 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         cameraView.lockToPortrait(true)
 
         // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#preview-mode
-        //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN);
+        //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
 
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 // Shutter sound is ON by default. You can disable it:
-                // cameraView.setShutterSound(false);
+                // cameraView.setShutterSound(false)
 
                 cameraView.continuousFocus()
                 cameraView.useFlash(flashEnabled)
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         autoSnappingToggleButton.post { setAutoSnapEnabled(autoSnappingEnabled) }
     }
 
-    private fun askPermission() {
+    private fun askPermission() { // TODO: migrate to Result API to request permissions!
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         return false // typically you need to return false
     }
 
-    private fun showUserGuidance(result: DetectionStatus) {
+    private fun showUserGuidance(result: DocumentDetectionStatus) {
         if (!autoSnappingEnabled) {
             return
         }
@@ -149,27 +149,27 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Make sure to reset the default polygon fill color (see the ignoreBadAspectRatio case).
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         when (result) {
-            DetectionStatus.OK -> {
+            DocumentDetectionStatus.OK -> {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_TOO_SMALL -> {
+            DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_BAD_ANGLES -> {
+            DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_NOTHING_DETECTED -> {
+            DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_TOO_NOISY -> {
+            DocumentDetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+            DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                 if (ignoreBadAspectRatio) {
                     userGuidanceHint.text = "Don't move"
                     // change polygon color to "OK"
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
                 }
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_TOO_DARK -> {
+            DocumentDetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
         options.inSampleSize = 8
         // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
-        //options.inSampleSize = 1;
+        //options.inSampleSize = 1
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
         // Rotate the original image based on the imageOrientation value.

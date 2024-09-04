@@ -89,7 +89,7 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<View>(R.id.retry).setOnClickListener { v: View? -> finish() }
+        findViewById<View>(R.id.retry).setOnClickListener { finish() }
     }
 
     private fun addValueView(layout: LinearLayout, title: String, value: String) {

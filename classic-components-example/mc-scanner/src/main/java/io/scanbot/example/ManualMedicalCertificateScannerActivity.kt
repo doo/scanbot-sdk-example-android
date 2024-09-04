@@ -60,7 +60,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
 
-        findViewById<View>(R.id.take_picture_btn).setOnClickListener { v: View? -> cameraView.takePicture(false) }
+        findViewById<View>(R.id.take_picture_btn).setOnClickListener { cameraView.takePicture(false) }
         Toast.makeText(
             this,
             if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",

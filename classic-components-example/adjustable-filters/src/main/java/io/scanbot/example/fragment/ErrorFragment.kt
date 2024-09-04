@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import io.scanbot.example.R
 
-
-class ErrorFragment : androidx.fragment.app.DialogFragment() {
+class ErrorFragment : DialogFragment() {
 
     companion object {
         const val NAME = "ErrorFragment"
@@ -38,19 +38,13 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
 
         builder.setView(contentContainer)
 
-        builder.setNegativeButton(
-                getString(R.string.cancel_dialog_button)) { _, _ ->
-            run {
-                dismiss()
-            }
+        builder.setNegativeButton(getString(R.string.cancel_dialog_button)) { _, _ ->
+            dismiss()
         }
-        builder.setPositiveButton(
-                getString(R.string.get_license)) { _, _ ->
-            run {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://scanbot.io/en/sdk.html"))
-                activity?.startActivity(Intent.createChooser(intent, "Choose Browser"))
-                dismiss()
-            }
+        builder.setPositiveButton(getString(R.string.get_license)) { _, _ ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://scanbot.io/en/sdk.html"))
+            activity?.startActivity(Intent.createChooser(intent, "Choose Browser"))
+            dismiss()
         }
 
         val dialog = builder.create()

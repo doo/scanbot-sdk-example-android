@@ -23,7 +23,7 @@
         android:id="@+id/result"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_gravity="bottom|right" />
+        android:layout_gravity="bottom|end" />
 
     <Button
         android:id="@+id/snap"
@@ -36,7 +36,7 @@
         android:id="@+id/flash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        android:layout_gravity="top|end"
         android:text="Flash" />
 
 </FrameLayout>

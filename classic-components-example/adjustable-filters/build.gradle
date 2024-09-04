@@ -1,49 +1,46 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    namespace = project.ext.submodulesNamespace
+    compileSdk = project.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId project.ext.exampleAppId
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled true
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
     }
+
     buildTypes {
-        debug {
+        named("debug") {
             // set this to `false` to allow debugging and run a "non-release" build
             minifyEnabled = false
             debuggable = true
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
     }
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true
     }
 }
 
-configurations {
-    implementation.exclude group: 'org.jetbrains', module: 'annotations'
-}
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
-    implementation "io.scanbot:sdk-package-1:$project.ext.scanbotSdkVersion"
-    implementation "io.scanbot:sdk-package-ui:$scanbotSdkVersion"
-    implementation "io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion"
-    implementation "com.squareup.picasso:picasso:$project.ext.picassoVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$project.ext.coroutinesCoreVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$project.ext.coroutinesAndroidVersion"
-    implementation "com.google.android.material:material:$project.ext.materialVersion"
+    implementation(project(':common'))
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+    implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
+    implementation("io.scanbot:sdk-package-1:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-package-ui:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-ml-imageprocessor-assets:${project.ext.scanbotSdkVersion}")
+    implementation("com.squareup.picasso:picasso:${project.ext.picassoVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.ext.coroutinesCoreVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${project.ext.coroutinesAndroidVersion}")
+    implementation("com.google.android.material:material:${project.ext.materialVersion}")
 }

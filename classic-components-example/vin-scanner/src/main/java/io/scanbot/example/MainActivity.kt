@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun askPermission(): Boolean {
+    private fun askPermission(): Boolean { // TODO: migrate to Result API to request permissions!
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
             return false

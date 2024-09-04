@@ -1,34 +1,40 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    namespace = project.ext.submodulesNamespace
+    compileSdk = project.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId project.ext.exampleAppId
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled true
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
     }
+
     buildTypes {
-        debug {
+        named("debug") {
             // set this to `false` to allow debugging and run a "non-release" build
             minifyEnabled = false
             debuggable = true
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$project.ext.androidxSupportVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
-    implementation "io.scanbot:sdk-package-4:$project.ext.scanbotSdkVersion"
-    implementation "io.scanbot:sdk-licenseplate-assets:$project.ext.scanbotSdkVersion"
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+    implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
+    implementation("io.scanbot:sdk-package-3:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-licenseplate-assets:${project.ext.scanbotSdkVersion}")
 }

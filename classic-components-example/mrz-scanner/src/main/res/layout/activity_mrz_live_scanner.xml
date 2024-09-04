@@ -13,7 +13,6 @@
             android:id="@+id/result"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
 
     <io.scanbot.sdk.ui.camera.FinderOverlayView
@@ -25,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/mrz_finder_hint"
-        android:layout_above="@+id/finder_overlay"
+        android:layout_above="@id/finder_overlay"
         android:layout_margin="16dp"
         android:textColor="@android:color/holo_red_dark"
         android:gravity="center"/>
@@ -35,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:text="Flash" />
-
 </RelativeLayout>
