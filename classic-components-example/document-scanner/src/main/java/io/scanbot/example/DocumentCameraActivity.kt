@@ -130,7 +130,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         autoSnappingToggleButton.post { setAutoSnapEnabled(autoSnappingEnabled) }
     }
 
-    private fun askPermission() { // TODO: migrate to Result API to request permissions!
+    private fun askPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }

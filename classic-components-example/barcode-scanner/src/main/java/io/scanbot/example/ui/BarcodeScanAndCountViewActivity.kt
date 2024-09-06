@@ -132,7 +132,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         // TODO to get the result of all scanned barcodes, use the following code
     }
 
-    override fun onResume() { // TODO: migrate to Result API to request permissions!
+    override fun onResume() {
         super.onResume()
         if (ContextCompat.checkSelfPermission(
                 this,

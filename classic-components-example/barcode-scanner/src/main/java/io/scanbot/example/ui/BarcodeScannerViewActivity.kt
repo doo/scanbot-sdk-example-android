@@ -77,7 +77,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() { // TODO: migrate to Result API to request permissions!
+    override fun onResume() {
         super.onResume()
         barcodeScannerView.viewController.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

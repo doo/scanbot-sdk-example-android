@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -11,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityFiltersTunesBinding
 import io.scanbot.example.fragment.ErrorFragment
@@ -61,30 +63,7 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
             return
         }
 
-        val doc = scanbotSdk.documentApi.loadDocument(docId, createIfNotExist = false)
-        if (doc == null) {
-            this.showToast("Document with given ID was not found!")
-            finish()
-            return
-        }
-        document = doc
-
-        /** For example purposes we only expect one and only page in given document.
-         * In real app there can be many. */
-        val page = document.pageAtIndex(0)
-        if (page == null) {
-            this.showToast("Document has no pages!")
-            finish()
-            return
-        }
-        this.page = page
-
-        /** For example purposes we only use one filter from the list here - because we also apply only one filter.
-         * In real app one can use multiple filters. */
-        val appliedFilter = page.filters.getOrNull(0)
-        selectedFilter = appliedFilter
-
-        binding.filterValue.text = selectedFilter.getFilterName()
+        lifecycleScope.launch { loadDocument(docId) }
 
         binding.filtersInnerLayout.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
@@ -96,7 +75,7 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.Main) {
                     val data = Intent().apply {
-                        putExtra(DOC_ID_EXTRA, document.uuid)
+                        putExtra(DOC_ID_EXTRA, docId)
                     }
                     setResult(Activity.RESULT_OK, data)
                     finish()
@@ -105,7 +84,41 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
         }
 
         initMenu()
-        updatePagePreview()
+    }
+
+    private suspend fun loadDocument(docId: String) {
+        val doc = withContext(Dispatchers.IO) { scanbotSdk.documentApi.loadDocument(docId, createIfNotExist = false) }
+        withContext(Dispatchers.Main) {
+            if (doc == null) {
+                showToast("Document with given ID was not found!")
+                Log.e(Const.LOG_TAG, "Document with ID $docId was not found!")
+                finish()
+                return@withContext
+            }
+
+            document = doc
+
+            /** For example purposes we only expect one and only page in given document.
+             * In real app there can be many. */
+            val page = document.pageAtIndex(0)
+            if (page == null) {
+                showToast("Document has no pages!")
+                Log.e(Const.LOG_TAG, "Document has no pages!")
+                finish()
+                return@withContext
+            }
+
+            this@FilterActivity.page = page
+
+            /** For example purposes we only use one filter from the list here - because we also apply only one filter.
+             * In real app one can use multiple filters. */
+            val appliedFilter = page.filters.getOrNull(0)
+            selectedFilter = appliedFilter
+
+            binding.filterValue.text = selectedFilter.getFilterName()
+
+            updatePagePreview()
+        }
     }
 
     private fun updatePagePreview() {
@@ -145,16 +158,6 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
         filtersSheetFragment = FiltersBottomSheetMenuFragment()
     }
 
-    inner class ImageCallback : Callback {
-        override fun onSuccess() {
-            binding.progress.visibility = View.GONE
-        }
-
-        override fun onError(e: java.lang.Exception?) {
-            binding.progress.visibility = View.GONE
-        }
-    }
-
     override fun onFilterApplied(parametricFilter: ParametricFilter?) {
         applyFilter(parametricFilter)
     }
@@ -186,6 +189,16 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
             } else {
                 filteringState = FilteringState.PROCESSING_AND_SCHEDULED
             }
+        }
+    }
+
+    inner class ImageCallback : Callback {
+        override fun onSuccess() {
+            binding.progress.visibility = View.GONE
+        }
+
+        override fun onError(e: java.lang.Exception?) {
+            binding.progress.visibility = View.GONE
         }
     }
 }

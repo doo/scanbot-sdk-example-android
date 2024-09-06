@@ -77,7 +77,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         })
     }
 
-    override fun onResume() { // TODO: migrate to Result API to request permissions!
+    override fun onResume() {
         super.onResume()
         if (ContextCompat.checkSelfPermission(
                 this,
