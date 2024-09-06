@@ -14,11 +14,10 @@ import java.io.File
 
 class BarcodeResultActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityBarcodeResultBinding
+    private val binding by lazy { ActivityBarcodeResultBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBarcodeResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 

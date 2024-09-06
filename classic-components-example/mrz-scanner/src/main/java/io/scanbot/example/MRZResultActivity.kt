@@ -73,7 +73,7 @@ class MRZResultActivity : AppCompatActivity() {
         travelDocTypeVariant.text = mrzResult.travelDocTypeVariant?.value?.text
         versionNumber.text = mrzResult.versionNumber?.value?.text
 
-        findViewById<View>(R.id.retry).setOnClickListener { v: View? -> finish() }
+        findViewById<View>(R.id.retry).setOnClickListener { finish() }
     }
 
     companion object {

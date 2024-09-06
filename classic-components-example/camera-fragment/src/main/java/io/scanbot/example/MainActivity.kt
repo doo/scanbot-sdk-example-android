@@ -1,103 +1,75 @@
 package io.scanbot.example
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.example.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.core.contourdetector.ContourDetector
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val scanbotSDK = ScanbotSDK(this)
-        val pageFileStorage = scanbotSDK.createPageFileStorage()
-        val pageProcessor = scanbotSDK.createPageProcessor()
-        val galleryImageLauncher =
-            registerForActivityResult(ImportImageContract(this)) { resultEntity ->
-                lifecycleScope.launch(Dispatchers.Default) {
-                    val activity = this@MainActivity
-                    val sdk = ScanbotSDK(activity)
-                    if (!sdk.licenseInfo.isValid) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                activity,
-                                "License has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        resultEntity?.let { bitmap ->
-                            processImageForAutoDocumentDetection(
-                                pageFileStorage,
-                                pageProcessor,
-                                bitmap
-                            )
-                        }
-                    }
-                }
-            }
 
-        findViewById<View>(R.id.show_dialog_btn).setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    this@MainActivity,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(
-                        this@MainActivity,
-                        Manifest.permission.CAMERA
-                    )
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this@MainActivity,
-                        arrayOf(Manifest.permission.CAMERA),
-                        PERMISSIONS_REQUEST_CAMERA
-                    )
-                }
-            } else {
-                openCameraDialog()
-            }
-        }
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+    private val contourDetector:ContourDetector by lazy { scanbotSdk.createContourDetector() }
 
-        findViewById<View>(R.id.import_image).setOnClickListener {
-            galleryImageLauncher.launch(Unit)
+    private val requestCameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            openCameraDialog()
+        } else {
+            this@MainActivity.showToast("Camera permission is required to run this example!")
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCameraDialog()
-            }
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@MainActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
+        }
+
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
+        }
+
+        if (scanbotSdk.licenseInfo.isValid) {
+            lifecycleScope.launch { processImageForAutoDocumentDetection(uri) }
+        } else {
+            this@MainActivity.showToast("1-minute trial license has expired!")
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        findViewById<View>(R.id.show_dialog_btn).setOnClickListener {
+            requestCameraLauncher.launch(Manifest.permission.CAMERA)
+        }
+
+        findViewById<View>(R.id.import_image).setOnClickListener {
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
     private fun openCameraDialog() {
         val ft = supportFragmentManager.beginTransaction()
-        val prev = supportFragmentManager.findFragmentByTag("dialog")
+        val prev = supportFragmentManager.findFragmentByTag(DIALOG_TAG)
         if (prev != null) {
             ft.remove(prev)
         }
@@ -105,49 +77,50 @@ class MainActivity : AppCompatActivity() {
 
         // Create and show the dialog.
         val newFragment: DialogFragment = CameraDialogFragment.newInstance()
-        newFragment.show(ft, "dialog")
+        newFragment.show(ft, DIALOG_TAG)
     }
 
     /** Imports a selected image as original image and performs auto document detection on it. */
-    suspend fun processImageForAutoDocumentDetection(
-        pageFileStorage: PageFileStorage,
-        pageProcessor: PageProcessor,
-        bitmap: Bitmap
-    ) {
+    private suspend fun processImageForAutoDocumentDetection(imageUri: Uri) {
         val progressBar = findViewById<View>(R.id.progress_bar)
         val importResultImage = findViewById<ImageView>(R.id.import_result)
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.VISIBLE
-            Toast.makeText(
-                this@MainActivity,
-                "importing page", Toast.LENGTH_LONG
-            ).show()
+            this@MainActivity.showToast("Importing image...")
         }
 
         val page = withContext(Dispatchers.Default) {
-            // create a new Page object with given image as original image:
-            val pageId = pageFileStorage.add(bitmap)
-            var page = Page(pageId, emptyList(), DetectionStatus.OK, ImageFilterType.NONE)
+            // load the selected image:
+            val inputStream = contentResolver.openInputStream(imageUri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            // create a new Document object with given image as original image:
+            val newDocument = scanbotSdk.documentApi.createDocument()
+            val page = newDocument.addPage(bitmap)
+
             // run auto document detection on it:
-            page = pageProcessor.detectDocument(page)
+            val detectionResult = contourDetector.detect(bitmap)
+
+            /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
+             * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
+             */
+            val isDetectionStatusOk = (detectionResult?.status?.name?.startsWith("OK_")) ?: false
+            if (detectionResult != null && isDetectionStatusOk && detectionResult.polygonF.isNotEmpty()) {
+                // apply the detected polygon to the new page:
+                page.apply(newPolygon = detectionResult.polygonF)
+            }
             page
         }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
-            val image = pageFileStorage.getImage(
-                page.pageId,
-                PageFileStorage.PageFileType.DOCUMENT //cropped image
-            )
-            importResultImage.setImageBitmap(
-                image
-            )
+            // show Page's document image:
+            importResultImage.setImageBitmap(page.documentImage)
             importResultImage.visibility = View.VISIBLE
-            //show Page
         }
     }
 
-    companion object {
-        private const val PERMISSIONS_REQUEST_CAMERA = 314
+    private companion object {
+        const val DIALOG_TAG = "scanbot_dialog"
     }
 }

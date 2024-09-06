@@ -1,102 +1,76 @@
 package io.scanbot.example
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.example.common.ImportImageContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
 
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@MainActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
+        }
+
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
+        }
+
+        lifecycleScope.launch { recognizeCheck(uri) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val galleryImageLauncher =
-            registerForActivityResult(ImportImageContract(this)) { resultEntity ->
-                lifecycleScope.launch(Dispatchers.Default) {
-                    val activity = this@MainActivity
-                    val sdk = ScanbotSDK(activity)
-                    if (!sdk.licenseInfo.isValid) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                activity,
-                                "License has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        val progressBar = findViewById<View>(R.id.progress_bar)
-                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
-                        resultEntity?.let { bitmap ->
-                            val checkRecognizer = sdk.createCheckRecognizer()
-                            val stream = ByteArrayOutputStream()
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                            val result =
-                                checkRecognizer.recognizeBitmap(
-                                    bitmap,
-                                    0
-                                )
+        setContentView(binding.root)
 
-                            withContext(Dispatchers.Main) {
-                                result?.let {
-                                    startActivity(
-                                        CheckRecognizerResultActivity.newIntent(
-                                            activity,
-                                            it
-                                        )
-                                    )
-                                } ?: Toast.makeText(
-                                    this@MainActivity,
-                                    "No  data recognized!", Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                        withContext(Dispatchers.Main) { progressBar.isVisible = false }
-                    }
-                }
-            }
-        askPermission()
-        setContentView(R.layout.activity_main)
-        findViewById<View>(R.id.check_recognizer).setOnClickListener {
+        binding.checkRecognizer.setOnClickListener {
             startActivity(CheckRecognizerActivity.newIntent(this))
         }
-        findViewById<View>(R.id.check_recognizer_auto_snapping).setOnClickListener {
+        binding.checkRecognizerAutoSnapping.setOnClickListener {
             startActivity(AutoSnappingCheckRecognizerActivity.newIntent(this))
         }
-
-        findViewById<View>(R.id.check_recognizer_pick_image).setOnClickListener {
-            galleryImageLauncher.launch(Unit)
+        binding.checkRecognizerPickImage.setOnClickListener {
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    private fun askPermission() {
-        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-            checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-            checkPermissionNotGranted(Manifest.permission.CAMERA)
-        ) {
+    private suspend fun recognizeCheck(uri: Uri) {
+        withContext(Dispatchers.Main) { binding.progressBar.isVisible = true }
 
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                ), 999
-            )
+        val recognitionResult = withContext(Dispatchers.Default) {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            val checkRecognizer = scanbotSdk.createCheckRecognizer()
+            checkRecognizer.recognizeBitmap(bitmap, 0)
         }
-    }
 
-    private fun checkPermissionNotGranted(permission: String) =
-        ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+        withContext(Dispatchers.Main) {
+            recognitionResult?.let {
+                startActivity(CheckRecognizerResultActivity.newIntent(this@MainActivity, it))
+            } ?: this@MainActivity.showToast("No  data recognized!")
+        }
+
+        withContext(Dispatchers.Main) { binding.progressBar.isVisible = false }
+    }
 }

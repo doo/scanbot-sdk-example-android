@@ -52,7 +52,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
                         barcodeScannerView.post {
                             Toast.makeText(
                                 this@BarcodeScannerViewActivity,
-                                "License has expired!",
+                                "1-minute trial license has expired!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -77,7 +77,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
+    override fun onResume() { // TODO: migrate to Result API to request permissions!
         super.onResume()
         barcodeScannerView.viewController.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

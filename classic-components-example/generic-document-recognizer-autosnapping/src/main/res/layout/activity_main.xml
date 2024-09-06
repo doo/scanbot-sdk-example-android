@@ -28,5 +28,5 @@
         android:text="Pick image from library"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startScannerButton" />
+        app:layout_constraintTop_toBottomOf="@id/startScannerButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

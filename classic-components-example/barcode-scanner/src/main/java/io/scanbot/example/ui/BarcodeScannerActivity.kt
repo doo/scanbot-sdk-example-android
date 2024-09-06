@@ -77,7 +77,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         })
     }
 
-    override fun onResume() {
+    override fun onResume() { // TODO: migrate to Result API to request permissions!
         super.onResume()
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -124,7 +124,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             cameraView.post {
                 Toast.makeText(
                     this,
-                    "License has expired!",
+                    "1-minute trial license has expired!",
                     Toast.LENGTH_LONG
                 ).show()
             }

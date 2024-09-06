@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:text="Back"
         android:visibility="gone"/>
 
@@ -46,7 +46,7 @@
         app:edgeImageSrc="@drawable/ui_crop_side_handle"
         app:editPolygonHandleSize="48dp"
         app:magneticLineTreshold="10dp"
-        android:layout_above="@+id/buttons"/>
+        android:layout_above="@id/buttons"/>
 
     <io.scanbot.sdk.ui.MagnifierView
         android:id="@+id/magnifier"
@@ -56,13 +56,13 @@
         app:magnifierImageSrc="@drawable/ui_crop_magnifier"
         app:magnifierRadius="36dp"
         app:magnifierMargin="16dp"
-        android:layout_above="@+id/buttons"/>
+        android:layout_above="@id/buttons"/>
 
     <ImageView
         android:id="@+id/resultImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/backButton"
+        android:layout_above="@id/backButton"
         android:visibility="gone"/>
 
 </RelativeLayout>

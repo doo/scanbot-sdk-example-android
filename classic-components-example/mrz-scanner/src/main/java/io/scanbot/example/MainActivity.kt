@@ -1,42 +1,25 @@
 package io.scanbot.example
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import io.scanbot.example.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        askPermission()
+        setContentView(binding.root)
 
-        val liveScannerBtn = findViewById<Button>(R.id.live_scanner_btn)
-
-        liveScannerBtn.setOnClickListener { startActivity(MRZLiveDetectionActivity.newIntent(this)) }
+        binding.liveScannerBtn.setOnClickListener { startActivity(MRZLiveDetectionActivity.newIntent(this)) }
         val stillImageScannerBtn = findViewById<Button>(R.id.still_image_detection_btn)
 
         stillImageScannerBtn.setOnClickListener {
-            val intent = Intent(applicationContext, MRZStillImageDetectionActivity::class.java)
+            val intent = Intent(applicationContext, MrzStillImageDetectionActivity::class.java)
             startActivity(intent)
         }
     }
-
-    private fun askPermission() {
-        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.CAMERA), 999)
-        }
-    }
-
-    private fun checkPermissionNotGranted(permission: String) =
-            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
 }

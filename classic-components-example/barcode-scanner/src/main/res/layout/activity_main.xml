@@ -24,7 +24,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
                 android:fontFamily="sans-serif-medium"
-                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
                 android:text="@string/scanbot_sdk_demo"
                 android:textColor="#ffffff"
                 android:textSize="34sp"
@@ -34,17 +34,12 @@
                 android:id="@+id/warning_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="0dp"
-                android:layout_marginRight="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/warning_shape"
                 android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -55,7 +50,6 @@
                     android:textColor="#ffffff"
                     android:textSize="14sp"
                     android:textStyle="normal" />
-
             </LinearLayout>
 
             <TextView
@@ -63,7 +57,7 @@
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
                 android:text="Start QR-/Barcode Scanner" />
 
@@ -78,7 +72,7 @@
                 android:layout_height="56dp"
                 android:gravity="center_vertical"
                 android:text="Start Barcode Scanner View demo"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button" />
 
             <View
@@ -92,7 +86,7 @@
                 android:layout_height="56dp"
                 android:gravity="center_vertical"
                 android:text="Start Barcode Scan and Count View demo"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button" />
 
             <View
@@ -105,7 +99,7 @@
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
                 android:text="Pick image from library" />
 
@@ -119,7 +113,7 @@
                 style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
                 android:text="Set accepted barcodes" />
 
@@ -127,7 +121,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#50000000" />
-
         </LinearLayout>
     </ScrollView>
 

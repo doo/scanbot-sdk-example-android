@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.PointF
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Pair
 import android.view.View
@@ -12,17 +11,21 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import io.scanbot.sdk.core.contourdetector.Line2D
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
-import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var editPolygonView: EditPolygonImageView
     private lateinit var magnifierView: MagnifierView
     private lateinit var resultImageView: ImageView
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var backButton: Button
 
     private lateinit var originalBitmap: Bitmap
+    private lateinit var previewBitmap: Bitmap
 
     private lateinit var contourDetector: ContourDetector
 
@@ -64,12 +68,42 @@ class MainActivity : AppCompatActivity() {
             cropButton.visibility = View.VISIBLE
             rotateButton.visibility = View.VISIBLE
         }
-        InitImageViewTask().executeOnExecutor(Executors.newSingleThreadExecutor())
+
+        lifecycleScope.launch {
+            val initImageResult = withContext(Dispatchers.Default) {
+                originalBitmap = loadBitmapFromAssets("demo_image.jpg")
+                previewBitmap = resizeForPreview(originalBitmap)
+
+                val result = contourDetector.detect(originalBitmap)
+                return@withContext when (result?.status) {
+                    DocumentDetectionStatus.OK,
+                    DocumentDetectionStatus.OK_BUT_BAD_ANGLES,
+                    DocumentDetectionStatus.OK_BUT_TOO_SMALL,
+                    DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+                        val linesPair = Pair(result.horizontalLines, result.verticalLines)
+                        val polygon = result.polygonF
+
+                        InitImageResult(linesPair, polygon)
+                    }
+
+                    else -> InitImageResult(Pair(listOf(), listOf()), listOf())
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                editPolygonView.setImageBitmap(previewBitmap)
+                magnifierView.setupMagnifier(editPolygonView)
+
+                // set detected polygon and lines into EditPolygonImageView
+                editPolygonView.polygon = initImageResult.polygon
+                editPolygonView.setLines(initImageResult.linesPair.first, initImageResult.linesPair.second)
+            }
+        }
     }
 
     private fun loadBitmapFromAssets(filePath: String): Bitmap {
-            val inputStream = assets.open(filePath)
-            return BitmapFactory.decodeStream(inputStream)
+        val inputStream = assets.open(filePath)
+        return BitmapFactory.decodeStream(inputStream)
     }
 
     private fun resizeForPreview(bitmap: Bitmap): Bitmap {
@@ -109,39 +143,6 @@ class MainActivity : AppCompatActivity() {
             resultImageView.setImageBitmap(resizeForPreview(documentImage!!))
             resultImageView.visibility = View.VISIBLE
             backButton.visibility = View.VISIBLE
-        }
-    }
-
-    // We use AsyncTask only for simplicity here. Avoid using it in your production app due to memory leaks, etc!
-    internal inner class InitImageViewTask : AsyncTask<Void?, Void?, InitImageResult>() {
-        private var previewBitmap: Bitmap? = null
-
-        override fun doInBackground(vararg params: Void?): InitImageResult {
-            originalBitmap = loadBitmapFromAssets("demo_image.jpg")
-            previewBitmap = resizeForPreview(originalBitmap)
-
-            val result = contourDetector.detect(originalBitmap)
-            return when (result?.status) {
-                DetectionStatus.OK,
-                DetectionStatus.OK_BUT_BAD_ANGLES,
-                DetectionStatus.OK_BUT_TOO_SMALL,
-                DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                    val linesPair = Pair(result.horizontalLines, result.verticalLines)
-                    val polygon = result.polygonF
-
-                    InitImageResult(linesPair, polygon)
-                }
-                else -> InitImageResult(Pair(listOf(), listOf()), listOf())
-            }
-        }
-
-        override fun onPostExecute(initImageResult: InitImageResult) {
-            editPolygonView.setImageBitmap(previewBitmap)
-            magnifierView.setupMagnifier(editPolygonView)
-
-            // set detected polygon and lines into EditPolygonImageView
-            editPolygonView.polygon = initImageResult.polygon
-            editPolygonView.setLines(initImageResult.linesPair.first, initImageResult.linesPair.second)
         }
     }
 

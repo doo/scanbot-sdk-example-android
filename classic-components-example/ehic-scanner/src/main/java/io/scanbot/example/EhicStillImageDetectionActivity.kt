@@ -1,173 +1,142 @@
 package io.scanbot.example
 
 import android.graphics.Bitmap
-import android.graphics.PointF
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.ehicscanner.model.EhicDetectionStatus
 import io.scanbot.example.EhicResultActivity.Companion.newIntent
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityEhicStillImageDetectionBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.example.common.ImportImageContract
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
-import io.scanbot.sdk.docprocessing.PageProcessor
+import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.persistence.PageFileStorage.PageFileType
-import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
-import io.scanbot.sdk.ui.view.camera.DocumentScannerActivity
-import io.scanbot.sdk.ui.view.camera.configuration.DocumentScannerConfiguration
-import io.scanbot.sdk.ui.view.edit.CroppingActivity
-import io.scanbot.sdk.ui.view.edit.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
+import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
+import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 
 class EhicStillImageDetectionActivity : AppCompatActivity() {
-    private lateinit var resultImageView: ImageView
-    private lateinit var cropBtn: Button
-    private lateinit var runRecognitionBtn: Button
-    private lateinit var progressView: View
 
-    private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var pageFileStorage: PageFileStorage
-    private lateinit var pageProcessor: PageProcessor
-    private lateinit var healthInsuranceCardScanner: HealthInsuranceCardScanner
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+    private val healthInsuranceCardScanner: HealthInsuranceCardScanner by lazy { scanbotSdk.createHealthInsuranceCardScanner() }
 
     private var page: Page? = null
 
-    private val docScannerResultLauncher =
-        registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
-            val parcelablePages = resultEntity.result!!
-            page = parcelablePages[0]
-            displayPreviewImage()
-            cropBtn.visibility = View.VISIBLE
-            runRecognitionBtn.visibility = View.VISIBLE
+    private val binding by lazy { ActivityEhicStillImageDetectionBinding.inflate(layoutInflater) }
+
+    private val docScannerResultLauncher: ActivityResultLauncher<DocumentScanningFlow> by lazy {
+        registerForActivityResultOk(DocumentScannerActivity.ResultContract(this)) { resultEntity ->
+            val document = resultEntity.result!!
+            page = document.pages.first().also { binding.resultImageView.setImageBitmap(it.documentImage) }
+            binding.runRecognitionBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@EhicStillImageDetectionActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
         }
 
-    private val croppingResultLauncher =
-        registerForActivityResultOk(CroppingActivity.ResultContract()) { resultEntity ->
-            page = resultEntity.result!!
-            displayPreviewImage()
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
         }
 
-    private val chooseFromGalleryResultLauncher =
-        registerForActivityResult(ImportImageContract(this)) { resultEntity ->
-            lifecycleScope.launch {
-
-                lifecycleScope.launch(Dispatchers.Default) {
-                    resultEntity?.let {
-                        importImageToPage(it)
-                    }
-                }
-                progressView.visibility = View.VISIBLE
-            }}
+        binding.progress.isVisible = true
+        lifecycleScope.launch { importedImageToPage(uri) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ehic_still_image_detection)
+        setContentView(binding.root)
 
-        resultImageView = findViewById(R.id.resultImageView)
-        progressView = findViewById(R.id.progressBar)
-        scanbotSDK = ScanbotSDK(this)
-
-        healthInsuranceCardScanner = scanbotSDK.createHealthInsuranceCardScanner()
-        pageFileStorage = scanbotSDK.createPageFileStorage()
-        pageProcessor = scanbotSDK.createPageProcessor()
-
-        findViewById<View>(R.id.start_scanner_btn).setOnClickListener {
-            val configuration = DocumentScannerConfiguration()
-            configuration.setMultiPageEnabled(false)
-            configuration.setMultiPageButtonHidden(true)
-            configuration.setAutoSnappingEnabled(false)
-            configuration.setCameraPreviewMode(CameraPreviewMode.FIT_IN)
-            configuration.setOrientationLockMode(CameraOrientationMode.PORTRAIT)
-            configuration.setIgnoreBadAspectRatio(true)
+        binding.startScannerBtn.setOnClickListener {
+            val configuration = DocumentScanningFlow().apply {
+                this.outputSettings.pagesScanLimit = 1
+                this.screens.camera.cameraConfiguration.autoSnappingEnabled = false
+                this.screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.NONE
+            }
             docScannerResultLauncher.launch(configuration)
         }
 
-        findViewById<View>(R.id.import_from_lib_btn).setOnClickListener { openGallery() }
-
-        cropBtn = findViewById(R.id.crop_btn)
-        cropBtn.setOnClickListener {
-            val configuration = CroppingConfiguration(page!!)
-            croppingResultLauncher.launch(configuration)
-        }
-
-        runRecognitionBtn = findViewById(R.id.run_recognition_btn)
-        runRecognitionBtn.setOnClickListener { runRecognition() }
+        binding.importFromLibBtn.setOnClickListener { openGallery() }
+        binding.runRecognitionBtn.setOnClickListener { runRecognition() }
     }
 
     private fun openGallery() {
-        chooseFromGalleryResultLauncher.launch(Unit)
+        selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun displayPreviewImage() {
-        val imageUri = pageFileStorage.getPreviewImageURI(page!!.pageId, PageFileType.DOCUMENT)
-        resultImageView.setImageBitmap(loadImage(imageUri))
-    }
-
-    private fun loadImage(imageUri: Uri): Bitmap? {
-        return MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+    private fun loadImage(imageUri: Uri): Bitmap {
+        val inputStream = contentResolver.openInputStream(imageUri)
+        return BitmapFactory.decodeStream(inputStream)
     }
 
     private fun runRecognition() {
-        lifecycleScope.launch(Dispatchers.Default) {
-            recognizeEhic(page)
+        if (!scanbotSdk.licenseInfo.isValid) {
+            showToast("1-minute trial license has expired!")
+            return
         }
-        progressView.visibility = View.VISIBLE
+
+        page?.let { page ->
+            binding.progress.isVisible = true
+
+            lifecycleScope.launch {
+                recognizeEhic(page)
+            }
+        }
     }
 
-    private suspend fun recognizeEhic(page: Page?) {
-        val imageUri = pageFileStorage.getImageURI(page!!.pageId, PageFileType.DOCUMENT)
-        val documentImage = loadImage(imageUri)!!
-        val result = healthInsuranceCardScanner.recognizeBitmap(documentImage, 0)
+    private suspend fun recognizeEhic(page: Page) {
+        val result = withContext(Dispatchers.Default) {
+            val imageUri = page.documentFileUri
+            val documentImage = loadImage(imageUri)
+            healthInsuranceCardScanner.recognizeBitmap(documentImage, 0)
+        }
 
         withContext(Dispatchers.Main) {
-            progressView.visibility = View.GONE
+            binding.progress.isVisible = false
             if (result != null && result.status == EhicDetectionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
             } else {
-                Toast.makeText(
-                    this@EhicStillImageDetectionActivity,
-                    "No EHIC data recognized!", Toast.LENGTH_LONG
-                ).show()
+                this@EhicStillImageDetectionActivity.showToast("No EHIC data recognized!")
             }
         }
     }
 
-    private suspend fun importImageToPage(bitmap: Bitmap) {
-        val pageId = pageFileStorage.add(bitmap)
-        val emptyPolygon = emptyList<PointF>()
-        val newPage = Page(pageId, emptyPolygon, DetectionStatus.OK, ImageFilterType.NONE)
+    private suspend fun importedImageToPage(uri: Uri) {
+        withContext(Dispatchers.Default) {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
 
-        val resultPage = try {
-            pageProcessor.detectDocument(newPage)
-        } catch (ex: IOException) {
-            Log.e("ImportImageToPageTask", "Error detecting document on page " + newPage.pageId)
-            null
+            val detectionResult = scanbotSdk.createContourDetector().detect(bitmap)
+            val document = scanbotSdk.documentApi.createDocument()
+            page = document.addPage(bitmap).apply {
+                apply(newPolygon = detectionResult?.polygonF ?: PolygonHelper.getFullPolygon())
+            }
         }
 
         withContext(Dispatchers.Main) {
-            progressView.visibility = View.GONE
-            page = resultPage
-            if (resultPage != null) {
-                displayPreviewImage()
-                cropBtn.visibility = View.VISIBLE
-                runRecognitionBtn.visibility = View.VISIBLE
-            }
+            binding.progress.visibility = View.GONE
+            binding.runRecognitionBtn.visibility = View.VISIBLE
+            page?.let { binding.resultImageView.setImageBitmap(it.documentImage) }
         }
     }
 }

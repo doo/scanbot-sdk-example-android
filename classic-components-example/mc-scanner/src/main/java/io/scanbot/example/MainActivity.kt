@@ -1,105 +1,79 @@
 package io.scanbot.example
 
-import android.Manifest
-import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.Toast
+import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.example.MedicalCertificateRecognizerActivity.Companion.newIntent
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.example.common.ImportImageContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@MainActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
+        }
+
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
+        }
+
+        lifecycleScope.launch { processImportedImage(uri) }
+    }
+
+    private suspend fun processImportedImage(uri: Uri) {
+        withContext(Dispatchers.Main) {
+            binding.progressBar.isVisible = true
+        }
+
+        val result = withContext(Dispatchers.Default) {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            val medicalCertificateRecognizer = scanbotSdk.createMedicalCertificateRecognizer()
+
+            medicalCertificateRecognizer.recognizeMcBitmap(bitmap, 0, true, true, true)
+        }
+
+        withContext(Dispatchers.Main) {
+            result?.let {
+                startActivity(MedicalCertificateResultActivity.newIntent(this@MainActivity, it))
+            } ?: this@MainActivity.showToast("Nothing detected on image")
+
+            binding.progressBar.isVisible = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        askPermission()
-        val galleryImageLauncher =
-            registerForActivityResult(ImportImageContract(this)) { resultEntity ->
-                lifecycleScope.launch(Dispatchers.Default) {
-                    val activity = this@MainActivity
-                    val sdk = ScanbotSDK(activity)
-                    if (!sdk.licenseInfo.isValid) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                activity,
-                                "License has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        val progressBar = findViewById<View>(R.id.progress_bar)
-                        withContext(Dispatchers.Main) { progressBar.isVisible = true }
-                        resultEntity?.let { bitmap ->
-                            val medicalCertificateRecognizer =
-                                sdk.createMedicalCertificateRecognizer()
+        binding.scannerBtn.setOnClickListener { startActivity(MedicalCertificateRecognizerActivity.newIntent(this)) }
 
-                            val result =
-                                medicalCertificateRecognizer.recognizeMcBitmap(
-                                    bitmap,
-                                    0,
-                                    true,
-                                    true,
-                                    true
-                                )
-
-                            withContext(Dispatchers.Main) {
-                                result?.let {
-                                    startActivity(
-                                        MedicalCertificateResultActivity.newIntent(
-                                            activity,
-                                            it
-                                        )
-                                    )
-                                } ?: Toast.makeText(
-                                    activity,
-                                    "Nothing detected on image",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                        withContext(Dispatchers.Main) { progressBar.isVisible = false }
-                    }
-                }
-            }
-        val scannerBtn = findViewById<View>(R.id.scanner_btn) as Button
-        scannerBtn.setOnClickListener { startActivity(newIntent(this@MainActivity)) }
-
-        val manualScannerBtn = findViewById<View>(R.id.manual_scanner_btn) as Button
-        manualScannerBtn.setOnClickListener {
-            startActivity(
-                ManualMedicalCertificateScannerActivity.newIntent(
-                    this@MainActivity
-                )
-            )
+        binding.manualScannerBtn.setOnClickListener {
+            startActivity(ManualMedicalCertificateScannerActivity.newIntent(this))
         }
 
-        findViewById<Button>(R.id.pick_image_btn)?.run {
-            setOnClickListener {
-                galleryImageLauncher.launch(Unit)
-            }
+        binding.pickImageBtn.setOnClickListener {
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
-
-    private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
-        }
-    }
-
 }

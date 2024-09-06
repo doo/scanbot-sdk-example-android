@@ -12,8 +12,8 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         google()
-        maven { url "https://nexus.scanbot.io/nexus/content/repositories/releases/" }
-        maven { url "https://nexus.scanbot.io/nexus/content/repositories/snapshots/" }
+        maven(url = "https://nexus.scanbot.io/nexus/content/repositories/releases/")
+        maven(url = "https://nexus.scanbot.io/nexus/content/repositories/snapshots/")
     }
 }
 

@@ -4,111 +4,122 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityFiltersTunesBinding
 import io.scanbot.example.fragment.ErrorFragment
 import io.scanbot.example.fragment.FiltersBottomSheetMenuFragment
-import io.scanbot.imagefilters.LegacyFilter
-import io.scanbot.imagefilters.ParametricFilter
+import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.PageProcessor
-import io.scanbot.sdk.persistence.Page
-import io.scanbot.sdk.persistence.PageFileStorage
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.docprocessing.Page
 import kotlinx.coroutines.*
-import java.io.File
-import kotlin.coroutines.CoroutineContext
 
-class FilterActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
+class FilterActivity : AppCompatActivity(), FiltersListener {
+
     companion object {
-        private const val PAGE_DATA = "PAGE_DATA"
         private const val FILTERS_MENU_TAG = "FILTERS_MENU_TAG"
 
+        const val DOC_ID_EXTRA = "DOC_ID_EXTRA"
+
         @JvmStatic
-        fun newIntent(context: Context, page: Page): Intent {
-            val intent = Intent(context, FilterActivity::class.java)
-            intent.putExtra(PAGE_DATA, (page as Parcelable))
-            return intent
+        fun newIntent(context: Context, documentId: String): Intent {
+            return Intent(context, FilterActivity::class.java).apply {
+                putExtra(DOC_ID_EXTRA, documentId)
+            }
         }
     }
 
-    private lateinit var selectedPage: Page
+    private lateinit var document: Document
+    private lateinit var page: Page
 
     private var filteringState: FilteringState = FilteringState.IDLE
     private var selectedFilter: ParametricFilter? = null
     private lateinit var filtersSheetFragment: FiltersBottomSheetMenuFragment
 
-    private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var pageProcessor: PageProcessor
-    private lateinit var pageFileStorage: PageFileStorage
+    private lateinit var scanbotSdk: ScanbotSDK
 
-    private var job: Job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job
-
-    private lateinit var binding: ActivityFiltersTunesBinding
+    private val binding by lazy { ActivityFiltersTunesBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityFiltersTunesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initActionBar()
 
-        selectedPage = intent.getParcelableExtra(PAGE_DATA)!!
+        scanbotSdk = ScanbotSDK(application)
 
-        selectedPage.let { page ->
-            selectedFilter = page.parametricFilters.firstOrNull() ?: LegacyFilter(ImageFilterType.NONE.code)
+        val docId = intent.getStringExtra(DOC_ID_EXTRA)
+        if (docId == null) {
+            this.showToast("Document ID is missing!")
+            finish()
+            return
         }
 
-        binding.filterValue.text = getFilterName()
+        val doc = scanbotSdk.documentApi.loadDocument(docId, createIfNotExist = false)
+        if (doc == null) {
+            this.showToast("Document with given ID was not found!")
+            finish()
+            return
+        }
+        document = doc
 
-        scanbotSDK = ScanbotSDK(application)
-        pageFileStorage = scanbotSDK.createPageFileStorage()
-        pageProcessor = scanbotSDK.createPageProcessor()
+        /** For example purposes we only expect one and only page in given document.
+         * In real app there can be many. */
+        val page = document.pageAtIndex(0)
+        if (page == null) {
+            this.showToast("Document has no pages!")
+            finish()
+            return
+        }
+        this.page = page
+
+        /** For example purposes we only use one filter from the list here - because we also apply only one filter.
+         * In real app one can use multiple filters. */
+        val appliedFilter = page.filters.getOrNull(0)
+        selectedFilter = appliedFilter
+
+        binding.filterValue.text = selectedFilter.getFilterName()
 
         binding.filtersInnerLayout.setOnClickListener {
             filtersSheetFragment.show(supportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG")
         }
 
-        binding.cancel.setOnClickListener {
-            removeFilteredPreview()
-            finish()
-        }
+        binding.cancel.setOnClickListener { finish() }
 
         binding.done.setOnClickListener {
-            binding.progress.visibility = View.VISIBLE
-            launch {
-                selectedFilter?.let { selectedPage = PageFilterHelper.applyFilter(pageProcessor, selectedPage, it) }
+            lifecycleScope.launch {
                 withContext(Dispatchers.Main) {
-                    binding.progress.visibility = View.GONE
-                    val data = Intent()
-                    data.putExtra(PAGE_DATA, selectedPage as Parcelable)
+                    val data = Intent().apply {
+                        putExtra(DOC_ID_EXTRA, document.uuid)
+                    }
                     setResult(Activity.RESULT_OK, data)
                     finish()
                 }
             }
         }
 
-        initPagePreview()
         initMenu()
+        updatePagePreview()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
+    private fun updatePagePreview() {
+        Picasso.get()
+            .load(page.documentPreviewFileUri)
+            .memoryPolicy(MemoryPolicy.NO_CACHE)
+            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
+            .centerInside()
+            .into(binding.image, ImageCallback())
     }
 
     override fun onResume() {
         super.onResume()
-        if (!scanbotSDK.licenseInfo.isValid) {
+        if (!scanbotSdk.licenseInfo.isValid) {
             showLicenseDialog()
         }
     }
@@ -128,17 +139,10 @@ class FilterActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
     private fun initMenu() {
         val fragment = supportFragmentManager.findFragmentByTag(FILTERS_MENU_TAG)
         if (fragment != null) {
-            supportFragmentManager
-                    .beginTransaction()
-                    .remove(fragment)
-                    .commitNow()
+            supportFragmentManager.beginTransaction().remove(fragment).commitNow()
         }
 
         filtersSheetFragment = FiltersBottomSheetMenuFragment()
-    }
-
-    private fun initPagePreview() {
-        selectedFilter?.let { applyFilter(it) }
     }
 
     inner class ImageCallback : Callback {
@@ -151,59 +155,32 @@ class FilterActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
         }
     }
 
-    override fun onFilterApplied(parametricFilter: ParametricFilter) {
+    override fun onFilterApplied(parametricFilter: ParametricFilter?) {
         applyFilter(parametricFilter)
     }
 
-    private fun getFilterName() = selectedFilter?.let {
-        if (it is LegacyFilter)
-            ImageFilterType.getByCode(it.filterType).filterName.replace("_", " ").capitalize()
-        else it.javaClass.simpleName
-    } ?: "None"
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        removeFilteredPreview()
-    }
-
-    private fun removeFilteredPreview() {
-        pageFileStorage.removeFilteredPreviewImages(selectedPage.pageId)
-    }
-
-    private fun applyFilter(parametricFilter: ParametricFilter) {
-        if (!scanbotSDK.licenseInfo.isValid) {
+    private fun applyFilter(newFilter: ParametricFilter?) {
+        if (!scanbotSdk.licenseInfo.isValid) {
             showLicenseDialog()
-        } else {
+        } else if (selectedFilter != newFilter) {
             binding.progress.visibility = View.VISIBLE
-            selectedFilter = parametricFilter
-            binding.filterValue.text = getFilterName()
-            if (filteringState == FilteringState.IDLE && selectedFilter != null) {
-                launch {
+            selectedFilter = newFilter
+            binding.filterValue.text = selectedFilter.getFilterName()
+            if (filteringState == FilteringState.IDLE) {
+                lifecycleScope.launch {
                     filteringState = FilteringState.PROCESSING
 
-                    try {
-                        pageProcessor.generateFilteredPreview(selectedPage, selectedFilter!!)
-                    }
-                    catch (e: Exception) {
-                        Log.e("FilterTunesActivity", "Couldn't generate preview image.", e)
-                        finish()
+                    withContext(Dispatchers.Default) {
+                        // applying empty collection of filters will remove all filters
+                        val filtersToApply = selectedFilter?.let { listOf(it) } ?: emptyList()
+                        page.apply(newFilters = filtersToApply)
                     }
 
                     withContext(Dispatchers.Main) {
-                        pageFileStorage.getFilteredPreviewImageURI(selectedPage.pageId, selectedFilter!!).path?.let {
-                            Picasso.get()
-                                .load(File(it))
-                                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                                .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-                                .centerInside()
-                                .into(binding.image, ImageCallback())
-                            binding.progress.visibility = View.GONE
-                            val previousState = filteringState
-                            filteringState = FilteringState.IDLE
-                            if (previousState == FilteringState.PROCESSING_AND_SCHEDULED) {
-                                applyFilter(selectedFilter!!)
-                            }
-                        }
+                        updatePagePreview()
+
+                        binding.progress.visibility = View.GONE
+                        filteringState = FilteringState.IDLE
                     }
                 }
             } else {
@@ -216,5 +193,5 @@ class FilterActivity : AppCompatActivity(), FiltersListener, CoroutineScope {
 private enum class FilteringState {
     IDLE,
     PROCESSING,
-    PROCESSING_AND_SCHEDULED
+    PROCESSING_AND_SCHEDULED,
 }

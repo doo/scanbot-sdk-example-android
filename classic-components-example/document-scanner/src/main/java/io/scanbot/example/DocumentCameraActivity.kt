@@ -20,7 +20,7 @@ import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
 import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DetectionStatus
+import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import io.scanbot.sdk.docdetection.ui.DocumentScannerView
 import io.scanbot.sdk.docdetection.ui.IDocumentScannerViewCallback
 import io.scanbot.sdk.process.ImageProcessor
@@ -29,6 +29,12 @@ import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 
 class DocumentCameraActivity : AppCompatActivity() {
+
+    private var lastUserGuidanceHintTs = 0L
+    private var flashEnabled = false
+    private var autoSnappingEnabled = true
+    private val ignoreBadAspectRatio = true
+
     private lateinit var documentScannerView: DocumentScannerView
 
     private lateinit var resultView: ImageView
@@ -36,23 +42,19 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var scanbotSdk: ScanbotSDK
     private lateinit var contourDetector: ContourDetector
-
-    private var lastUserGuidanceHintTs = 0L
-    private var flashEnabled = false
-    private var autoSnappingEnabled = true
-    private val ignoreBadAspectRatio = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
+
         super.onCreate(savedInstanceState)
-        askPermission()
         setContentView(R.layout.activity_camera)
+        askPermission()
         supportActionBar!!.hide()
 
-        scanbotSDK = ScanbotSDK(this)
-        contourDetector = scanbotSDK.createContourDetector()
+        scanbotSdk = ScanbotSDK(this)
+        contourDetector = scanbotSdk.createContourDetector()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -128,7 +130,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         autoSnappingToggleButton.post { setAutoSnapEnabled(autoSnappingEnabled) }
     }
 
-    private fun askPermission() {
+    private fun askPermission() { // TODO: migrate to Result API to request permissions!
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
@@ -144,7 +146,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.onPause()
     }
 
-    private fun showUserGuidance(result: DetectionStatus) {
+    private fun showUserGuidance(result: DocumentDetectionStatus) {
         if (!autoSnappingEnabled) {
             return
         }
@@ -153,35 +155,35 @@ class DocumentCameraActivity : AppCompatActivity() {
         }
 
         when (result) {
-            DetectionStatus.OK -> {
+            DocumentDetectionStatus.OK -> {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_TOO_SMALL -> {
+            DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_BAD_ANGLES -> {
+            DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_NOTHING_DETECTED -> {
+            DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_TOO_NOISY -> {
+            DocumentDetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+            DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                 if (ignoreBadAspectRatio) {
                     userGuidanceHint.text = "Don't move"
                 } else {
-                    userGuidanceHint.text = "Wrong aspect ratio.\n Rotate your device."
+                    userGuidanceHint.text = "Wrong aspect ratio.\nRotate your device."
                 }
                 userGuidanceHint.visibility = View.VISIBLE
             }
-            DetectionStatus.ERROR_TOO_DARK -> {
+            DocumentDetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }

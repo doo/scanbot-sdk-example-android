@@ -23,6 +23,7 @@ import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import kotlin.math.roundToInt
 
 class MedicalCertificateRecognizerActivity : AppCompatActivity() {
+
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultImageView: ImageView
 
@@ -47,7 +48,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         }
         cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                processPictureTaken(image, captureInfo.imageOrientation)
+                processPictureTaken(image)
             }
         })
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
@@ -58,9 +59,12 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
         val frameHandler = MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
         // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
-        val autoSnappingController = MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler)
+        MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler).apply {
+            // possibly adjust auto-snapping parameters here
+//            setSensitivity(0.5f)
+        }
 
-        findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
+        findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }
@@ -77,7 +81,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         Toast.makeText(this, "Scanning Medical Certificate...", Toast.LENGTH_LONG)
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ByteArray) {
         // Here we get the full image from the camera.
         // Implement a suitable async(!) detection and image handling here.
 

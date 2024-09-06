@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.isVisible
 import io.scanbot.example.R
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
@@ -72,7 +71,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
                         scanCountView.post {
                             Toast.makeText(
                                 this@BarcodeScanAndCountViewActivity,
-                                "License has expired!",
+                                "1-minute trial license has expired!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -112,7 +111,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         })
         scanCountView.counterOverlayController.setBarcodeItemViewBinder(object :
             BarcodePolygonsStaticView.BarcodeItemViewBinder {
-            override fun bindView(view: View, barcodeItem: BarcodeItem, shouldHighlight: Boolean) {
+            override fun bindView(view: View, barcodeItem: BarcodeItem, isBarcodeAccepted: Boolean) {
                 val valueTextView = view.findViewById<TextView>(R.id.custom_ar_view_value)
                 val imageView = view.findViewById<ImageView>(R.id.custom_ar_view)
 //                valueTextView.isVisible = false //uncomment to show barcode value
@@ -133,7 +132,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         // TODO to get the result of all scanned barcodes, use the following code
     }
 
-    override fun onResume() {
+    override fun onResume() { // TODO: migrate to Result API to request permissions!
         super.onResume()
         if (ContextCompat.checkSelfPermission(
                 this,

@@ -3,21 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MRZStillImageDetectionActivity"
+    tools:context=".MrzStillImageDetectionActivity"
     android:padding="10dp">
 
     <Button
         android:id="@+id/start_scanner_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
+        android:layout_gravity="top|start"
         android:text="Scan ID Card Image" />
 
     <Button
         android:id="@+id/import_from_lib_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        android:layout_gravity="top|end"
         android:text="Import From Gallery" />
 
     <ImageView
@@ -30,7 +30,7 @@
         android:id="@+id/crop_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
+        android:layout_gravity="bottom|start"
         android:text="Re-Crop"
         android:visibility="gone" />
 
@@ -38,12 +38,12 @@
         android:id="@+id/run_recognition_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:text="Recognize"
         android:visibility="gone" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -19,9 +19,7 @@ import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
-/**
- * [ScanbotCameraXView] integrated in [DialogFragment] example
- */
+/** [ScanbotCameraXView] integrated in [DialogFragment] example. */
 class CameraDialogFragment : DialogFragment() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
@@ -57,8 +55,8 @@ class CameraDialogFragment : DialogFragment() {
             }
         })
 
-        baseView.findViewById<View>(R.id.snap).setOnClickListener { v: View? -> cameraView.takePicture(false) }
-        baseView.findViewById<View>(R.id.flash).setOnClickListener { v: View? ->
+        baseView.findViewById<View>(R.id.snap).setOnClickListener { cameraView.takePicture(false) }
+        baseView.findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)
         }

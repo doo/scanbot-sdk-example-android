@@ -14,10 +14,10 @@ dependencyResolutionManagement {
         mavenCentral()
 
         // Scanbot SDK maven repos:
-        maven { url = "https://nexus.scanbot.io/nexus/content/repositories/releases/" }
-        maven { url = "https://nexus.scanbot.io/nexus/content/repositories/snapshots/" }
+        maven(url = "https://nexus.scanbot.io/nexus/content/repositories/releases/")
+        maven(url = "https://nexus.scanbot.io/nexus/content/repositories/snapshots/")
     }
 }
 
-rootProject.name = "Scanbot Document Scanner SDK RTU UI example"
 include(":app")
+rootProject.name = "Scanbot Document Scanner SDK RTU UI example"

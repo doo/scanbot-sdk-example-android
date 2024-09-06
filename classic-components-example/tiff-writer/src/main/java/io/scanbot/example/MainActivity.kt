@@ -1,180 +1,105 @@
 package io.scanbot.example
 
-import android.Manifest
-import android.app.Activity
-import android.content.ClipData
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
-import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import android.widget.CheckBox
-import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import io.scanbot.imagefilters.LegacyFilter
+import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.getAppStorageDir
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.process.ImageFilterType
-import io.scanbot.sdk.tiff.TIFFWriter
+import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
 import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
 import io.scanbot.sdk.tiff.model.TIFFImageWriterUserDefinedField
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var tiffWriter: TIFFWriter
-    private lateinit var progressView: View
-    private lateinit var resultTextView: TextView
-    private lateinit var binarizationCheckBox: CheckBox
-    private lateinit var customFieldsCheckBox: CheckBox
+
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+    private val tiffWriter by lazy { scanbotSdk.createTiffWriter() }
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val selectGalleryImageResultLauncher =
+        // limit to 5 images for example purposes
+        registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+            if (uris.isEmpty()) {
+                this@MainActivity.showToast("No images were selected!")
+                Log.w(Const.LOG_TAG, "No images were selected!")
+                return@registerForActivityResult
+            }
+
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("Scanbot SDK license (1-minute trial) has expired!")
+                Log.w(Const.LOG_TAG, "Scanbot SDK license (1-minute trial) has expired!")
+                return@registerForActivityResult
+            }
+
+            binding.progressBar.visibility = View.VISIBLE
+
+            lifecycleScope.launch {
+                writeTiffImages(uris, binding.binarizationCheckBox.isChecked, binding.customFieldsCheckBox.isChecked)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        askPermission()
-
-        tiffWriter = ScanbotSDK(this).createTiffWriter()
-        resultTextView = findViewById(R.id.resultTextView)
-        binarizationCheckBox = findViewById(R.id.binarizationCheckBox)
-        customFieldsCheckBox = findViewById(R.id.customFieldsCheckBox)
-
-        findViewById<View>(R.id.selectImagesButton).setOnClickListener {
-            resultTextView.text = ""
-            openGallery()
-        }
-
-        progressView = findViewById(R.id.progressBar)
-    }
-
-    private fun askPermission() {
-        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE), 999)
+        binding.selectImagesButton.setOnClickListener {
+            binding.resultTextView.text = ""
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    private fun checkPermissionNotGranted(permission: String) =
-            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+    private suspend fun writeTiffImages(imageUris: List<Uri>, binarize: Boolean, addCustomFields: Boolean) {
+        val resultFile = File(getAppStorageDir(this), "tiff_result_${System.currentTimeMillis()}.tiff")
 
-
-    private fun openGallery() {
-        val intent = Intent().apply {
-            type = IMAGE_TYPE
-            action = Intent.ACTION_GET_CONTENT
-            putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        val result = withContext(Dispatchers.IO) {
+            tiffWriter.writeTIFF(imageUris.toTypedArray(), false, resultFile, constructParameters(binarize, addCustomFields))
         }
 
-        startActivityForResult(Intent.createChooser(intent, "Select picture"), SELECT_PICTURE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (requestCode != SELECT_PICTURE_REQUEST || resultCode != Activity.RESULT_OK) {
-            return
-        }
-        if (!ScanbotSDK(this).licenseInfo.isValid) {
-            Toast.makeText(this,
-                    "Scanbot SDK license is not valid or the trial minute has expired.",
-                    Toast.LENGTH_LONG).show()
-            return
-        }
-        progressView.visibility = View.VISIBLE
-
-        intent?.let {
-            processGalleryResult(it)
-        }
-    }
-
-    private fun processGalleryResult(data: Intent) {
-        val clipData = data.clipData
-        val singleImageUri = data.data
-        val imageUris: MutableList<Uri> = ArrayList()
-        if (clipData != null && clipData.itemCount > 0) {
-            // multiple images were selected
-            imageUris.addAll(getImageUris(clipData))
-        } else if (singleImageUri != null) {
-            // a single image was selected
-            imageUris.add(singleImageUri)
-        }
-        WriteTIFFImageTask(imageUris, binarizationCheckBox.isChecked, customFieldsCheckBox.isChecked).execute()
-    }
-
-    private fun getImageUris(clipData: ClipData): List<Uri> {
-        val imageUris: MutableList<Uri> = ArrayList()
-        for (i in 0 until clipData.itemCount) {
-            val uri = clipData.getItemAt(i).uri
-            if (uri != null) {
-                imageUris.add(uri)
-            }
-        }
-        return imageUris
-    }
-
-    /*
-    This AsyncTask is used here only for the sake of example. Please, try to avoid usage of
-    AsyncTasks in your application
-     */
-    private inner class WriteTIFFImageTask(imageUris: List<Uri>, binarize: Boolean, addCustomFields: Boolean) : AsyncTask<Void, Void, Boolean>() {
-        private val dpi = 200
-
-        private val images: MutableList<Bitmap> = ArrayList()
-        private val resultFile: File
-        private val parameters: TIFFImageWriterParameters
-
-        init {
-            for (uri in imageUris) {
-                images.add(MediaStore.Images.Media.getBitmap(contentResolver, uri))
-            }
-            resultFile = File(getExternalFilesDir(null)!!.path + "/tiff_result_" + System.currentTimeMillis() + ".tiff")
-
-            // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
-            val compression =
-                    if (binarize) TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4 else TIFFImageWriterCompressionOptions.COMPRESSION_ADOBE_DEFLATE
-
-            // Example for custom tags (fields) as userDefinedFields.
-            // Please note the range for custom tag IDs and refer to TIFF specifications.
-            val userDefinedFields = if (addCustomFields) {
-                arrayListOf(TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 65000),
-                        TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 65001),
-                        TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 65535))
-            } else {
-                arrayListOf()
-            }
-            val binarizationFilter = if (binarize) LegacyFilter(ImageFilterType.PURE_BINARIZED.code) else null
-            parameters = TIFFImageWriterParameters(binarizationFilter, dpi, compression, userDefinedFields)
-        }
-
-        override fun doInBackground(vararg voids: Void): Boolean {
-            return tiffWriter.writeTIFFFromImages(images.toTypedArray(), resultFile, parameters)
-        }
-
-        override fun onPostExecute(result: Boolean) {
-            progressView.visibility = View.GONE
+        withContext(Dispatchers.Main) {
+            binding.progressBar.visibility = View.GONE
             if (result) {
-                resultTextView.text = """
-                    TIFF file created:
-                    ${resultFile.path}
-                    """.trimIndent()
+                binding.resultTextView.text = "TIFF file created: ${resultFile.path}"
             } else {
-                Toast.makeText(this@MainActivity,
-                        "ERROR: Could not create TIFF file.",
-                        Toast.LENGTH_LONG).show()
+                this@MainActivity.showToast("ERROR: Could not create TIFF file.")
             }
         }
     }
 
-    companion object {
-        private const val SELECT_PICTURE_REQUEST = 100
-        private const val IMAGE_TYPE = "image/*"
+    private fun constructParameters(binarize: Boolean, addCustomFields: Boolean): TIFFImageWriterParameters {
+        // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
+        val compression =
+            if (binarize) TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4
+            else TIFFImageWriterCompressionOptions.COMPRESSION_ADOBE_DEFLATE
+
+        // Example for custom tags (fields) as userDefinedFields.
+        // Please note the range for custom tag IDs and refer to TIFF specifications.
+        val userDefinedFields = if (addCustomFields) {
+            arrayListOf(
+                TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 65000),
+                TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 65001),
+                TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 65535)
+            )
+        } else {
+            arrayListOf()
+        }
+        val binarizationFilter = if (binarize) ParametricFilter.scanbotBinarizationFilter() else null
+        return TIFFImageWriterParameters(binarizationFilter, DPI, compression, userDefinedFields)
+    }
+
+    private companion object {
+        private const val DPI = 200
     }
 }

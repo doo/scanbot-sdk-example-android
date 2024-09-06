@@ -1,126 +1,78 @@
 package io.scanbot.example
 
-import android.Manifest
-import android.app.Activity
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.common.Const
+import io.scanbot.example.common.showToast
+import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.process.DocumentQualityAnalyzer
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(), CoroutineScope {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var stillImageImageView: ImageView
-    private lateinit var stillImageQualityCaption: TextView
+    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
+    private val documentQualityAnalyzer: DocumentQualityAnalyzer by lazy { scanbotSdk.createDocumentQualityAnalyzer() }
 
-    private lateinit var documentQualityAnalyzer: DocumentQualityAnalyzer
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val parentJob = Job()
+    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (!scanbotSdk.licenseInfo.isValid) {
+            this@MainActivity.showToast("1-minute trial license has expired!")
+            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+            return@registerForActivityResult
+        }
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + parentJob
+        if (uri == null) {
+            showToast("Error obtaining selected image!")
+            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+            return@registerForActivityResult
+        }
+
+        lifecycleScope.launch { estimateOnStillImage(uri) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-
-        val scanbotSDK = ScanbotSDK(this)
-        documentQualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer()
-
+        setContentView(binding.root)
         supportActionBar!!.hide()
-        setContentView(R.layout.activity_main)
-        askPermission()
 
-
-        stillImageImageView = findViewById(R.id.still_image_image_view)
-        stillImageQualityCaption = findViewById(R.id.still_image_quality_caption)
-
-        findViewById<Button>(R.id.gallery_button).setOnClickListener { openGallery() }
-        findViewById<Button>(R.id.still_image_close).setOnClickListener { close() }
-
-        Toast.makeText(
-                this,
-                if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
-                Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private fun estimateOnStillImage(imageUri: Uri) {
-        calculateForImage(imageUri)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PHOTOLIB_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let {
-                estimateOnStillImage(it)
-            }
+        binding.galleryButton.setOnClickListener {
+            selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
+        binding.stillImageClose.setOnClickListener { this@MainActivity.finish() }
     }
 
-    private fun close() {
-        finish()
+    override fun onResume() {
+        super.onResume()
+        if (scanbotSdk.licenseInfo.isValid.not()) showToast("License expired!")
+        // TODO: use License fragment!
     }
 
-    private fun openGallery() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-        startActivityForResult(
-                Intent.createChooser(intent, "Select picture"), PHOTOLIB_REQUEST_CODE
-        )
-    }
-
-    private fun askPermission() {
-        if (checkPermissionNotGranted(Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                checkPermissionNotGranted(Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.CAMERA), 999)
+    private suspend fun estimateOnStillImage(imageUri: Uri) {
+        val bitmap = withContext(Dispatchers.IO) {
+            val inputStream = contentResolver.openInputStream(imageUri)
+            BitmapFactory.decodeStream(inputStream)
         }
-    }
 
-    private fun calculateForImage(imageUri: Uri) {
-        launch {
-            val bitmap: Bitmap =
-                    MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-
-            withContext(Dispatchers.Main) {
-                stillImageImageView.setImageBitmap(bitmap)
-            }
-            val result = documentQualityAnalyzer.analyzeInBitmap(bitmap, 0)
-            withContext(Dispatchers.Main) {
-                stillImageQualityCaption.text =
-                    "Image quality: ${result?.name ?: "UNKNOWN"}"
-            }
+        withContext(Dispatchers.Main) {
+            binding.stillImageImageView.setImageBitmap(bitmap)
         }
-    }
 
-    override fun onDestroy() {
-        parentJob.cancel()
-        super.onDestroy()
-    }
+        val result = withContext(Dispatchers.Default) { documentQualityAnalyzer.analyzeInBitmap(bitmap, 0) }
 
-    private fun checkPermissionNotGranted(permission: String) =
-            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
-
-    private companion object {
-        private const val PHOTOLIB_REQUEST_CODE = 5712
+        withContext(Dispatchers.Main) {
+            binding.stillImageQualityCaption.text = "Image quality: ${result?.name ?: "UNKNOWN"}"
+        }
     }
 }
