@@ -3,32 +3,27 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
-import io.scanbot.page.PageImageSource
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.document.CroppingActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
-import io.scanbot.sdk.util.isDefault
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.page.PageImageSource
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.util.isDefault
 
 
 private class DocumentDetectionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
+        // In the real application, you should call this function on button click
         importImagesFromLibrary()
     }
 

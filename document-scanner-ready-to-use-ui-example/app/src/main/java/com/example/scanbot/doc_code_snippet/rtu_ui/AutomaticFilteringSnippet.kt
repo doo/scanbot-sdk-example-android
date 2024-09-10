@@ -14,7 +14,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 class AutomaticFilteringSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
+        // In the real application, you should call this function on button click
         startScanning()
     }
 

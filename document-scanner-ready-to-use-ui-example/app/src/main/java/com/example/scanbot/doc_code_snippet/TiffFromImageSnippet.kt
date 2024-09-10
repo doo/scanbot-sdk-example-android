@@ -23,7 +23,7 @@ private class TiffFromImageSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
+        // In the real application, you should call this function on button click
         importImagesFromLibrary()
     }
 
@@ -36,13 +36,11 @@ private class TiffFromImageSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
                                 .apply {
                                     createTiffFromImages(this.toList())
                                 }
-
                         }
                     }
                 }
