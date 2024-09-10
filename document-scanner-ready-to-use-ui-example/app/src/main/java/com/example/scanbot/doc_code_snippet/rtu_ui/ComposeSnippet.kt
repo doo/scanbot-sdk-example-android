@@ -12,7 +12,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-private class ComposeSnippet : AppCompatActivity() {
+class ComposeSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ComposeView(this).apply {

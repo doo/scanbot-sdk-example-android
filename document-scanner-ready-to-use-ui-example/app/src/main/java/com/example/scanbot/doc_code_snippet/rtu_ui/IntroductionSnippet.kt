@@ -13,7 +13,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.IntroImage
 import io.scanbot.sdk.ui_v2.document.configuration.IntroListEntry
 
 
-private class IntroductionSnippet : AppCompatActivity() {
+class IntroductionSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click

@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
-private class TiffFromImageSnippet : AppCompatActivity() {
+class TiffFromImageSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -19,7 +19,7 @@ import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.util.isDefault
 
 
-private class DocumentDetectionSnippet : AppCompatActivity() {
+class DocumentDetectionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

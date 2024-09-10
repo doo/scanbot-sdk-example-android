@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
-private class ImportImagesFromPdfSnippet : AppCompatActivity() {
+class ImportImagesFromPdfSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

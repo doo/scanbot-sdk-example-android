@@ -12,7 +12,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.PageSnapFeedbackMode
 import io.scanbot.sdk.ui_v2.document.configuration.UserGuidanceVisibility
 
 
-private class ScanningScreenSnippet : AppCompatActivity() {
+class ScanningScreenSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click

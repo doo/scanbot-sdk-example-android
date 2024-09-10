@@ -12,7 +12,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-private class AcknowledgeScreenSnippet : AppCompatActivity() {
+class AcknowledgeScreenSnippet : AppCompatActivity() {
     
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =

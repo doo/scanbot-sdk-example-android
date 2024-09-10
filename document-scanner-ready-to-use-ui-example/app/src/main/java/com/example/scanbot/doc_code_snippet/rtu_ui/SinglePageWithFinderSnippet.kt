@@ -13,7 +13,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
-private class SinglePageWithFinderSnippet : AppCompatActivity() {
+class SinglePageWithFinderSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
