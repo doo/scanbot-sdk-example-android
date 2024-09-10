@@ -33,7 +33,7 @@ private class PageFilterSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
+        // In the real application, you should call this function on button click
         startFiltering()
     }
 

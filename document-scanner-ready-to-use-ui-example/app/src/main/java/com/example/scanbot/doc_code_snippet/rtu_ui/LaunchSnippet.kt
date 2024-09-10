@@ -10,11 +10,6 @@ import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
 class LaunchSnippet : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //run this function on button click
-        startScanning()
-    }
 
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =
@@ -28,6 +23,11 @@ class LaunchSnippet : AppCompatActivity() {
             }
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // In the real application, you should call this function on button click
+        startScanning()
+    }
 
     fun startScanning() {
         // Create the default configuration object.

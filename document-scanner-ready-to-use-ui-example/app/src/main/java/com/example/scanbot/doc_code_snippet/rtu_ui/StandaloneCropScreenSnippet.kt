@@ -26,7 +26,7 @@ private class StandaloneCropScreenSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //run this function on button click
+        // In the real application, you should call this function on button click.
         importImagesFromLibrary()
     }
 
@@ -41,7 +41,8 @@ private class StandaloneCropScreenSnippet : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             val document = scanbotSDK.documentApi.createDocument()
                             getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                // Process images one by one instead of collecting the whole list - less memory consumption.
+                                .asSequence()
                                 .map { it.toBitmap(contentResolver) }
                                 .forEach { bitmap ->
                                     if (bitmap == null) {
@@ -57,11 +58,11 @@ private class StandaloneCropScreenSnippet : AppCompatActivity() {
             }
         }
 
-    private val documentScannerResult: ActivityResultLauncher<CroppingConfiguration> =
+    private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { result ->
-                    // Retrieve the cropped document
+                    // Retrieve the cropped document.
                     val document =
                         ScanbotSDK(this@StandaloneCropScreenSnippet).documentApi.loadDocument(
                             documentId = result.documentUuid
@@ -89,13 +90,13 @@ private class StandaloneCropScreenSnippet : AppCompatActivity() {
                 cropping.topBarConfirmButton.foreground.color =
                     ScanbotColor(color = Color.WHITE)
 
-                // e.g. customize a UI element's text
+                // e.g. customize a UI element's text.
                 localization.croppingCancelButtonTitle = "Cancel"
 
             }
 
         // Start the recognizer activity.
-        documentScannerResult.launch(configuration)
+        croppingResult.launch(configuration)
     }
 
 
