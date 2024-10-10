@@ -12,7 +12,7 @@ import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 class LaunchSnippet : AppCompatActivity() {
 
     private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =
+    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
@@ -22,6 +22,7 @@ class LaunchSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped.
             }
         }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

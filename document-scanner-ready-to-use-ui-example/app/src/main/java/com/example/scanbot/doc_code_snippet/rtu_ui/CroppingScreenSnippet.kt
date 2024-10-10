@@ -19,7 +19,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
     }
 
     private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =
+    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
@@ -29,7 +29,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped.
             }
         }
-
+    }
 
     fun startScanning() {
         // Create the default configuration object.
@@ -47,7 +47,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
             // Set the background color of the bottom bar.
             appearance.bottomBarBackgroundColor = ScanbotColor(value = "#C8193C")
             // e.g. configure .
-            appearance.topBarBackgroundColor = ScanbotColor(color= Color.RED)
+            appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)
             // Retrieve the camera screen configuration.
 
             // e.g. customize a UI element's text
@@ -57,7 +57,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
                 bottomBar.rotateButton.visible = false
 
                 topBarConfirmButton.foreground.color =
-                    ScanbotColor(color= Color.WHITE)
+                    ScanbotColor(color = Color.WHITE)
             }
 
         }

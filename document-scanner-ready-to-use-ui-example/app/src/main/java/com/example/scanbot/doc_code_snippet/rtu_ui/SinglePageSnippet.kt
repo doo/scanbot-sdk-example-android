@@ -18,7 +18,7 @@ class SinglePageSnippet : AppCompatActivity() {
     }
 
     private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> =
+    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
@@ -28,7 +28,7 @@ class SinglePageSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped.
             }
         }
-
+    }
 
     fun startScanning() {
         // Create the default configuration object.
