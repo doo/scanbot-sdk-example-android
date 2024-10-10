@@ -91,7 +91,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                     ScanbotColor(color = Color.WHITE)
 
                 // e.g. customize a UI element's text.
-                localization.croppingCancelButtonTitle = "Cancel"
+                localization.croppingTopBarCancelButtonTitle = "Cancel"
 
             }
 

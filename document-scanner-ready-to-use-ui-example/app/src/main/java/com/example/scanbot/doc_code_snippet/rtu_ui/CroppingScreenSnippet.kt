@@ -51,7 +51,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
             // Retrieve the camera screen configuration.
 
             // e.g. customize a UI element's text
-            localization.croppingCancelButtonTitle = "Cancel"
+            localization.croppingTopBarCancelButtonTitle = "Cancel"
             screens.cropping.apply {
                 // e.g disable the rotation feature.
                 bottomBar.rotateButton.visible = false

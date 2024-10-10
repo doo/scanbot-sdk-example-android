@@ -14,7 +14,7 @@
         tools:targetApi="33">
 
         <activity
-            android:name="com.example.scanbot.doc_code_snippet.rtu_ui.LaunchSnippet"
+            android:name="com.example.scanbot.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
