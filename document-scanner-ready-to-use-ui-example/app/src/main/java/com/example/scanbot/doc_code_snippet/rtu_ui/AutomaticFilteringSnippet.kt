@@ -19,7 +19,7 @@ class AutomaticFilteringSnippet : AppCompatActivity() {
     }
 
     private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow>  by lazy {
+    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->

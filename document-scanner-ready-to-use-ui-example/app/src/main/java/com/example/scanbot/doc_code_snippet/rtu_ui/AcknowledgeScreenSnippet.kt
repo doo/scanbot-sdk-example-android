@@ -13,9 +13,9 @@ import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 
 
 class AcknowledgeScreenSnippet : AppCompatActivity() {
-    
+
     private val context = this
-    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow>  by lazy {
+    private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
@@ -26,6 +26,7 @@ class AcknowledgeScreenSnippet : AppCompatActivity() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
