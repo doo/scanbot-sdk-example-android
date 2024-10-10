@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/sheetColor"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        app:divider="@drawable/divider_list_items"
+        app:showDividers="middle">
+
+        <Button
+            android:id="@+id/colorDocumentFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/color_document_filter"
+            />
+
+        <Button
+            android:id="@+id/scanbotBinarizationFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/scanbot_binarization_filter"
+            />
+
+        <Button
+            android:id="@+id/customBinarizationFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/custom_binarization_filter"
+            />
+
+        <Button
+            android:id="@+id/brightnessFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/brightness_filter"
+            />
+
+        <Button
+            android:id="@+id/contrastFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/contrast_filter"
+            />
+
+        <Button
+            android:id="@+id/grayscaleFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/grayscale_filter"
+            />
+
+        <Button
+            android:id="@+id/whiteBlackPointFilter"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/white_black_point_filter"
+            />
+
+        <Button
+            android:id="@+id/none"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/none"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>

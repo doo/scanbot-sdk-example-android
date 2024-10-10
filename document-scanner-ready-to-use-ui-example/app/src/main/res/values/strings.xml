@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Scanbot Document SDK</string>
+    <string name="scan_results">Scan Result</string>
+    <string name="filter">Filter</string>
+    <string name="export">Export</string>
+    <string name="crop">Manual Crop</string>
+    <string name="document_quality_analyzer">Analyze Document Quality</string>
+
+    <string name="save_prf">Save Pdf</string>
+    <string name="save_tiff">Save TIFF</string>
+    <string name="save_jpeg">Save Jpeg</string>
+    <string name="save_png">Save Png</string>
+
+    <string name="filter_none">None</string>
+    <string name="filter_color_document">Color document</string>
+    <string name="filter_grayscale">Grayscale</string>
+    <string name="filter_binarization">Binarization</string>
+    <string name="filter_white_black_point">White-black point</string>
+</resources>
