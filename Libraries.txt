@@ -1,5 +1,3 @@
-Open Source libraries used in the Scanbot SDK for Android version 6.0.0
-
 CWAC-Camera
 
 Version 0.6.42
@@ -21,7 +19,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-
 Coil image loading
 
 Version 2.3.0
@@ -40,7 +37,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
 
 
 PDFium
@@ -65,7 +61,7 @@ limitations under the License.
 
 Kotlin Standard Library
 
-Version 1.7.10
+Version 1.9.23
 (https://github.com/JetBrains/kotlin)
 
 Copyright 2010-2018 JetBrains s.r.o.
@@ -83,8 +79,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-
 Kotlin Standard Library JDK
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Google AndroidX Libraries
+(https://github.com/androidx/androidx/blob/androidx-main/LICENSE.txt)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Google Accompanist Libraries
+A collection of extension libraries for Jetpack Compose
+Version 0.34.0
+(https://github.com/google/accompanist/blob/main/LICENSE)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -120,7 +149,7 @@ limitations under the License.
 
 Dagger
 
-Version 2.45
+Version 2.50
 (https://github.com/google/dagger)
 
 Copyright 2012 The Dagger Authors
@@ -950,7 +979,7 @@ Lao Word Break Dictionary Data (laodict.txt)
  # License: https://github.com/rober42539/lao-dictionary/LICENSE.txt
  #          (copied below)
  #
- # This file is derived from the above dictionary version of Nov 22, 2020
+ #	This file is derived from the above dictionary version of Nov 22, 2020
  #  ----------------------------------------------------------------------
  #  Copyright (C) 2013 Brian Eugene Wilson, Robert Martin Campbell.
  #  All rights reserved.
@@ -2883,6 +2912,3 @@ Version 1.1.0
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-
