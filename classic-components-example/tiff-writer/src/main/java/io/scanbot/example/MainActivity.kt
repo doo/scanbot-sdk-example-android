@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.getAppStorageDir
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,7 +49,11 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
 
             lifecycleScope.launch {
-                writeTiffImages(uris, binding.binarizationCheckBox.isChecked, binding.customFieldsCheckBox.isChecked)
+                writeTiffImages(
+                    uris,
+                    binding.binarizationCheckBox.isChecked,
+                    binding.customFieldsCheckBox.isChecked
+                )
             }
         }
 
@@ -61,14 +67,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun writeTiffImages(imageUris: List<Uri>, binarize: Boolean, addCustomFields: Boolean) {
-        val resultFile = File(getAppStorageDir(this), "tiff_result_${System.currentTimeMillis()}.tiff")
+    private suspend fun writeTiffImages(
+        imageUris: List<Uri>,
+        binarize: Boolean,
+        addCustomFields: Boolean
+    ) {
+        val appStorageDir = getAppStorageDir(this@MainActivity)
+        appStorageDir.mkdirs()
+        val resultFile =
+            File(appStorageDir, "tiff_result_${System.currentTimeMillis()}.tiff")
 
         val result = withContext(Dispatchers.IO) {
-            tiffWriter.writeTIFF(imageUris.toTypedArray(), false, resultFile, constructParameters(binarize, addCustomFields))
+
+            val uris = imageUris.toTypedArray().map { uri ->
+
+                val file = appStorageDir.resolve(
+                    UUID.randomUUID().toString() + ".jpg"
+                )
+                file.createNewFile()
+                file.outputStream().use { output ->
+                    val openInputStream = contentResolver.openInputStream(uri)
+                    openInputStream.use { input ->
+                        input?.copyTo(output)
+                    }
+                }
+                file.toUri()
+            }
+
+            // Convert URIs to local filed DON USE IN PRODUCTION
+            tiffWriter.writeTIFF(
+                uris.toTypedArray(),
+                false,
+                resultFile,
+                constructParameters(binarize, addCustomFields)
+            )
         }
 
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.Main)
+        {
             binding.progressBar.visibility = View.GONE
             if (result) {
                 binding.resultTextView.text = "TIFF file created: ${resultFile.path}"
@@ -78,7 +114,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun constructParameters(binarize: Boolean, addCustomFields: Boolean): TIFFImageWriterParameters {
+    private fun constructParameters(
+        binarize: Boolean,
+        addCustomFields: Boolean
+    ): TIFFImageWriterParameters {
         // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
         val compression =
             if (binarize) TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4
@@ -88,14 +127,27 @@ class MainActivity : AppCompatActivity() {
         // Please note the range for custom tag IDs and refer to TIFF specifications.
         val userDefinedFields = if (addCustomFields) {
             arrayListOf(
-                TIFFImageWriterUserDefinedField.fieldWithStringValue("testStringValue", "custom_string_field_name", 65000),
-                TIFFImageWriterUserDefinedField.fieldWithIntValue(100, "custom_number_field_name", 65001),
-                TIFFImageWriterUserDefinedField.fieldWithDoubleValue(42.001, "custom_double_field_name", 65535)
+                TIFFImageWriterUserDefinedField.fieldWithStringValue(
+                    "testStringValue",
+                    "custom_string_field_name",
+                    65000
+                ),
+                TIFFImageWriterUserDefinedField.fieldWithIntValue(
+                    100,
+                    "custom_number_field_name",
+                    65001
+                ),
+                TIFFImageWriterUserDefinedField.fieldWithDoubleValue(
+                    42.001,
+                    "custom_double_field_name",
+                    65535
+                )
             )
         } else {
             arrayListOf()
         }
-        val binarizationFilter = if (binarize) ParametricFilter.scanbotBinarizationFilter() else null
+        val binarizationFilter =
+            if (binarize) ParametricFilter.scanbotBinarizationFilter() else null
         return TIFFImageWriterParameters(binarizationFilter, DPI, compression, userDefinedFields)
     }
 
