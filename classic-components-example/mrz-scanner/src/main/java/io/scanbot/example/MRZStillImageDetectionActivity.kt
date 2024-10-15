@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,43 +33,43 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
 
     private lateinit var page: Page
 
-    private val docScannerResultLauncher by lazy {
-        registerForActivityResultOk(DocumentScannerActivity.ResultContract(this@MrzStillImageDetectionActivity)) { resultEntity ->
-            val document = resultEntity.result!!
-            page = document.pageAtIndex(0) ?: kotlin.run {
-                Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
-                this@MrzStillImageDetectionActivity.showToast("Error obtaining scanned page!")
-                return@registerForActivityResultOk
+    private lateinit var docScannerResultLauncher: ActivityResultLauncher<DocumentScanningFlow>
+
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MrzStillImageDetectionActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
             }
 
-            binding.resultImageView.setImageBitmap(page.documentImage)
-            binding.cropBtn.visibility = View.VISIBLE
-            binding.runRecognitionBtn.visibility = View.VISIBLE
-        }
-    }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MrzStillImageDetectionActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
+            lifecycleScope.launch {
+                importImageToPage(uri)
+            }
         }
-
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
-
-        lifecycleScope.launch {
-            importImageToPage(uri)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        docScannerResultLauncher =
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract(this@MrzStillImageDetectionActivity)) { resultEntity ->
+                val document = resultEntity.result!!
+                page = document.pageAtIndex(0) ?: kotlin.run {
+                    Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
+                    this@MrzStillImageDetectionActivity.showToast("Error obtaining scanned page!")
+                    return@registerForActivityResultOk
+                }
 
+                binding.resultImageView.setImageBitmap(page.documentImage)
+                binding.cropBtn.visibility = View.VISIBLE
+                binding.runRecognitionBtn.visibility = View.VISIBLE
+            }
         binding.startScannerBtn.setOnClickListener {
             val config = DocumentScanningFlow().apply {
                 this.outputSettings.pagesScanLimit = 1
@@ -117,10 +118,11 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
             val document = scanbotSdk.documentApi.createDocument()
             val page = document.addPage(bitmap)
 
-            val contourResult = scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: kotlin.run {
-                Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
-                PolygonHelper.getFullPolygon()
-            }
+            val contourResult =
+                scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: kotlin.run {
+                    Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
+                    PolygonHelper.getFullPolygon()
+                }
             page.apply(newPolygon = contourResult)
             page
         }

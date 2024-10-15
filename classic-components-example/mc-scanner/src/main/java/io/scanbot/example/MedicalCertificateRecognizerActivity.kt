@@ -1,7 +1,9 @@
 package io.scanbot.example
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -10,6 +12,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.MedicalCertificateResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
@@ -36,7 +40,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mc_recognizer)
         supportActionBar!!.hide()
-
+        askPermission()
         resultImageView = findViewById(R.id.resultImageView)
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
@@ -57,7 +61,8 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
 
         // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
-        val frameHandler = MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
+        val frameHandler =
+            MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
         // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
         MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler).apply {
             // possibly adjust auto-snapping parameters here
@@ -69,9 +74,9 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
         Toast.makeText(
-                this,
-                if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
-                Toast.LENGTH_LONG
+            this,
+            if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
+            Toast.LENGTH_LONG
         ).show()
     }
 
@@ -91,12 +96,14 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
         // And finally run Medical Certificate recognition on prepared document image:
-        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(originalBitmap,
+        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
+            originalBitmap,
             0,
             shouldCropDocument = true,
             returnCroppedDocument = true,
             recognizePatientInfo = true,
-            recognizeBarcode = true)
+            recognizeBarcode = true
+        )
 
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             // Show the cropped image as thumbnail preview
@@ -107,10 +114,14 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
                 }
             }
 
-            resultImageView.postDelayed({ startActivity(newIntent(this, resultInfo))}, 2000)
+            resultImageView.postDelayed({ startActivity(newIntent(this, resultInfo)) }, 2000)
         } else {
             runOnUiThread {
-                val toast = Toast.makeText(this, "No Medical Certificate content was recognized!", Toast.LENGTH_LONG)
+                val toast = Toast.makeText(
+                    this,
+                    "No Medical Certificate content was recognized!",
+                    Toast.LENGTH_LONG
+                )
                 toast.setGravity(Gravity.CENTER, 0, 0)
                 toast.show()
             }
@@ -122,6 +133,16 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         runOnUiThread {
             cameraView.continuousFocus()
             cameraView.startPreview()
+        }
+    }
+
+    private fun askPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
 

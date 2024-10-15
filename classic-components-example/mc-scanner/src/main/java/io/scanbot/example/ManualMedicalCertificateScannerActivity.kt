@@ -1,7 +1,9 @@
 package io.scanbot.example
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -11,6 +13,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.MedicalCertificateResultActivity.Companion.newIntent
 import io.scanbot.sdk.ScanbotSDK
@@ -36,6 +40,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_manual_mc_recognizer)
         supportActionBar!!.hide()
 
+        askPermission()
         val scanbotSDK = ScanbotSDK(this)
         medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
 
@@ -121,6 +126,16 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         runOnUiThread {
             cameraView.continuousFocus()
             cameraView.startPreview()
+        }
+    }
+
+    private fun askPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
 

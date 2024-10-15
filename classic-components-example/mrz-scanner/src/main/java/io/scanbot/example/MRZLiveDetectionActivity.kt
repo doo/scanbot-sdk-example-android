@@ -1,11 +1,15 @@
 package io.scanbot.example
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
 import io.scanbot.genericdocument.entity.MRZ
@@ -29,6 +33,7 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mrz_live_scanner)
+        askPermission()
         supportActionBar!!.hide()
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -71,6 +76,16 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
             if (scanbotSDK.licenseInfo.isValid) "License is active" else "License is expired",
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    private fun askPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
+        }
     }
 
     companion object {
