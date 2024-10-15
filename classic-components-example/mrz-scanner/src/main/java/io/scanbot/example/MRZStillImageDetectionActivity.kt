@@ -67,7 +67,6 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
                 }
 
                 binding.resultImageView.setImageBitmap(page.documentImage)
-                binding.cropBtn.visibility = View.VISIBLE
                 binding.runRecognitionBtn.visibility = View.VISIBLE
             }
         binding.startScannerBtn.setOnClickListener {
@@ -130,7 +129,6 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
             binding.resultImageView.setImageBitmap(page.documentImage)
-            binding.cropBtn.visibility = View.VISIBLE
             binding.runRecognitionBtn.visibility = View.VISIBLE
         }
     }
