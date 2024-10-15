@@ -126,7 +126,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
             page.apply(newPolygon = contourResult)
             page
         }
-
+        this.page = page
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
             binding.resultImageView.setImageBitmap(page.documentImage)
