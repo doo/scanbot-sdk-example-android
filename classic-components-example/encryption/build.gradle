@@ -1,0 +1,42 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+
+android {
+    namespace = project.ext.submodulesNamespace
+    compileSdk = project.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        named("debug") {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
+        }
+    }
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+    implementation("io.scanbot:sdk-package-4:${project.ext.scanbotSdkVersion}")
+    // This dependency is only needed if you plan to use the encryption feature
+    implementation("io.scanbot:bundle-sdk-crypto-persistence:${project.ext.scanbotSdkVersion}")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${project.ext.coroutinesCoreVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${project.ext.coroutinesAndroidVersion}")
+}

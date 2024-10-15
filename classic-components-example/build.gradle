@@ -1,0 +1,35 @@
+plugins {
+    id("com.android.application") version "8.3.2" apply false
+    id("com.android.library") version "8.3.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.23" apply false
+}
+
+allprojects {
+    project.ext {
+        exampleAppId = "io.scanbot.example.sdk.android"
+        submodulesNamespace = "io.scanbot.example"
+
+        compileSdkVersion = 34
+        minSdkVersion = 21
+        targetSdkVersion = 34
+
+        jvmToolchainVersion = 17
+
+        scanbotSdkVersion = "6.0.0"
+
+        androidCoreKtxVersion = "1.6.0"
+        constraintLayoutVersion = "2.0.4"
+        coroutinesAndroidVersion = "1.7.3"
+        coroutinesCoreVersion = "1.7.3"
+
+        androidxAppcompatVersion = "1.7.0"
+        materialVersion = "1.4.0"
+        recyclerViewVersion = "1.2.1"
+        picassoVersion = "2.71828"
+    }
+
+    configurations.all {
+        // Hack to let Gradle pickup latest SNAPSHOTS
+        resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+    }
+}

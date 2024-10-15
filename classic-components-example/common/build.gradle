@@ -1,0 +1,32 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "io.scanbot.example.common"
+    compileSdk = project.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdk = project.ext.minSdkVersion
+
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "consumer-rules.pro")
+    }
+
+    buildTypes {
+        named("release") {
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:${project.ext.androidCoreKtxVersion}")
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${project.ext.coroutinesAndroidVersion}")
+}
