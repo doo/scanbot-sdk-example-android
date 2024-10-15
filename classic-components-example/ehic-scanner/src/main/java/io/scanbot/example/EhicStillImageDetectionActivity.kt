@@ -38,42 +38,43 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityEhicStillImageDetectionBinding.inflate(layoutInflater) }
 
-    private val docScannerResultLauncher: ActivityResultLauncher<DocumentScanningFlow> by lazy {
-        registerForActivityResultOk(DocumentScannerActivity.ResultContract(this)) { resultEntity ->
-            val document = resultEntity.result!!
-            page = document.pages.first().also { binding.resultImageView.setImageBitmap(it.documentImage) }
-            binding.runRecognitionBtn.visibility = View.VISIBLE
-        }
-    }
+    private var docScannerResultLauncher: ActivityResultLauncher<DocumentScanningFlow>? = null
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@EhicStillImageDetectionActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@EhicStillImageDetectionActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-        binding.progress.isVisible = true
-        lifecycleScope.launch { importedImageToPage(uri) }
-    }
+            binding.progress.isVisible = true
+            lifecycleScope.launch { importedImageToPage(uri) }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        docScannerResultLauncher =
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract(this)) { resultEntity ->
+                val document = resultEntity.result!!
+                page = document.pages.first()
+                    .also { binding.resultImageView.setImageBitmap(it.documentImage) }
+                binding.runRecognitionBtn.visibility = View.VISIBLE
+            }
         binding.startScannerBtn.setOnClickListener {
             val configuration = DocumentScanningFlow().apply {
                 this.outputSettings.pagesScanLimit = 1
                 this.screens.camera.cameraConfiguration.autoSnappingEnabled = false
                 this.screens.camera.acknowledgement.acknowledgementMode = AcknowledgementMode.NONE
             }
-            docScannerResultLauncher.launch(configuration)
+            docScannerResultLauncher?.launch(configuration)
         }
 
         binding.importFromLibBtn.setOnClickListener { openGallery() }
