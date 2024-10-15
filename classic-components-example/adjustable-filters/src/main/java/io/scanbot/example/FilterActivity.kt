@@ -87,7 +87,7 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
     }
 
     private suspend fun loadDocument(docId: String) {
-        val doc = withContext(Dispatchers.IO) { scanbotSdk.documentApi.loadDocument(docId, createIfNotExist = false) }
+        val doc = withContext(Dispatchers.IO) { scanbotSdk.documentApi.loadDocument(docId) }
         withContext(Dispatchers.Main) {
             if (doc == null) {
                 showToast("Document with given ID was not found!")

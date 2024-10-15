@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                     return@registerForActivityResult
                 }
 
-                val page = ScanbotSDK(this).documentApi.loadDocument(documentId, false)?.pages?.firstOrNull()
+                val page = ScanbotSDK(this).documentApi.loadDocument(documentId)?.pages?.firstOrNull()
                 if (page == null) {
                     Log.e(Const.LOG_TAG, "Error loading document with page!")
                     showToast("Error loading document with page!")

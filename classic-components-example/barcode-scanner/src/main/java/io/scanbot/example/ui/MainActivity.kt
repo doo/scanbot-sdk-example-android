@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.barcodeCounterViewDemo.setOnClickListener {
+        binding.barcodeScannerViewDemo.setOnClickListener {
             val intent = Intent(applicationContext, BarcodeScannerViewActivity::class.java)
             startActivity(intent)
         }
