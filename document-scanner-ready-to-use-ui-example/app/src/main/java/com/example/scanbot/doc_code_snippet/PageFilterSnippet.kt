@@ -15,6 +15,7 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
 import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.core.ImageRotation
 import io.scanbot.sdk.core.processor.ImageProcessor
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.imagefilters.BrightnessFilter
@@ -52,7 +53,7 @@ class PageFilterSnippet : AppCompatActivity() {
             val filter2 = BrightnessFilter(brightness = 0.4)
 
             // Apply rotation on the page, and you can also pass the filters here if you want
-            page.apply(newRotationTimes = 1, newFilters = listOf(filter1, filter2))
+            page.apply(newImageRotation = ImageRotation.CLOCKWISE_90, newFilters = listOf(filter1, filter2))
 
             // Or you can also set the filters separately
             // Set the filters
