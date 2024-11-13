@@ -58,7 +58,7 @@ class DocumentDetectionSnippet : AppCompatActivity() {
         }
 
     // Create a document detector instance
-    val documentDetector = scanbotSDK.createContourDetector()
+    val documentDetector = scanbotSDK.createDocumentDetector()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
@@ -66,11 +66,11 @@ class DocumentDetectionSnippet : AppCompatActivity() {
             val detectionResult = documentDetector.detect(page.originalImage!!)
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
-                detectionResult.polygonF.isNotEmpty() &&
-                !detectionResult.polygonF.isDefault()
+                detectionResult.pointsNormalized.isNotEmpty() &&
+                !detectionResult.pointsNormalized.isDefault()
             ) {
                 // If the result is an acceptable polygon, we warp the image into the polygon.
-                page.apply(newPolygon = detectionResult.polygonF)
+                page.apply(newPolygon = detectionResult.pointsNormalized)
                 // Set the source of the page to IMPORTED if needs
                 page.source = PageImageSource.IMPORTED
             }

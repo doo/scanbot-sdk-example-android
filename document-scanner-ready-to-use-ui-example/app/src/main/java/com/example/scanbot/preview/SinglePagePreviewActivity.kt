@@ -136,7 +136,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 }
                 withContext(Dispatchers.Main) {
                     imageQualityResult?.let { qualityResult ->
-                        val text = "Image quality: ${qualityResult.name}"
+                        val text = "Image quality: ${qualityResult.quality?.name}"
                         Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG).show()
 
                         updateImageView()

@@ -5,7 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.process.model.DocumentQuality
+import io.scanbot.sdk.process.DocumentQuality
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
@@ -48,7 +48,7 @@ class AcknowledgeScreenSnippet : AppCompatActivity() {
 
                 // Set the minimum acceptable document quality.
                 // Options: excellent, good, reasonable, poor, veryPoor, or noDocument.
-                minimumQuality = DocumentQuality.REASONABLE
+                minimumQuality = DocumentQuality.GOOD
 
                 // Set the background color for the acknowledgment screen.
                 backgroundColor = ScanbotColor(value = "#EFEFEF")

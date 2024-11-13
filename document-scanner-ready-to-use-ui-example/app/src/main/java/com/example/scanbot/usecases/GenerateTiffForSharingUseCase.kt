@@ -4,7 +4,7 @@ import com.example.scanbot.sharing.ISharingDocumentStorage
 import com.example.scanbot.sharing.ensureFileExists
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.tiff.TIFFWriter
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
+import io.scanbot.tiffwriter.model.TiffWriterParameters
 import java.io.File
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ class GenerateTiffForSharingUseCase @Inject constructor(
         tiffWriter.writeTIFF(
             document = document,
             targetFile = sharingTiffFile,
-            parameters = TIFFImageWriterParameters.defaultParametersForBinaryImages(),
+            parameters = TiffWriterParameters.default(),
         )
 
         return listOf(sharingTiffFile)

@@ -3,26 +3,14 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
-import io.scanbot.pdf.model.PdfConfig
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.processor.ImageProcessor
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.process.model.DocumentQuality
-import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
-import io.scanbot.sdk.util.isDefault
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

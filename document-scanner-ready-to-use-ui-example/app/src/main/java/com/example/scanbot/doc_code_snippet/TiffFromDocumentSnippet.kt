@@ -14,8 +14,8 @@ import com.example.scanbot.utils.toBitmap
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
+import io.scanbot.tiffwriter.model.CompressionMode
+import io.scanbot.tiffwriter.model.TiffWriterParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,11 +63,11 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
     val tiffWriter = scanbotSDK.createTiffWriter()
 
     fun createPdfFromImages(document: Document) {
-        val config = TIFFImageWriterParameters(
+        val config = TiffWriterParameters(
             binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
-            compression = TIFFImageWriterCompressionOptions.COMPRESSION_NONE,
-            userDefinedFields = arrayListOf()
+            compression = CompressionMode.NONE,
+            userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
         val pdfRendered = tiffWriter.writeTIFF(
