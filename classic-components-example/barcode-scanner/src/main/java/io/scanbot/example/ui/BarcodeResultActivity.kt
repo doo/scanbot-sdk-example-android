@@ -10,6 +10,8 @@ import io.scanbot.example.databinding.BarcodeItemBinding
 import io.scanbot.example.databinding.SnapImageItemBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.entity.textWithExtension
+import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
 import java.io.File
 
 class BarcodeResultActivity : AppCompatActivity() {
@@ -43,20 +45,20 @@ class BarcodeResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScanningResult?) {
+    private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScannerResult?) {
         detectedBarcodes?.let {
-            detectedBarcodes.barcodeItems.asSequence().map { item ->
+            detectedBarcodes.barcodes.asSequence().map { item ->
                 BarcodeItemBinding.inflate(layoutInflater, binding.recognisedItems, false)
                     .also {
-                        item.image?.let { bitmap ->
-                            it.image.setImageBitmap(bitmap)
+                        item.sourceImage?.let { image ->
+                            it.image.setImageBitmap(image.toBitmap())
                         }
-                        it.barcodeFormat.text = item.barcodeFormat.name
-                        it.docFormat.text = item.formattedResult?.let {
+                        it.barcodeFormat.text = item.format.name
+                        it.docFormat.text = item.parsedDocument?.let {
                             it::class.java.simpleName
                         } ?: "Unknown document"
                         it.docFormat.visibility =
-                            if (item.formattedResult != null) View.VISIBLE else View.GONE
+                            if (item.parsedDocument != null) View.VISIBLE else View.GONE
                         it.docText.text = item.textWithExtension
                         it.root.setOnClickListener {
                             val intent = Intent(this, DetailedItemDataActivity::class.java)

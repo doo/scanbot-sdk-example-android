@@ -18,6 +18,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
+import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.ui.camera.CameraUiSettings
@@ -37,10 +38,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         resultView = findViewById(R.id.result)
 
         val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.modifyConfig {
-            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
-            setSaveCameraPreviewFrame(false)
-        }
+        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
 
         barcodeScannerView.apply {
             initCamera(CameraUiSettings(false))
@@ -91,7 +89,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView.viewController.onPause()
     }
 
-    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {
+    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScannerResult?>) {
         result.value?.let {
             BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
             val intent = Intent(this, BarcodeResultActivity::class.java)
