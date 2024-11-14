@@ -7,23 +7,24 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import io.scanbot.check.entity.CheckDocumentLibrary.wrap
-import io.scanbot.ehicscanner.EhicRecognizerParameters
-import io.scanbot.ehicscanner.model.EhicRecognitionResult
+import io.scanbot.check.entity.Check
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.fragments.EHICResultDialogFragment
 import io.scanbot.example.fragments.ErrorFragment
 import io.scanbot.example.fragments.MRZDialogFragment
 import io.scanbot.example.fragments.MedicalCertificateResultDialogFragment
+import io.scanbot.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.genericdocument.entity.DePassport
 import io.scanbot.genericdocument.entity.FieldProperties
 import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.mrzscanner.model.MRZGenericDocument
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.check.entity.CheckRecognizerResult
-import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
+import io.scanbot.sdk.checkrecognizer.CheckRecognitionResult
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognizerConfiguration
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
+import io.scanbot.sdk.mrzscanner.MrzScannerResult
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.result.ResultWrapper
 import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
@@ -163,9 +164,11 @@ class MainActivity : AppCompatActivity() {
         binding.ehicDefaultUi.setOnClickListener {
             val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
             ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
-            ehicScannerConfig.setRecognizerParameters(EhicRecognizerParameters(
-                // Add your parameters here if needed
-            ))
+            ehicScannerConfig.setRecognizerParameters(
+                EuropeanHealthInsuranceCardRecognizerConfiguration(
+                    // Add your parameters here if needed
+                )
+            )
             // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
             // ehicScannerConfig.setFinderTextHint("custom text")
             // ...
@@ -211,21 +214,13 @@ class MainActivity : AppCompatActivity() {
             if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
-    private fun handleGenericDocRecognizerResult(resultWrappers: List<ResultWrapper<GenericDocument>>) {
-        // For simplicity we will take only the first document
-        val firstResultWrapper = resultWrappers.first()
-
-        // Get the ResultRepository from the ScanbotSDK instance
-        // scanbotSDK was created in onCreate via ScanbotSDK(context)
-        val resultRepository = scanbotSdk.resultRepositoryForClass(firstResultWrapper.clazz)
-
-        // Receive an instance of GenericDocument class from the repository
-        // This call will also remove the result from the repository (to make the memory usage less)
-        val genericDocument = resultRepository.getResultAndErase(firstResultWrapper.resultId)
-
+    private fun handleGenericDocRecognizerResult(result: List<GenericDocumentRecognitionResult>) {
+        result
         Toast.makeText(
             this,
-            genericDocument?.fields?.map { "${it.type.name} = ${it.value?.text}" }.toString(),
+            result.joinToString {
+                it?.document?.fields?.joinToString { "${it.type.name} = ${it.value?.text}" } ?: ""
+            },
             Toast.LENGTH_LONG
         ).show()
     }
@@ -237,48 +232,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMrzDialog(mrzRecognitionResult: MRZGenericDocument) {
+    private fun showMrzDialog(mrzRecognitionResult: MrzScannerResult) {
         val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
-    private fun showEHICResultDialog(recognitionResult: EhicRecognitionResult) {
+    private fun showEHICResultDialog(recognitionResult: EuropeanHealthInsuranceCardRecognitionResult) {
         val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
     }
 
-    private fun handleMedicalCertificateResult(resultWrapper: ResultWrapper<MedicalCertificateRecognizerResult>) {
-        // Get the ResultRepository from the ScanbotSDK instance
-        // scanbotSDK was created in onCreate via ScanbotSDK(context)
-        val resultRepository = scanbotSdk.resultRepositoryForClass(resultWrapper.clazz)
+    private fun handleMedicalCertificateResult(resultWrapper: MedicalCertificateRecognitionResult) {
 
-        // Receive an instance of MedicalCertificateRecognizerResult class from the repository
-        // This call will also remove the result from the repository (to make the memory usage less)
-        val medicalCertificateRecognizerResult =
-            resultRepository.getResultAndErase(resultWrapper.resultId)
 
-        showMedicalCertificateRecognizerResult(medicalCertificateRecognizerResult!!)
+        showMedicalCertificateRecognizerResult(resultWrapper!!)
     }
 
-    private fun showMedicalCertificateRecognizerResult(recognitionResult: MedicalCertificateRecognizerResult) {
+    private fun showMedicalCertificateRecognizerResult(recognitionResult: MedicalCertificateRecognitionResult) {
         val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
 
-    private fun handleCheckRecognizerResult(resultWrapper: ResultWrapper<CheckRecognizerResult>) {
-        // Get the ResultRepository from the ScanbotSDK instance
-        // scanbotSDK was created in onCreate via ScanbotSDK(context)
-        val resultRepository = scanbotSdk.resultRepositoryForClass(resultWrapper.clazz)
-
-        // Receive an instance of CheckRecognizerResult class from the repository
-        // This call will also remove the result from the repository (to make the memory usage less)
-        val result = resultRepository.getResultAndErase(resultWrapper.resultId)
-
-        showCheckRecognizerResult(result!!)
+    private fun handleCheckRecognizerResult(result: CheckRecognitionResult) {
+        showCheckRecognizerResult(result)
     }
 
-    private fun showCheckRecognizerResult(recognitionResult: CheckRecognizerResult) {
-        recognitionResult.check?.wrap()
+    private fun showCheckRecognizerResult(recognitionResult: CheckRecognitionResult) {
+        val document = recognitionResult.check?.let { Check(it) } // Convert to the document model
         Toast.makeText(this, recognitionResult.toString(), Toast.LENGTH_SHORT).show()
     }
 
