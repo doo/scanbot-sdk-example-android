@@ -12,13 +12,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.ehicscanner.model.EhicDetectionStatus
 import io.scanbot.example.EhicResultActivity.Companion.newIntent
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityEhicStillImageDetectionBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScanner
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -114,7 +114,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             binding.progress.isVisible = false
-            if (result != null && result.status == EhicDetectionStatus.SUCCESS) {
+            if (result != null && result.status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
             } else {
                 this@EhicStillImageDetectionActivity.showToast("No EHIC data recognized!")
@@ -127,10 +127,11 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val detectionResult = scanbotSdk.createContourDetector().detect(bitmap)
+            val documentDetector = scanbotSdk.createDocumentDetector()
+            val detectionResult = documentDetector.detect(bitmap)
             val document = scanbotSdk.documentApi.createDocument()
             page = document.addPage(bitmap).apply {
-                apply(newPolygon = detectionResult?.polygonF ?: PolygonHelper.getFullPolygon())
+                apply(newPolygon = detectionResult?.pointsNormalized ?: PolygonHelper.getFullPolygon())
             }
         }
 

@@ -13,7 +13,6 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val contourResult = sdk.createContourDetector().detect(bitmap)
+            val contourResult = sdk.createDocumentDetector().detect(bitmap)
 
             if (contourResult == null) {
                 Log.e(Const.LOG_TAG, "Error detecting document (result is `null`)!")
@@ -126,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             val document = sdk.documentApi.createDocument()
             val page = document.addPage(bitmap)
             Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-            page.apply(newPolygon = contourResult.polygonF)
+            page.apply(newPolygon = contourResult.pointsNormalized)
             document
         }
 

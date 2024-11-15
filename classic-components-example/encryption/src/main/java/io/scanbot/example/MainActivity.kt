@@ -8,15 +8,15 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.showToast
 import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.process.PdfRenderer
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fileIOProcessor: FileIOProcessor
-    private lateinit var pdfRenderer: PDFRenderer
+    private lateinit var pdfRenderer: PdfRenderer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         val encryptedDestination = pdfRenderer.render(
             imageFileUris.toTypedArray(),
             false,
-            PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
+            PdfConfiguration.default().copy(pageSize = PageSize.A4)
         ) ?: return
 
         showToast("The encrypted pdf was written to: $encryptedDestination")

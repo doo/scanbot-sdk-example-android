@@ -15,8 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,35 +23,37 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val contourDetector:ContourDetector by lazy { scanbotSdk.createContourDetector() }
+    private val contourDetector: DocumentDetector by lazy { scanbotSdk.createDocumentDetector() }
 
-    private val requestCameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            openCameraDialog()
-        } else {
-            this@MainActivity.showToast("Camera permission is required to run this example!")
-        }
-    }
-
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
+    private val requestCameraLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openCameraDialog()
+            } else {
+                this@MainActivity.showToast("Camera permission is required to run this example!")
+            }
         }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (scanbotSdk.licenseInfo.isValid) {
-            lifecycleScope.launch { processImageForAutoDocumentDetection(uri) }
-        } else {
-            this@MainActivity.showToast("1-minute trial license has expired!")
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
+
+            if (scanbotSdk.licenseInfo.isValid) {
+                lifecycleScope.launch { processImageForAutoDocumentDetection(uri) }
+            } else {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,9 +106,9 @@ class MainActivity : AppCompatActivity() {
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
              */
             val isDetectionStatusOk = (detectionResult?.status?.name?.startsWith("OK_")) ?: false
-            if (detectionResult != null && isDetectionStatusOk && detectionResult.polygonF.isNotEmpty()) {
+            if (detectionResult != null && isDetectionStatusOk && detectionResult.pointsNormalized.isNotEmpty()) {
                 // apply the detected polygon to the new page:
-                page.apply(newPolygon = detectionResult.polygonF)
+                page.apply(newPolygon = detectionResult.pointsNormalized)
             }
             page
         }

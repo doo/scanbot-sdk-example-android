@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import io.scanbot.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.genericdocument.entity.Field
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
 
 class ResultActivity : AppCompatActivity() {
 
@@ -66,10 +66,10 @@ private class Adapter(private val scanResult: GenericDocumentRecognitionResult) 
         private val fieldRecognizedText: TextView = itemView.findViewById(R.id.fieldRecognizedText)
 
         fun bind(item: Field) {
-            val confidence = String.format(FIELD_CONFIDENCE_FLOAT_FORMAT, (item.value?.confidence ?: 0.0f) * 100)
+            val confidence = String.format(FIELD_CONFIDENCE_FLOAT_FORMAT, (item.value?.confidence ?: 0.0) * 100)
 
             fieldType.text = String.format(FIELD_TYPE_FORMAT, item.type.name.capitalize())
-            fieldCroppedImage.setImageBitmap(item.image)
+            fieldCroppedImage.setImageBitmap(item.image?.toBitmap())
             fieldTextConfidence.text = String.format(FIELD_CONFIDENCE_FORMAT, confidence)
             fieldRecognizedText.text = item.value?.text
         }
@@ -81,7 +81,7 @@ private class Adapter(private val scanResult: GenericDocumentRecognitionResult) 
         private val cardType: TextView = itemView.findViewById(R.id.cardType)
 
         fun bind(item: GenericDocumentRecognitionResult) {
-            croppedCard.setImageBitmap(item.croppedImage)
+            croppedCard.setImageBitmap(item.croppedImage?.toBitmap())
             cardType.text = item.document?.type?.name
         }
     }

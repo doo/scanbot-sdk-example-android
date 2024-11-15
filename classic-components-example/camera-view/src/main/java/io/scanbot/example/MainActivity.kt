@@ -20,17 +20,16 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
-import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetector
+import io.scanbot.sdk.documentdetector.DocumentAutoSnappingController
+import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
-class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: ImageView
@@ -38,11 +37,11 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var contourDetectorFrameHandler: ContourDetectorFrameHandler
+    private lateinit var contourDetectorFrameHandler: DocumentDetectorFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var documentDetector: DocumentDetector
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         supportActionBar!!.hide()
 
         scanbotSDK = ScanbotSDK(this)
-        contourDetector = scanbotSDK.createContourDetector()
+        documentDetector = scanbotSDK.createDocumentDetector()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
+        contourDetectorFrameHandler = DocumentDetectorFrameHandler.attach(cameraView, documentDetector)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#contour-detection-parameters
         contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
@@ -127,12 +126,12 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DetectedFrame, SdkLicenseError>): Boolean {
+    override fun handle(result: FrameHandlerResult<DocumentDetectorFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success<*>) {
-                showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
+                showUserGuidance((result as FrameHandlerResult.Success<DocumentDetectorFrameHandler.DetectedFrame>).value.detectionStatus)
             }
         }
         return false // typically you need to return false
@@ -209,7 +208,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
+        val detectedPolygon = documentDetector.detect(originalBitmap)!!.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }

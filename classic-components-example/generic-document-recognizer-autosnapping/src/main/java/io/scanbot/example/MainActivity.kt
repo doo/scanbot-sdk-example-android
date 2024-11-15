@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
+import io.scanbot.genericdocument.GenericDocumentRecognitionMode
 import io.scanbot.sdk.ScanbotSDK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             val result = withContext(Dispatchers.Default) {
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
-                documentRecognizer.scanBitmap(bitmap, true, 0)
+                documentRecognizer.scanBitmap(bitmap, 0, GenericDocumentRecognitionMode.SINGLE_SHOT)
             }
 
             withContext(Dispatchers.Main) {

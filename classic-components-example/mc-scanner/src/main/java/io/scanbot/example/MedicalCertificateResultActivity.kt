@@ -8,10 +8,10 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.mcscanner.model.DateRecordType
-import io.scanbot.mcscanner.model.CheckBoxType
-import io.scanbot.mcscanner.model.McPatientInfoField
-import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
+import io.scanbot.sdk.mcscanner.MedicalCertificateCheckBoxType
+import io.scanbot.sdk.mcscanner.MedicalCertificateDateRecordType
+import io.scanbot.sdk.mcscanner.MedicalCertificatePatientInfoField
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
 
 class MedicalCertificateResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,9 +83,9 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
         intent.getStringExtra(EXTRA_formType)?.let { addValueView(otherLayout, "Form type", it) }
         val parcelableArrayExtra = intent.getParcelableArrayExtra(EXTRA_patientInfo) as Array<Parcelable>
         parcelableArrayExtra.forEach {
-            if (it is McPatientInfoField) {
-                addValueView(patientInfoLayout, it.patientInfoFieldType.name, it.value)
-                addConfidenceValueView(patientInfoLayout, it.confidenceValue)
+            if (it is MedicalCertificatePatientInfoField) {
+                addValueView(patientInfoLayout, it.type.name, it.value)
+                addConfidenceValueView(patientInfoLayout, it.recognitionConfidence)
             }
         }
 
@@ -169,119 +169,119 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
         const val EXTRA_formType = "formType"
 
         @JvmStatic
-        fun newIntent(context: Context?, result: MedicalCertificateRecognizerResult): Intent {
+        fun newIntent(context: Context?, result: MedicalCertificateRecognitionResult): Intent {
             val intent = Intent(context, MedicalCertificateResultActivity::class.java)
-            for (checkbox in result.checkboxes) {
+            for (checkbox in result.checkBoxes) {
                 when (checkbox.type) {
-                    CheckBoxType.McBoxUnknown -> {
+                    MedicalCertificateCheckBoxType.UNKNOWN -> {
                     }
-                    CheckBoxType.McBoxWorkAccident -> {
-                        intent.putExtra(EXTRA_workAccident, checkbox.hasContents)
-                        intent.putExtra(EXTRA_workAccidentConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.WORK_ACCIDENT -> {
+                        intent.putExtra(EXTRA_workAccident, checkbox.checked)
+                        intent.putExtra(EXTRA_workAccidentConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor -> {
-                        intent.putExtra(EXTRA_assignedInsDoctor, checkbox.hasContents)
-                        intent.putExtra(EXTRA_assignedInsDoctorConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.ASSIGNED_TO_ACCIDENT_INSURANCE_DOCTOR -> {
+                        intent.putExtra(EXTRA_assignedInsDoctor, checkbox.checked)
+                        intent.putExtra(EXTRA_assignedInsDoctorConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxInitialCertificate -> {
-                        intent.putExtra(EXTRA_initialCertificate, checkbox.hasContents)
-                        intent.putExtra(EXTRA_initialCertificateConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.INITIAL_CERTIFICATE -> {
+                        intent.putExtra(EXTRA_initialCertificate, checkbox.checked)
+                        intent.putExtra(EXTRA_initialCertificateConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxRenewedCertificate -> {
-                        intent.putExtra(EXTRA_renewedCertificate, checkbox.hasContents)
-                        intent.putExtra(EXTRA_renewedCertificateConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.RENEWED_CERTIFICATE -> {
+                        intent.putExtra(EXTRA_renewedCertificate, checkbox.checked)
+                        intent.putExtra(EXTRA_renewedCertificateConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxInsuredPayCase -> {
-                        intent.putExtra(EXTRA_insuredPayCase, checkbox.hasContents)
-                        intent.putExtra(EXTRA_insuredPayCaseConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.INSURED_PAY_CASE -> {
+                        intent.putExtra(EXTRA_insuredPayCase, checkbox.checked)
+                        intent.putExtra(EXTRA_insuredPayCaseConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxFinalCertificate -> {
-                        intent.putExtra(EXTRA_finalCertificate, checkbox.hasContents)
-                        intent.putExtra(EXTRA_finalCertificateConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.FINAL_CERTIFICATE -> {
+                        intent.putExtra(EXTRA_finalCertificate, checkbox.checked)
+                        intent.putExtra(EXTRA_finalCertificateConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxRequiresCareYes -> {
-                        intent.putExtra(EXTRA_requiresCareYes, checkbox.hasContents)
-                        intent.putExtra(EXTRA_requiresCareYesConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.REQUIRES_CARE_YES -> {
+                        intent.putExtra(EXTRA_requiresCareYes, checkbox.checked)
+                        intent.putExtra(EXTRA_requiresCareYesConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxRequiresCareNo -> {
-                        intent.putExtra(EXTRA_requiresCareNo, checkbox.hasContents)
-                        intent.putExtra(EXTRA_requiresCareNoConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.REQUIRES_CARE_NO -> {
+                        intent.putExtra(EXTRA_requiresCareNo, checkbox.checked)
+                        intent.putExtra(EXTRA_requiresCareNoConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxAccidentYes -> {
-                        intent.putExtra(EXTRA_accidentYes, checkbox.hasContents)
-                        intent.putExtra(EXTRA_accidentYesConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.ACCIDENT_YES -> {
+                        intent.putExtra(EXTRA_accidentYes, checkbox.checked)
+                        intent.putExtra(EXTRA_accidentYesConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxAccidentNo -> {
-                        intent.putExtra(EXTRA_accidentNo, checkbox.hasContents)
-                        intent.putExtra(EXTRA_accidentNoConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.ACCIDENT_NO -> {
+                        intent.putExtra(EXTRA_accidentNo, checkbox.checked)
+                        intent.putExtra(EXTRA_accidentNoConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxOtherAccident -> {
-                        intent.putExtra(EXTRA_otherAccident, checkbox.hasContents)
-                        intent.putExtra(EXTRA_otherAccidentConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.OTHER_ACCIDENT -> {
+                        intent.putExtra(EXTRA_otherAccident, checkbox.checked)
+                        intent.putExtra(EXTRA_otherAccidentConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxEntitlementToContinuedPaymentYes -> {
-                        intent.putExtra(EXTRA_entitlementToContinuedPaymentYes, checkbox.hasContents)
-                        intent.putExtra(EXTRA_entitlementToContinuedPaymentYesConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.ENTITLEMENT_TO_CONTINUED_PAYMENT_YES -> {
+                        intent.putExtra(EXTRA_entitlementToContinuedPaymentYes, checkbox.checked)
+                        intent.putExtra(EXTRA_entitlementToContinuedPaymentYesConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxEntitlementToContinuedPaymentNo -> {
-                        intent.putExtra(EXTRA_entitlementToContinuedPaymentNo, checkbox.hasContents)
-                        intent.putExtra(EXTRA_entitlementToContinuedPaymentNoConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.ENTITLEMENT_TO_CONTINUED_PAYMENT_NO -> {
+                        intent.putExtra(EXTRA_entitlementToContinuedPaymentNo, checkbox.checked)
+                        intent.putExtra(EXTRA_entitlementToContinuedPaymentNoConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxSickPayWasClaimedNo -> {
-                        intent.putExtra(EXTRA_sickPayWasClaimedNo, checkbox.hasContents)
-                        intent.putExtra(EXTRA_sickPayWasClaimedNoConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.SICK_PAY_WAS_CLAIMED_YES -> {
+                        intent.putExtra(EXTRA_sickPayWasClaimedNo, checkbox.checked)
+                        intent.putExtra(EXTRA_sickPayWasClaimedNoConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxSickPayWasClaimedYes -> {
-                        intent.putExtra(EXTRA_sickPayWasClaimedYes, checkbox.hasContents)
-                        intent.putExtra(EXTRA_sickPayWasClaimedYesConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.SICK_PAY_WAS_CLAIMED_NO -> {
+                        intent.putExtra(EXTRA_sickPayWasClaimedYes, checkbox.checked)
+                        intent.putExtra(EXTRA_sickPayWasClaimedYesConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxSingleParentNo -> {
-                        intent.putExtra(EXTRA_singleParentNo, checkbox.hasContents)
-                        intent.putExtra(EXTRA_singleParentNoConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.SINGLE_PARENT_NO -> {
+                        intent.putExtra(EXTRA_singleParentNo, checkbox.checked)
+                        intent.putExtra(EXTRA_singleParentNoConf, checkbox.checkedConfidence)
                     }
-                    CheckBoxType.McBoxSingleParentYes -> {
-                        intent.putExtra(EXTRA_singleParentYes, checkbox.hasContents)
-                        intent.putExtra(EXTRA_singleParentYesConf, checkbox.contentsValidationConfidenceValue)
+                    MedicalCertificateCheckBoxType.SINGLE_PARENT_YES -> {
+                        intent.putExtra(EXTRA_singleParentYes, checkbox.checked)
+                        intent.putExtra(EXTRA_singleParentYesConf, checkbox.checkedConfidence)
                     }
                 }
             }
             for (date in result.dates) {
                 when (date.type) {
-                    DateRecordType.DateRecordIncapableOfWorkSince -> {
-                        intent.putExtra(EXTRA_incapableSince, date.dateString)
-                        intent.putExtra(EXTRA_incapableSinceRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.INCAPABLE_OF_WORK_SINCE -> {
+                        intent.putExtra(EXTRA_incapableSince, date.value)
+                        intent.putExtra(EXTRA_incapableSinceRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordIncapableOfWorkUntil -> {
-                        intent.putExtra(EXTRA_incapableUntil, date.dateString)
-                        intent.putExtra(EXTRA_incapableUntilRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.INCAPABLE_OF_WORK_UNTIL -> {
+                        intent.putExtra(EXTRA_incapableUntil, date.value)
+                        intent.putExtra(EXTRA_incapableUntilRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordDiagnosedOn -> {
-                        intent.putExtra(EXTRA_diagnosedOn, date.dateString)
-                        intent.putExtra(EXTRA_diagnosedOnRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.DIAGNOSED_ON -> {
+                        intent.putExtra(EXTRA_diagnosedOn, date.value)
+                        intent.putExtra(EXTRA_diagnosedOnRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordUndefined -> {
+                    MedicalCertificateDateRecordType.UNDEFINED -> {
                     }
 
-                    DateRecordType.DateRecordDocumentDate -> {
-                        intent.putExtra(EXTRA_documentDate, date.dateString)
-                        intent.putExtra(EXTRA_documentDateRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.DOCUMENT_DATE -> {
+                        intent.putExtra(EXTRA_documentDate, date.value)
+                        intent.putExtra(EXTRA_documentDateRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordBirthDate -> {
-                        intent.putExtra(EXTRA_birthDate, date.dateString)
-                        intent.putExtra(EXTRA_birthDateRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.BIRTH_DATE -> {
+                        intent.putExtra(EXTRA_birthDate, date.value)
+                        intent.putExtra(EXTRA_birthDateRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordChildNeedsCareFrom -> {
-                        intent.putExtra(EXTRA_childNeedsCareFrom, date.dateString)
-                        intent.putExtra(EXTRA_childNeedsCareFromRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.CHILD_NEEDS_CARE_FROM -> {
+                        intent.putExtra(EXTRA_childNeedsCareFrom, date.value)
+                        intent.putExtra(EXTRA_childNeedsCareFromRC, date.recognitionConfidence)
                     }
-                    DateRecordType.DateRecordChildNeedsCareUntil -> {
-                        intent.putExtra(EXTRA_childNeedsCareUntil, date.dateString)
-                        intent.putExtra(EXTRA_childNeedsCareUntilRC, date.recognitionConfidenceValue)
+                    MedicalCertificateDateRecordType.CHILD_NEEDS_CARE_UNTIL -> {
+                        intent.putExtra(EXTRA_childNeedsCareUntil, date.value)
+                        intent.putExtra(EXTRA_childNeedsCareUntilRC, date.recognitionConfidence)
                     }
                 }
             }
 
-            intent.putExtra(EXTRA_formType, result.mcFormType.name)
+            intent.putExtra(EXTRA_formType, result.formType.name)
             intent.putExtra(EXTRA_patientInfo, result.patientInfoBox.fields.toTypedArray())
 
             return intent

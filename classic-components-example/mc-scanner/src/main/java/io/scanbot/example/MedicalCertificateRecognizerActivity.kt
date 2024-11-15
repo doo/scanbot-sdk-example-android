@@ -23,6 +23,7 @@ import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateAutoSnappingController
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateFrameHandler
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import kotlin.math.roundToInt
 
@@ -99,16 +100,18 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
             originalBitmap,
             0,
-            shouldCropDocument = true,
-            returnCroppedDocument = true,
-            recognizePatientInfo = true,
-            recognizeBarcode = true
+            MedicalCertificateRecognitionParameters(
+                shouldCropDocument = true,
+                extractCroppedImage = true,
+                recognizePatientInfoBox = true,
+                recognizeBarcode = true
+            )
         )
 
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             // Show the cropped image as thumbnail preview
-            resultInfo.croppedImage?.let {
-                val thumbnailImage = resizeImage(it, 600f, 600f)
+            resultInfo.croppedImage?.toBitmap()?.let { image ->
+                val thumbnailImage = resizeImage(image, 600f, 600f)
                 runOnUiThread {
                     resultImageView.setImageBitmap(thumbnailImage)
                 }

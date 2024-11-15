@@ -13,7 +13,7 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         val ocrResult = withContext(Dispatchers.Default) {
             opticalCharacterRecognizer.recognizeTextWithPdfFromDocument(
                 document,
-                PdfConfig.defaultConfig().copy(pageSize = PageSize.A4),
+                PdfConfiguration.default().copy(pageSize = PageSize.A4),
             )
         }
 
