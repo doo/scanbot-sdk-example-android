@@ -11,14 +11,14 @@ import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
 import io.scanbot.tiffwriter.model.CompressionMode
 import io.scanbot.tiffwriter.model.TiffWriterParameters
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class TiffFromDocumentSnippet : AppCompatActivity() {

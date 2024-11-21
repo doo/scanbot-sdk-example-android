@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.ImageRotation
 import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
@@ -18,9 +21,6 @@ import io.scanbot.sdk.imagefilters.OutputMode
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.util.isDefault
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class ImageFilterSnippet : AppCompatActivity() {

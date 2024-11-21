@@ -10,11 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import io.scanbot.sdk.ScanbotSDK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import io.scanbot.sdk.ScanbotSDK
 
 
 class ImportImagesFromPdfSnippet : AppCompatActivity() {

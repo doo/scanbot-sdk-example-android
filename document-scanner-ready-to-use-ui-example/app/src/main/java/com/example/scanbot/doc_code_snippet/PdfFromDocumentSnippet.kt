@@ -11,6 +11,9 @@ import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.scanbot.pdf.model.PageDirection
 import io.scanbot.pdf.model.PageFit
 import io.scanbot.pdf.model.PageSize
@@ -19,9 +22,6 @@ import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.pdf.model.ResamplingMethod
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {

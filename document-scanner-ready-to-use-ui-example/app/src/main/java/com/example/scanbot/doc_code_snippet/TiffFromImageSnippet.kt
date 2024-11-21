@@ -9,14 +9,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.tiffwriter.model.CompressionMode
-import io.scanbot.tiffwriter.model.TiffWriterParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.tiffwriter.model.CompressionMode
+import io.scanbot.tiffwriter.model.TiffWriterParameters
 
 
 class TiffFromImageSnippet : AppCompatActivity() {
@@ -36,8 +36,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                            getUrisFromGalleryResult(imagePickerResult).asSequence() // process images one by one instead of collecting the whole list - less memory consumption
                                 .apply {
                                     createTiffFromImages(this.toList())
                                 }
@@ -82,8 +81,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
         imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
         imageIntent.putExtra(
-            Intent.EXTRA_MIME_TYPES,
-            arrayOf("image/jpeg", "image/png", "image/webp", "image/heic")
+            Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png", "image/webp", "image/heic")
         )
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }

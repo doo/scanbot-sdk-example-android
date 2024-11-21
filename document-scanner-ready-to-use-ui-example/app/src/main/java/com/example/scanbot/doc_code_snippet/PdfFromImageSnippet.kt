@@ -9,11 +9,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import io.scanbot.pdf.model.PdfConfiguration
-import io.scanbot.sdk.ScanbotSDK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.pdf.model.PdfConfiguration
+import io.scanbot.sdk.ScanbotSDK
 
 
 class PdfFromImageSnippet : AppCompatActivity() {

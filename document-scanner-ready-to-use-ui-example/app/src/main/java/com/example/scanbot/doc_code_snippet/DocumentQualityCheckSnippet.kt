@@ -10,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.process.DocumentQuality
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.process.DocumentQuality
 
 
 class DocumentQualityCheckSnippet : AppCompatActivity() {
