@@ -8,15 +8,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import io.scanbot.check.model.CheckRecognizerStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.check.CheckRecognizerFrameHandler
 import io.scanbot.sdk.check.CheckRecognizerFrameHandler.Companion.attach
+import io.scanbot.sdk.checkrecognizer.CheckRecognitionResult
+import io.scanbot.sdk.checkrecognizer.CheckRecognitionStatus
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import io.scanbot.sdk.check.entity.CheckRecognizerResult
 
 class CheckRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
@@ -43,10 +43,10 @@ class CheckRecognizerActivity : AppCompatActivity() {
 
         val checkScanner = scanbotSDK.createCheckRecognizer()
         frameHandler = attach(cameraView, checkScanner)
-        frameHandler.addResultHandler { result: FrameHandlerResult<CheckRecognizerResult?, SdkLicenseError?>? ->
+        frameHandler.addResultHandler { result: FrameHandlerResult<CheckRecognitionResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
-                val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckRecognizerResult?
-                if (recognitionResult?.status == CheckRecognizerStatus.SUCCESS) {
+                val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckRecognitionResult?
+                if (recognitionResult?.status == CheckRecognitionStatus.SUCCESS) {
                     frameHandler.isEnabled = false
                     startActivity(CheckRecognizerResultActivity.newIntent(this, recognitionResult))
                 }

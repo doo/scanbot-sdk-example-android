@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         val page = withContext(Dispatchers.Default) {
             val inputStream = contentResolver.openInputStream(imageUri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
-            val detectedPolygon = scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: PolygonHelper.getFullPolygon()
+            val detectedPolygon = scanbotSdk.createDocumentDetector().detect(bitmap)?.pointsNormalized ?: PolygonHelper.getFullPolygon()
             val document = scanbotSdk.documentApi.createDocument()
             return@withContext document.addPage(bitmap).apply {
                 apply(newPolygon = detectedPolygon, newFilters = listOf(ParametricFilter.grayscaleFilter()))

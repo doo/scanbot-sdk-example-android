@@ -22,6 +22,7 @@ import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import java.util.*
 import kotlin.math.roundToInt
@@ -91,30 +92,57 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         // rotate original image if required:
         if (imageOrientation > 0) {
             val matrix = Matrix()
-            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
+            matrix.setRotate(
+                imageOrientation.toFloat(),
+                originalBitmap.width / 2f,
+                originalBitmap.height / 2f
+            )
+            originalBitmap = Bitmap.createBitmap(
+                originalBitmap,
+                0,
+                0,
+                originalBitmap.width,
+                originalBitmap.height,
+                matrix,
+                false
+            )
         }
 
         // And finally run Medical Certificate recognition on prepared document image:
-        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(originalBitmap,
+        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
+            originalBitmap,
             0,
-            shouldCropDocument = true,
-            returnCroppedDocument = true,
-            recognizePatientInfo = true,
-            recognizeBarcode = true)
+            MedicalCertificateRecognitionParameters(
+                shouldCropDocument = true,
+                extractCroppedImage = true,
+                recognizePatientInfoBox = true,
+                recognizeBarcode = true
+            )
+        )
         if (resultInfo != null && resultInfo.recognitionSuccessful) {
             // Show the cropped image as thumbnail preview
-            resultInfo.croppedImage?.let {
-                val thumbnailImage = resizeImage(it, 600f, 600f)
+            resultInfo.croppedImage?.toBitmap()?.let { image ->
+                val thumbnailImage = resizeImage(image, 600f, 600f)
                 runOnUiThread {
                     resultImageView.setImageBitmap(thumbnailImage)
                 }
             }
 
-            resultImageView.postDelayed({ startActivity(newIntent(this@ManualMedicalCertificateScannerActivity, resultInfo)) }, 2000)
+            resultImageView.postDelayed({
+                startActivity(
+                    newIntent(
+                        this@ManualMedicalCertificateScannerActivity,
+                        resultInfo
+                    )
+                )
+            }, 2000)
         } else {
             runOnUiThread {
-                val toast = Toast.makeText(this@ManualMedicalCertificateScannerActivity, "No Medical Certificate content was recognized!", Toast.LENGTH_LONG)
+                val toast = Toast.makeText(
+                    this@ManualMedicalCertificateScannerActivity,
+                    "No Medical Certificate content was recognized!",
+                    Toast.LENGTH_LONG
+                )
                 toast.setGravity(Gravity.CENTER, 0, 0)
                 toast.show()
             }

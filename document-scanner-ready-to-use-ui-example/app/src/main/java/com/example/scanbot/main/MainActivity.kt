@@ -17,9 +17,9 @@ import com.example.scanbot.preview.DocumentPreviewActivity
 import com.example.scanbot.preview.SinglePagePreviewActivity
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ui_v2.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity

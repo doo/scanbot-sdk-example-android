@@ -21,11 +21,11 @@ import io.scanbot.genericdocument.entity.DeResidencePermitBack
 import io.scanbot.genericdocument.entity.DeResidencePermitFront
 import io.scanbot.genericdocument.entity.EuropeanHealthInsuranceCard
 import io.scanbot.genericdocument.entity.GenericDocument
-import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
+import io.scanbot.genericdocument.entity.GenericDocumentWrapper
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
     // Alternatively, use GenericDocumentLibrary.wrapperFromGenericDocument(genericDocument)
-    when (val wrapper = genericDocument.wrap()) {
+    when (val wrapper = GenericDocumentWrapper(genericDocument)) {
         is DeIdCardFront -> {
             val id = wrapper.id
             val name = wrapper.givenNames

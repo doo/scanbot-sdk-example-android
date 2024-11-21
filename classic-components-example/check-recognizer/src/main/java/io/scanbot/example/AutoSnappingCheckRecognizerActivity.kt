@@ -16,9 +16,9 @@ import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.check.CheckRecognizer
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
-import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.core.contourdetector.ContourDetector
+import io.scanbot.sdk.core.documentdetector.DocumentDetector
+import io.scanbot.sdk.documentdetector.DocumentAutoSnappingController
+import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -28,10 +28,10 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: TextView
 
-    private lateinit var contourDetectorFrameHandler: ContourDetectorFrameHandler
+    private lateinit var contourDetectorFrameHandler: DocumentDetectorFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var contourDetector: DocumentDetector
     private lateinit var checkRecognizer: CheckRecognizer
 
     private var flashEnabled = false
@@ -54,12 +54,12 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
 
         checkRecognizer = scanbotSDK.createCheckRecognizer()
-        contourDetector = scanbotSDK.createContourDetector()
+        contourDetector = scanbotSDK.createDocumentDetector()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
         contourDetectorFrameHandler =
-            ContourDetectorFrameHandler.attach(cameraView, contourDetector)
+            DocumentDetectorFrameHandler.attach(cameraView, contourDetector)
 
         contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
         contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
@@ -111,7 +111,7 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
 
         val result = contourDetector.detect(originalBitmap)
 
-        result?.polygonF?.let { polygon ->
+        result?.pointsNormalized?.let { polygon ->
             ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
                 ?.let { documentImage ->
                     // documentImage will be recycled inside recognizeCheckBitmap

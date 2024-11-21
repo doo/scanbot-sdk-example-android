@@ -98,7 +98,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
-            if (mrzRecognitionResult != null && mrzRecognitionResult.recognitionSuccessful) {
+            if (mrzRecognitionResult != null && mrzRecognitionResult.success) {
                 startActivity(newIntent(this@MrzStillImageDetectionActivity, mrzRecognitionResult))
             } else {
                 Toast.makeText(
@@ -118,7 +118,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
             val page = document.addPage(bitmap)
 
             val contourResult =
-                scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: kotlin.run {
+                scanbotSdk.createDocumentDetector().detect(bitmap)?.pointsNormalized ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
                     PolygonHelper.getFullPolygon()
                 }

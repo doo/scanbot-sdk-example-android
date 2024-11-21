@@ -15,9 +15,10 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
 import io.scanbot.example.databinding.FragmentMedicalCertificateResultDialogBinding
-import io.scanbot.mcscanner.model.CheckBoxType
-import io.scanbot.mcscanner.model.DateRecordType
-import io.scanbot.sdk.mcrecognizer.entity.MedicalCertificateRecognizerResult
+import io.scanbot.sdk.core.ImageRef
+import io.scanbot.sdk.mcscanner.MedicalCertificateCheckBoxType
+import io.scanbot.sdk.mcscanner.MedicalCertificateDateRecordType
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
 
 class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
@@ -27,7 +28,7 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
 
         const val MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA"
 
-        fun newInstance(medicalCertificateScanResult: MedicalCertificateRecognizerResult): MedicalCertificateResultDialogFragment {
+        fun newInstance(medicalCertificateScanResult: MedicalCertificateRecognitionResult): MedicalCertificateResultDialogFragment {
             val f = MedicalCertificateResultDialogFragment()
 
             // Supply num input as an argument.
@@ -42,11 +43,11 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
     private var _binding: FragmentMedicalCertificateResultDialogBinding? = null
     private val binding get() = _binding!!
 
-    private var medicalCertificateResult: MedicalCertificateRecognizerResult? = null
+    private var medicalCertificateResult: MedicalCertificateRecognitionResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View {
         medicalCertificateResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, MedicalCertificateRecognizerResult::class.java)
+            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, MedicalCertificateRecognitionResult::class.java)
         } else {
             @Suppress("DEPRECATION")
             arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
@@ -65,9 +66,9 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         return binding.root
     }
 
-    private fun showBitmapImage(mcImage: Bitmap, imageView: ImageView) {
+    private fun showBitmapImage(mcImage: ImageRef, imageView: ImageView) {
         imageView.visibility = View.VISIBLE
-        imageView.setImageBitmap(mcImage)
+        imageView.setImageBitmap(mcImage.toBitmap())
     }
 
 
@@ -107,43 +108,43 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         return dialog
     }
 
-    private fun extractData(result: MedicalCertificateRecognizerResult): String {
+    private fun extractData(result: MedicalCertificateRecognitionResult): String {
         return StringBuilder()
-                .append("Type: ").append(if (result.checkboxes
-                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxInitialCertificate }
-                                ?.hasContents == true)
+                .append("Type: ").append(if (result.checkBoxes
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == MedicalCertificateCheckBoxType.INITIAL_CERTIFICATE }
+                    ?.checked == true)
                     "Initial"
-                else if (result.checkboxes
-                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxRenewedCertificate }
-                                ?.hasContents == true)
+                else if (result.checkBoxes
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == MedicalCertificateCheckBoxType.RENEWED_CERTIFICATE }
+                                ?.checked == true)
                     "Renewed"
                 else
                     "Unknown").append("\n")
-                .append("Work Accident: ").append(if (result.checkboxes
-                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxWorkAccident }
-                                ?.hasContents == true)
+                .append("Work Accident: ").append(if (result.checkBoxes
+                    .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == MedicalCertificateCheckBoxType.WORK_ACCIDENT }
+                                ?.checked == true)
                     "Yes"
                 else "No").append("\n")
                 .append("Accident Consultant: ").append(
-                        if (result.checkboxes
-                                .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor }
-                                        ?.hasContents == true)
+                        if (result.checkBoxes
+                                .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == MedicalCertificateCheckBoxType.ASSIGNED_TO_ACCIDENT_INSURANCE_DOCTOR }
+                                        ?.checked == true)
                             "Yes"
                         else "No"
                 ).append("\n")
                 .append("Start Date: ").append(
-                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkSince }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == MedicalCertificateDateRecordType.INCAPABLE_OF_WORK_SINCE }?.value
                 ).append("\n")
                 .append("End Date: ").append(
-                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordIncapableOfWorkUntil }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == MedicalCertificateDateRecordType.INCAPABLE_OF_WORK_UNTIL }?.value
                 ).append("\n")
                 .append("Issue Date: ").append(
-                        result.dates.find { dateRecord -> dateRecord.type == DateRecordType.DateRecordDiagnosedOn }?.dateString
+                        result.dates.find { dateRecord -> dateRecord.type == MedicalCertificateDateRecordType.DIAGNOSED_ON }?.value
                 )
                 .append("\n")
-                .append("Form type: ${result.mcFormType.name}")
+                .append("Form type: ${result.formType.name}")
                 .append("\n")
-                .append(result.patientInfoBox.fields.joinToString(separator = "\n", prefix = "\n") { "${it.patientInfoFieldType.name}: ${it.value}" })
+                .append(result.patientInfoBox.fields.joinToString(separator = "\n", prefix = "\n") { "${it.type.name}: ${it.value}" })
                 .toString()
     }
 

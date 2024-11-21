@@ -18,11 +18,11 @@ import androidx.core.view.WindowCompat
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetector
 import io.scanbot.sdk.docdetection.ui.DocumentScannerView
 import io.scanbot.sdk.docdetection.ui.IDocumentScannerViewCallback
+import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.CameraUiSettings
 import io.scanbot.sdk.ui.camera.ShutterButton
@@ -43,7 +43,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSdk: ScanbotSDK
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var documentDetector: DocumentDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -54,7 +54,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         scanbotSdk = ScanbotSDK(this)
-        contourDetector = scanbotSdk.createContourDetector()
+        documentDetector = scanbotSdk.createDocumentDetector()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -67,13 +67,13 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         documentScannerView.apply {
             initCamera(CameraUiSettings(true))
-            initDetectionBehavior(contourDetector,
+            initDetectionBehavior(documentDetector,
                 { result ->
                     // Here you are continuously notified about contour detection results.
                     // For example, you can show a user guidance text depending on the current detection status.
                     userGuidanceHint.post {
                         if (result is FrameHandlerResult.Success<*>) {
-                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
+                            showUserGuidance((result as FrameHandlerResult.Success<DocumentDetectorFrameHandler.DetectedFrame>).value.detectionStatus)
                         }
                     }
                     false // typically you need to return false
@@ -203,8 +203,8 @@ class DocumentCameraActivity : AppCompatActivity() {
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        val result = contourDetector.detect(originalBitmap)!!
-        val detectedPolygon = result.polygonF
+        val result = documentDetector.detect(originalBitmap)!!
+        val detectedPolygon = result.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }

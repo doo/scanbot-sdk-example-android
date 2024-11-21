@@ -6,9 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
 import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.mrzscanner.model.MRZGenericDocument
+import io.scanbot.sdk.mrzscanner.MrzScannerResult
 
 class MRZResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,11 +41,11 @@ class MRZResultActivity : AppCompatActivity() {
         val travelDocTypeVariant = findViewById<TextView>(R.id.travelDocTypeVariant)
         val versionNumber = findViewById<TextView>(R.id.versionNumber)
 
-        val result: MRZGenericDocument = intent.getParcelableExtra(EXTRA_MRZ_RESULT)!!
+        val result: MrzScannerResult = intent.getParcelableExtra(EXTRA_MRZ_RESULT)!!
 
-        val mrzResult = result.document?.wrap() as MRZ
+        val mrzResult = MRZ(result.document!!)
 
-        travelDocType.text = result.documentType.name
+        travelDocType.text = mrzResult.travelDocType?.value?.text
         documentNumber.text = mrzResult.documentNumber?.value?.text
         firstName.text = mrzResult.givenNames?.value?.text
         lastName.text = mrzResult.surname?.value?.text
@@ -79,7 +78,7 @@ class MRZResultActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_MRZ_RESULT = "MRZ_RESULT"
         @JvmStatic
-        fun newIntent(context: Context?, result: MRZGenericDocument?): Intent {
+        fun newIntent(context: Context?, result: MrzScannerResult?): Intent {
             val intent = Intent(context, MRZResultActivity::class.java)
             intent.putExtra(EXTRA_MRZ_RESULT, result)
             return intent
