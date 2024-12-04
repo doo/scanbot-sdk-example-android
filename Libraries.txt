@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 6.1.1
+Open Source libraries used in the Scanbot SDK for Android version 6.1.2
 
 CWAC-Camera
 
