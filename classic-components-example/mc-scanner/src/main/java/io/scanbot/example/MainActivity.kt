@@ -13,6 +13,7 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
             val medicalCertificateRecognizer = scanbotSdk.createMedicalCertificateRecognizer()
 
-            medicalCertificateRecognizer.recognizeMcBitmap(bitmap, 0, true, true, true)
+            medicalCertificateRecognizer.recognizeMcBitmap(bitmap, 0, MedicalCertificateRecognitionParameters(true, true, true))
         }
 
         withContext(Dispatchers.Main) {

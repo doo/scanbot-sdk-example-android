@@ -11,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.ehicscanner.model.EhicDetectionStatus
-import io.scanbot.sdk.AspectRatio
+import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -52,7 +52,7 @@ class EhicLiveDetectionActivity : AppCompatActivity() {
         frameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
                 val recognitionResult = result.value
-                if (recognitionResult != null && recognitionResult.status == EhicDetectionStatus.SUCCESS) {
+                if (recognitionResult != null && recognitionResult.status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.SUCCESS) {
                     val detectStart = System.currentTimeMillis()
                     try {
                         startActivity(

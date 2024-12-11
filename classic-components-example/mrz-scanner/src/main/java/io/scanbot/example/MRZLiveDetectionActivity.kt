@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
+import io.scanbot.common.AspectRatio
+import io.scanbot.genericdocument.entity.GenericDocumentWrapper
 import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.mrzscanner.MRZScannerFrameHandler
+import io.scanbot.sdk.mrzscanner.MrzScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.util.log.LoggerProvider
@@ -50,15 +50,16 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
 
         val mrzScanner = scanbotSDK.createMrzScanner()
-        val mrzScannerFrameHandler = MRZScannerFrameHandler.attach(cameraView, mrzScanner)
+        val mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
 
         mrzScannerFrameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
                 val mrzRecognitionResult = result.value
 
                 // It is recommended to use a frame accumulation as well and expect at least 2 of 4 frames to be equal
-                val mrzDocument = mrzRecognitionResult.document?.wrap() as MRZ?
-                if (mrzRecognitionResult.recognitionSuccessful
+
+                val mrzDocument = mrzRecognitionResult.document?.let { MRZ(it) }
+                if (mrzRecognitionResult.success
                     && mrzDocument?.checkDigitGeneral?.isValid == true
                 ) {
                     startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))

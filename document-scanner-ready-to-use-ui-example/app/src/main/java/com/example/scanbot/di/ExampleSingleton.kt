@@ -7,14 +7,14 @@ import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.persistence.page.PageFileStorage
 import io.scanbot.sdk.process.DocumentQualityAnalyzer
-import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.process.PdfRenderer
 import io.scanbot.sdk.tiff.TIFFWriter
 
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
 interface ExampleSingleton {
     fun pagePdfExtractorInstance(): PdfPagesExtractor
     fun pageOpticalCharacterRecognizer(): OpticalCharacterRecognizer
-    fun pagePDFRenderer(): PDFRenderer
+    fun pagePDFRenderer(): PdfRenderer
     fun pageTIFFWriter(): TIFFWriter
     fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer
     fun fileIOProcessor(): FileIOProcessor
@@ -40,7 +40,7 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
         return textRecognition!!
     }
 
-    override fun pagePDFRenderer(): PDFRenderer {
+    override fun pagePDFRenderer(): PdfRenderer {
         if (pdfRenderer == null) {
             pdfRenderer = scanbotSdk.createPdfRenderer()
         }
@@ -78,7 +78,7 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
     companion object {
         private var pdfExtractor: PdfPagesExtractor? = null
         private var textRecognition: OpticalCharacterRecognizer? = null
-        private var pdfRenderer: PDFRenderer? = null
+        private var pdfRenderer: PdfRenderer? = null
         private var tiffWriter: TIFFWriter? = null
         private var documentQualityAnalyzer: DocumentQualityAnalyzer? = null
         private var fileIOProcessor: FileIOProcessor? = null

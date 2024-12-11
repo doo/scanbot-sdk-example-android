@@ -11,10 +11,10 @@ package io.scanbot.example.doc_code_snippet.gdr
 
 import android.content.Context
 import android.widget.Toast
+import io.scanbot.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognizerFrameHandler
 
 fun useGenericDocumentRecognizerFrameHandler(context: Context) {

@@ -15,9 +15,12 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
-import io.scanbot.sdk.tiff.model.TIFFImageWriterUserDefinedField
+import io.scanbot.tiffwriter.model.CompressionMode
+import io.scanbot.tiffwriter.model.TiffWriterParameters
+import io.scanbot.tiffwriter.model.UserField
+import io.scanbot.tiffwriter.model.UserFieldDoubleValue
+import io.scanbot.tiffwriter.model.UserFieldIntValue
+import io.scanbot.tiffwriter.model.UserFieldStringValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -117,38 +120,43 @@ class MainActivity : AppCompatActivity() {
     private fun constructParameters(
         binarize: Boolean,
         addCustomFields: Boolean
-    ): TIFFImageWriterParameters {
+    ): TiffWriterParameters {
         // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
         val compression =
-            if (binarize) TIFFImageWriterCompressionOptions.COMPRESSION_CCITTFAX4
-            else TIFFImageWriterCompressionOptions.COMPRESSION_ADOBE_DEFLATE
+            if (binarize) CompressionMode.CCITT_T4
+            else CompressionMode.ADOBE_DEFLATE
 
         // Example for custom tags (fields) as userDefinedFields.
         // Please note the range for custom tag IDs and refer to TIFF specifications.
         val userDefinedFields = if (addCustomFields) {
             arrayListOf(
-                TIFFImageWriterUserDefinedField.fieldWithStringValue(
-                    "testStringValue",
+                UserField(
+                    65001,
                     "custom_string_field_name",
-                    65000
+                    UserFieldStringValue("testStringValue"),
                 ),
-                TIFFImageWriterUserDefinedField.fieldWithIntValue(
-                    100,
+                UserField(
+                    65001,
                     "custom_number_field_name",
-                    65001
+                    UserFieldIntValue(100)
                 ),
-                TIFFImageWriterUserDefinedField.fieldWithDoubleValue(
-                    42.001,
-                    "custom_double_field_name",
-                    65535
-                )
+                UserField(
+                    65535,
+                    "custom_number_field_name",
+                    UserFieldDoubleValue(42.001)
+                ),
             )
         } else {
             arrayListOf()
         }
         val binarizationFilter =
             if (binarize) ParametricFilter.scanbotBinarizationFilter() else null
-        return TIFFImageWriterParameters(binarizationFilter, DPI, compression, userDefinedFields)
+        return TiffWriterParameters(
+            binarizationFilter = binarizationFilter,
+            dpi = DPI,
+            compression = compression,
+            userFields = userDefinedFields
+        )
     }
 
     private companion object {

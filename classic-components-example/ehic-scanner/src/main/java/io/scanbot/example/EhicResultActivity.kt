@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.ehicscanner.model.EhicFieldType
-import io.scanbot.ehicscanner.model.EhicRecognitionResult
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult.Field.FieldType
 
 class EhicResultActivity : AppCompatActivity() {
 
@@ -24,19 +24,19 @@ class EhicResultActivity : AppCompatActivity() {
         val cardNumber = findViewById<TextView>(R.id.card_number)
         val cardDate = findViewById<TextView>(R.id.card_date)
         val country = findViewById<TextView>(R.id.country)
-        val result : EhicRecognitionResult = intent.getParcelableExtra(EXTRA_EHIC_RESULT)!!
+        val result : EuropeanHealthInsuranceCardRecognitionResult = intent.getParcelableExtra(EXTRA_EHIC_RESULT)!!
 
         for ((type, value) in result.fields) {
             when (type) {
-                EhicFieldType.SURNAME -> surname.text = value
-                EhicFieldType.GIVEN_NAME -> givenName.text = value
-                EhicFieldType.DATE_OF_BIRTH -> dateOfBirth.text = value
-                EhicFieldType.PERSONAL_IDENTIFICATION_NUMBER -> personalNumber.text = value
-                EhicFieldType.INSTITUTION_NUMBER -> institutionNumber.text = value
-                EhicFieldType.INSTITUTION_NAME -> institutionName.text = value
-                EhicFieldType.CARD_NUMBER -> cardNumber.text = value
-                EhicFieldType.CARD_EXPIRATION_DATE -> cardDate.text = value
-                EhicFieldType.COUNTRY -> country.text = value
+                FieldType.SURNAME -> surname.text = value
+                FieldType.GIVEN_NAME -> givenName.text = value
+                FieldType.DATE_OF_BIRTH -> dateOfBirth.text = value
+                FieldType.PERSONAL_IDENTIFICATION_NUMBER -> personalNumber.text = value
+                FieldType.INSTITUTION_NUMBER -> institutionNumber.text = value
+                FieldType.INSTITUTION_NAME -> institutionName.text = value
+                FieldType.CARD_NUMBER -> cardNumber.text = value
+                FieldType.CARD_EXPIRATION_DATE -> cardDate.text = value
+                FieldType.COUNTRY -> country.text = value
             }
         }
         findViewById<View>(R.id.retry).setOnClickListener { finish() }
@@ -45,7 +45,7 @@ class EhicResultActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_EHIC_RESULT = "EHIC_RESULT"
         @JvmStatic
-        fun newIntent(context: Context?, result: EhicRecognitionResult): Intent {
+        fun newIntent(context: Context?, result: EuropeanHealthInsuranceCardRecognitionResult): Intent {
             val intent = Intent(context, EhicResultActivity::class.java)
             intent.putExtra(EXTRA_EHIC_RESULT, result)
             return intent

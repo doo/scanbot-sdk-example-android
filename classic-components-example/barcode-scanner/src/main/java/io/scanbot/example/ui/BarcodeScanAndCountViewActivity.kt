@@ -18,7 +18,10 @@ import androidx.core.view.WindowCompat
 import io.scanbot.example.R
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.barcode.BarcodeFormatCommonConfiguration
+import io.scanbot.sdk.barcode.BarcodeFormatConfigurationBase
 import io.scanbot.sdk.barcode.entity.BarcodeItem
+import io.scanbot.sdk.barcode.entity.textWithExtension
 import io.scanbot.sdk.barcode.ui.BarcodePolygonsStaticView
 import io.scanbot.sdk.barcode.ui.BarcodeScanAndCountView
 import io.scanbot.sdk.barcode.ui.IBarcodeScanCountViewCallback
@@ -42,10 +45,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         snapResult = findViewById(R.id.snapped_message)
 
         val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.modifyConfig {
-            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
-            setSaveCameraPreviewFrame(false)
-        }
+        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
         scanButton.setOnClickListener {
             scanCountView.viewController.scanAndCount() // call this to run the scan and count
         }
@@ -81,7 +81,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
                         scanButton.isEnabled = false
                     }
 
-                    override fun onScanAndCountFinished(barcodes: List<BarcodeItem>) {
+                    override fun onScanAndCountFinished(barcodes: List<io.scanbot.sdk.barcodescanner.BarcodeItem>) {
                         scanButton.isEnabled = false
                         nextButton.isEnabled = true
                         // barcodes is the result of the last scanning session, but to ge all counted barcodes, use the following code
@@ -96,10 +96,9 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
             BarcodePolygonsStaticView.BarcodeAppearanceDelegate {
             override fun getPolygonStyle(
                 defaultStyle: BarcodePolygonsStaticView.BarcodePolygonStyle,
-                barcodeItem: BarcodeItem
+                barcodeItem: io.scanbot.sdk.barcodescanner.BarcodeItem
             ): BarcodePolygonsStaticView.BarcodePolygonStyle {
-                // you can customize the style of the barcode polygon here
-                return defaultStyle
+               return defaultStyle
             }
         })
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :
@@ -111,7 +110,11 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         })
         scanCountView.counterOverlayController.setBarcodeItemViewBinder(object :
             BarcodePolygonsStaticView.BarcodeItemViewBinder {
-            override fun bindView(view: View, barcodeItem: BarcodeItem, isBarcodeAccepted: Boolean) {
+            override fun bindView(
+                view: View,
+                barcodeItem: io.scanbot.sdk.barcodescanner.BarcodeItem,
+                isBarcodeAccepted: Boolean
+            ) {
                 val valueTextView = view.findViewById<TextView>(R.id.custom_ar_view_value)
                 val imageView = view.findViewById<ImageView>(R.id.custom_ar_view)
 //                valueTextView.isVisible = false //uncomment to show barcode value
@@ -148,7 +151,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleSnap(barcodes: Map<BarcodeItem, Int>) {
+    private fun handleSnap(barcodes: Map<io.scanbot.sdk.barcodescanner.BarcodeItem, Int>) {
         barcodes.let {
             val sb = StringBuilder()
             for ((key, value) in it) {

@@ -17,10 +17,10 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.process.PdfRenderer
 import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val pdfRenderer: PDFRenderer by lazy { scanbotSdk.createPdfRenderer() }
+    private val pdfRenderer: PdfRenderer by lazy { scanbotSdk.createPdfRenderer() }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -69,16 +69,16 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
         val renderedPdfFile = withContext(Dispatchers.Default) {
-            val contourDetector = scanbotSdk.createContourDetector()
+            val contourDetector = scanbotSdk.createDocumentDetector()
             val document = scanbotSdk.documentApi.createDocument()
             uris.asSequence().forEach { uri ->
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
-                val pageDetected = contourDetector.detect(bitmap)?.polygonF ?: PolygonHelper.getFullPolygon()
+                val pageDetected = contourDetector.detect(bitmap)?.pointsNormalized ?: PolygonHelper.getFullPolygon()
                 document.addPage(bitmap).apply(newPolygon = pageDetected, newFilters = filters)
             }
 
-            pdfRenderer.render(document, PdfConfig.defaultConfig().copy(pageSize = PageSize.A4))
+            pdfRenderer.render(document, PdfConfiguration.default().copy(pageSize = PageSize.A4))
             document.pdfUri.toFile()
         }
 

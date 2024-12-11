@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         val result = withContext(Dispatchers.Default) { documentQualityAnalyzer.analyzeInBitmap(bitmap, 0) }
 
         withContext(Dispatchers.Main) {
-            binding.stillImageQualityCaption.text = "Image quality: ${result?.name ?: "UNKNOWN"}"
+            binding.stillImageQualityCaption.text = "Image quality: ${result?.quality?.name ?: "UNKNOWN"}"
         }
     }
 }

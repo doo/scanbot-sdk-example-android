@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
             val barcodeDetector = scanbotSdk.createBarcodeDetector()
-            barcodeDetector.modifyConfig { setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList()) }
+            barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
             val result = barcodeDetector.detectFromBitmap(bitmap, 0)
 
             BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, null, null) }

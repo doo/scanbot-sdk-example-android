@@ -6,7 +6,7 @@ import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
-import io.scanbot.sdk.core.contourdetector.ContourDetector
+import io.scanbot.sdk.core.documentdetector.DocumentDetectorEngineMode
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.page.PageStorageSettings
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +40,7 @@ class ExampleApplication : Application(), CoroutineScope {
         // Initialize the Scanbot SDK:
         ScanbotSDKInitializer()
             .withLogging(true)
-            .contourDetectorType(ContourDetector.Type.ML_BASED)
+            .documentDetectorEngineMode(DocumentDetectorEngineMode.ML)
             .usePageStorageSettings(
                 PageStorageSettings.Builder()
                     .imageFormat(CameraImageFormat.JPG)

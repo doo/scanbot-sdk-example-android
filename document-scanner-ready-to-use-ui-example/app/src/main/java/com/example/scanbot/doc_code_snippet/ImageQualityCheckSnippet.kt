@@ -10,11 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.process.model.DocumentQuality
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.process.DocumentQuality
 
 
 class ImageQualityCheckSnippet : AppCompatActivity() {
@@ -54,20 +54,20 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
             val documentQuality = qualityAnalyter.analyzeInBitmap(image, orientation = 0)
             // proceed the result
             if (documentQuality != null) {
-                printResult(documentQuality)
+                printResult(documentQuality.quality)
             }
         }
     }
 
     // Print the result.
-    fun printResult(quality: DocumentQuality) {
+    fun printResult(quality: DocumentQuality?) {
         when (quality) {
-            DocumentQuality.NO_DOCUMENT -> print("No document was found")
             DocumentQuality.VERY_POOR -> print("The quality of the document is very poor")
             DocumentQuality.POOR -> print("The quality of the document is poor")
             DocumentQuality.REASONABLE -> print("The quality of the document is reasonable")
             DocumentQuality.GOOD -> print("The quality of the document is good")
             DocumentQuality.EXCELLENT -> print("The quality of the document is excellent")
+            else -> print("No document was found")
         }
     }
 

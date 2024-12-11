@@ -5,7 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.ui_v2.common.AspectRatio
+import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.FinderStyle
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity

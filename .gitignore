@@ -31,7 +31,8 @@ proguard/
 *.iml
 *.ipr
 *.iws
-.idea/
+*/.idea/*
+!*/.idea/codeStyles/
 .DS_Store
 
 .gradle/
