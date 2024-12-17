@@ -36,6 +36,7 @@ include(
         ":licenseplate-scanner",
         ":tiff-writer",
         ":check-recognizer",
+        ":creditcard-scanner",
         ":manual-processing",
         ":camera-view-aspect-ratio-finder",
         ":ehic-scanner",
