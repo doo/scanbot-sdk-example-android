@@ -7,56 +7,51 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import io.scanbot.check.entity.Check
-import io.scanbot.example.databinding.ActivityMainBinding
-import io.scanbot.example.fragments.EHICResultDialogFragment
-import io.scanbot.example.fragments.ErrorFragment
-import io.scanbot.example.fragments.MRZDialogFragment
-import io.scanbot.example.fragments.MedicalCertificateResultDialogFragment
-import io.scanbot.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.genericdocument.entity.DePassport
-import io.scanbot.genericdocument.entity.FieldProperties
-import io.scanbot.genericdocument.entity.GenericDocument
-import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.sap.Status
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.checkrecognizer.CheckRecognitionResult
-import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
-import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognizerConfiguration
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
-import io.scanbot.sdk.mrzscanner.MrzScannerResult
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui.result.ResultWrapper
-import io.scanbot.sdk.ui.view.check.CheckRecognizerActivity
-import io.scanbot.sdk.ui.view.check.configuration.CheckRecognizerConfiguration
-import io.scanbot.sdk.ui.view.genericdocument.GenericDocumentRecognizerActivity
-import io.scanbot.sdk.ui.view.genericdocument.configuration.GenericDocumentRecognizerConfiguration
-import io.scanbot.sdk.ui.view.generictext.TextDataScannerActivity
-import io.scanbot.sdk.ui.view.generictext.configuration.TextDataScannerConfiguration
-import io.scanbot.sdk.ui.view.generictext.entity.TextDataScannerStep
-import io.scanbot.sdk.ui.view.hic.HealthInsuranceCardScannerActivity
-import io.scanbot.sdk.ui.view.hic.configuration.HealthInsuranceCardScannerConfiguration
-import io.scanbot.sdk.ui.view.licenseplate.LicensePlateScannerActivity
-import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConfiguration
-import io.scanbot.sdk.ui.view.mc.MedicalCertificateRecognizerActivity
-import io.scanbot.sdk.ui.view.mc.configuration.MedicalCertificateRecognizerConfiguration
-import io.scanbot.sdk.ui.view.mrz.MRZScannerActivity
-import io.scanbot.sdk.ui.view.mrz.configuration.MRZScannerConfiguration
-import io.scanbot.sdk.ui.view.vin.VinScannerActivity
-import io.scanbot.sdk.ui.view.vin.configuration.VinScannerConfiguration
+import io.scanbot.example.databinding.*
+import io.scanbot.example.fragments.*
+import io.scanbot.genericdocument.entity.*
+import io.scanbot.sap.*
+import io.scanbot.sdk.*
+import io.scanbot.sdk.check.*
+import io.scanbot.sdk.check.entity.*
+import io.scanbot.sdk.documentdata.*
+import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.ehicscanner.*
+import io.scanbot.sdk.mc.*
+import io.scanbot.sdk.mrz.*
+import io.scanbot.sdk.ui.*
+import io.scanbot.sdk.ui.view.check.*
+import io.scanbot.sdk.ui.view.check.configuration.*
+import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
+import io.scanbot.sdk.ui.view.documentdata.*
+import io.scanbot.sdk.ui.view.documentdata.configuration.*
+import io.scanbot.sdk.ui.view.documentdata.configuration.DocumentDataExtractorConfiguration
+import io.scanbot.sdk.ui.view.hic.*
+import io.scanbot.sdk.ui.view.hic.configuration.*
+import io.scanbot.sdk.ui.view.licenseplate.*
+import io.scanbot.sdk.ui.view.licenseplate.configuration.*
+import io.scanbot.sdk.ui.view.mc.*
+import io.scanbot.sdk.ui.view.mc.configuration.*
+import io.scanbot.sdk.ui.view.mrz.*
+import io.scanbot.sdk.ui.view.mrz.configuration.*
+import io.scanbot.sdk.ui.view.textpattern.*
+import io.scanbot.sdk.ui.view.textpattern.configuration.*
+import io.scanbot.sdk.ui.view.textpattern.entity.*
+import io.scanbot.sdk.ui.view.vin.*
+import io.scanbot.sdk.ui.view.vin.configuration.*
 
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
 
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
-    private val textDataScannerResultLauncher: ActivityResultLauncher<TextDataScannerConfiguration>
+    private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
-    private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateRecognizerConfiguration>
+    private val medicalCertificateRecognizerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
-    private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<GenericDocumentRecognizerConfiguration>
-    private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckRecognizerConfiguration>
+    private val genericDocumentRecognizerResultLauncher: ActivityResultLauncher<DocumentDataExtractorConfiguration>
+    private val checkRecognizerResultLauncher: ActivityResultLauncher<CheckScannerConfiguration>
 
     private lateinit var binding: ActivityMainBinding
 
@@ -80,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
-            val step = TextDataScannerStep(
+            val step = TextPatternScannerStep(
                 stepTag = "One-line text",
                 title = "One-line text scanning",
                 guidanceText = "Scan any one-line text",
@@ -100,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 // cleanRecognitionResultCallback = ...
             )
 
-            val textDataScannerConfiguration = TextDataScannerConfiguration(step)
+            val textDataScannerConfiguration = TextPatternScannerConfiguration(step)
 
             textDataScannerConfiguration.setTopBarBackgroundColor(
                 ContextCompat.getColor(this, R.color.colorPrimaryDark)
@@ -139,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
-            val genericDocumentConfiguration = GenericDocumentRecognizerConfiguration()
+            val genericDocumentConfiguration = DocumentDataExtractorConfiguration()
             genericDocumentConfiguration.setTopBarButtonsInactiveColor(
                 ContextCompat.getColor(this, android.R.color.white)
             )
@@ -177,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.checkRecognizerUi.setOnClickListener {
-            val config = CheckRecognizerConfiguration().apply {
+            val config = CheckScannerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
                         this@MainActivity,
@@ -191,7 +186,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.mcScannerUi.setOnClickListener {
-            val config = MedicalCertificateRecognizerConfiguration().apply {
+            val config = MedicalCertificateScannerConfiguration().apply {
                 setTopBarBackgroundColor(
                     ContextCompat.getColor(
                         this@MainActivity,
@@ -214,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
-    private fun handleGenericDocRecognizerResult(result: List<GenericDocumentRecognitionResult>) {
+    private fun handleGenericDocRecognizerResult(result: List<DocumentDataExtractionResult>) {
         result
         Toast.makeText(
             this,
@@ -242,22 +237,22 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
     }
 
-    private fun handleMedicalCertificateResult(resultWrapper: MedicalCertificateRecognitionResult) {
+    private fun handleMedicalCertificateResult(resultWrapper: MedicalCertificateScanningResult) {
 
 
-        showMedicalCertificateRecognizerResult(resultWrapper!!)
+        showMedicalCertificateScannerResult(resultWrapper!!)
     }
 
-    private fun showMedicalCertificateRecognizerResult(recognitionResult: MedicalCertificateRecognitionResult) {
+    private fun showMedicalCertificateScannerResult(recognitionResult: MedicalCertificateScanningResult) {
         val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(recognitionResult)
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
 
-    private fun handleCheckRecognizerResult(result: CheckRecognitionResult) {
+    private fun handleCheckRecognizerResult(result: CheckScanningResult) {
         showCheckRecognizerResult(result)
     }
 
-    private fun showCheckRecognizerResult(recognitionResult: CheckRecognitionResult) {
+    private fun showCheckRecognizerResult(recognitionResult: CheckScanningResult) {
         val document = recognitionResult.check?.let { Check(it) } // Convert to the document model
         Toast.makeText(this, recognitionResult.toString(), Toast.LENGTH_SHORT).show()
     }
@@ -269,7 +264,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         textDataScannerResultLauncher =
-            registerForActivityResultOk(TextDataScannerActivity.ResultContract()) { resultEntity ->
+            registerForActivityResultOk(TextPatternScannerActivity.ResultContract()) { resultEntity ->
                 val textDataScannerStepResult = resultEntity.result!!.first()
                 Toast.makeText(
                     this@MainActivity,
@@ -305,17 +300,17 @@ class MainActivity : AppCompatActivity() {
             }
 
         genericDocumentRecognizerResultLauncher =
-            registerForActivityResultOk(GenericDocumentRecognizerActivity.ResultContract()) { resultEntity ->
+            registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
                 handleGenericDocRecognizerResult(resultEntity.result!!)
             }
 
         medicalCertificateRecognizerActivityResultLauncher =
-            registerForActivityResultOk(MedicalCertificateRecognizerActivity.ResultContract()) { resultEntity ->
+            registerForActivityResultOk(MedicalCertificateScannerActivity.ResultContract()) { resultEntity ->
                 handleMedicalCertificateResult(resultEntity.result!!)
             }
 
         checkRecognizerResultLauncher =
-            registerForActivityResultOk(CheckRecognizerActivity.ResultContract()) { resultEntity ->
+            registerForActivityResultOk(CheckScannerActivity.ResultContract()) { resultEntity ->
                 handleCheckRecognizerResult(resultEntity.result!!)
             }
     }

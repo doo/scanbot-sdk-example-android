@@ -11,19 +11,18 @@ package io.scanbot.example.doc_code_snippet.gdr
 
 import android.content.Context
 import android.widget.Toast
-import io.scanbot.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizerFrameHandler
+import io.scanbot.sdk.documentdata.*
 
-fun useGenericDocumentRecognizerFrameHandler(context: Context) {
-    val genericDocumentRecognizer = ScanbotSDK(context).createGenericDocumentRecognizer()
-    val frameHandler = GenericDocumentRecognizerFrameHandler(genericDocumentRecognizer)
+fun useDocumentDataExtractorFrameHandler(context: Context) {
+    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor()
+    val frameHandler = DocumentDataExtractorFrameHandler(dataExtractor)
 
-    frameHandler.addResultHandler(object : GenericDocumentRecognizerFrameHandler.ResultHandler {
+    frameHandler.addResultHandler(object : DocumentDataExtractorFrameHandler.ResultHandler {
 
-        override fun handle(result: FrameHandlerResult<GenericDocumentRecognitionResult, SdkLicenseError>): Boolean {
+        override fun handle(result: FrameHandlerResult<DocumentDataExtractionResult, SdkLicenseError>): Boolean {
             val isSuccess = result is FrameHandlerResult.Success
             when {
                 isSuccess -> {

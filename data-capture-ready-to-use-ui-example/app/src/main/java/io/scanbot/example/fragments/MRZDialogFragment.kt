@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
-import io.scanbot.sdk.mrzscanner.MrzScannerResult
+import io.scanbot.sdk.mrz.*
 
 
 class MRZDialogFragment : androidx.fragment.app.DialogFragment() {

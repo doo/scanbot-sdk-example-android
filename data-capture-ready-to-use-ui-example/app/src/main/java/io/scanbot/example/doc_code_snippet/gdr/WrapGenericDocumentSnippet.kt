@@ -11,17 +11,9 @@ package io.scanbot.example.doc_code_snippet.gdr
 // Page URLs using this code:
 // TODO: add URLs here
 
-import io.scanbot.genericdocument.entity.DeDriverLicenseBack
-import io.scanbot.genericdocument.entity.DeDriverLicenseFront
-import io.scanbot.genericdocument.entity.DeHealthInsuranceCardFront
-import io.scanbot.genericdocument.entity.DeIdCardBack
-import io.scanbot.genericdocument.entity.DeIdCardFront
-import io.scanbot.genericdocument.entity.DePassport
-import io.scanbot.genericdocument.entity.DeResidencePermitBack
-import io.scanbot.genericdocument.entity.DeResidencePermitFront
-import io.scanbot.genericdocument.entity.EuropeanHealthInsuranceCard
-import io.scanbot.genericdocument.entity.GenericDocument
 import io.scanbot.genericdocument.entity.GenericDocumentWrapper
+import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.genericdocument.entity.*
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
     // Alternatively, use GenericDocumentLibrary.wrapperFromGenericDocument(genericDocument)

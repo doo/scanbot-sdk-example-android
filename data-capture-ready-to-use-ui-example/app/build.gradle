@@ -80,13 +80,13 @@ dependencies {
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Generic Document Recognizer feature
-    implementation("io.scanbot:sdk-genericdocument-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:sdk-documentdata-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Document Quality Analyzer feature
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use data scanner feature
-    implementation("io.scanbot:sdk-generictext-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:sdk-textpattern-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use license plate scanner feature
     implementation("io.scanbot:sdk-licenseplate-assets:$scanbotSdkVersion")

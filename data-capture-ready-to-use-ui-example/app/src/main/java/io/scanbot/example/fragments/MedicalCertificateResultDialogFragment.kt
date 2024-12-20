@@ -16,9 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
 import io.scanbot.example.databinding.FragmentMedicalCertificateResultDialogBinding
 import io.scanbot.sdk.core.ImageRef
-import io.scanbot.sdk.mcscanner.MedicalCertificateCheckBoxType
-import io.scanbot.sdk.mcscanner.MedicalCertificateDateRecordType
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
+import io.scanbot.sdk.mc.*
 
 class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragment() {
 
@@ -28,7 +26,7 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
 
         const val MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA"
 
-        fun newInstance(medicalCertificateScanResult: MedicalCertificateRecognitionResult): MedicalCertificateResultDialogFragment {
+        fun newInstance(medicalCertificateScanResult: MedicalCertificateScanningResult): MedicalCertificateResultDialogFragment {
             val f = MedicalCertificateResultDialogFragment()
 
             // Supply num input as an argument.
@@ -43,11 +41,11 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
     private var _binding: FragmentMedicalCertificateResultDialogBinding? = null
     private val binding get() = _binding!!
 
-    private var medicalCertificateResult: MedicalCertificateRecognitionResult? = null
+    private var medicalCertificateResult: MedicalCertificateScanningResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View {
         medicalCertificateResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, MedicalCertificateRecognitionResult::class.java)
+            arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, MedicalCertificateScanningResult::class.java)
         } else {
             @Suppress("DEPRECATION")
             arguments?.getParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA)
@@ -108,7 +106,7 @@ class MedicalCertificateResultDialogFragment : androidx.fragment.app.DialogFragm
         return dialog
     }
 
-    private fun extractData(result: MedicalCertificateRecognitionResult): String {
+    private fun extractData(result: MedicalCertificateScanningResult): String {
         return StringBuilder()
                 .append("Type: ").append(if (result.checkBoxes
                     .find { medicalCertificateInfoBox -> medicalCertificateInfoBox.type == MedicalCertificateCheckBoxType.INITIAL_CERTIFICATE }
