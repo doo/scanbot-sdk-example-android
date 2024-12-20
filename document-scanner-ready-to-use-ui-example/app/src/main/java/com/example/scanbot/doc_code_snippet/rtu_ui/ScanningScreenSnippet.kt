@@ -21,7 +21,7 @@ class ScanningScreenSnippet : AppCompatActivity() {
 
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
-        registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
+        registerForActivityResult(DocumentScannerActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
                     // Handle the document.

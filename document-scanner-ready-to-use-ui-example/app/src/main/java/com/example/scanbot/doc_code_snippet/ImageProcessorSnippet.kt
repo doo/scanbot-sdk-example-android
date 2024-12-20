@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentDetectionStatus
 import io.scanbot.sdk.process.DocumentQuality
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.util.isDefault
@@ -50,11 +50,11 @@ class ImageProcessorSnippet : AppCompatActivity() {
         }
 
     // Create a quality analyzer instance
-    val documentDetector = scanbotSDK.createDocumentDetector()
+    val documentScanner = scanbotSDK.createDocumentScanner()
     fun startFiltering(list: List<Bitmap>) {
         list.forEach { image ->
             // Run detection on the picked image
-            val detectionResult = documentDetector.detect(image)
+            val detectionResult = documentScanner.scanFromBitmap(image)
 
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&

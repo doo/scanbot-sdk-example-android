@@ -131,7 +131,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 val imageQualityResult = withContext(Dispatchers.Default) {
                     // Result is represented by `DocumentQuality` enum.
                     page.documentImage?.let {
-                        exampleSingleton.pageDocQualityAnalyzer().analyzeInBitmap(it, 0)
+                        exampleSingleton.pageDocQualityAnalyzer().analyzeOnBitmap(it, 0)
                     }
                 }
                 withContext(Dispatchers.Main) {

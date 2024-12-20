@@ -51,7 +51,7 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
     fun startFiltering(list: List<Bitmap>) {
         list.forEach { image ->
             // Run quality check on the picked image
-            val documentQuality = qualityAnalyter.analyzeInBitmap(image, orientation = 0)
+            val documentQuality = qualityAnalyter.analyzeOnBitmap(image, orientation = 0)
             // proceed the result
             if (documentQuality != null) {
                 printResult(documentQuality.quality)

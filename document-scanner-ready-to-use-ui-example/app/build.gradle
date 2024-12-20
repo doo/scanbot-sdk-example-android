@@ -37,12 +37,13 @@ android {
     }
 }
 
-def scanbotSdkVersion = "6.1.0"
+def scanbotSdkVersion = "7.0.0.18-STAGING-SNAPSHOT"
 
 dependencies {
 
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:sdk-docqualityanalyzer-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-1:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 

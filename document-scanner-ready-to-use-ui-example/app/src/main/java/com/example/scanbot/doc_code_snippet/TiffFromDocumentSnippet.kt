@@ -17,8 +17,8 @@ import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.tiffwriter.model.CompressionMode
-import io.scanbot.tiffwriter.model.TiffWriterParameters
+import io.scanbot.sdk.tiff.model.CompressionMode
+import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
 
 
 class TiffFromDocumentSnippet : AppCompatActivity() {
@@ -59,24 +59,24 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
-    // Create tiif writer instance
-    val tiffWriter = scanbotSDK.createTiffWriter()
+    // Create tiff generator instance
+    val tiffGenerator = scanbotSDK.createTiffGenerator()
 
     fun createPdfFromImages(document: Document) {
-        val config = TiffWriterParameters(
+        val config = TiffGeneratorParameters(
             binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
             compression = CompressionMode.NONE,
             userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
-        val pdfRendered = tiffWriter.writeTIFF(
+        val pdfGenerated = tiffGenerator.generateFromUris(
             document,
             tiffFile,
             config
         )
         val file = tiffFile
-        if (pdfRendered && file.exists()) {
+        if (pdfGenerated && file.exists()) {
             // Do something with the PDF file
         } else {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")

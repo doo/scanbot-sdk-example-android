@@ -14,6 +14,9 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.genericdocument.GenericDocumentRecognitionMode
+import io.scanbot.genericdocument.entity.DeDriverLicenseFront
+import io.scanbot.genericdocument.entity.DeIdCardFront
+import io.scanbot.genericdocument.entity.DeResidencePermitFront
 import io.scanbot.sdk.ScanbotSDK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,21 +28,22 @@ class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-        lifecycleScope.launch {
-            val documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
+            lifecycleScope.launch {
+                val documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
 
             val result = withContext(Dispatchers.Default) {
                 val inputStream = contentResolver.openInputStream(uri)
@@ -47,20 +51,21 @@ class MainActivity : AppCompatActivity() {
                 documentRecognizer.scanBitmap(bitmap, 0, GenericDocumentRecognitionMode.SINGLE_SHOT)
             }
 
-            withContext(Dispatchers.Main) {
-                DocumentsResultsStorage.result = result
-                showResult()
+                withContext(Dispatchers.Main) {
+                    DocumentsResultsStorage.result = result
+                    showResult()
+                }
             }
         }
-    }
 
-    private val requestCameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            startScannerActivity()
-        } else {
-            this@MainActivity.showToast("Camera permission is required to run this example!")
+    private val requestCameraLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                startScannerActivity()
+            } else {
+                this@MainActivity.showToast("Camera permission is required to run this example!")
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +77,11 @@ class MainActivity : AppCompatActivity() {
         }
         binding.pickImageBtn.run {
             setOnClickListener {
-                selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                selectGalleryImageResultLauncher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
             }
         }
     }

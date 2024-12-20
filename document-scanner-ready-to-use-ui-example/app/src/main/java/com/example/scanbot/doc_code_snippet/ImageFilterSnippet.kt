@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.core.ImageRotation
-import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentDetectionStatus
 import io.scanbot.sdk.imagefilters.BrightnessFilter
 import io.scanbot.sdk.imagefilters.OutputMode
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
@@ -54,11 +54,11 @@ class ImageFilterSnippet : AppCompatActivity() {
         }
 
     // Create a document detector instance
-    val documentDetector = scanbotSDK.createDocumentDetector()
+    val documentScanner = scanbotSDK.createDocumentScanner()
     fun startFiltering(list: List<Bitmap>) {
         list.forEach { image ->
             // Run detection on the picked image
-            val detectionResult = documentDetector.detect(image)
+            val detectionResult = documentScanner.scanFromBitmap(image)
 
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&

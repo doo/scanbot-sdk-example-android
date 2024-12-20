@@ -15,8 +15,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.tiffwriter.model.CompressionMode
-import io.scanbot.tiffwriter.model.TiffWriterParameters
+import io.scanbot.sdk.tiff.model.CompressionMode
+import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
 
 
 class TiffFromImageSnippet : AppCompatActivity() {
@@ -46,22 +46,22 @@ class TiffFromImageSnippet : AppCompatActivity() {
             }
         }
 
-    // Create tiff writer instance
-    val tiffWriter = scanbotSDK.createTiffWriter()
+    // Create tiff generator instance
+    val tiffGenerator = scanbotSDK.createTiffGenerator()
     fun createTiffFromImages(list: List<Uri>) {
         list.forEach { imageUri ->
-            // Create the default PDF rendering options.
-            val config = TiffWriterParameters(
+            // Create the default Tiff generation options.
+            val config = TiffGeneratorParameters(
                 binarizationFilter = ScanbotBinarizationFilter(),
                 dpi = 200,
                 compression = CompressionMode.NONE,
                 userFields = arrayListOf()
             )
-            // notify the renderer that the images are encrypted with global sdk-encryption settings
+            // notify the generator that the images are encrypted with global sdk-encryption settings
             val encryptionEnabled = false
             // Render the images to a PDF file.
             val file = File("path/to/tiff/file")
-            val created = tiffWriter.writeTIFF(
+            val created = tiffGenerator.generateFromUris(
                 sourceImages = list.toTypedArray(),
                 sourceFilesEncrypted = encryptionEnabled,
                 targetFile = file,

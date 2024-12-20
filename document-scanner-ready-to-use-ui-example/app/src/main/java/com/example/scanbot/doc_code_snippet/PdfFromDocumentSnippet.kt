@@ -63,7 +63,7 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
         }
 
     // Create instance of PdfRenderer
-    val pdfRenderer = scanbotSDK.createPdfRenderer()
+    val pdfGenerator = scanbotSDK.createPdfGenerator()
 
     fun createPdfFromImages(document: Document) {
         val config = PdfConfiguration(
@@ -81,12 +81,12 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             pageFit = PageFit.NONE,
             resamplingMethod = ResamplingMethod.NONE,
         )
-        val pdfRendered = pdfRenderer.render(
+        val pdfGenerated = pdfGenerator.generateFromDocument(
             document,
             config
         )
         val pdfFile = document.pdfUri.toFile()
-        if (pdfRendered && pdfFile.exists()) {
+        if (pdfGenerated && pdfFile.exists()) {
             // Do something with the PDF file
         } else {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")

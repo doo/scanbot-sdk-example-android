@@ -58,12 +58,12 @@ class DocumentDetectionSnippet : AppCompatActivity() {
         }
 
     // Create a document detector instance
-    val documentDetector = scanbotSDK.createDocumentDetector()
+    val documentScanner = scanbotSDK.createDocumentScanner()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
             // Run detection on the created page
-            val detectionResult = documentDetector.detect(page.originalImage!!)
+            val detectionResult = documentScanner.scanFromBitmap(page.originalImage!!)
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
                 detectionResult.pointsNormalized.isNotEmpty() &&
