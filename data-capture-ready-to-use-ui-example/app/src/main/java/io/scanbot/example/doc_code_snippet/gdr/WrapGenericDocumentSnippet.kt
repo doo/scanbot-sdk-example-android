@@ -16,36 +16,37 @@ import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.genericdocument.entity.*
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
-    // Alternatively, use GenericDocumentLibrary.wrapperFromGenericDocument(genericDocument)
-    when (val wrapper = GenericDocumentWrapper(genericDocument)) {
-        is DeIdCardFront -> {
+
+    when ( genericDocument.type.name) {
+         DeIdCardFront.DOCUMENT_TYPE -> {
+            val wrapper = DeIdCardFront(genericDocument)
             val id = wrapper.id
             val name = wrapper.givenNames
             val surname = wrapper.surname
             val cardAccessNumber = wrapper.cardAccessNumber
         }
-        is DeIdCardBack -> {
+        DeIdCardBack.DOCUMENT_TYPE  -> {
             // Handle ID card back
         }
-        is DePassport -> {
+        DePassport.DOCUMENT_TYPE  -> {
             // Handle passport
         }
-        is DeDriverLicenseFront -> {
+        DeDriverLicenseFront.DOCUMENT_TYPE  -> {
             // Handle driver license front
         }
-        is DeDriverLicenseBack -> {
+        DeDriverLicenseBack.DOCUMENT_TYPE  -> {
             // Handle driver license back
         }
-        is DeResidencePermitFront -> {
+        DeResidencePermitFront.DOCUMENT_TYPE  -> {
             // Handle residence permit front
         }
-        is DeResidencePermitBack -> {
+        DeResidencePermitBack.DOCUMENT_TYPE  -> {
             // Handle residence permit back
         }
-        is DeHealthInsuranceCardFront -> {
+        DeHealthInsuranceCardFront.DOCUMENT_TYPE  -> {
             // Handle health insurance card front
         }
-        is EuropeanHealthInsuranceCard -> {
+        EuropeanHealthInsuranceCard.DOCUMENT_TYPE  -> {
             // Handle European health insurance card back
         }
         else -> {
