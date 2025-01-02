@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.mc
+package io.scanbot.example.doc_code_snippet.cheque
 
 import android.app.Activity
 import android.content.Intent
@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.mc.*
+import io.scanbot.sdk.check.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 // Pay attention to imports adding/removal/sorting!
 // Page URLs using this code:
 // TODO: add URLs here
-class DataExtractorStableImageDetection : AppCompatActivity() {
+class CheckStableImageDetectionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@DataExtractorStableImageDetection)
+    private val scanbotSDK = ScanbotSDK(this@CheckStableImageDetectionSnippet)
     private val context = this
 
     private val pictureForDocDetectionResult =
@@ -53,7 +53,7 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
                                         )
                                         return@forEach
                                     }
-                                    processImage(medicalCertificateScanner, bitmap)
+                                    processImage(checkScanner, bitmap)
                                 }
 
                         }
@@ -76,26 +76,17 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    // Create a data extractor  instance
-    val medicalCertificateScanner = scanbotSDK.createMedicalCertificateScanner()
+    // Create a check scanner instance
+    val checkScanner = scanbotSDK.createCheckScanner()
 
-    fun processImage(
-        medicalCertificateScanner: MedicalCertificateScanner,
+    private fun processImage(
+        checkScanner: CheckScanner,
         bitmap: Bitmap
     ) {
-        val result = medicalCertificateScanner.scanFromBitmap(
-            bitmap,
-            0,
-            parameters = MedicalCertificateScanningParameters(
-                shouldCropDocument = true,
-                extractCroppedImage = true,
-                recognizePatientInfoBox = true,
-                recognizeBarcode = true
-            )
-        )
-        if (result != null && result.scanningSuccessful) {
-            // Document scanning results are processed
-            // processResul
-        }
+        val result = checkScanner.scanFromBitmap(bitmap, 0)
+        result?.check?.let { wrapCheck(it) }
+        // Check recognition results are processed
     }
 }
+
+
