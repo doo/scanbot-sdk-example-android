@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.gdr
+package io.scanbot.example.doc_code_snippet.data_extractor
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.

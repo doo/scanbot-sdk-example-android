@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.gdr
+package io.scanbot.example.doc_code_snippet.data_extractor
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -11,7 +11,6 @@ package io.scanbot.example.doc_code_snippet.gdr
 // Page URLs using this code:
 // TODO: add URLs here
 
-import io.scanbot.genericdocument.entity.GenericDocumentWrapper
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.genericdocument.entity.*
 
