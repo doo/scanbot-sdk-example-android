@@ -34,7 +34,7 @@ class ExampleApplication : Application() {
         ScanbotSDKInitializer().initialize(this)
     }
 }
-// #Launching The Scanner
+// #END_Launching The Scanner
 
 class MyActivity : Activity() {
 
