@@ -24,6 +24,7 @@ import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.usecases.documents.R
 
+// #Launching The Scanner
 class ExampleApplication : Application() {
 
     override fun onCreate() {
@@ -33,6 +34,7 @@ class ExampleApplication : Application() {
         ScanbotSDKInitializer().initialize(this)
     }
 }
+// #Launching The Scanner
 
 class MyActivity : Activity() {
 
