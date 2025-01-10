@@ -70,7 +70,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
-        val pdfGenerated = tiffGenerator.generateFromUris(
+        val pdfGenerated = tiffGenerator.generateFromDocument(
             document,
             tiffFile,
             config

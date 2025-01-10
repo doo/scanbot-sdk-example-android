@@ -16,7 +16,7 @@ class GenerateTiffForSharingUseCase @Inject constructor(
     override suspend fun generateFilesForDocument(documentSharingDir: File, document: Document): List<File> {
         val sharingTiffFile = documentSharingDir.ensureFileExists().resolve("${documentSharingDir.name}.tiff")
 
-        tiffGenerator.generateFromUris(
+        tiffGenerator.generateFromDocument(
             document = document,
             targetFile = sharingTiffFile,
             parameters = TiffGeneratorParameters.default(),
