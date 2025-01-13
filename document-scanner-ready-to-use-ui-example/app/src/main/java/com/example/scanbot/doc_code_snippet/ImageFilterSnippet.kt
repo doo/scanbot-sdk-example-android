@@ -53,6 +53,7 @@ class ImageFilterSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Processing an image")
     // Create a document detector instance
     val documentScanner = scanbotSDK.createDocumentScanner()
     fun startFiltering(list: List<Bitmap>) {
@@ -91,6 +92,7 @@ class ImageFilterSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Processing an image")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

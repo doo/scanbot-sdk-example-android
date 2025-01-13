@@ -46,33 +46,33 @@ class TiffFromImageSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Creating a TIFF from images")
     // Create tiff generator instance
     val tiffGenerator = scanbotSDK.createTiffGenerator()
     fun createTiffFromImages(list: List<Uri>) {
-        list.forEach { imageUri ->
-            // Create the default Tiff generation options.
-            val config = TiffGeneratorParameters(
-                binarizationFilter = ScanbotBinarizationFilter(),
-                dpi = 200,
-                compression = CompressionMode.NONE,
-                userFields = arrayListOf()
-            )
-            // notify the generator that the images are encrypted with global sdk-encryption settings
-            val encryptionEnabled = false
-            // Render the images to a PDF file.
-            val file = File("path/to/tiff/file")
-            val created = tiffGenerator.generateFromUris(
-                sourceImages = list.toTypedArray(),
-                sourceFilesEncrypted = encryptionEnabled,
-                targetFile = file,
-                parameters = config
-            )
+        // Create the default Tiff generation options.
+        val config = TiffGeneratorParameters(
+            binarizationFilter = ScanbotBinarizationFilter(),
+            dpi = 200,
+            compression = CompressionMode.NONE,
+            userFields = arrayListOf()
+        )
+        // notify the generator that the images are encrypted with global sdk-encryption settings
+        val encryptionEnabled = false
+        // Render the images to a PDF file.
+        val file = File("path/to/tiff/file")
+        val created = tiffGenerator.generateFromUris(
+            sourceImages = list.toTypedArray(),
+            sourceFilesEncrypted = encryptionEnabled,
+            targetFile = file,
+            parameters = config
+        )
 
-            if (created && file.exists()) {
-                // Do something with the PDF file
-            }
+        if (created && file.exists()) {
+            // Do something with the PDF file
         }
     }
+    // @EndTag("Creating a TIFF from images")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

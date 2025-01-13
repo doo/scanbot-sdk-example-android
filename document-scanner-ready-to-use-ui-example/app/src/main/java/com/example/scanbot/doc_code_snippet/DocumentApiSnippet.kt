@@ -7,7 +7,7 @@ import androidx.core.net.toFile
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 
-
+// @Tag("Storing and retrieving a Document")
 fun createScannedDocument(sdk: ScanbotSDK, images: List<Bitmap>) {
 
     // Create a new document with the specified maximum image size.
@@ -69,3 +69,4 @@ fun deleteScannedDocument(scannedDocument: Document) {
     // just call delete and document would be deleted
     scannedDocument.delete()
 }
+// @EndTag("Storing and retrieving a Document")

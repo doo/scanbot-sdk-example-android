@@ -46,6 +46,7 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Example")
     // Create a document quality analyzer instance
     val qualityAnalyter = scanbotSDK.createDocumentQualityAnalyzer()
     fun startFiltering(list: List<Bitmap>) {
@@ -58,6 +59,7 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Example")
 
     // Print the result.
     fun printResult(quality: DocumentQuality?) {

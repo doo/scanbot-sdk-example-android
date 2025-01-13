@@ -62,6 +62,7 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Creating a PDF from an Document")
     // Create instance of PdfRenderer
     val pdfGenerator = scanbotSDK.createPdfGenerator()
 
@@ -92,6 +93,7 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")
         }
     }
+    // @EndTag("Creating a PDF from an Document")
 
 
     private fun importImagesFromLibrary() {

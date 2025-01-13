@@ -45,6 +45,7 @@ class PdfFromImageSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Creating a PDF from an image")
     // Create a PDF generator instance
     val pdfGenerator = scanbotSDK.createPdfGenerator()
     fun createPdfFromImages(list: List<Uri>) {
@@ -65,6 +66,7 @@ class PdfFromImageSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Creating a PDF from an image")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

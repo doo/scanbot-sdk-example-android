@@ -59,6 +59,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         }
 
     private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
+        // @Tag("Using Cropping UI")
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { result ->
@@ -74,6 +75,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped.
             }
         }
+        // @EndTag("Using Cropping UI")
 
     fun startCropping(document: Document) {
         // Retrieve the selected document page.

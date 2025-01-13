@@ -57,6 +57,7 @@ class DocumentDetectionSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Direct Document detection on page")
     // Create a document detector instance
     val documentScanner = scanbotSDK.createDocumentScanner()
 
@@ -76,7 +77,7 @@ class DocumentDetectionSnippet : AppCompatActivity() {
             }
         }
     }
-
+    // @EndTag("Direct Document detection on page")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

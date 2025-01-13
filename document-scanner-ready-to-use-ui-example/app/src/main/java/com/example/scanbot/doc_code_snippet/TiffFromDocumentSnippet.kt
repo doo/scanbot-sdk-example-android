@@ -59,6 +59,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Creating a TIFF from a Document")
     // Create tiff generator instance
     val tiffGenerator = scanbotSDK.createTiffGenerator()
 
@@ -82,6 +83,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")
         }
     }
+    // @EndTag("Creating a TIFF from a Document")
 
 
     private fun importImagesFromLibrary() {

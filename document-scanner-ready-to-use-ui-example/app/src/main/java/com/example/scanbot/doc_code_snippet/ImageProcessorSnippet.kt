@@ -49,6 +49,7 @@ class ImageProcessorSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Direct Document detection on image")
     // Create a quality analyzer instance
     val documentScanner = scanbotSDK.createDocumentScanner()
     fun startFiltering(list: List<Bitmap>) {
@@ -75,6 +76,7 @@ class ImageProcessorSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Direct Document detection on image")
 
     // Print the result.
     fun printResult(quality: DocumentQuality) {

@@ -46,6 +46,7 @@ class ImportImagesFromPdfSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Extracting images from PDF")
     // Create instance of PdfImagesExtractor
     val extractor = scanbotSDK.createPdfImagesExtractor()
     fun createDocumentFromPdf(list: List<Uri>) {
@@ -60,6 +61,7 @@ class ImportImagesFromPdfSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Extracting images from PDF")
 
     private fun importPdfFromLibrary() {
         val pdfIntent = Intent()

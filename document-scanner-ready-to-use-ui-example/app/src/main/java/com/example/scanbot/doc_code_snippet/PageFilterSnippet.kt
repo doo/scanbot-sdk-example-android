@@ -19,10 +19,9 @@ class PageFilterSnippet : AppCompatActivity() {
     }
 
     private val scanbotSDK = ScanbotSDK(this@PageFilterSnippet)
-    private val context = this
-
 
     fun startFiltering() {
+        // @Tag("Processing Scanned Page")
         // Retrieve the scanned document
         val document = scanbotSDK.documentApi.loadDocument("SOME_SAVED_UUID")
 
@@ -42,6 +41,7 @@ class PageFilterSnippet : AppCompatActivity() {
             // Set the filters
             page.filters = listOf(filter1, filter2)
         }
+        // @EndTag("Processing Scanned Page")
     }
 }
 
