@@ -24,7 +24,7 @@ import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.usecases.documents.R
 
-// #Launching The Scanner
+// @Tag("Launching The Scanner")
 class ExampleApplication : Application() {
 
     override fun onCreate() {
@@ -34,9 +34,9 @@ class ExampleApplication : Application() {
         ScanbotSDKInitializer().initialize(this)
     }
 }
-// #END_Launching The Scanner
+// @EndTag("Launching The Scanner")
 
-// #Delegate `onResume` and `onPause` methods
+// @Tag("Delegate `onResume` and `onPause` methods")
 class MyActivity : Activity() {
 
     private lateinit var scanbotCameraView: ScanbotCameraView
@@ -53,10 +53,10 @@ class MyActivity : Activity() {
         super.onPause()
     }
 }
-// #END_Delegate `onResume` and `onPause` methods
+// @EndTag("Delegate `onResume` and `onPause` methods")
 
 fun setOpenCallbackSnippet(cameraView: ScanbotCameraXView) {
-    // #Enable/disable shutter sound
+    // @Tag("Enable/disable shutter sound")
     cameraView.setCameraOpenCallback(object : CameraOpenCallback {
         override fun onCameraOpened() {
             cameraView.postDelayed({
@@ -64,11 +64,11 @@ fun setOpenCallbackSnippet(cameraView: ScanbotCameraXView) {
             }, 700)
         }
     })
-    // #END_Enable/disable shutter sound
+    // @EndTag("Enable/disable shutter sound")
 }
 
 fun continuousFocusSnippet(cameraView: ScanbotCameraXView) {
-    // #Enable Continuous Focus Mode
+    // @Tag("Enable Continuous Focus Mode")
     cameraView.setCameraOpenCallback(object : CameraOpenCallback {
         override fun onCameraOpened() {
             cameraView.postDelayed({
@@ -76,12 +76,12 @@ fun continuousFocusSnippet(cameraView: ScanbotCameraXView) {
             }, 700)
         }
     })
-    // #END_Enable Continuous Focus Mode
+    // @EndTag("Enable Continuous Focus Mode")
 }
 
 fun onPictureTakenSnippet(cameraView: ScanbotCameraXView) {
     cameraView.addPictureCallback(object : PictureCallback() {
-        // #`onPictureTaken()` example
+        // @Tag("`onPictureTaken()` example")
         override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
             // image processing ...
             // ...
@@ -91,19 +91,19 @@ fun onPictureTakenSnippet(cameraView: ScanbotCameraXView) {
                 cameraView.startPreview()
             }
         }
-        // #END_`onPictureTaken()` example
+        // @EndTag("`onPictureTaken()` example")
     })
 }
 
 fun setCameraModuleSnippet(cameraView: ScanbotCameraXView) {
-    // #Set Camera Module
+    // @Tag("Set Camera Module")
     cameraView.setCameraModule(CameraModule.FRONT)
     cameraView.restartPreview()
-    // #END_Set Camera Module
+    // @EndTag("Set Camera Module")
 }
 
 fun setCustomPreviewPictureSizeSnippet(cameraView: ScanbotCameraXView) {
-    // #Set Custom Picture and Preview Sizes
+    // @Tag("Set Custom Picture and Preview Sizes")
     cameraView.setCameraOpenCallback {
         cameraView.stopPreview()
 
@@ -117,39 +117,39 @@ fun setCustomPreviewPictureSizeSnippet(cameraView: ScanbotCameraXView) {
 
         cameraView.startPreview()
     }
-    // #END_Set Custom Picture and Preview Sizes
+    // @EndTag("Set Custom Picture and Preview Sizes")
 }
 
 fun useFlashSnippet(cameraView: ScanbotCameraXView, enabled: Boolean) {
-    // #Enable/disable Flashlight
+    // @Tag("Enable/disable Flashlight")
     cameraView.useFlash(enabled)
-    // #END_Enable/disable Flashlight
+    // @EndTag("Enable/disable Flashlight")
 }
 
 fun isFlashEnabled(cameraView: ScanbotCameraXView) {
-    // #Get Flashlight state
+    // @Tag("Get Flashlight state")
     val state = cameraView.isFlashEnabled()
-    // #END_Get Flashlight state
+    // @EndTag("Get Flashlight state")
 }
 
 fun startDocumentScannerSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // #Start Document Scanner (full example)
+    // @Tag("Start Document Scanner (full example)")
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
 
     val frameHandler = DocumentScannerFrameHandler(context, scanner)
     cameraView.addFrameHandler(frameHandler)
-    // #END_Start Document Scanner (full example)
+    // @EndTag("Start Document Scanner (full example)")
 }
 
 fun startDocumentScannerShortSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // #Start Document Scanner (short)
+    // @Tag("Start Document Scanner (short)")
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
     val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
-    // #END_Start Document Scanner (short)
+    // @EndTag("Start Document Scanner (short)")
 }
 
 fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
-    // #Handle results
+    // @Tag("Handle results")
     frameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
         when (result) {
             is FrameHandlerResult.Success -> {
@@ -162,48 +162,48 @@ fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
         }
         false
     })
-    // #END_Handle results
+    // @EndTag("Handle results")
 }
 
 fun documentScanningParamsSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // #Customize Document Scanner Parameters
+    // @Tag("Customize Document Scanner Parameters")
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
     val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
     frameHandler.setAcceptedAngleScore(75.0)
     frameHandler.setAcceptedSizeScore(80.0)
-    // #END_Customize Document Scanner Parameters
+    // @EndTag("Customize Document Scanner Parameters")
 }
 
 fun addPolygonViewSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler) {
-    // #Bind `PolygonView` to `DocumentScannerFrameHandler`
+    // @Tag("Bind `PolygonView` to `DocumentScannerFrameHandler`")
     val polygonView = cameraView.findViewById<PolygonView>(R.id.polygonView)
     frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
-    // #END_Bind `PolygonView` to `DocumentScannerFrameHandler`
+    // @EndTag("Bind `PolygonView` to `DocumentScannerFrameHandler`")
 }
 
 fun autoSnappingSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler, context: Context) {
-    // #Attach `DocumentAutoSnappingController`
+    // @Tag("Attach `DocumentAutoSnappingController`")
     val documentScanner = ScanbotSDK(context).createDocumentScanner()
     val documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
     val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
-    // #END_Attach `DocumentAutoSnappingController`
+    // @EndTag("Attach `DocumentAutoSnappingController`")
 }
 
 fun autoSnappingSensitivitySnippet(autoSnappingController: DocumentAutoSnappingController) {
-    // #Set Auto Snapping Sensitivity
+    // @Tag("Set Auto Snapping Sensitivity")
     autoSnappingController.setSensitivity(1f)
-    // #END_Set Auto Snapping Sensitivity
+    // @EndTag("Set Auto Snapping Sensitivity")
 }
 
 fun autoSnappingVisualisationSnippet(scanbotCameraView: ScanbotCameraXView, documentScanner: DocumentScanner, polygonView: PolygonView) {
-    // #Auto Snapping Visualisation
+    // @Tag("Auto Snapping Visualisation")
     val autoSnappingController = DocumentAutoSnappingController.attach(scanbotCameraView, documentScanner)
     autoSnappingController.stateListener = polygonView
-    // #END_Auto Snapping Visualisation
+    // @EndTag("Auto Snapping Visualisation")
 }
 
 fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentScannerFrameHandler) {
-    // #Handle Document Scanning Results
+    // @Tag("Handle Document Scanning Results")
     documentScannerFrameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
         when (result) {
             is FrameHandlerResult.Success -> {
@@ -215,11 +215,11 @@ fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentS
         }
         false
     })
-    // #END_Handle Document Scanning Results
+    // @EndTag("Handle Document Scanning Results")
 }
 
 fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // #Handle Camera Picture
+    // @Tag("Handle Camera Picture")
     // Create one instance per screen
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
 
@@ -258,11 +258,11 @@ fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Contex
             }
         }
     })
-    // #END_Handle Camera Picture
+    // @EndTag("Handle Camera Picture")
 }
 
 fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // #Creating `FinderPictureCallback`
+    // @Tag("Creating `FinderPictureCallback`")
     val scanbotSDK = ScanbotSDK(context)
     cameraView.addPictureCallback(object : FinderPictureCallback() {
         override fun onPictureTaken(image: Bitmap?, captureInfo: CaptureInfo) {
@@ -276,31 +276,31 @@ fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Contex
             }
         }
     })
-    // #END_Creating `FinderPictureCallback`
+    // @EndTag("Creating `FinderPictureCallback`")
 }
 
 fun editPolygonViewSetPointsSnippet(editPolygonView: EditPolygonImageView, context: Context, image: Bitmap) {
-    // #Set Scanned Contour to `EditPolygonImageView`
+    // @Tag("Set Scanned Contour to `EditPolygonImageView`")
     val scanner = ScanbotSDK(context).createDocumentScanner()
     val scanningResult = scanner.scanFromBitmap(image)
     editPolygonView.polygon = scanningResult?.pointsNormalized ?: emptyList()
-    // #END_Set Scanned Contour to `EditPolygonImageView`
+    // @EndTag("Set Scanned Contour to `EditPolygonImageView`")
 }
 
 fun editPolygonViewSetLines(editPolygonView: EditPolygonImageView, scanningResult: DocumentDetectionResult) {
-    // #Set Scanned Lines to `EditPolygonImageView`
+    // @Tag("Set Scanned Lines to `EditPolygonImageView`")
     editPolygonView.setLines(scanningResult?.horizontalLinesNormalized ?: emptyList(), scanningResult?.verticalLinesNormalized ?: emptyList())
-    // #END_Set Scanned Lines to `EditPolygonImageView`
+    // @EndTag("Set Scanned Lines to `EditPolygonImageView`")
 }
 
 fun setupMagnifierSnippet(magnifierView: MagnifierView, editPolygonView: EditPolygonImageView) {
-    // #Setup `MagnifierView`
+    // @Tag("Setup `MagnifierView`")
     magnifierView.setupMagnifier(editPolygonView)
-    // #END_Setup `MagnifierView`
+    // @EndTag("Setup `MagnifierView`")
 }
 
 fun getCurrentPolygonSnippet(editPolygonView: EditPolygonImageView) {
-    // #Get Selected Polygon from `EditPolygonImageView`
+    // @Tag("Get Selected Polygon from `EditPolygonImageView`")
     val currentPolygon = editPolygonView.polygon
-    // #END_Get Selected Polygon from `EditPolygonImageView`
+    // @EndTag("Get Selected Polygon from `EditPolygonImageView`")
 }
