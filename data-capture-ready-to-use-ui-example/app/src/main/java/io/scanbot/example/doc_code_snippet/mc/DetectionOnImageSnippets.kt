@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.data_extractor
+package io.scanbot.example.doc_code_snippet.mc
 
 import android.app.Application
 import android.content.Context
@@ -23,15 +23,16 @@ class ExampleApplication : Application() {
 
         // The Scanbot SDK initialization:
         ScanbotSDKInitializer()
+                .prepareOCRLanguagesBlobs(true)
                 // ...
                 .initialize(this)
     }
 }
 // @EndTag("Initialize SDK")
 
-fun extractorCreationSnippet(context: Context) {
-    // @Tag("Create Document Data Extractor")
+fun scannerCreationSnippet(context: Context) {
+    // @Tag("Create Medical Certificate Scanner")
     val scanbotSdk = ScanbotSDK(context)
-    val dataExtractor = scanbotSdk.createDocumentDataExtractor()
-    // @EndTag("Create Document Data Extractor")
+    val medicalCertificateScanner = scanbotSdk.createMedicalCertificateScanner()
+    // @EndTag("Create Medical Certificate Scanner")
 }

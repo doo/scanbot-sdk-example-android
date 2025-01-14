@@ -22,6 +22,17 @@ import io.scanbot.sdk.ui.camera.*
 import io.scanbot.sdk.ui.view.documentdata.*
 import io.scanbot.sdk.ui.view.documentdata.configuration.DocumentDataExtractorConfiguration
 
+/*
+    NOTE: this snippet of code is to be used only as a part of the website documentation.
+    This code is not intended for any use outside of the support of documentation by Scanbot SDK GmbH employees.
+*/
+
+// NOTE for maintainers: whenever changing this code,
+// ensure that links using it are still pointing to valid lines!
+// Pay attention to imports adding/removal/sorting!
+// Page URLs using this code:
+// TODO: add URLs here
+
 fun initSdkSnippet(application: Application) {
     // @Tag("Initialize SDK")
     ScanbotSDKInitializer()

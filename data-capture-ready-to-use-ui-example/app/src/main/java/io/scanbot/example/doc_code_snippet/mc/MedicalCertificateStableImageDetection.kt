@@ -76,6 +76,7 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
+    // @Tag("Extracting medical certificate data from an image")
     // Create a medical certificate scanner instance
     val medicalCertificateScanner = scanbotSDK.createMedicalCertificateScanner()
 
@@ -98,4 +99,5 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
             // processResul
         }
     }
+    // @EndTag("Extracting medical certificate data from an image")
 }
