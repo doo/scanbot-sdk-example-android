@@ -9,18 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.*
-
-import io.scanbot.sdk.common.*
-import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.licenseplate.*
-import io.scanbot.sdk.mrz.*
 import io.scanbot.sdk.ui.camera.*
 import io.scanbot.sdk.ui.view.licenseplate.*
-import io.scanbot.sdk.ui.view.licenseplate.configuration.*
 import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConfiguration
 import io.scanbot.sdk.ui.view.licenseplate.entity.LicensePlateScannerResult
-import io.scanbot.sdk.ui.view.mrz.*
-import io.scanbot.sdk.ui.view.mrz.configuration.*
 
 //Rtu ui snippets
 fun initializeScanbotSDK(application: Application) {
@@ -98,7 +91,7 @@ fun licensePlateScannerConfiguration() {
     configuration.setConfirmationDialogTitle("Double-check the result")
     configuration.setFinderTextHint("Place the plate in the scanning rectangle")
     configuration.setScanStrategy(LicensePlateScannerStrategy.ML)
-    // @EndTag("Mrz Scanner Screen Configuration")
+    // @EndTag("License Plate Scanner Configuration")
 }
 
 fun licensePlateScannerResult(result: LicensePlateScannerResult) {
