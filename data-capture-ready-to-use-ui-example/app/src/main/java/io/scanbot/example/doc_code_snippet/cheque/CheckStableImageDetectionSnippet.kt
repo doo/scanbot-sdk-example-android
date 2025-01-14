@@ -32,7 +32,7 @@ class CheckStableImageDetectionSnippet : AppCompatActivity() {
         // In the real application, you should call this function on button click
         importImagesFromLibrary()
     }
-
+    // @Tag("Extracting cheque data from an image")
     private val scanbotSDK = ScanbotSDK(this@CheckStableImageDetectionSnippet)
     private val context = this
 
@@ -87,6 +87,7 @@ class CheckStableImageDetectionSnippet : AppCompatActivity() {
         result?.check?.let { wrapCheck(it) }
         // Check recognition results are processed
     }
+    // @EndTag("Extracting cheque data from an image")
 }
 
 
