@@ -77,7 +77,7 @@ fun startTextPatternScannerRTUAndHandleResultSnippet(activity: AppCompatActivity
         val textPatternScannerConfiguration = TextPatternScannerConfiguration(step)
         textPatternResult.launch(textPatternScannerConfiguration)
     }
-    // @EndTag("Start RTU TextPattern Scanner and handle the result")
+    // @EndTag("Start RTU Text Pattern Scanner and handle the result")
 }
 
 val GTR_REQUEST_CODE_CONSTANT = 1000
