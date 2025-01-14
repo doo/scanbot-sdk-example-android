@@ -15,7 +15,7 @@ import io.scanbot.sdk.check.entity.*
 import io.scanbot.sdk.genericdocument.entity.*
 
 fun wrapCheck(genericDocument: GenericDocument) {
-
+    // @Tag("Check Scanner Result Wrapper")
     when ( genericDocument.type.name) {
          USACheck.DOCUMENT_TYPE -> {
             val wrapper = FRACheck(genericDocument)
@@ -46,6 +46,7 @@ fun wrapCheck(genericDocument: GenericDocument) {
             // Handle other document types
         }
     }
+    // @EndTag("Check Scanner Result Wrapper")
 }
 
 

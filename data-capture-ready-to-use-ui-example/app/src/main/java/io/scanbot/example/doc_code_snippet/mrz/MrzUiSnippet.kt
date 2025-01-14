@@ -53,6 +53,7 @@ class DeprecatedApiCall : AppCompatActivity() {
     val MRZ_REQUEST_CODE_CONSTANT = 1232134
     fun deprecatedResultApi(myButton: Button) {
         // @Tag("deprecated")
+
         myButton.setOnClickListener {
             val mrzCameraConfiguration = MRZScannerConfiguration()
             val intent =
@@ -77,7 +78,7 @@ class DeprecatedApiCall : AppCompatActivity() {
             }
         }
     }
-    // @Tag("deprecated")
+    // @EndTag("deprecated")
 }
 
 fun mrzScannerConfiguration() {
