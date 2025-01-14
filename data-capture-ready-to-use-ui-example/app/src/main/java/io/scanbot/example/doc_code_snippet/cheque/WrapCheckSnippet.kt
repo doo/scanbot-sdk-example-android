@@ -18,8 +18,8 @@ fun wrapCheck(genericDocument: GenericDocument) {
     // @Tag("Check Scanner Result Wrapper")
     when ( genericDocument.type.name) {
          USACheck.DOCUMENT_TYPE -> {
-            val wrapper = FRACheck(genericDocument)
-            val number = wrapper.chequeNumber
+            val wrapper = USACheck(genericDocument)
+            val number = wrapper.accountNumber
         }
         FRACheck.DOCUMENT_TYPE  -> {
             // Handle ID card back
