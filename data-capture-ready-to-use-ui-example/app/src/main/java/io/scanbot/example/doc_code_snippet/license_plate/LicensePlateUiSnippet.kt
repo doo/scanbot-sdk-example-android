@@ -94,7 +94,7 @@ fun licensePlateScannerConfiguration() {
     // @EndTag("License Plate Scanner Configuration")
 }
 
-fun licensePlateScannerResult(result: LicensePlateScannerResult) {
+fun licensePlateScannerResult(result: LicensePlateScannerResult, context: Context) {
     // @Tag("License Plate Scanner Result")
     val licensePlateString = StringBuilder()
         .append("Raw scanned text: ${result.rawText}")
@@ -102,6 +102,7 @@ fun licensePlateScannerResult(result: LicensePlateScannerResult) {
         .append("\nLicense plate: ${result.licensePlate}")
         .append("\nConfidence level: ${result.confidence}%")
         .toString()
+    Toast.makeText(context, licensePlateString, Toast.LENGTH_LONG).show()
     // @EndTag("License Plate Scanner Result")
 }
 
