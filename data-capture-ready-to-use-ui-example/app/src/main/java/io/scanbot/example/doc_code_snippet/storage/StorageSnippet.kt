@@ -18,16 +18,30 @@ import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConf
 import io.scanbot.sdk.ui.view.licenseplate.entity.LicensePlateScannerResult
 import java.io.File
 
-fun initializeScanbotSDK(application: Application) {
-    // @Tag("InitializeScanbotSDK")
+
+
+fun initializeCustomDir(application: Application) {
+    // @Tag("Custom storage directory")
+    // Example for using a sub-folder in the external(!) storage:
+    val customStorageDir = File(application.getExternalFilesDir(null), "my-custom-storage-dir")
+    customStorageDir.mkdirs()
+
+    ScanbotSDKInitializer()
+        .sdkFilesDirectory(application, customStorageDir)
+    .initialize(application)
+    // @EndTag("Custom storage directory")
+}
+
+fun defaultEncryption(application: Application) {
+    // @Tag("Default encryption setup")
     ScanbotSDKInitializer()
         // ...
         .useFileEncryption(true)
         .initialize(application)
-    // @EndTag("InitializeScanbotSDK")
+    // @EndTag("Default encryption setup")
 }
 
-fun encryption(application: Application) {
+fun customEncryption(application: Application) {
     // @Tag("Encryption setup")
     ScanbotSDKInitializer()
         // ...
