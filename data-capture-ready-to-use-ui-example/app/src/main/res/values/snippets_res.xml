@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="my_button" type="id" />
+    <item name="my_text_view" type="id" />
+
+    <string name="clear_button">Clear</string>
+    <string name="submit_button">Submit</string>
+</resources>

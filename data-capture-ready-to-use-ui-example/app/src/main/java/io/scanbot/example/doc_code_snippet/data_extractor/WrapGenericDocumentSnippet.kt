@@ -16,6 +16,7 @@ import io.scanbot.sdk.genericdocument.entity.*
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
 
+    // @Tag("Manual data parsing snippet")
     when ( genericDocument.type.name) {
          DeIdCardFront.DOCUMENT_TYPE -> {
             val wrapper = DeIdCardFront(genericDocument)
@@ -52,6 +53,7 @@ fun wrapGenericDocument(genericDocument: GenericDocument) {
             // Handle other document types
         }
     }
+    // @EndTag("Manual data parsing snippet")
 }
 
 

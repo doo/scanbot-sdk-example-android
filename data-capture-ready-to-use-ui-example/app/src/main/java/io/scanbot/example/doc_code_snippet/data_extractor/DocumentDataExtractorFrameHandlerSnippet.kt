@@ -17,6 +17,7 @@ import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.documentdata.*
 
 fun useDocumentDataExtractorFrameHandler(context: Context) {
+    // @Tag("Add a frame handler for DocumentDataExtractor")
     val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor()
     val frameHandler = DocumentDataExtractorFrameHandler(dataExtractor)
 
@@ -39,4 +40,5 @@ fun useDocumentDataExtractorFrameHandler(context: Context) {
             return false
         }
     })
+    // @EndTag("Add a frame handler for DocumentDataExtractor")
 }
