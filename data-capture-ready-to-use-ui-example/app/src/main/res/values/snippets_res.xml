@@ -2,6 +2,9 @@
 <resources>
     <item name="my_button" type="id" />
     <item name="my_text_view" type="id" />
+    <item name="first_page_image_preview" type="id" />
+    <item name="open_document_scanner" type="id" />
+    <item name="open_cropping_ui" type="id" />
 
     <string name="clear_button">Clear</string>
     <string name="submit_button">Submit</string>
