@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+// @Tag("Introduction")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.StyledText
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -84,4 +85,5 @@ class IntroductionSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Introduction")
 

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+// @Tag("Acknowledge Screen")
 import io.scanbot.sdk.process.DocumentQuality
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -71,4 +72,5 @@ class AcknowledgeScreenSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Acknowledge Screen")
 

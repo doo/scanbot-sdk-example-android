@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+// @Tag("Review Screen")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
@@ -76,4 +77,4 @@ class ReviewScreenSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
-
+// @EndTag("Review Screen")

@@ -56,7 +56,7 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
             }
         }
 
-    // @Tag("Example")
+    // @Tag("Analyze the quality of a document image")
     // Create a document detector instance
     val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer()
 
@@ -71,7 +71,7 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
             }
         }
     }
-    // @EndTag("Example")
+    // @EndTag("Analyze the quality of a document image")
 
     // Print the result.
     fun printResult(quality: DocumentQuality?) {

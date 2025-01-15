@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+// @Tag("Single Page With Finder Overlay")
 import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.FinderStyle
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
@@ -74,4 +75,5 @@ class SinglePageWithFinderSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Single Page With Finder Overlay")
 

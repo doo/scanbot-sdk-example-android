@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+// @Tag("Crop Screen")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
@@ -66,4 +67,5 @@ class CroppingScreenSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Crop Screen")
 

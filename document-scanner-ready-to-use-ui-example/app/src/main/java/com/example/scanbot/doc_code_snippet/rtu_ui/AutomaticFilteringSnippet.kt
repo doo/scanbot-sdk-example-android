@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+// @Tag("Automatic Filtering")
 import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -45,4 +46,5 @@ class AutomaticFilteringSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Automatic Filtering")
 

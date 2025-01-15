@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.usecases.documents.R
 
+// @Tag("SDK Imports")
 // Add the following imports in your Activity (for example, MainActivity.kt):
 import android.widget.Button
 import android.widget.ImageView
@@ -14,9 +15,11 @@ import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+// @EndTag("SDK Imports")
 
 class QuickStartSnippetsActivity : AppCompatActivity() {
 
+    // @Tag("Initialize SDK")
     // Adapt the 'onCreate' method in your Activity (for example, MainActivity.kt):
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +30,19 @@ class QuickStartSnippetsActivity : AppCompatActivity() {
             // optional: uncomment the next line if you have a license key
             // .license(this.application, LICENSE_KEY)
             .initialize(this.application)
+        // ...
     }
+    // @EndTag("Initialize SDK")
 }
 
 class QuickStartDocumentScannerSnippetsActivity : AppCompatActivity() {
 
+    // @Tag("Document Scanner Screen Launcher")
     // Add the following variable in your Activity:
     private lateinit var documentScreenLauncher: ActivityResultLauncher<DocumentScanningFlow>
+    // @EndTag("Document Scanner Screen Launcher")
 
+    // @Tag("Prepare Document Scanner Screen")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.quick_start_snippets_activity)
@@ -63,7 +71,9 @@ class QuickStartDocumentScannerSnippetsActivity : AppCompatActivity() {
             openDocumentScannerRtuV2()
         }
     }
+    // @EndTag("Prepare Document Scanner Screen")
 
+    // @Tag("Open Document Scanner Screen")
     // Launch the Document Scanner in your Activity:
     private fun openDocumentScannerRtuV2() {
         val configuration = DocumentScanningFlow().apply {
@@ -73,4 +83,5 @@ class QuickStartDocumentScannerSnippetsActivity : AppCompatActivity() {
 
         documentScreenLauncher.launch(configuration)
     }
+    // @EndTag("Open Document Scanner Screen")
 }
