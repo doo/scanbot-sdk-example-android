@@ -36,7 +36,7 @@ class ExampleApplication : Application() {
 }
 // @EndTag("Launching The Scanner")
 
-// @Tag("Delegate `onResume` and `onPause` methods")
+// @Tag("Delegate onResume and onPause methods")
 class MyActivity : Activity() {
 
     private lateinit var scanbotCameraView: ScanbotCameraView
@@ -53,7 +53,7 @@ class MyActivity : Activity() {
         super.onPause()
     }
 }
-// @EndTag("Delegate `onResume` and `onPause` methods")
+// @EndTag("Delegate onResume and onPause methods")
 
 fun setOpenCallbackSnippet(cameraView: ScanbotCameraXView) {
     // @Tag("Enable/disable shutter sound")
@@ -81,7 +81,7 @@ fun continuousFocusSnippet(cameraView: ScanbotCameraXView) {
 
 fun onPictureTakenSnippet(cameraView: ScanbotCameraXView) {
     cameraView.addPictureCallback(object : PictureCallback() {
-        // @Tag("`onPictureTaken()` example")
+        // @Tag("onPictureTaken() example")
         override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
             // image processing ...
             // ...
@@ -91,7 +91,7 @@ fun onPictureTakenSnippet(cameraView: ScanbotCameraXView) {
                 cameraView.startPreview()
             }
         }
-        // @EndTag("`onPictureTaken()` example")
+        // @EndTag("onPictureTaken() example")
     })
 }
 
@@ -175,18 +175,18 @@ fun documentScanningParamsSnippet(cameraView: ScanbotCameraXView, context: Conte
 }
 
 fun addPolygonViewSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler) {
-    // @Tag("Bind `PolygonView` to `DocumentScannerFrameHandler`")
+    // @Tag("Bind PolygonView to DocumentScannerFrameHandler")
     val polygonView = cameraView.findViewById<PolygonView>(R.id.polygonView)
     frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
-    // @EndTag("Bind `PolygonView` to `DocumentScannerFrameHandler`")
+    // @EndTag("Bind PolygonView to DocumentScannerFrameHandler")
 }
 
 fun autoSnappingSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler, context: Context) {
-    // @Tag("Attach `DocumentAutoSnappingController`")
+    // @Tag("Attach DocumentAutoSnappingController")
     val documentScanner = ScanbotSDK(context).createDocumentScanner()
     val documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
     val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
-    // @EndTag("Attach `DocumentAutoSnappingController`")
+    // @EndTag("Attach DocumentAutoSnappingController")
 }
 
 fun autoSnappingSensitivitySnippet(autoSnappingController: DocumentAutoSnappingController) {
@@ -262,7 +262,7 @@ fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Contex
 }
 
 fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Context) {
-    // @Tag("Creating `FinderPictureCallback`")
+    // @Tag("Creating FinderPictureCallback")
     val scanbotSDK = ScanbotSDK(context)
     cameraView.addPictureCallback(object : FinderPictureCallback() {
         override fun onPictureTaken(image: Bitmap?, captureInfo: CaptureInfo) {
@@ -276,31 +276,31 @@ fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Contex
             }
         }
     })
-    // @EndTag("Creating `FinderPictureCallback`")
+    // @EndTag("Creating FinderPictureCallback")
 }
 
 fun editPolygonViewSetPointsSnippet(editPolygonView: EditPolygonImageView, context: Context, image: Bitmap) {
-    // @Tag("Set Scanned Contour to `EditPolygonImageView`")
+    // @Tag("Set Scanned Contour to EditPolygonImageView")
     val scanner = ScanbotSDK(context).createDocumentScanner()
     val scanningResult = scanner.scanFromBitmap(image)
     editPolygonView.polygon = scanningResult?.pointsNormalized ?: emptyList()
-    // @EndTag("Set Scanned Contour to `EditPolygonImageView`")
+    // @EndTag("Set Scanned Contour to EditPolygonImageView")
 }
 
 fun editPolygonViewSetLines(editPolygonView: EditPolygonImageView, scanningResult: DocumentDetectionResult) {
-    // @Tag("Set Scanned Lines to `EditPolygonImageView`")
+    // @Tag("Set Scanned Lines to EditPolygonImageView")
     editPolygonView.setLines(scanningResult?.horizontalLinesNormalized ?: emptyList(), scanningResult?.verticalLinesNormalized ?: emptyList())
-    // @EndTag("Set Scanned Lines to `EditPolygonImageView`")
+    // @EndTag("Set Scanned Lines to EditPolygonImageView")
 }
 
 fun setupMagnifierSnippet(magnifierView: MagnifierView, editPolygonView: EditPolygonImageView) {
-    // @Tag("Setup `MagnifierView`")
+    // @Tag("Setup MagnifierView")
     magnifierView.setupMagnifier(editPolygonView)
-    // @EndTag("Setup `MagnifierView`")
+    // @EndTag("Setup MagnifierView")
 }
 
 fun getCurrentPolygonSnippet(editPolygonView: EditPolygonImageView) {
-    // @Tag("Get Selected Polygon from `EditPolygonImageView`")
+    // @Tag("Get Selected Polygon from EditPolygonImageView")
     val currentPolygon = editPolygonView.polygon
-    // @EndTag("Get Selected Polygon from `EditPolygonImageView`")
+    // @EndTag("Get Selected Polygon from EditPolygonImageView")
 }
