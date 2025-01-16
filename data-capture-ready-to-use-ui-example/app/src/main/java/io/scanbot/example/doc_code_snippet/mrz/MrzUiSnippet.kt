@@ -101,6 +101,13 @@ fun mrzScannerConfiguration() {
     // @EndTag("Mrz Scanner Screen Configuration")
 }
 
+fun presentingMrzResultSnippet(result: io.scanbot.sdk.mrz.MrzScannerResult, context: Context) {
+    // @Tag("Presenting Mrz Result")
+    val mrzString = result?.document?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
+    Toast.makeText(context, mrzString, Toast.LENGTH_LONG).show()
+    // @EndTag("Presenting Mrz Result")
+}
+
 fun mrzScannerResult(result: MrzScannerResult) {
     // @Tag("Mrz Scanner Result")
     val mrzScanningResult = MRZ(result?.document!!)

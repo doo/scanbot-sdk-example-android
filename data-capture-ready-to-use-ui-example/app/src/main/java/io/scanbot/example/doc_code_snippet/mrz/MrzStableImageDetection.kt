@@ -1,6 +1,8 @@
 package io.scanbot.example.doc_code_snippet.mrz
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -25,6 +27,33 @@ import kotlinx.coroutines.withContext
 // Pay attention to imports adding/removal/sorting!
 // Page URLs using this code:
 // TODO: add URLs here
+
+val licenseKey = "YOUR_SCANBOT_SDK_LICENSE_KEY"
+
+// @Tag("Initialize SDK")
+class ExampleApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Initialize the Scanbot Scanner SDK:
+        ScanbotSDKInitializer()
+                .license(this, licenseKey)
+                // TODO: other configuration calls
+                .prepareOCRLanguagesBlobs(true)
+                .initialize(this)
+    }
+}
+// @EndTag("Initialize SDK")
+
+fun createMrzScannerSnippet(context: Context) {
+    // @Tag("Create MRZ Scanner")
+    val scanbotSDK = ScanbotSDK(context)
+    val mrzScanner = scanbotSDK.createMrzScanner()
+    // @EndTag("Create MRZ Scanner")
+
+}
+
 class MrzStableImageDetection : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +105,7 @@ class MrzStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
+    // @Tag("Extracting mrz data from an image")
     // Create a data extractor  instance
     val mrzScanner = scanbotSDK.createMrzScanner()
 
@@ -84,6 +114,7 @@ class MrzStableImageDetection : AppCompatActivity() {
         // Proceed MRZ scanner result
         // processResult(result)
     }
+    // @EndTag("Extracting mrz data from an image")
 }
 
 
