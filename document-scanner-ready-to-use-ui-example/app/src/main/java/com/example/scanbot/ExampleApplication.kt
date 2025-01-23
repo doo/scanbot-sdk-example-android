@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
 
 class ExampleApplication : Application(), CoroutineScope {
 
@@ -31,7 +32,7 @@ class ExampleApplication : Application(), CoroutineScope {
          * "io.scanbot.example.document.usecases.android" of this example app.
          */
         private const val LICENSE_KEY = "" // "YOUR_SCANBOT_SDK_LICENSE_KEY"
-        const val USE_ENCRYPTION = false
+        const val USE_ENCRYPTION = true
     }
 
     override fun onCreate() {
@@ -56,11 +57,13 @@ class ExampleApplication : Application(), CoroutineScope {
                     Status.StatusFailureExpired -> {
                         Toast.makeText(this, "License error: $status ", Toast.LENGTH_LONG).show()
                     }
-                    else -> { /* Can be empty for the purpose of this example. */ }
+
+                    else -> { /* Can be empty for the purpose of this example. */
+                    }
                 }
 
             })
-            .useFileEncryption(USE_ENCRYPTION)
+            .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
             .license(this, LICENSE_KEY)
             .initialize(this)
 
