@@ -81,6 +81,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
 
         exampleSingleton = ExampleSingletonImpl(this)
         val sharingDocumentStorage = SharingDocumentStorage(this)
+        val fileIOProcessor = scanbotSdk.fileIOProcessor()
 
         exportPdf =
             GeneratePdfForSharingUseCase(sharingDocumentStorage, exampleSingleton.pagePDFRenderer())
@@ -88,9 +89,9 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
             sharingDocumentStorage,
             exampleSingleton.pageTIFFWriter(),
         )
-        exportJpeg = GenerateJpgForSharingUseCase(sharingDocumentStorage)
+        exportJpeg = GenerateJpgForSharingUseCase(sharingDocumentStorage, fileIOProcessor)
         exportPng =
-            GeneratePngForSharingUseCase(sharingDocumentStorage, scanbotSdk.fileIOProcessor())
+            GeneratePngForSharingUseCase(sharingDocumentStorage, fileIOProcessor)
 
         imageView = findViewById(R.id.image)
         progress = findViewById(R.id.progress_bar)

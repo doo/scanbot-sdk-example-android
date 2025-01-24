@@ -15,6 +15,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
+import io.scanbot.sdk.persistence.fileio.AesGcmEncryptedFileIoProcessor
+import io.scanbot.sdk.persistence.fileio.AesGcmKeyProvider
+import kotlin.random.Random
 
 class ExampleApplication : Application(), CoroutineScope {
 
@@ -32,7 +35,7 @@ class ExampleApplication : Application(), CoroutineScope {
          * "io.scanbot.example.document.usecases.android" of this example app.
          */
         private const val LICENSE_KEY = "" // "YOUR_SCANBOT_SDK_LICENSE_KEY"
-        const val USE_ENCRYPTION = true
+        const val USE_ENCRYPTION = false
     }
 
     override fun onCreate() {
@@ -63,13 +66,14 @@ class ExampleApplication : Application(), CoroutineScope {
                 }
 
             })
-            .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
+            // .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
             .license(this, LICENSE_KEY)
             .initialize(this)
 
         launch {
             // Delete all existing documents on app start
-            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage()
+                .deleteAll()
         }
     }
 }
