@@ -60,13 +60,16 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         initActionBar()
         initMenu()
 
-        val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID) ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId) ?: throw IllegalStateException("No such document!")
+        val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
+            ?: throw IllegalStateException("No document id!")
+        document = scanbotSdk.documentApi.loadDocument(docId)
+            ?: throw IllegalStateException("No such document!")
 
         exampleSingleton = ExampleSingletonImpl(this)
         val sharingDocumentStorage = SharingDocumentStorage(this)
 
-        exportPdf = GeneratePdfForSharingUseCase(sharingDocumentStorage, exampleSingleton.pagePDFRenderer())
+        exportPdf =
+            GeneratePdfForSharingUseCase(sharingDocumentStorage, exampleSingleton.pagePDFRenderer())
 
         exportTiff = GenerateTiffForSharingUseCase(
             sharingDocumentStorage,
@@ -167,7 +170,8 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
     }
 
     private fun showLicenseToast() {
-        Toast.makeText(this@DocumentPreviewActivity, "License is not valid!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this@DocumentPreviewActivity, "License is not valid!", Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun saveDocumentPdf() {
@@ -176,7 +180,7 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         } else {
             progress.visibility = View.VISIBLE
             lifecycleScope.launch {
-                val pdfFile: File? =
+                val file: File? =
                     withContext(Dispatchers.Default) {
                         exportPdf.generate(document).firstOrNull()
                     }
@@ -185,11 +189,15 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
                     progress.visibility = View.GONE
 
                     //open first document
-                    if (pdfFile != null) {
+                    if (file != null) {
                         if (!ExampleApplication.USE_ENCRYPTION) {
-                            ExampleUtils.openDocument(this@DocumentPreviewActivity, pdfFile)
+                            ExampleUtils.openDocument(this@DocumentPreviewActivity, file)
                         } else {
-                            showEncryptedDocumentToast(pdfFile)
+                            ExampleUtils.showEncryptedDocumentToast(
+                                this@DocumentPreviewActivity,
+                                file,
+                                exampleSingleton.fileIOProcessor()
+                            )
                         }
                     }
                 }
@@ -203,19 +211,22 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         } else {
             progress.visibility = View.VISIBLE
             lifecycleScope.launch {
-                val pdfFile: File? =
+                val file: File? =
                     withContext(Dispatchers.Default) {
                         exportTiff.generate(document).firstOrNull()
                     }
 
                 withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
-
-                    if (pdfFile != null) {
+                    if (file != null) {
                         if (!ExampleApplication.USE_ENCRYPTION) {
-                            ExampleUtils.openDocument(this@DocumentPreviewActivity, pdfFile)
+                            ExampleUtils.openDocument(this@DocumentPreviewActivity, file)
                         } else {
-                            showEncryptedDocumentToast(pdfFile)
+                            ExampleUtils.showEncryptedDocumentToast(
+                                this@DocumentPreviewActivity,
+                                file,
+                                exampleSingleton.fileIOProcessor()
+                            )
                         }
                     }
                 }
@@ -257,11 +268,6 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         override fun getItemCount(): Int {
             return items.size
         }
-    }
-
-    private fun showEncryptedDocumentToast(pdfFile: File) {
-        // TODO: scanbotSdk.fileIOProcessor().openFileInputStream() you need to use this call to unencrypt the pdf file
-        Toast.makeText(this@DocumentPreviewActivity, "Encrypted document saved!", Toast.LENGTH_LONG).show()
     }
 
     /** View holder for page and its number. */
