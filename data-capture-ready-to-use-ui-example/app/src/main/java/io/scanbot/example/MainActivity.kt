@@ -17,9 +17,9 @@ import io.scanbot.sdk.check.entity.*
 import io.scanbot.sdk.documentdata.*
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ehicscanner.*
+import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
-import io.scanbot.sdk.mrz.*
-import io.scanbot.sdk.ui.*
+import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.check.*
 import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
 import io.scanbot.sdk.ui.view.documentdata.*
@@ -30,19 +30,20 @@ import io.scanbot.sdk.ui.view.licenseplate.*
 import io.scanbot.sdk.ui.view.licenseplate.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
-import io.scanbot.sdk.ui.view.mrz.*
-import io.scanbot.sdk.ui.view.mrz.configuration.*
 import io.scanbot.sdk.ui.view.textpattern.*
 import io.scanbot.sdk.ui.view.textpattern.configuration.*
 import io.scanbot.sdk.ui.view.textpattern.entity.*
 import io.scanbot.sdk.ui.view.vin.*
 import io.scanbot.sdk.ui.view.vin.configuration.*
+import io.scanbot.sdk.ui_v2.common.activity.*
+import io.scanbot.sdk.ui_v2.mrz.*
+import io.scanbot.sdk.ui_v2.mrz.configuration.*
 
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
 
-    private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MRZScannerConfiguration>
+    private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
@@ -59,16 +60,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         findViewById<View>(R.id.mrz_camera_default_ui).setOnClickListener {
-            val mrzCameraConfiguration = MRZScannerConfiguration()
-
-            mrzCameraConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            mrzCameraConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
-            mrzCameraConfiguration.setSuccessBeepEnabled(false)
-
+            val mrzCameraConfiguration = MrzScannerScreenConfiguration()
+            mrzCameraConfiguration.cameraConfiguration.apply {
+                flashEnabled = false
+            }
+            mrzCameraConfiguration.mrzExampleOverlay = MrzFinderLayoutPreset.threeLineMrzFinderLayoutPreset()
             mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
         }
 
@@ -225,8 +221,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showMrzDialog(mrzRecognitionResult: MrzScannerResult) {
-        val dialogFragment = MRZDialogFragment.newInstance(mrzRecognitionResult)
+    private fun showMrzDialog(genericDocument: GenericDocument) {
+        val dialogFragment = MRZDialogFragment.newInstance(genericDocument)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
     }
 
@@ -257,8 +253,8 @@ class MainActivity : AppCompatActivity() {
 
     init {
         mrzDefaultUiResultLauncher =
-            registerForActivityResultOk(MRZScannerActivity.ResultContract()) { resultEntity ->
-                showMrzDialog(resultEntity.result!!)
+            registerForActivityResultOk(MrzScannerActivity.ResultContract()) { resultEntity ->
+                resultEntity.result?.mrzDocument?.let { showMrzDialog(it) }
             }
 
         textDataScannerResultLauncher =

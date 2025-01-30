@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.mrz
+package io.scanbot.example.doc_code_snippet.creditcard
 
 import android.app.Activity
 import android.content.Intent
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.creditcard.*
 import io.scanbot.sdk.mrz.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ import kotlinx.coroutines.withContext
 // Pay attention to imports adding/removal/sorting!
 // Page URLs using this code:
 // TODO: add URLs here
-class MrzStableImageDetection : AppCompatActivity() {
+class CreditCardStableImageDetection : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +34,7 @@ class MrzStableImageDetection : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@MrzStableImageDetection)
+    private val scanbotSDK = ScanbotSDK(this@CreditCardStableImageDetection)
     private val context = this
 
     private val pictureForDocDetectionResult =
@@ -53,7 +54,7 @@ class MrzStableImageDetection : AppCompatActivity() {
                                         )
                                         return@forEach
                                     }
-                                    processImage(mrzScanner, bitmap)
+                                    processImage(creditCardScanner, bitmap)
                                 }
 
                         }
@@ -77,10 +78,10 @@ class MrzStableImageDetection : AppCompatActivity() {
     }
 
     // Create a data extractor  instance
-    val mrzScanner = scanbotSDK.createMrzScanner()
+    val creditCardScanner = scanbotSDK.createCreditCardScanner()
 
-    private fun processImage(mrzScanner: MrzScanner, bitmap: Bitmap) {
-        val mrzRecognitionResult = mrzScanner.scanFromBitmap(bitmap, 0)
+    private fun processImage(scanner: CreditCardScanner, bitmap: Bitmap) {
+        val mrzRecognitionResult = scanner.scanFromBitmap(bitmap, 0)
         // Proceed MRZ scanner result
         // processResult(result)
     }
