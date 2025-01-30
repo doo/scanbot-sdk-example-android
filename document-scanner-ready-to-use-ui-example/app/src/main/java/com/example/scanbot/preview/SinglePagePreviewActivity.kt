@@ -37,7 +37,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, CoroutineScope {
+class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener,
+    CoroutineScope {
 
     private val scanbotSdk by lazy { ScanbotSDK(application) }
 
@@ -64,7 +65,8 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 result.result?.let { croppingResult ->
                     document = scanbotSdk.documentApi.loadDocument(croppingResult.documentUuid)
                         ?: throw IllegalStateException("No such document!")
-                    page = document.pages.firstOrNull() ?: throw IllegalStateException("No pages in document!")
+                    page = document.pages.firstOrNull()
+                        ?: throw IllegalStateException("No pages in document!")
                     updateImageView()
                 }
             }
@@ -79,20 +81,25 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
 
         exampleSingleton = ExampleSingletonImpl(this)
         val sharingDocumentStorage = SharingDocumentStorage(this)
+        val fileIOProcessor = scanbotSdk.fileIOProcessor()
 
-        exportPdf = GeneratePdfForSharingUseCase(sharingDocumentStorage, exampleSingleton.pagePDFRenderer())
+        exportPdf =
+            GeneratePdfForSharingUseCase(sharingDocumentStorage, exampleSingleton.pagePDFRenderer())
         exportTiff = GenerateTiffForSharingUseCase(
             sharingDocumentStorage,
             exampleSingleton.pageTIFFWriter(),
         )
-        exportJpeg = GenerateJpgForSharingUseCase(sharingDocumentStorage)
-        exportPng = GeneratePngForSharingUseCase(sharingDocumentStorage)
+        exportJpeg = GenerateJpgForSharingUseCase(sharingDocumentStorage, fileIOProcessor)
+        exportPng =
+            GeneratePngForSharingUseCase(sharingDocumentStorage, fileIOProcessor)
 
         imageView = findViewById(R.id.image)
         progress = findViewById(R.id.progress_bar)
 
-        val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID) ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId) ?: throw IllegalStateException("No such document!")
+        val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
+            ?: throw IllegalStateException("No document id!")
+        document = scanbotSdk.documentApi.loadDocument(docId)
+            ?: throw IllegalStateException("No such document!")
         page = document.pages.firstOrNull() ?: throw IllegalStateException("No pages in document!")
 
         val actionFilter = findViewById<TextView>(R.id.action_filter)
@@ -137,7 +144,8 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 withContext(Dispatchers.Main) {
                     imageQualityResult?.let { qualityResult ->
                         val text = "Image quality: ${qualityResult.name}"
-                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG)
+                            .show()
 
                         updateImageView()
                         progress.visibility = View.GONE
@@ -153,7 +161,8 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
             return
         }
 
-        val configuration = CroppingConfiguration(documentUuid = document.uuid, pageUuid = page.uuid)
+        val configuration =
+            CroppingConfiguration(documentUuid = document.uuid, pageUuid = page.uuid)
         croppingResult.launch(configuration)
     }
 
@@ -246,7 +255,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         } else {
             progress.visibility = View.VISIBLE
             lifecycleScope.launch {
-                val pdfFile: File? =
+                val file: File? =
                     withContext(Dispatchers.Default) {
                         if (withJpeg) {
                             exportJpeg.generate(document).firstOrNull()
@@ -258,13 +267,13 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 withContext(Dispatchers.Main) {
                     progress.visibility = View.GONE
 
-                    if (pdfFile != null) {
+                    if (file != null) {
                         if (!ExampleApplication.USE_ENCRYPTION) {
-                            ExampleUtils.openDocument(this@SinglePagePreviewActivity, pdfFile)
+                            ExampleUtils.openDocument(this@SinglePagePreviewActivity, file)
                         } else {
-                            showEncryptedDocumentToast(
+                            ExampleUtils.showEncryptedDocumentToast(
                                 this@SinglePagePreviewActivity,
-                                pdfFile,
+                                file,
                                 exampleSingleton.fileIOProcessor()
                             )
                         }
