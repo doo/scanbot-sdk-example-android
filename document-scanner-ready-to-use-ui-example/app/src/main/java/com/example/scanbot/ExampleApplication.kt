@@ -35,7 +35,7 @@ class ExampleApplication : Application(), CoroutineScope {
          * "io.scanbot.example.document.usecases.android" of this example app.
          */
         private const val LICENSE_KEY = "" // "YOUR_SCANBOT_SDK_LICENSE_KEY"
-        const val USE_ENCRYPTION = true
+        const val USE_ENCRYPTION = false
     }
 
     override fun onCreate() {
@@ -66,7 +66,7 @@ class ExampleApplication : Application(), CoroutineScope {
                 }
 
             })
-             .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
+            // .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
             .license(this, LICENSE_KEY)
             .initialize(this)
 
