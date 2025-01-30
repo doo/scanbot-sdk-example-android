@@ -14,10 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
-import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
-import io.scanbot.sdk.persistence.fileio.AesGcmEncryptedFileIoProcessor
-import io.scanbot.sdk.persistence.fileio.AesGcmKeyProvider
-import kotlin.random.Random
 
 class ExampleApplication : Application(), CoroutineScope {
 
