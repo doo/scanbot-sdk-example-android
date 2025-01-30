@@ -1,8 +1,6 @@
-package io.scanbot.example.doc_code_snippet.mrz
+package io.scanbot.example.doc_code_snippet.creditcard
 
 import android.app.Activity
-import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -12,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.creditcard.*
 import io.scanbot.sdk.mrz.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,34 +26,7 @@ import kotlinx.coroutines.withContext
 // Pay attention to imports adding/removal/sorting!
 // Page URLs using this code:
 // TODO: add URLs here
-
-val licenseKey = "YOUR_SCANBOT_SDK_LICENSE_KEY"
-
-// @Tag("Initialize SDK")
-class ExampleApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        // Initialize the Scanbot Scanner SDK:
-        ScanbotSDKInitializer()
-                .license(this, licenseKey)
-                // TODO: other configuration calls
-                .prepareOCRLanguagesBlobs(true)
-                .initialize(this)
-    }
-}
-// @EndTag("Initialize SDK")
-
-fun createMrzScannerSnippet(context: Context) {
-    // @Tag("Create MRZ Scanner")
-    val scanbotSDK = ScanbotSDK(context)
-    val mrzScanner = scanbotSDK.createMrzScanner()
-    // @EndTag("Create MRZ Scanner")
-
-}
-
-class MrzStableImageDetection : AppCompatActivity() {
+class CreditCardStableImageDetection : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +34,7 @@ class MrzStableImageDetection : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@MrzStableImageDetection)
+    private val scanbotSDK = ScanbotSDK(this@CreditCardStableImageDetection)
     private val context = this
 
     private val pictureForDocDetectionResult =
@@ -82,7 +54,7 @@ class MrzStableImageDetection : AppCompatActivity() {
                                         )
                                         return@forEach
                                     }
-                                    processImage(mrzScanner, bitmap)
+                                    processImage(creditCardScanner, bitmap)
                                 }
 
                         }
@@ -105,16 +77,14 @@ class MrzStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    // @Tag("Extracting mrz data from an image")
     // Create a data extractor  instance
-    val mrzScanner = scanbotSDK.createMrzScanner()
+    val creditCardScanner = scanbotSDK.createCreditCardScanner()
 
-    private fun processImage(mrzScanner: MrzScanner, bitmap: Bitmap) {
-        val mrzRecognitionResult = mrzScanner.scanFromBitmap(bitmap, 0)
+    private fun processImage(scanner: CreditCardScanner, bitmap: Bitmap) {
+        val mrzRecognitionResult = scanner.scanFromBitmap(bitmap, 0)
         // Proceed MRZ scanner result
         // processResult(result)
     }
-    // @EndTag("Extracting mrz data from an image")
 }
 
 

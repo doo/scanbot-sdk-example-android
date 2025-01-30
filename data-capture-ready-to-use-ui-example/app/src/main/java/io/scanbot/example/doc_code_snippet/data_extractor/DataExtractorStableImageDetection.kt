@@ -49,7 +49,7 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
                                 .forEach { bitmap ->
                                     if (bitmap == null) {
                                         Log.e(
-                                            "StandaloneCropSnippet",
+                                            "Snippet",
                                             "Failed to load bitmap from URI"
                                         )
                                         return@forEach

@@ -21,12 +21,12 @@ import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.*
 
-import io.scanbot.sdk.common.*
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.mrz.*
 import io.scanbot.sdk.ui.camera.*
-import io.scanbot.sdk.ui.view.mrz.*
-import io.scanbot.sdk.ui.view.mrz.configuration.*
+import io.scanbot.sdk.ui_v2.common.*
+import io.scanbot.sdk.ui_v2.mrz.*
+import io.scanbot.sdk.ui_v2.mrz.configuration.*
 
 //Rtu ui snippets
 fun initializeScanbotSDK(application: Application) {
@@ -41,18 +41,34 @@ class ResultApiCall : AppCompatActivity() {
     fun resultApi(myButton: Button, context: Context) {
         // @Tag("result-api")
 
-        val mrzResult: ActivityResultLauncher<MRZScannerConfiguration>
+        val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
 
-        mrzResult =
-            registerForActivityResult(MRZScannerActivity.ResultContract()) { resultEntity: MRZScannerActivity.Result ->
+        resultLauncher =
+            registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
                 if (resultEntity.resultOk) {
                     Toast.makeText(context, resultEntity.result?.rawMRZ, Toast.LENGTH_LONG).show()
                 }
             }
 
         myButton.setOnClickListener {
-            val mrzCameraConfiguration = MRZScannerConfiguration()
-            mrzResult.launch(mrzCameraConfiguration)
+            val configuration = MrzScannerScreenConfiguration()
+            configuration.mrzExampleOverlay = MrzFinderLayoutPreset.threeLineMrzFinderLayoutPreset().apply {
+                //  this.mrzTextLine1 = "ARD<<MUSTER<<<<<<<<<<<<<<<<<<"
+            }
+            configuration.palette.apply { sbColorPrimary = ScanbotColor("#FFFF00") }
+            configuration.viewFinder.apply {
+                style = FinderStyle.finderStrokedStyle().apply {
+                    strokeColor = ScanbotColor("#FFFFFF")
+                    strokeWidth = 10.0
+                }
+            }
+            configuration.actionBar.flashButton.activeBackgroundColor = ScanbotColor("#FFCE5C")
+            configuration.actionBar.flashButton.activeForegroundColor = ScanbotColor("#000000")
+
+            configuration.vibration = Vibration(true)
+            configuration.sound = Sound(true)
+            configuration.topUserGuidance.title.text = "Scan your ID"
+            resultLauncher.launch(configuration)
         }
     }
     // @EndTag("result-api")
@@ -65,9 +81,9 @@ class DeprecatedApiCall : AppCompatActivity() {
         // @Tag("deprecated")
 
         myButton.setOnClickListener {
-            val mrzCameraConfiguration = MRZScannerConfiguration()
+            val mrzCameraConfiguration = MrzScannerScreenConfiguration()
             val intent =
-                MRZScannerActivity.newIntent(this@DeprecatedApiCall, mrzCameraConfiguration)
+                MrzScannerActivity.newIntent(this@DeprecatedApiCall, mrzCameraConfiguration)
             startActivityForResult(intent, MRZ_REQUEST_CODE_CONSTANT)
         }
 
@@ -77,8 +93,8 @@ class DeprecatedApiCall : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == MRZ_REQUEST_CODE_CONSTANT) {
-            val resultEntity: MRZScannerActivity.Result =
-                MRZScannerActivity.extractResult(resultCode, data)
+            val resultEntity: MrzScannerActivity.Result =
+                MrzScannerActivity.extractResult(resultCode, data)
             if (resultEntity.resultOk) {
                 Toast.makeText(
                     this@DeprecatedApiCall,
@@ -91,26 +107,33 @@ class DeprecatedApiCall : AppCompatActivity() {
     // @EndTag("deprecated")
 }
 
-fun mrzScannerConfiguration() {
+fun MrzScreenConfiguration() {
     // @Tag("Mrz Scanner Screen Configuration")
-    val mrzCameraConfiguration = MRZScannerConfiguration()
-    mrzCameraConfiguration.setFinderAspectRatio(AspectRatio(8.0, 4.0))
-    mrzCameraConfiguration.setCancelButtonTitle("Stop")
-    mrzCameraConfiguration.setSuccessBeepEnabled(false)
-    mrzCameraConfiguration.setFinderTextHint("Place the card in scanning rectangle")
+    val mrzCameconfiguration = MrzScannerScreenConfiguration()
+    mrzCameconfiguration.mrzExampleOverlay = MrzFinderLayoutPreset.twoLineMrzFinderLayoutPreset().apply {
+      //  this.mrzTextLine1 = "ARD<<MUSTER<<<<<<<<<<<<<<<<<<"
+    }
+    mrzCameconfiguration.topBar.backgroundColor = ScanbotColor("#FF0000")
+
+    mrzCameconfiguration.actionBar.zoomButton.backgroundColor = ScanbotColor("#FFCE5C")
+    mrzCameconfiguration.actionBar.zoomButton.foregroundColor = ScanbotColor("#000000")
+
+    mrzCameconfiguration.vibration = Vibration(true)
+    mrzCameconfiguration.sound = Sound(true)
+    mrzCameconfiguration.topUserGuidance.title.text = "Scan your ID"
     // @EndTag("Mrz Scanner Screen Configuration")
 }
 
-fun presentingMrzResultSnippet(result: io.scanbot.sdk.mrz.MrzScannerResult, context: Context) {
+fun presentingMrzResultSnippet(result: MrzScannerUiResult, context: Context) {
     // @Tag("Presenting Mrz Result")
-    val mrzString = result?.document?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
+    val mrzString = result?.mrzDocument?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
     Toast.makeText(context, mrzString, Toast.LENGTH_LONG).show()
     // @EndTag("Presenting Mrz Result")
 }
 
-fun mrzScannerResult(result: MrzScannerResult) {
+fun mrzScannerResult(result: MrzScannerUiResult) {
     // @Tag("Mrz Scanner Result")
-    val mrzScanningResult = MRZ(result?.document!!)
+    val mrzScanningResult = MRZ(result?.mrzDocument!!)
     val givenName: String = mrzScanningResult.givenNames.value.text
     val birthDate: String = mrzScanningResult.birthDate.value.text
     val expiryDate: String? = mrzScanningResult.expiryDate?.value?.text
@@ -123,15 +146,15 @@ fun mrzScannerResult(result: MrzScannerResult) {
 fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
     // @Tag("Get Instances")
     val scanbotSDK = ScanbotSDK(context)
-    val mrzScanner: MrzScanner = scanbotSDK.createMrzScanner()
-    val mrzScannerFrameHandler: MrzScannerFrameHandler =
-        MrzScannerFrameHandler.attach(cameraView, mrzScanner)
+    val scanner: MrzScanner = scanbotSDK.createMrzScanner()
+    val frameHandler: MrzScannerFrameHandler =
+        MrzScannerFrameHandler.attach(cameraView, scanner)
     // @EndTag("Get Instances")
 }
 
-fun handleResult(mrzScannerFrameHandler: MrzScannerFrameHandler){
+fun handleResult(MrzScannerFrameHandler: MrzScannerFrameHandler){
     // @Tag("Handle Result")
-    mrzScannerFrameHandler.addResultHandler { result ->
+    MrzScannerFrameHandler.addResultHandler { result ->
         when (result) {
             is FrameHandlerResult.Success -> {
                 if (result.value.success) {

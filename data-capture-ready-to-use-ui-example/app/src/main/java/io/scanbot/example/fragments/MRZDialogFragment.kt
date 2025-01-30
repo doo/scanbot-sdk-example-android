@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
+import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mrz.*
 
 
@@ -22,7 +23,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
-        fun newInstance(data:  MrzScannerResult): MRZDialogFragment {
+        fun newInstance(data:  GenericDocument): MRZDialogFragment {
             val frag = MRZDialogFragment()
             val args = Bundle()
             args.putParcelable(MRZ_DATA, data)
@@ -31,7 +32,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         }
     }
 
-    private var mrzGenericDocument: MrzScannerResult? = null
+    private var mrzGenericDocument: GenericDocument? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
         mrzGenericDocument = requireArguments().getParcelable(MRZ_DATA)
@@ -71,7 +72,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: MrzScannerResult): String {
-        return result.document?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
+    private fun extractData(document: GenericDocument?): String {
+        return document?.fields?.joinToString("\n") { "${it.type.name}: ${it.value?.text}" } ?: ""
     }
 }
