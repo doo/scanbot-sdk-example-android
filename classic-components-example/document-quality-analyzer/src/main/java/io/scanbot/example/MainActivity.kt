@@ -23,13 +23,12 @@ class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
     private val documentQualityAnalyzer: DocumentQualityAnalyzer by lazy {
-        val createDocumentQualityAnalyzer = scanbotSdk.createDocumentQualityAnalyzer()
-        createDocumentQualityAnalyzer.setConfiguration(
-            DocumentQualityAnalyzerConfiguration.default().apply {
-                this.detectOrientation = true
-            })
-        createDocumentQualityAnalyzer
-
+        scanbotSdk.createDocumentQualityAnalyzer().apply {
+            setConfiguration(
+                DocumentQualityAnalyzerConfiguration.default().apply {
+                    this.detectOrientation = true
+                })
+        }
     }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
