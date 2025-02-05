@@ -14,6 +14,7 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.process.DocumentQualityAnalyzer
+import io.scanbot.sdk.process.DocumentQualityAnalyzerConfiguration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,25 +22,34 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val documentQualityAnalyzer: DocumentQualityAnalyzer by lazy { scanbotSdk.createDocumentQualityAnalyzer() }
+    private val documentQualityAnalyzer: DocumentQualityAnalyzer by lazy {
+        val createDocumentQualityAnalyzer = scanbotSdk.createDocumentQualityAnalyzer()
+        createDocumentQualityAnalyzer.setConfiguration(
+            DocumentQualityAnalyzerConfiguration.default().apply {
+                this.detectOrientation = true
+            })
+        createDocumentQualityAnalyzer
+
+    }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-        lifecycleScope.launch { estimateOnStillImage(uri) }
-    }
+            lifecycleScope.launch { estimateOnStillImage(uri) }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -69,10 +79,12 @@ class MainActivity : AppCompatActivity() {
             binding.stillImageImageView.setImageBitmap(bitmap)
         }
 
-        val result = withContext(Dispatchers.Default) { documentQualityAnalyzer.analyzeInBitmap(bitmap, 0) }
+        val result =
+            withContext(Dispatchers.Default) { documentQualityAnalyzer.analyzeOnBitmap(bitmap, 0) }
 
         withContext(Dispatchers.Main) {
-            binding.stillImageQualityCaption.text = "Image quality: ${result?.quality?.name ?: "UNKNOWN"}"
+            binding.stillImageQualityCaption.text =
+                "Image quality: ${result?.quality?.name ?: "UNKNOWN"}. Orientation: ${result?.orientation ?: "UNKNOWN"}"
         }
     }
 }
