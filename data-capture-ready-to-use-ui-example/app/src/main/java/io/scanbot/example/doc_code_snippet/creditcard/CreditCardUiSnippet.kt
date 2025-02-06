@@ -18,18 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.common.*
-
-import io.scanbot.sdk.documentdata.entity.*
-import io.scanbot.sdk.creditcard.*
 import io.scanbot.sdk.creditcard.entity.*
-import io.scanbot.sdk.ui.camera.*
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.creditcard.*
 import io.scanbot.sdk.ui_v2.creditcard.configuration.*
-import io.scanbot.sdk.ui_v2.document.*
-import io.scanbot.sdk.ui_v2.document.configuration.*
 
 //Rtu ui snippets
 fun initializeScanbotSDK(application: Application) {

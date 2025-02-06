@@ -11,25 +11,15 @@ package io.scanbot.example.doc_code_snippet.mrz
 // Page URLs using this code:
 // TODO: add URLs here
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.*
-
 import io.scanbot.sdk.documentdata.entity.*
-import io.scanbot.sdk.mrz.*
-import io.scanbot.sdk.ui.camera.*
 import io.scanbot.sdk.ui_v2.common.*
-import io.scanbot.sdk.ui_v2.creditcard.*
-import io.scanbot.sdk.ui_v2.creditcard.configuration.*
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 
