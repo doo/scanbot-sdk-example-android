@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.*
@@ -27,6 +28,8 @@ import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.mrz.*
 import io.scanbot.sdk.ui.camera.*
 import io.scanbot.sdk.ui_v2.common.*
+import io.scanbot.sdk.ui_v2.creditcard.*
+import io.scanbot.sdk.ui_v2.creditcard.configuration.*
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 
@@ -536,4 +539,35 @@ class MrzScanningSnippet : AppCompatActivity() {
         resultLauncher.launch(configuration)
     }
 // @EndTag("Scanning")
+}
+
+class ComposeSnippet : AppCompatActivity() {
+
+    // @Tag("Compose Example")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(ComposeView(this).apply {
+            setContent {
+                // integrate the MRZ scanner compose view
+                MrzScannerView(
+                    configuration = getConfiguration(),
+                    onMrzScanned = { document ->
+                        // Handle the document.
+                    },
+                    onMrzScannerClosed = { reason ->
+                        // Indicates that the cancel button was tapped.
+                    }
+                )
+            }
+        })
+    }
+
+
+    fun getConfiguration(): MrzScannerScreenConfiguration {
+        // Create the default configuration object.
+        return MrzScannerScreenConfiguration().apply {
+
+        }
+    }
+    // @EndPage("Compose Example")
 }
