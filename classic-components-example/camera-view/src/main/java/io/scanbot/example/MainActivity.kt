@@ -20,16 +20,16 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.documentdetector.DocumentDetector
-import io.scanbot.sdk.documentdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentAutoSnappingController
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
-class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: ImageView
@@ -37,11 +37,11 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var contourDetectorFrameHandler: DocumentDetectorFrameHandler
+    private lateinit var documentScannerFrameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var documentDetector: DocumentDetector
+    private lateinit var documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         supportActionBar!!.hide()
 
         scanbotSDK = ScanbotSDK(this)
-        documentDetector = scanbotSDK.createDocumentDetector()
+        documentScanner = scanbotSDK.createDocumentScanner()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -82,16 +82,16 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
 
-        contourDetectorFrameHandler = DocumentDetectorFrameHandler.attach(cameraView, documentDetector)
+        documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#contour-detection-parameters
-        contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
-        contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
-        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
-        contourDetectorFrameHandler.addResultHandler(this)
-        contourDetectorFrameHandler.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
+        documentScannerFrameHandler.setAcceptedAngleScore(60.0)
+        documentScannerFrameHandler.setAcceptedSizeScore(75.0)
+        documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+        documentScannerFrameHandler.addResultHandler(this)
+        documentScannerFrameHandler.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
-        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
@@ -126,12 +126,12 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DocumentDetectorFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
+    override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
         // Here you are continuously notified about contour detection results.
         // For example, you can show a user guidance text depending on the current detection status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success<*>) {
-                showUserGuidance((result as FrameHandlerResult.Success<DocumentDetectorFrameHandler.DetectedFrame>).value.detectionStatus)
+                showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
             }
         }
         return false // typically you need to return false
@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        val detectedPolygon = documentDetector.detect(originalBitmap)!!.pointsNormalized
+        val detectedPolygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }
@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
 
     private fun setAutoSnapEnabled(enabled: Boolean) {
         autoSnappingController.isEnabled = enabled
-        contourDetectorFrameHandler.isEnabled = enabled
+        documentScannerFrameHandler.isEnabled = enabled
         polygonView.visibility = if (enabled) View.VISIBLE else View.GONE
         autoSnappingToggleButton.text = "Automatic ${if (enabled) "ON" else "OFF"}"
         if (enabled) {

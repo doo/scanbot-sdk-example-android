@@ -15,12 +15,12 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.tiffwriter.model.CompressionMode
-import io.scanbot.tiffwriter.model.TiffWriterParameters
-import io.scanbot.tiffwriter.model.UserField
-import io.scanbot.tiffwriter.model.UserFieldDoubleValue
-import io.scanbot.tiffwriter.model.UserFieldIntValue
-import io.scanbot.tiffwriter.model.UserFieldStringValue
+import io.scanbot.sdk.tiff.model.CompressionMode
+import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
+import io.scanbot.sdk.tiff.model.UserField
+import io.scanbot.sdk.tiff.model.UserFieldDoubleValue
+import io.scanbot.sdk.tiff.model.UserFieldIntValue
+import io.scanbot.sdk.tiff.model.UserFieldStringValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,7 +30,7 @@ import java.util.UUID
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val tiffWriter by lazy { scanbotSdk.createTiffWriter() }
+    private val tiffWriter by lazy { scanbotSdk.createTiffGenerator() }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Convert URIs to local filed DON USE IN PRODUCTION
-            tiffWriter.writeTIFF(
+            tiffWriter.generateFromUris(
                 uris.toTypedArray(),
                 false,
                 resultFile,
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     private fun constructParameters(
         binarize: Boolean,
         addCustomFields: Boolean
-    ): TiffWriterParameters {
+    ): TiffGeneratorParameters {
         // Please note that some compression types are only compatible for binarized images (1-bit encoded black & white images)!
         val compression =
             if (binarize) CompressionMode.CCITT_T4
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         }
         val binarizationFilter =
             if (binarize) ParametricFilter.scanbotBinarizationFilter() else null
-        return TiffWriterParameters(
+        return TiffGeneratorParameters(
             binarizationFilter = binarizationFilter,
             dpi = DPI,
             compression = compression,

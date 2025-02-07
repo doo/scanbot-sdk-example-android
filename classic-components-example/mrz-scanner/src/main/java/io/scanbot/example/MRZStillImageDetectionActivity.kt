@@ -58,7 +58,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         docScannerResultLauncher =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract(this@MrzStillImageDetectionActivity)) { resultEntity ->
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
                 val document = resultEntity.result!!
                 page = document.pageAtIndex(0) ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
@@ -94,7 +94,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private suspend fun recognizeMrz(page: Page) {
-        val mrzRecognitionResult = mrzScanner.recognizeMRZBitmap(page.documentImage, 0)
+        val mrzRecognitionResult = mrzScanner.scanFromBitmap(page.documentImage, 0)
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
@@ -118,7 +118,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
             val page = document.addPage(bitmap)
 
             val contourResult =
-                scanbotSdk.createDocumentDetector().detect(bitmap)?.pointsNormalized ?: kotlin.run {
+                scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)?.pointsNormalized ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
                     PolygonHelper.getFullPolygon()
                 }

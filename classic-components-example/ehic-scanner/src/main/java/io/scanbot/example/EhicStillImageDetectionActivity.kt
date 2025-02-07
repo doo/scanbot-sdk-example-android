@@ -62,7 +62,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         docScannerResultLauncher =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract(this)) { resultEntity ->
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
                 val document = resultEntity.result!!
                 page = document.pages.first()
                     .also { binding.resultImageView.setImageBitmap(it.documentImage) }
@@ -127,8 +127,8 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val documentDetector = scanbotSdk.createDocumentDetector()
-            val detectionResult = documentDetector.detect(bitmap)
+            val documentDetector = scanbotSdk.createDocumentScanner()
+            val detectionResult = documentDetector.scanFromBitmap(bitmap)
             val document = scanbotSdk.documentApi.createDocument()
             page = document.addPage(bitmap).apply {
                 apply(newPolygon = detectionResult?.pointsNormalized ?: PolygonHelper.getFullPolygon())

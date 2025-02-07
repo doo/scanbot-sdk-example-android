@@ -15,7 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.documentdetector.DocumentDetector
+import io.scanbot.sdk.document.DocumentScanner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val contourDetector: DocumentDetector by lazy { scanbotSdk.createDocumentDetector() }
+    private val contourDetector: DocumentScanner by lazy { scanbotSdk.createDocumentScanner() }
 
     private val requestCameraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             val page = newDocument.addPage(bitmap)
 
             // run auto document detection on it:
-            val detectionResult = contourDetector.detect(bitmap)
+            val detectionResult = contourDetector.scanFromBitmap(bitmap)
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.

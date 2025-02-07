@@ -9,9 +9,8 @@ import io.scanbot.example.databinding.ActivityBarcodeResultBinding
 import io.scanbot.example.databinding.BarcodeItemBinding
 import io.scanbot.example.databinding.SnapImageItemBinding
 import io.scanbot.example.repository.BarcodeResultRepository
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
-import io.scanbot.sdk.barcode.entity.textWithExtension
-import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
+import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.barcode.textWithExtension
 import java.io.File
 
 class BarcodeResultActivity : AppCompatActivity() {
@@ -54,11 +53,11 @@ class BarcodeResultActivity : AppCompatActivity() {
                             it.image.setImageBitmap(image.toBitmap())
                         }
                         it.barcodeFormat.text = item.format.name
-                        it.docFormat.text = item.parsedDocument?.let {
+                        it.docFormat.text = item.extractedDocument?.let {
                             it::class.java.simpleName
                         } ?: "Unknown document"
                         it.docFormat.visibility =
-                            if (item.parsedDocument != null) View.VISIBLE else View.GONE
+                            if (item.extractedDocument != null) View.VISIBLE else View.GONE
                         it.docText.text = item.textWithExtension
                         it.root.setOnClickListener {
                             val intent = Intent(this, DetailedItemDataActivity::class.java)

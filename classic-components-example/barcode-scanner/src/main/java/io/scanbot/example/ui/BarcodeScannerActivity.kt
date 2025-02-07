@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.common.AspectRatio
 import io.scanbot.example.R
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
@@ -21,21 +20,21 @@ import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
-import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
-import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
+import io.scanbot.sdk.barcode.BarcodeScannerFrameHandler
+import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.camera.*
+import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 
-class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler {
+class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
     private lateinit var finderOverlay: FinderOverlayView
 
     private var flashEnabled = false
-    private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
+    private var scannerFrameHandler: BarcodeScannerFrameHandler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -54,13 +53,13 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         }
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
-        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
-        barcodeDetectorFrameHandler =
-            BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
+        val barcodeDetector = ScanbotSDK(this).createBarcodeScanner()
+        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        scannerFrameHandler =
+            BarcodeScannerFrameHandler.attach(cameraView, barcodeDetector)
 
-        barcodeDetectorFrameHandler?.let { frameHandler ->
-            frameHandler.setDetectionInterval(1000)
+        scannerFrameHandler?.let { frameHandler ->
+            frameHandler.setScanningInterval(1000)
             frameHandler.addResultHandler(this)
 
             val barcodeAutoSnappingController =

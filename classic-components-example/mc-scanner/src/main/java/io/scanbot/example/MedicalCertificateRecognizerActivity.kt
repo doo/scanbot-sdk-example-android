@@ -20,21 +20,21 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateAutoSnappingController
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateFrameHandler
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
+import io.scanbot.sdk.mc.MedicalCertificateAutoSnappingController
+import io.scanbot.sdk.mc.MedicalCertificateFrameHandler
+import io.scanbot.sdk.mc.MedicalCertificateScanner
+import io.scanbot.sdk.mc.MedicalCertificateScanningParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import kotlin.math.roundToInt
 
-class MedicalCertificateRecognizerActivity : AppCompatActivity() {
+class MedicalCertificateScannerActivity : AppCompatActivity() {
 
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultImageView: ImageView
 
     private var flashEnabled = false
 
-    private lateinit var medicalCertificateRecognizer: MedicalCertificateRecognizer
+    private lateinit var scanner: MedicalCertificateScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -59,11 +59,11 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSDK = ScanbotSDK(this)
-        medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
+        scanner = scanbotSDK.createMedicalCertificateScanner()
 
         // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
         val frameHandler =
-            MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
+            MedicalCertificateFrameHandler.attach(cameraView, scanner)
         // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
         MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler).apply {
             // possibly adjust auto-snapping parameters here
@@ -97,10 +97,10 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
         // And finally run Medical Certificate recognition on prepared document image:
-        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
+        val resultInfo = scanner.scanFromBitmap(
             originalBitmap,
             0,
-            MedicalCertificateRecognitionParameters(
+            MedicalCertificateScanningParameters(
                 shouldCropDocument = true,
                 extractCroppedImage = true,
                 recognizePatientInfoBox = true,
@@ -108,7 +108,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
             )
         )
 
-        if (resultInfo != null && resultInfo.recognitionSuccessful) {
+        if (resultInfo != null && resultInfo.scanningSuccessful) {
             // Show the cropped image as thumbnail preview
             resultInfo.croppedImage?.toBitmap()?.let { image ->
                 val thumbnailImage = resizeImage(image, 600f, 600f)
@@ -161,7 +161,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, MedicalCertificateRecognizerActivity::class.java)
+            return Intent(context, MedicalCertificateScannerActivity::class.java)
         }
     }
 }

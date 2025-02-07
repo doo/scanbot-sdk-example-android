@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             val page = document.addPage(bitmap)
 
             // run contour detection on the image:
-            val detectionResult = scanbotSdk.createDocumentDetector().detect(bitmap)
+            val detectionResult = scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)
             // set the result to page:
             page.apply(newPolygon = detectionResult?.pointsNormalized ?: PolygonHelper.getFullPolygon())
             page

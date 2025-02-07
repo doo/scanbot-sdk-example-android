@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(CheckRecognizerActivity.newIntent(this))
         }
         binding.checkRecognizerAutoSnapping.setOnClickListener {
-            startActivity(AutoSnappingCheckRecognizerActivity.newIntent(this))
+            startActivity(AutoSnappingCheckScannerActivity.newIntent(this))
         }
         binding.checkRecognizerPickImage.setOnClickListener {
             selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -61,13 +61,13 @@ class MainActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val checkRecognizer = scanbotSdk.createCheckRecognizer()
-            checkRecognizer.recognizeBitmap(bitmap, 0)
+            val checkRecognizer = scanbotSdk.createCheckScanner()
+            checkRecognizer.scanFromBitmap(bitmap, 0)
         }
 
         withContext(Dispatchers.Main) {
             recognitionResult?.let {
-                startActivity(CheckRecognizerResultActivity.newIntent(this@MainActivity, it))
+                startActivity(CheckScannerResultActivity.newIntent(this@MainActivity, it))
             } ?: this@MainActivity.showToast("No  data recognized!")
         }
 

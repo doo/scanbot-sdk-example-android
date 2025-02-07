@@ -20,7 +20,7 @@ import io.scanbot.pdf.model.PageSize
 import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.process.PdfRenderer
+import io.scanbot.sdk.process.PdfGenerator
 import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,9 +28,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
-
+    private val runOcr = false
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val pdfRenderer: PdfRenderer by lazy { scanbotSdk.createPdfRenderer() }
+    private val pdfRenderer: PdfGenerator by lazy { scanbotSdk.createPdfGenerator() }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -65,23 +65,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun processDocument(uris: List<Uri>, applyGrayscale: Boolean) {
-        val filters = if (applyGrayscale) listOf(ParametricFilter.grayscaleFilter()) else emptyList()
+        val filters =
+            if (applyGrayscale) listOf(ParametricFilter.grayscaleFilter()) else emptyList()
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
         val renderedPdfFile = withContext(Dispatchers.Default) {
-            val contourDetector = scanbotSdk.createDocumentDetector()
+            val documentScanner = scanbotSdk.createDocumentScanner()
             val document = scanbotSdk.documentApi.createDocument()
             uris.asSequence().forEach { uri ->
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
-                val pageDetected = contourDetector.detect(bitmap)?.pointsNormalized ?: PolygonHelper.getFullPolygon()
+                val pageDetected = documentScanner.scanFromBitmap(bitmap)?.pointsNormalized
+                    ?: PolygonHelper.getFullPolygon()
                 document.addPage(bitmap).apply(newPolygon = pageDetected, newFilters = filters)
             }
-
-            pdfRenderer.render(document, PdfConfiguration.default().copy(pageSize = PageSize.A4))
-            document.pdfUri.toFile()
+            if (runOcr) {
+                pdfRenderer.generateWithOcrFromDocument(
+                    document,
+                    PdfConfiguration.default().copy(pageSize = PageSize.A4)
+                )
+                document.pdfUri.toFile()
+            } else {
+                pdfRenderer.generateFromDocument(
+                    document,
+                    PdfConfiguration.default().copy(pageSize = PageSize.A4)
+                )
+                document.pdfUri.toFile()
+            }
         }
-
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
             openPdfDocument(renderedPdfFile)
@@ -98,7 +109,10 @@ class MainActivity : AppCompatActivity() {
 
         if (intent.resolveActivity(packageManager) != null) {
             val chooser = Intent.createChooser(openIntent, file.name)
-            val resInfoList = this.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+            val resInfoList = this.packageManager.queryIntentActivities(
+                chooser,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )
 
             for (resolveInfo in resInfoList) {
                 val packageName = resolveInfo.activityInfo.packageName

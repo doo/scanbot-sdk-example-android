@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val contourResult = sdk.createDocumentDetector().detect(bitmap)
+            val contourResult = sdk.createDocumentScanner().detect(bitmap)
 
             if (contourResult == null) {
                 Log.e(Const.LOG_TAG, "Error detecting document (result is `null`)!")

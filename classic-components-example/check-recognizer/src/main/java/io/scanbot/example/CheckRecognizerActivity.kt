@@ -12,16 +12,16 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.check.CheckRecognizerFrameHandler
-import io.scanbot.sdk.check.CheckRecognizerFrameHandler.Companion.attach
-import io.scanbot.sdk.checkrecognizer.CheckRecognitionResult
-import io.scanbot.sdk.checkrecognizer.CheckRecognitionStatus
+import io.scanbot.sdk.check.CheckScannerFrameHandler
+import io.scanbot.sdk.check.CheckScannerFrameHandler.Companion.attach
+import io.scanbot.sdk.check.CheckScanningResult
+import io.scanbot.sdk.check.CheckRecognitionStatus
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 class CheckRecognizerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: TextView
-    private lateinit var frameHandler: CheckRecognizerFrameHandler
+    private lateinit var frameHandler: CheckScannerFrameHandler
     var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,14 +41,14 @@ class CheckRecognizerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        val checkScanner = scanbotSDK.createCheckRecognizer()
+        val checkScanner = scanbotSDK.createCheckScanner()
         frameHandler = attach(cameraView, checkScanner)
-        frameHandler.addResultHandler { result: FrameHandlerResult<CheckRecognitionResult?, SdkLicenseError?>? ->
+        frameHandler.addResultHandler { result: FrameHandlerResult<CheckScanningResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
-                val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckRecognitionResult?
+                val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckScanningResult?
                 if (recognitionResult?.status == CheckRecognitionStatus.SUCCESS) {
                     frameHandler.isEnabled = false
-                    startActivity(CheckRecognizerResultActivity.newIntent(this, recognitionResult))
+                    startActivity(CheckScannerResultActivity.newIntent(this, recognitionResult))
                 }
             } else if (!scanbotSDK.licenseInfo.isValid) {
                 frameHandler.isEnabled = false

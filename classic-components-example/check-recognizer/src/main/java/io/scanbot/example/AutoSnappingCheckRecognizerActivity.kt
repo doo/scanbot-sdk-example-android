@@ -15,24 +15,24 @@ import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.check.CheckRecognizer
-import io.scanbot.sdk.core.documentdetector.DocumentDetector
-import io.scanbot.sdk.documentdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
+import io.scanbot.sdk.check.CheckScanner
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentAutoSnappingController
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
-class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
+class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: TextView
 
-    private lateinit var contourDetectorFrameHandler: DocumentDetectorFrameHandler
+    private lateinit var contourDetectorFrameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
-    private lateinit var contourDetector: DocumentDetector
-    private lateinit var checkRecognizer: CheckRecognizer
+    private lateinit var contourDetector: DocumentScanner
+    private lateinit var checkRecognizer: CheckScanner
 
     private var flashEnabled = false
 
@@ -53,19 +53,19 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        checkRecognizer = scanbotSDK.createCheckRecognizer()
-        contourDetector = scanbotSDK.createDocumentDetector()
+        checkRecognizer = scanbotSDK.createCheckScanner()
+        contourDetector = scanbotSDK.createDocumentScanner()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
         contourDetectorFrameHandler =
-            DocumentDetectorFrameHandler.attach(cameraView, contourDetector)
+            DocumentScannerFrameHandler.attach(cameraView, contourDetector)
 
         contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
         contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
         contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
 
-        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
+        contourDetectorFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
         autoSnappingController =
             DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
 
@@ -109,17 +109,17 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
         val options = BitmapFactory.Options()
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        val result = contourDetector.detect(originalBitmap)
+        val result = contourDetector.scanFromBitmap(originalBitmap)
 
         result?.pointsNormalized?.let { polygon ->
             ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
                 ?.let { documentImage ->
                     // documentImage will be recycled inside recognizeCheckBitmap
                     val imageCopy = Bitmap.createBitmap(documentImage)
-                    val checkResult = checkRecognizer.recognizeBitmap(documentImage, 0)
+                    val checkResult = checkRecognizer.scanFromBitmap(documentImage, 0)
                     if (checkResult?.check != null) {
-                        CheckRecognizerResultActivity.tempDocumentImage = imageCopy
-                        startActivity(CheckRecognizerResultActivity.newIntent(this, checkResult))
+                        CheckScannerResultActivity.tempDocumentImage = imageCopy
+                        startActivity(CheckScannerResultActivity.newIntent(this, checkResult))
                     } else {
                         runOnUiThread {
                             Toast.makeText(
@@ -144,7 +144,7 @@ class AutoSnappingCheckRecognizerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, AutoSnappingCheckRecognizerActivity::class.java)
+            return Intent(context, AutoSnappingCheckScannerActivity::class.java)
         }
     }
 }

@@ -30,7 +30,7 @@
         <activity
             android:name=".CheckRecognizerActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".CheckRecognizerResultActivity" />
+        <activity android:name=".CheckScannerResultActivity" />
         <activity
             android:name=".AutoSnappingCheckRecognizerActivity"
             android:screenOrientation="landscape" />

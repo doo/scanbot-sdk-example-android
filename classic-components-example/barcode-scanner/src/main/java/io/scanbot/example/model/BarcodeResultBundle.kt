@@ -1,7 +1,6 @@
 package io.scanbot.example.model
 
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
-import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
+import io.scanbot.sdk.barcode.BarcodeScannerResult
 
 data class BarcodeResultBundle(
     val barcodeScanningResult: BarcodeScannerResult,

@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.common.AspectRatio
 import io.scanbot.genericdocument.entity.GenericDocumentWrapper
-import io.scanbot.genericdocument.entity.MRZ
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.mrzscanner.MrzScannerFrameHandler
+import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.documentdata.entity.MRZ
+import io.scanbot.sdk.mrz.MrzScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.util.log.LoggerProvider

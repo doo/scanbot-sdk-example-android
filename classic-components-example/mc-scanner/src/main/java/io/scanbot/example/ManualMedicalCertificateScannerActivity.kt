@@ -21,17 +21,16 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
+import io.scanbot.sdk.mc.MedicalCertificateScanner
+import io.scanbot.sdk.mc.MedicalCertificateScanningParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import java.util.*
 import kotlin.math.roundToInt
 
 class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultImageView: ImageView
 
-    private lateinit var medicalCertificateRecognizer: MedicalCertificateRecognizer
+    private lateinit var scanner: MedicalCertificateScanner
 
     var flashEnabled = false
 
@@ -43,7 +42,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
 
         askPermission()
         val scanbotSDK = ScanbotSDK(this)
-        medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
+        scanner = scanbotSDK.createMedicalCertificateScanner()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setCameraOpenCallback {
@@ -109,17 +108,17 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         }
 
         // And finally run Medical Certificate recognition on prepared document image:
-        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
+        val resultInfo = scanner.scanFromBitmap(
             originalBitmap,
             0,
-            MedicalCertificateRecognitionParameters(
+            MedicalCertificateScanningParameters(
                 shouldCropDocument = true,
                 extractCroppedImage = true,
                 recognizePatientInfoBox = true,
                 recognizeBarcode = true
             )
         )
-        if (resultInfo != null && resultInfo.recognitionSuccessful) {
+        if (resultInfo != null && resultInfo.scanningSuccessful) {
             // Show the cropped image as thumbnail preview
             resultInfo.croppedImage?.toBitmap()?.let { image ->
                 val thumbnailImage = resizeImage(image, 600f, 600f)

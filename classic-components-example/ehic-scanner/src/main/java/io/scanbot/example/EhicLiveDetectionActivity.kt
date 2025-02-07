@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
 import io.scanbot.sdk.hicscanner.HealthInsuranceCardScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
