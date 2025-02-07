@@ -1,6 +1,8 @@
 package io.scanbot.example.doc_code_snippet.creditcard
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -26,6 +28,32 @@ import kotlinx.coroutines.withContext
 // Pay attention to imports adding/removal/sorting!
 // Page URLs using this code:
 // TODO: add URLs here
+
+val licenseKey = "YOUR_SCANBOT_SDK_LICENSE_KEY"
+
+// @Tag("Initialize SDK")
+class ExampleApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Initialize the Scanbot Scanner SDK:
+        ScanbotSDKInitializer()
+            .license(this, licenseKey)
+            // TODO: other configuration calls
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this)
+    }
+}
+// @EndTag("Initialize SDK")
+
+fun createCreditCardScannerSnippet(context: Context) {
+    // @Tag("Create Credit Card Scanner")
+    val scanbotSDK = ScanbotSDK(context)
+    val mrzScanner = scanbotSDK.createCreditCardScanner()
+    // @EndTag("Create Credit Card Scanner")
+}
+
 class CreditCardStableImageDetection : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +105,7 @@ class CreditCardStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
+    // @Tag("Extracting credit card data from an image")
     // Create a data extractor  instance
     val creditCardScanner = scanbotSDK.createCreditCardScanner()
 
@@ -85,6 +114,7 @@ class CreditCardStableImageDetection : AppCompatActivity() {
         // Proceed MRZ scanner result
         // processResult(result)
     }
+    // @EndTag("Extracting credit card data from an image")
 }
 
 
