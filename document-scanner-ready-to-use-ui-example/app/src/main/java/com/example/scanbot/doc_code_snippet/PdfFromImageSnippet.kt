@@ -3,23 +3,17 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
-import io.scanbot.pdf.model.PdfConfig
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.processor.ImageProcessor
-import io.scanbot.sdk.process.model.DocumentQuality
-import io.scanbot.sdk.util.isDefault
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.pdf.model.PdfConfiguration
+import io.scanbot.sdk.ScanbotSDK
 
 
 class PdfFromImageSnippet : AppCompatActivity() {
@@ -51,16 +45,17 @@ class PdfFromImageSnippet : AppCompatActivity() {
             }
         }
 
-    // Create a PDF renderer instance
-    val pdfRenderer = scanbotSDK.createPdfRenderer()
+    // @Tag("Creating a PDF from an image")
+    // Create a PDF generator instance
+    val pdfGenerator = scanbotSDK.createPdfGenerator()
     fun createPdfFromImages(list: List<Uri>) {
         list.forEach { imageUri ->
-            // Create the default PDF rendering options.
-            val config = PdfConfig.defaultConfig()
-            // notify the renderer that the images are encrypted with global sdk-encryption settings
+            // Create the default PDF generation options.
+            val config = PdfConfiguration.default()
+            // notify the generator that the images are encrypted with global sdk-encryption settings
             val encryptionEnabled = false
-            // Render the images to a PDF file.
-            val pdfFile = pdfRenderer.render(
+            // Join the images into a PDF file.
+            val pdfFile = pdfGenerator.generateFromUris(
                 imageFileUris = list.toTypedArray(),
                 sourceFilesEncrypted = encryptionEnabled,
                 config
@@ -71,6 +66,7 @@ class PdfFromImageSnippet : AppCompatActivity() {
             }
         }
     }
+    // @EndTag("Creating a PDF from an image")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

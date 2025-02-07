@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+// @Tag("Reorder")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
@@ -20,7 +21,7 @@ class ReorderScreenSnippet : AppCompatActivity() {
 
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
-        registerForActivityResult(DocumentScannerActivity.ResultContract(context)) { result ->
+        registerForActivityResult(DocumentScannerActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { document ->
                     // Handle the document.
@@ -57,3 +58,4 @@ class ReorderScreenSnippet : AppCompatActivity() {
         documentScannerResult.launch(configuration)
     }
 }
+// @EndTag("Reorder")

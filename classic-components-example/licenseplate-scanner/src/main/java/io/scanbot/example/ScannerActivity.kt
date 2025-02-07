@@ -5,12 +5,12 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.licenseplate.LicensePlateScanner
 import io.scanbot.sdk.licenseplate.LicensePlateScannerFrameHandler
-import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
@@ -50,7 +50,7 @@ class ScannerActivity : AppCompatActivity() {
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
                     if (result.value.validationSuccessful) {
-                        result.value.rawString
+                        result.value.rawText
                     } else {
                         "License plate not found"
                     }

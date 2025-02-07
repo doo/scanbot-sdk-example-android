@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import io.scanbot.example.R
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.example.ui.adapter.BarcodeTypesAdapter.BarcodeTypesViewHolder
-import io.scanbot.sdk.barcode.entity.BarcodeFormat
+import io.scanbot.sdk.barcode.BarcodeFormats
 
 class BarcodeTypesAdapter : RecyclerView.Adapter<BarcodeTypesViewHolder>() {
 
-    private val values = BarcodeFormat.ALL_CODES
+    private val values = BarcodeFormats.all
 
     class BarcodeTypesViewHolder(barcodeTypeView: View) : RecyclerView.ViewHolder(barcodeTypeView) {
         var barcodeTypeName: TextView = barcodeTypeView.findViewById(R.id.barcode_type_name)

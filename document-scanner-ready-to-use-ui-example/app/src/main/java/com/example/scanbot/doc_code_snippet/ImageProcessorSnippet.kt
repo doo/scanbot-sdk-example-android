@@ -10,14 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.processor.ImageProcessor
-import io.scanbot.sdk.process.model.DocumentQuality
-import io.scanbot.sdk.util.isDefault
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.process.DocumentQuality
+import io.scanbot.sdk.process.ImageProcessor
+import io.scanbot.sdk.util.isDefault
 
 
 class ImageProcessorSnippet : AppCompatActivity() {
@@ -49,39 +49,38 @@ class ImageProcessorSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Direct Document detection on image")
     // Create a quality analyzer instance
-    val documentDetector = scanbotSDK.createContourDetector()
+    val documentScanner = scanbotSDK.createDocumentScanner()
     fun startFiltering(list: List<Bitmap>) {
         list.forEach { image ->
             // Run detection on the picked image
-            val detectionResult = documentDetector.detect(image)
+            val detectionResult = documentScanner.scanFromBitmap(image)
 
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
                 detectionResult.status == DocumentDetectionStatus.OK &&
-                detectionResult.polygonF.isNotEmpty() &&
-                !detectionResult.polygonF.isDefault()
+                detectionResult.pointsNormalized.isNotEmpty() &&
+                !detectionResult.pointsNormalized.isDefault()
             ) {
                 // If the result is an acceptable polygon, we warp the image into the polygon.
                 val imageProcessor = ImageProcessor(image)
 
                 // You can crop the image using the polygon if you want.
-                imageProcessor.crop(detectionResult.polygonF)
+                imageProcessor.crop(detectionResult.pointsNormalized)
 
                 // Retrieve the processed image.
-                imageProcessor.processedImage()?.let {
+                imageProcessor.processedBitmap()?.let {
                     // do something with the cropped image. eg. add it to a document save etc.
                 }
             }
         }
     }
+    // @EndTag("Direct Document detection on image")
 
     // Print the result.
     fun printResult(quality: DocumentQuality) {
         when (quality) {
-            DocumentQuality.NO_DOCUMENT ->
-                print("No document was found")
-
             DocumentQuality.VERY_POOR ->
                 print("The quality of the document is very poor")
 
@@ -96,6 +95,10 @@ class ImageProcessorSnippet : AppCompatActivity() {
 
             DocumentQuality.EXCELLENT ->
                 print("The quality of the document is excellent")
+
+            else ->
+                print("No document was found")
+
         }
     }
 

@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.gdr
+package io.scanbot.example.doc_code_snippet.data_extractor
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -11,55 +11,49 @@ package io.scanbot.example.doc_code_snippet.gdr
 // Page URLs using this code:
 // TODO: add URLs here
 
-import io.scanbot.genericdocument.entity.DeDriverLicenseBack
-import io.scanbot.genericdocument.entity.DeDriverLicenseFront
-import io.scanbot.genericdocument.entity.DeHealthInsuranceCardFront
-import io.scanbot.genericdocument.entity.DeIdCardBack
-import io.scanbot.genericdocument.entity.DeIdCardFront
-import io.scanbot.genericdocument.entity.DePassport
-import io.scanbot.genericdocument.entity.DeResidencePermitBack
-import io.scanbot.genericdocument.entity.DeResidencePermitFront
-import io.scanbot.genericdocument.entity.EuropeanHealthInsuranceCard
-import io.scanbot.genericdocument.entity.GenericDocument
-import io.scanbot.genericdocument.entity.GenericDocumentLibrary.wrap
+import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.genericdocument.entity.*
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
-    // Alternatively, use GenericDocumentLibrary.wrapperFromGenericDocument(genericDocument)
-    when (val wrapper = genericDocument.wrap()) {
-        is DeIdCardFront -> {
+
+    // @Tag("Manual data parsing snippet")
+    when ( genericDocument.type.name) {
+         DeIdCardFront.DOCUMENT_TYPE -> {
+            val wrapper = DeIdCardFront(genericDocument)
             val id = wrapper.id
             val name = wrapper.givenNames
             val surname = wrapper.surname
             val cardAccessNumber = wrapper.cardAccessNumber
         }
-        is DeIdCardBack -> {
+        DeIdCardBack.DOCUMENT_TYPE  -> {
             // Handle ID card back
         }
-        is DePassport -> {
+        DePassport.DOCUMENT_TYPE  -> {
             // Handle passport
         }
-        is DeDriverLicenseFront -> {
+        DeDriverLicenseFront.DOCUMENT_TYPE  -> {
             // Handle driver license front
         }
-        is DeDriverLicenseBack -> {
+        DeDriverLicenseBack.DOCUMENT_TYPE  -> {
             // Handle driver license back
         }
-        is DeResidencePermitFront -> {
+        DeResidencePermitFront.DOCUMENT_TYPE  -> {
             // Handle residence permit front
         }
-        is DeResidencePermitBack -> {
+        DeResidencePermitBack.DOCUMENT_TYPE  -> {
             // Handle residence permit back
         }
-        is DeHealthInsuranceCardFront -> {
+        DeHealthInsuranceCardFront.DOCUMENT_TYPE  -> {
             // Handle health insurance card front
         }
-        is EuropeanHealthInsuranceCard -> {
+        EuropeanHealthInsuranceCard.DOCUMENT_TYPE  -> {
             // Handle European health insurance card back
         }
         else -> {
             // Handle other document types
         }
     }
+    // @EndTag("Manual data parsing snippet")
 }
 
 

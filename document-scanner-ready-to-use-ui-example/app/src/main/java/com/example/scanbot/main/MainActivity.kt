@@ -19,7 +19,6 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ui_v2.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -28,6 +27,7 @@ import io.scanbot.sdk.usecases.documents.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.sdk.common.AspectRatio
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         documentScannerResult =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract(this)) { activityResult ->
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { activityResult ->
                 if (activityResult.resultCode == Activity.RESULT_OK && activityResult.result != null) {
                     val document = activityResult.result!!
                     runPreviewScreen(document.uuid, singlePageOnly = document.pages.size == 1)

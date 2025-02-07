@@ -10,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.genericdocument.entity.GenericDocument
-import io.scanbot.sdk.check.entity.CheckRecognizerResult
+import io.scanbot.sdk.checkrecognizer.CheckRecognitionResult
 
 class CheckRecognizerResultActivity : AppCompatActivity() {
     private lateinit var checkResultImageView: ImageView
@@ -56,7 +56,7 @@ class CheckRecognizerResultActivity : AppCompatActivity() {
         var tempDocumentImage: Bitmap? = null
 
         @JvmStatic
-        fun newIntent(context: Context?, result: CheckRecognizerResult): Intent {
+        fun newIntent(context: Context?, result: CheckRecognitionResult): Intent {
             val intent = Intent(context, CheckRecognizerResultActivity::class.java)
             intent.putExtra(EXTRA_CHECK_DOCUMENT, result.check)
             return intent

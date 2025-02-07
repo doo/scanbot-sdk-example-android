@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.gdr
+package io.scanbot.example.doc_code_snippet.data_extractor
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -14,16 +14,16 @@ import android.widget.Toast
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizerFrameHandler
+import io.scanbot.sdk.documentdata.*
 
-fun useGenericDocumentRecognizerFrameHandler(context: Context) {
-    val genericDocumentRecognizer = ScanbotSDK(context).createGenericDocumentRecognizer()
-    val frameHandler = GenericDocumentRecognizerFrameHandler(genericDocumentRecognizer)
+fun useDocumentDataExtractorFrameHandler(context: Context) {
+    // @Tag("Add a frame handler for DocumentDataExtractor")
+    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor()
+    val frameHandler = DocumentDataExtractorFrameHandler(dataExtractor)
 
-    frameHandler.addResultHandler(object : GenericDocumentRecognizerFrameHandler.ResultHandler {
+    frameHandler.addResultHandler(object : DocumentDataExtractorFrameHandler.ResultHandler {
 
-        override fun handle(result: FrameHandlerResult<GenericDocumentRecognitionResult, SdkLicenseError>): Boolean {
+        override fun handle(result: FrameHandlerResult<DocumentDataExtractionResult, SdkLicenseError>): Boolean {
             val isSuccess = result is FrameHandlerResult.Success
             when {
                 isSuccess -> {
@@ -40,4 +40,5 @@ fun useGenericDocumentRecognizerFrameHandler(context: Context) {
             return false
         }
     })
+    // @EndTag("Add a frame handler for DocumentDataExtractor")
 }

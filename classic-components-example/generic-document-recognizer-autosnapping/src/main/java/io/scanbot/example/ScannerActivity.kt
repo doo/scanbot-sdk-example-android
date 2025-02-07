@@ -6,15 +6,19 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.AspectRatio
+import io.scanbot.common.AspectRatio
+import io.scanbot.genericdocument.GenericDocumentRecognitionResult
+import io.scanbot.genericdocument.GenericDocumentRecognitionStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.genericdocument.GenericDocumentAutoSnappingController
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognitionResult
 import io.scanbot.sdk.genericdocument.GenericDocumentRecognizer
-import io.scanbot.sdk.ui.camera.*
+import io.scanbot.sdk.ui.camera.FinderOverlayView
+import io.scanbot.sdk.ui.camera.IScanbotCameraView
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
+import io.scanbot.sdk.ui.camera.ShutterButton
 
 class ScannerActivity : AppCompatActivity() {
     private lateinit var documentRecognizer: GenericDocumentRecognizer
@@ -34,7 +38,9 @@ class ScannerActivity : AppCompatActivity() {
         documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
-        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(AspectRatio(4.0, 3.0)))
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(
+            AspectRatio(4.0, 3.0)
+        ))
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
@@ -70,7 +76,7 @@ class ScannerActivity : AppCompatActivity() {
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
         val recognitionResult = documentRecognizer.scanBitmap(bitmap, orientation = imageOrientation)
 
-        val isSuccess = recognitionResult != null && recognitionResult.status == GenericDocumentRecognitionResult.RecognitionStatus.Success
+        val isSuccess = recognitionResult != null && recognitionResult.status == GenericDocumentRecognitionStatus.SUCCESS
 
         if (isSuccess) {
             recognitionResult?.document?.let {

@@ -12,10 +12,10 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.LineSegmentFloat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.contourdetector.Line2D
+import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
+import io.scanbot.sdk.core.documentdetector.DocumentDetector
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var originalBitmap: Bitmap
     private lateinit var previewBitmap: Bitmap
 
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var documentDetector: DocumentDetector
 
     private var lastRotationEventTs = 0L
     private var rotationDegrees = 0
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val scanbotSDK = ScanbotSDK(this)
-        contourDetector = scanbotSDK.createContourDetector()
+        documentDetector = scanbotSDK.createDocumentDetector()
 
         supportActionBar!!.hide()
 
@@ -74,14 +74,17 @@ class MainActivity : AppCompatActivity() {
                 originalBitmap = loadBitmapFromAssets("demo_image.jpg")
                 previewBitmap = resizeForPreview(originalBitmap)
 
-                val result = contourDetector.detect(originalBitmap)
+                val result = documentDetector.detect(originalBitmap)
                 return@withContext when (result?.status) {
                     DocumentDetectionStatus.OK,
                     DocumentDetectionStatus.OK_BUT_BAD_ANGLES,
                     DocumentDetectionStatus.OK_BUT_TOO_SMALL,
                     DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                        val linesPair = Pair(result.horizontalLines, result.verticalLines)
-                        val polygon = result.polygonF
+                        val linesPair = Pair(
+                            result?.horizontalLinesNormalized ?: emptyList(),
+                            result?.verticalLinesNormalized ?: emptyList()
+                        )
+                        val polygon = result?.pointsNormalized ?: emptyList()
 
                         InitImageResult(linesPair, polygon)
                     }
@@ -96,7 +99,10 @@ class MainActivity : AppCompatActivity() {
 
                 // set detected polygon and lines into EditPolygonImageView
                 editPolygonView.polygon = initImageResult.polygon
-                editPolygonView.setLines(initImageResult.linesPair.first, initImageResult.linesPair.second)
+                editPolygonView.setLines(
+                    initImageResult.linesPair.first,
+                    initImageResult.linesPair.second
+                )
             }
         }
     }
@@ -128,7 +134,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        var documentImage = ImageProcessor(originalBitmap).crop(editPolygonView.polygon).processedBitmap()
+        var documentImage =
+            ImageProcessor(originalBitmap).crop(editPolygonView.polygon).processedBitmap()
         documentImage?.let {
             if (rotationDegrees > 0) {
                 // rotate the final cropped image result based on current rotation value:
@@ -146,5 +153,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    internal inner class InitImageResult(val linesPair: Pair<List<Line2D>, List<Line2D>>, val polygon: List<PointF>)
+    internal inner class InitImageResult(
+        val linesPair: Pair<List<LineSegmentFloat>, List<LineSegmentFloat>>,
+        val polygon: List<PointF>
+    )
 }
