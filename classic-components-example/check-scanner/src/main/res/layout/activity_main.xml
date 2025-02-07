@@ -14,36 +14,36 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/check_recognizer"
+            android:id="@+id/check_scanner"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="@string/menu_check_recognizer"
+            android:text="@string/menu_check_scanner"
             android:textAppearance="?textAppearanceListItem" />
 
         <TextView
-            android:id="@+id/check_recognizer_auto_snapping"
+            android:id="@+id/check_scanner_auto_snapping"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="@string/menu_check_recognizer_autosnapping"
+            android:text="@string/menu_check_scanner_autosnapping"
             android:textAppearance="?textAppearanceListItem" />
 
         <TextView
-            android:id="@+id/check_recognizer_pick_image"
+            android:id="@+id/check_scanner_pick_image"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="@string/menu_check_recognizer_import"
+            android:text="@string/menu_check_scanner_import"
             android:textAppearance="?textAppearanceListItem" />
 
         <View

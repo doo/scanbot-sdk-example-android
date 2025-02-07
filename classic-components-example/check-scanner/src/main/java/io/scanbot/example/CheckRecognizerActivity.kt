@@ -27,7 +27,7 @@ class CheckRecognizerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_check_recognizer)
+        setContentView(R.layout.activity_check_scanner)
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->
             cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
             cameraView.setCameraOpenCallback {

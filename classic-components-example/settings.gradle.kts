@@ -52,7 +52,7 @@ include(
     ":vin-scanner",
     ":licenseplate-scanner",
     ":tiff-generation",
-    ":check-recognizer",
+    ":check-scanner",
     ":creditcard-scanner",
     ":manual-processing",
     ":camera-view-aspect-ratio-finder",
