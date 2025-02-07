@@ -88,12 +88,12 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
 
     private fun runRecognition() {
         lifecycleScope.launch(Dispatchers.Default) {
-            recognizeMrz(page)
+            scanMrz(page)
         }
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    private suspend fun recognizeMrz(page: Page) {
+    private suspend fun scanMrz(page: Page) {
         val mrzRecognitionResult = mrzScanner.scanFromBitmap(page.documentImage, 0)
 
         withContext(Dispatchers.Main) {
@@ -103,7 +103,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this@MrzStillImageDetectionActivity,
-                    "No MRZ data recognized!", Toast.LENGTH_LONG
+                    "No MRZ data found!", Toast.LENGTH_LONG
                 ).show()
             }
         }

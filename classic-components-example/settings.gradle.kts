@@ -56,7 +56,6 @@ include(
     ":creditcard-scanner",
     ":manual-processing",
     ":camera-view-aspect-ratio-finder",
-    ":ehic-scanner",
     ":adjustable-filters",
     ":encryption",
     ":document-quality-analyzer",

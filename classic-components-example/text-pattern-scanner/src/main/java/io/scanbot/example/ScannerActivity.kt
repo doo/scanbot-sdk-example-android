@@ -4,18 +4,14 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.AspectRatio
-import io.scanbot.generictext.ContentValidationCallback
-import io.scanbot.generictext.ContentValidator
-import io.scanbot.generictext.CustomContentValidator
-import io.scanbot.generictext.PatternContentValidator
-import io.scanbot.generictext.PresetContentValidator
-import io.scanbot.generictext.ValidatorPreset
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.generictext.GenericTextRecognizer
-import io.scanbot.sdk.generictext.GenericTextRecognizerFrameHandler
+import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.textpattern.ContentValidationCallback
+import io.scanbot.sdk.textpattern.CustomContentValidator
+import io.scanbot.sdk.textpattern.TextPatternScanner
+import io.scanbot.sdk.textpattern.TextPatternScannerFrameHandler
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
@@ -26,8 +22,8 @@ class ScannerActivity : AppCompatActivity() {
     
     private var useFlash = false
 
-    private lateinit var textRecognizer: GenericTextRecognizer
-    private lateinit var textRecognizerFrameHandler: GenericTextRecognizerFrameHandler
+    private lateinit var patternScanner: TextPatternScanner
+    private lateinit var patternScannerFrameHandler: TextPatternScannerFrameHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +38,12 @@ class ScannerActivity : AppCompatActivity() {
         zoomFinderOverlay.zoomLevel = 1.8f
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
-        textRecognizer = ScanbotSDK(this).createGenericTextRecognizer()
+        patternScanner = ScanbotSDK(this).createTextPatternScanner()
 
         // TODO: set validation string and validation callback which matches the need of the task
         // For the pattern: # - digits, ? - for any character. Other characters represent themselves
         // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-        textRecognizer.configuration = textRecognizer.configuration.copy(
+        patternScanner.configuration = patternScanner.configuration.copy(
             // validator = PresetContentValidator(preset = ValidatorPreset.VEHICLE_IDENTIFICATION_NUMBER),
             // validator = PatternContentValidator(pattern = "######"),
             validator = CustomContentValidator(callback =  object : ContentValidationCallback {
@@ -58,7 +54,8 @@ class ScannerActivity : AppCompatActivity() {
                 override fun validate(text: String): Boolean {
                     return text.firstOrNull() in listOf('1', '2') // TODO: add additional validation for the recognized text
                 }
-            }))
+            })
+        )
 
 
         // TODO: If the string which is needed to scan is not clearly separated from other parts of the text
@@ -77,8 +74,8 @@ class ScannerActivity : AppCompatActivity() {
         //     }
         // })
 
-        textRecognizerFrameHandler = GenericTextRecognizerFrameHandler.attach(cameraView, textRecognizer)
-        textRecognizerFrameHandler.addResultHandler { result ->
+        patternScannerFrameHandler = TextPatternScannerFrameHandler.attach(cameraView, patternScanner)
+        patternScannerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
                     when {

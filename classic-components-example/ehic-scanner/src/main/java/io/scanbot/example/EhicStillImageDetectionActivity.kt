@@ -100,12 +100,12 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
             binding.progress.isVisible = true
 
             lifecycleScope.launch {
-                recognizeEhic(page)
+                scanEhic(page)
             }
         }
     }
 
-    private suspend fun recognizeEhic(page: Page) {
+    private suspend fun scanEhic(page: Page) {
         val result = withContext(Dispatchers.Default) {
             val imageUri = page.documentFileUri
             val documentImage = loadImage(imageUri)
@@ -117,7 +117,7 @@ class EhicStillImageDetectionActivity : AppCompatActivity() {
             if (result != null && result.status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.SUCCESS) {
                 startActivity(newIntent(this@EhicStillImageDetectionActivity, result))
             } else {
-                this@EhicStillImageDetectionActivity.showToast("No EHIC data recognized!")
+                this@EhicStillImageDetectionActivity.showToast("No EHIC data found!")
             }
         }
     }

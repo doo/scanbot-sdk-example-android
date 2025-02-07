@@ -36,25 +36,25 @@ class MainActivity : AppCompatActivity() {
             return@registerForActivityResult
         }
 
-        lifecycleScope.launch { recognizeCheck(uri) }
+        lifecycleScope.launch { scanCheck(uri) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.checkRecognizer.setOnClickListener {
+        binding.checkScanner.setOnClickListener {
             startActivity(CheckRecognizerActivity.newIntent(this))
         }
-        binding.checkRecognizerAutoSnapping.setOnClickListener {
+        binding.checkScannerAutoSnapping.setOnClickListener {
             startActivity(AutoSnappingCheckScannerActivity.newIntent(this))
         }
-        binding.checkRecognizerPickImage.setOnClickListener {
+        binding.checkScannerPickImage.setOnClickListener {
             selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    private suspend fun recognizeCheck(uri: Uri) {
+    private suspend fun scanCheck(uri: Uri) {
         withContext(Dispatchers.Main) { binding.progressBar.isVisible = true }
 
         val recognitionResult = withContext(Dispatchers.Default) {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             recognitionResult?.let {
                 startActivity(CheckScannerResultActivity.newIntent(this@MainActivity, it))
-            } ?: this@MainActivity.showToast("No  data recognized!")
+            } ?: this@MainActivity.showToast("No  data found!")
         }
 
         withContext(Dispatchers.Main) { binding.progressBar.isVisible = false }

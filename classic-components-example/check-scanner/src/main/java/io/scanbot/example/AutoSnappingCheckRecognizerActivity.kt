@@ -32,7 +32,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var contourDetector: DocumentScanner
-    private lateinit var checkRecognizer: CheckScanner
+    private lateinit var checkScanner: CheckScanner
 
     private var flashEnabled = false
 
@@ -53,7 +53,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        checkRecognizer = scanbotSDK.createCheckScanner()
+        checkScanner = scanbotSDK.createCheckScanner()
         contourDetector = scanbotSDK.createDocumentScanner()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
@@ -114,9 +114,9 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         result?.pointsNormalized?.let { polygon ->
             ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
                 ?.let { documentImage ->
-                    // documentImage will be recycled inside recognizeCheckBitmap
+                    // documentImage will be recycled inside scanCheckBitmap
                     val imageCopy = Bitmap.createBitmap(documentImage)
-                    val checkResult = checkRecognizer.scanFromBitmap(documentImage, 0)
+                    val checkResult = checkScanner.scanFromBitmap(documentImage, 0)
                     if (checkResult?.check != null) {
                         CheckScannerResultActivity.tempDocumentImage = imageCopy
                         startActivity(CheckScannerResultActivity.newIntent(this, checkResult))
@@ -124,7 +124,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
                         runOnUiThread {
                             Toast.makeText(
                                 this,
-                                "Check is not recognized - please, try agian",
+                                "Check is not found - please, try agian",
                                 Toast.LENGTH_LONG
                             ).show()
                         }

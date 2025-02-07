@@ -37,7 +37,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_manual_mc_recognizer)
+        setContentView(R.layout.activity_manual_mc_scanner)
         supportActionBar!!.hide()
 
         askPermission()
@@ -139,7 +139,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
             runOnUiThread {
                 val toast = Toast.makeText(
                     this@ManualMedicalCertificateScannerActivity,
-                    "No Medical Certificate content was recognized!",
+                    "No Medical Certificate content was found!",
                     Toast.LENGTH_LONG
                 )
                 toast.setGravity(Gravity.CENTER, 0, 0)
