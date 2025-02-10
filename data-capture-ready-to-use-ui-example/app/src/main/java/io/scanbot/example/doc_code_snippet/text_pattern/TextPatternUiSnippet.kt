@@ -212,7 +212,7 @@ class TextPatternIntroductionSnippet : AppCompatActivity() {
 
             // Configure the text.
             text.color = ScanbotColor("#000000")
-            text.text = "This is a text pattern scanner. Please scan the text pattern."
+            text.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
