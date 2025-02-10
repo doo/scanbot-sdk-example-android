@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.creditcard.*
-import io.scanbot.sdk.mrz.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -110,7 +109,7 @@ class CreditCardStableImageDetection : AppCompatActivity() {
     val creditCardScanner = scanbotSDK.createCreditCardScanner()
 
     private fun processImage(scanner: CreditCardScanner, bitmap: Bitmap) {
-        val mrzRecognitionResult = scanner.scanFromBitmap(bitmap, 0)
+        val result = scanner.scanFromBitmap(bitmap, 0)
         // Proceed MRZ scanner result
         // processResult(result)
     }

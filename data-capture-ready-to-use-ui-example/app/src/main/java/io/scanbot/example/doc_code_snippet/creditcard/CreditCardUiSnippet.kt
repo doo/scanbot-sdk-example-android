@@ -208,7 +208,7 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an MRZ"
+            title.text = "How to scan an Credit Card"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
@@ -227,7 +227,7 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
             // Configure the text.
             text.color = ScanbotColor("#000000")
             text.text =
-                "The Machine Readable Zone (MRZ) is a special code on your ID document (such as a passport or ID card) that contains your personal information in a machine-readable format.\n\nTo scan it, simply hold your camera over the document, so that it aligns with the MRZ section. Once scanned, the data will be automatically processed, and you will be directed to the results screen.\n\nPress 'Start Scanning' to begin."
+                "To quickly and securely input your credit card details, please hold your device over the credit card, so that the camera aligns with the numbers on the front of the card.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
