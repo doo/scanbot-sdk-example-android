@@ -107,7 +107,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
             )
         }
 
-        // And finally run Medical Certificate recognition on prepared document image:
+        // And finally run Medical Certificate scanning on prepared document image:
         val resultInfo = scanner.scanFromBitmap(
             originalBitmap,
             0,

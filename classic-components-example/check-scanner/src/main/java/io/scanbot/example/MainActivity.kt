@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun scanCheck(uri: Uri) {
         withContext(Dispatchers.Main) { binding.progressBar.isVisible = true }
 
-        val recognitionResult = withContext(Dispatchers.Default) {
+        val result = withContext(Dispatchers.Default) {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         withContext(Dispatchers.Main) {
-            recognitionResult?.let {
+            result?.let {
                 startActivity(CheckScannerResultActivity.newIntent(this@MainActivity, it))
             } ?: this@MainActivity.showToast("No  data found!")
         }

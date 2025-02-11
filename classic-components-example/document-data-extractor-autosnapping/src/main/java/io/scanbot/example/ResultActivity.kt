@@ -63,7 +63,7 @@ private class Adapter(private val scanResult: DocumentDataExtractionResult) :
         private val fieldType: TextView = itemView.findViewById(R.id.fieldType)
         private val fieldCroppedImage: ImageView = itemView.findViewById(R.id.fieldCroppedImage)
         private val fieldTextConfidence: TextView = itemView.findViewById(R.id.fieldTextConfidence)
-        private val fieldRecognizedText: TextView = itemView.findViewById(R.id.fieldRecognizedText)
+        private val fieldExtractedText: TextView = itemView.findViewById(R.id.fieldExtractedText)
 
         fun bind(item: Field) {
             val confidence = String.format(FIELD_CONFIDENCE_FLOAT_FORMAT, (item.value?.confidence ?: 0.0) * 100)
@@ -71,7 +71,7 @@ private class Adapter(private val scanResult: DocumentDataExtractionResult) :
             fieldType.text = String.format(FIELD_TYPE_FORMAT, item.type.name.capitalize())
             fieldCroppedImage.setImageBitmap(item.image?.toBitmap())
             fieldTextConfidence.text = String.format(FIELD_CONFIDENCE_FORMAT, confidence)
-            fieldRecognizedText.text = item.value?.text
+            fieldExtractedText.text = item.value?.text
         }
     }
 

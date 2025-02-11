@@ -35,7 +35,7 @@
             tools:text="Recognized text with confidence 92.00%" />
 
     <TextView
-            android:id="@+id/fieldRecognizedText"
+            android:id="@+id/fieldExtractedText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"

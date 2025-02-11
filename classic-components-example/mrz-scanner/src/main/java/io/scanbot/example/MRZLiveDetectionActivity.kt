@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.genericdocument.entity.GenericDocumentWrapper
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.common.AspectRatio
@@ -54,15 +53,15 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
 
         mrzScannerFrameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
-                val mrzRecognitionResult = result.value
+                val scannerResult = result.value
 
                 // It is recommended to use a frame accumulation as well and expect at least 2 of 4 frames to be equal
 
-                val mrzDocument = mrzRecognitionResult.document?.let { MRZ(it) }
-                if (mrzRecognitionResult.success
+                val mrzDocument = scannerResult.document?.let { MRZ(it) }
+                if (scannerResult.success
                     && mrzDocument?.checkDigitGeneral?.isValid == true
                 ) {
-                    startActivity(MRZResultActivity.newIntent(this, mrzRecognitionResult))
+                    startActivity(MRZResultActivity.newIntent(this, scannerResult))
                 }
             }
             false

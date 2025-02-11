@@ -67,7 +67,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
                 }
 
                 binding.resultImageView.setImageBitmap(page.documentImage)
-                binding.runRecognitionBtn.visibility = View.VISIBLE
+                binding.runScanningBtn.visibility = View.VISIBLE
             }
         binding.startScannerBtn.setOnClickListener {
             val config = DocumentScanningFlow().apply {
@@ -79,7 +79,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
         }
 
         binding.importFromLibBtn.setOnClickListener { openGallery() }
-        binding.runRecognitionBtn.setOnClickListener { runRecognition() }
+        binding.runScanningBtn.setOnClickListener { runRecognition() }
     }
 
     private fun openGallery() {
@@ -94,12 +94,12 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
     }
 
     private suspend fun scanMrz(page: Page) {
-        val mrzRecognitionResult = mrzScanner.scanFromBitmap(page.documentImage, 0)
+        val result = mrzScanner.scanFromBitmap(page.documentImage, 0)
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
-            if (mrzRecognitionResult != null && mrzRecognitionResult.success) {
-                startActivity(newIntent(this@MrzStillImageDetectionActivity, mrzRecognitionResult))
+            if (result != null && result.success) {
+                startActivity(newIntent(this@MrzStillImageDetectionActivity, result))
             } else {
                 Toast.makeText(
                     this@MrzStillImageDetectionActivity,
@@ -129,7 +129,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
             binding.resultImageView.setImageBitmap(page.documentImage)
-            binding.runRecognitionBtn.visibility = View.VISIBLE
+            binding.runScanningBtn.visibility = View.VISIBLE
         }
     }
 }

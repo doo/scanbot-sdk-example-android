@@ -32,10 +32,10 @@ class BarcodeResultActivity : AppCompatActivity() {
 
     private fun showSnapImageIfExists(imagePath: String?) {
         imagePath?.let { path ->
-            binding.recognisedItems.addView(
+            binding.scannedItems.addView(
                 SnapImageItemBinding.inflate(
                     layoutInflater,
-                    binding.recognisedItems,
+                    binding.scannedItems,
                     false
                 ).also {
                     Picasso.get().load(File(path)).into(it.snapImage)
@@ -47,7 +47,7 @@ class BarcodeResultActivity : AppCompatActivity() {
     private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScannerResult?) {
         detectedBarcodes?.let {
             detectedBarcodes.barcodes.asSequence().map { item ->
-                BarcodeItemBinding.inflate(layoutInflater, binding.recognisedItems, false)
+                BarcodeItemBinding.inflate(layoutInflater, binding.scannedItems, false)
                     .also {
                         item.sourceImage?.let { image ->
                             it.image.setImageBitmap(image.toBitmap())
@@ -66,7 +66,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                         }
                     }
             }.forEach {
-                binding.recognisedItems.addView(it.root)
+                binding.scannedItems.addView(it.root)
             }
         }
     }

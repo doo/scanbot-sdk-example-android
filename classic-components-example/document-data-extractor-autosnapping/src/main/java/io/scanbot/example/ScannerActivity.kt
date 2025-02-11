@@ -66,7 +66,7 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // pause autoSnappingController to stop detecting results on a preview during the recognition on the full-size picture
+        // pause autoSnappingController to stop detecting results on a preview during the data extraction on the full-size picture
         autoSnappingController.isEnabled = false
 
         runOnUiThread {
@@ -74,17 +74,17 @@ class ScannerActivity : AppCompatActivity() {
         }
 
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val recognitionResult = dataExtractor.extractFromBitmap(bitmap, orientation = imageOrientation)
+        val result = dataExtractor.extractFromBitmap(bitmap, orientation = imageOrientation)
 
-        val isSuccess = recognitionResult != null && recognitionResult.status == DocumentDataExtractionStatus.SUCCESS
+        val isSuccess = result != null && result.status == DocumentDataExtractionStatus.SUCCESS
 
         if (isSuccess) {
-            recognitionResult?.document?.let {
-                proceedToResult(recognitionResult)
+            result?.document?.let {
+                proceedToResult(result)
             }
         } else {
             runOnUiThread {
-                Toast.makeText(this@ScannerActivity, "Error scanning: ${recognitionResult?.status}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ScannerActivity, "Error scanning: ${result?.status}", Toast.LENGTH_SHORT).show()
                 shutterButton.isEnabled = true
             }
             autoSnappingController.isEnabled = true

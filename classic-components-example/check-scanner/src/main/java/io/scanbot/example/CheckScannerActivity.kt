@@ -45,10 +45,10 @@ class CheckScannerActivity : AppCompatActivity() {
         frameHandler = attach(cameraView, checkScanner)
         frameHandler.addResultHandler { result: FrameHandlerResult<CheckScanningResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
-                val recognitionResult = (result as FrameHandlerResult.Success<*>).value as CheckScanningResult?
-                if (recognitionResult?.status == CheckRecognitionStatus.SUCCESS) {
+                val scanningResult = (result as FrameHandlerResult.Success<*>).value as CheckScanningResult?
+                if (scanningResult?.status == CheckRecognitionStatus.SUCCESS) {
                     frameHandler.isEnabled = false
-                    startActivity(CheckScannerResultActivity.newIntent(this, recognitionResult))
+                    startActivity(CheckScannerResultActivity.newIntent(this, scanningResult))
                 }
             } else if (!scanbotSDK.licenseInfo.isValid) {
                 frameHandler.isEnabled = false

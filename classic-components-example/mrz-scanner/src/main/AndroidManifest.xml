@@ -26,7 +26,7 @@
         </activity>
         <activity android:name=".MRZLiveDetectionActivity" />
         <activity android:name=".MrzStillImageDetectionActivity" android:screenOrientation="portrait" />
-        <activity android:name=".MRZResultActivity" android:label="MRZ recognition result" android:screenOrientation="portrait" />
+        <activity android:name=".MRZResultActivity" android:label="MRZ scanning result" android:screenOrientation="portrait" />
     </application>
 
 </manifest>

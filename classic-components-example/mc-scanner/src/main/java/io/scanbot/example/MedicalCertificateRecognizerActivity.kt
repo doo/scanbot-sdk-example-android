@@ -96,7 +96,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
         options.inSampleSize = 2 // use 1 for full, no downscaled image.
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        // And finally run Medical Certificate recognition on prepared document image:
+        // And finally run Medical Certificate scanning on prepared document image:
         val resultInfo = scanner.scanFromBitmap(
             originalBitmap,
             0,
