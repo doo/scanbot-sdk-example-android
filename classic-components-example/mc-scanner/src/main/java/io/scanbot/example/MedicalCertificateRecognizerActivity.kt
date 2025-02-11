@@ -61,10 +61,10 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
         scanner = scanbotSDK.createMedicalCertificateScanner()
 
-        // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
+        // Attach `FrameHandler`, that will be scanning for Medical Certificate document on the camera frames
         val frameHandler =
             MedicalCertificateFrameHandler.attach(cameraView, scanner)
-        // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
+        // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will scanning Medical Certificate document on the frame successfully
         MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler).apply {
             // possibly adjust auto-snapping parameters here
 //            setSensitivity(0.5f)
@@ -89,7 +89,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
 
     private fun processPictureTaken(image: ByteArray) {
         // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
+        // Implement a suitable async(!) scanning and image handling here.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()

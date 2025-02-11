@@ -66,7 +66,7 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // pause autoSnappingController to stop detecting results on a preview during the data extraction on the full-size picture
+        // pause autoSnappingController to stop scanning on a preview during the data extraction on the full-size picture
         autoSnappingController.isEnabled = false
 
         runOnUiThread {

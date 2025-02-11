@@ -34,7 +34,7 @@ class ScannerActivity : AppCompatActivity() {
         resultTextView = findViewById(R.id.resultTextView)
 
         val finderOverlay = findViewById<FinderOverlayView>(R.id.finder_overlay)
-        // The smaller finder view brings better performance and allows user to detect VIN more precise
+        // The smaller finder view brings better performance and allows user to scan VIN more precise
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(9.0, 1.0)))
         finderOverlay.setFixedFinderHeight(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,

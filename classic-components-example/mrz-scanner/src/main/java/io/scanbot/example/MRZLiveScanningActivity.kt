@@ -20,7 +20,7 @@ import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.util.log.LoggerProvider
 
-class MRZLiveDetectionActivity : AppCompatActivity() {
+class MRZLiveScanningActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
 
     private lateinit var cameraView: ScanbotCameraXView
@@ -90,7 +90,7 @@ class MRZLiveDetectionActivity : AppCompatActivity() {
 
     companion object {
         fun newIntent(context: Context?): Intent {
-            return Intent(context, MRZLiveDetectionActivity::class.java)
+            return Intent(context, MRZLiveScanningActivity::class.java)
         }
     }
 }

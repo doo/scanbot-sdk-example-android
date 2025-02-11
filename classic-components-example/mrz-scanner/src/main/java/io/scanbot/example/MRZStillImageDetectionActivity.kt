@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
-import io.scanbot.example.databinding.ActivityMrzStillImageDetectionBinding
+import io.scanbot.example.databinding.ActivityMrzStillImageScanningBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
@@ -25,9 +25,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MrzStillImageDetectionActivity : AppCompatActivity() {
+class MrzStillImageScanningActivity : AppCompatActivity() {
 
-    private val binding by lazy { ActivityMrzStillImageDetectionBinding.inflate(layoutInflater) }
+    private val binding by lazy { ActivityMrzStillImageScanningBinding.inflate(layoutInflater) }
     private val scanbotSdk by lazy { ScanbotSDK(this) }
     private val mrzScanner by lazy { scanbotSdk.createMrzScanner() }
 
@@ -38,7 +38,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
     private val selectGalleryImageResultLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (!scanbotSdk.licenseInfo.isValid) {
-                this@MrzStillImageDetectionActivity.showToast("1-minute trial license has expired!")
+                this@MrzStillImageScanningActivity.showToast("1-minute trial license has expired!")
                 Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
                 return@registerForActivityResult
             }
@@ -62,7 +62,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
                 val document = resultEntity.result!!
                 page = document.pageAtIndex(0) ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
-                    this@MrzStillImageDetectionActivity.showToast("Error obtaining scanned page!")
+                    this@MrzStillImageScanningActivity.showToast("Error obtaining scanned page!")
                     return@registerForActivityResultOk
                 }
 
@@ -99,10 +99,10 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
             if (result != null && result.success) {
-                startActivity(newIntent(this@MrzStillImageDetectionActivity, result))
+                startActivity(newIntent(this@MrzStillImageScanningActivity, result))
             } else {
                 Toast.makeText(
-                    this@MrzStillImageDetectionActivity,
+                    this@MrzStillImageScanningActivity,
                     "No MRZ data found!", Toast.LENGTH_LONG
                 ).show()
             }
@@ -119,7 +119,7 @@ class MrzStillImageDetectionActivity : AppCompatActivity() {
 
             val contourResult =
                 scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)?.pointsNormalized ?: kotlin.run {
-                    Log.e(Const.LOG_TAG, "Error detecting document on page " + page.uuid)
+                    Log.e(Const.LOG_TAG, "Error finding document on page " + page.uuid)
                     PolygonHelper.getFullPolygon()
                 }
             page.apply(newPolygon = contourResult)

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             result?.let {
                 startActivity(MedicalCertificateResultActivity.newIntent(this@MainActivity, it))
-            } ?: this@MainActivity.showToast("Nothing detected on image")
+            } ?: this@MainActivity.showToast("Nothing found on image")
 
             binding.progressBar.isVisible = false
         }

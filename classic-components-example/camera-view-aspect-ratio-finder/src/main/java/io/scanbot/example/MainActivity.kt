@@ -110,8 +110,8 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     }
 
     override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
-        // Here you are continuously notified about contour detection results.
-        // For example, you can show a user guidance text depending on the current detection status.
+        // Here you are continuously notified about document scanning results.
+        // For example, you can show a user guidance text depending on the current scanning status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success) {
                 showUserGuidance(result.value.detectionStatus)
@@ -203,9 +203,9 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
 
         scanner.setParameters(DocumentScannerParameters(aspectRatios = requiredPageAspectRatios))
-        val detectedPolygon = scanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
+        val polygon = scanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post {
             resultView.setImageBitmap(documentImage)
             cameraView.continuousFocus()

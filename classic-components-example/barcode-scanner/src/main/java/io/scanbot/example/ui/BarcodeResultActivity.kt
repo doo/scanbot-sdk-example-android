@@ -44,9 +44,9 @@ class BarcodeResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLatestBarcodeResult(detectedBarcodes: BarcodeScannerResult?) {
-        detectedBarcodes?.let {
-            detectedBarcodes.barcodes.asSequence().map { item ->
+    private fun showLatestBarcodeResult(scannedBarcodes: BarcodeScannerResult?) {
+        scannedBarcodes?.let {
+            scannedBarcodes.barcodes.asSequence().map { item ->
                 BarcodeItemBinding.inflate(layoutInflater, binding.scannedItems, false)
                     .also {
                         item.sourceImage?.let { image ->

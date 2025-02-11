@@ -81,7 +81,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
+        // Implement a suitable async(!) scanning and image handling here.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()

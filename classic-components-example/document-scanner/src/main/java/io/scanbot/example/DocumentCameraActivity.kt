@@ -69,8 +69,8 @@ class DocumentCameraActivity : AppCompatActivity() {
             initCamera(CameraUiSettings(true))
             initScanningBehavior(scanner,
                 { result ->
-                    // Here you are continuously notified about contour detection results.
-                    // For example, you can show a user guidance text depending on the current detection status.
+                    // Here you are continuously notified about document scanning results.
+                    // For example, you can show a user guidance text depending on the current scanning status.
                     userGuidanceHint.post {
                         if (result is FrameHandlerResult.Success<*>) {
                             showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
@@ -202,11 +202,11 @@ class DocumentCameraActivity : AppCompatActivity() {
             matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
-        // Run document detection on original image:
+        // Run document scanning on original image:
         val result = scanner.scanFromBitmap(originalBitmap)!!
-        val detectedPolygon = result.pointsNormalized
+        val polygon = result.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }
     }
 

@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (scanbotSdk.licenseInfo.isValid) {
-                lifecycleScope.launch { processImageForAutoDocumentDetection(uri) }
+                lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
             } else {
                 this@MainActivity.showToast("1-minute trial license has expired!")
             }
@@ -81,8 +81,8 @@ class MainActivity : AppCompatActivity() {
         newFragment.show(ft, DIALOG_TAG)
     }
 
-    /** Imports a selected image as original image and performs auto document detection on it. */
-    private suspend fun processImageForAutoDocumentDetection(imageUri: Uri) {
+    /** Imports a selected image as original image and performs auto document scanning on it. */
+    private suspend fun processImageForAutoDocumentScanning(imageUri: Uri) {
         val progressBar = findViewById<View>(R.id.progress_bar)
         val importResultImage = findViewById<ImageView>(R.id.import_result)
         withContext(Dispatchers.Main) {
@@ -99,16 +99,16 @@ class MainActivity : AppCompatActivity() {
             val newDocument = scanbotSdk.documentApi.createDocument()
             val page = newDocument.addPage(bitmap)
 
-            // run auto document detection on it:
-            val detectionResult = scanner.scanFromBitmap(bitmap)
+            // run auto document scanning on it:
+            val result = scanner.scanFromBitmap(bitmap)
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
              */
-            val isDetectionStatusOk = (detectionResult?.status?.name?.startsWith("OK_")) ?: false
-            if (detectionResult != null && isDetectionStatusOk && detectionResult.pointsNormalized.isNotEmpty()) {
+            val statusOk = (result?.status?.name?.startsWith("OK_")) ?: false
+            if (result != null && statusOk && result.pointsNormalized.isNotEmpty()) {
                 // apply the detected polygon to the new page:
-                page.apply(newPolygon = detectionResult.pointsNormalized)
+                page.apply(newPolygon = result.pointsNormalized)
             }
             page
         }

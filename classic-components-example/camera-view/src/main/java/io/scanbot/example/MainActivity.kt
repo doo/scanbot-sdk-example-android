@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
         documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
-        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#contour-detection-parameters
+        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
         documentScannerFrameHandler.setAcceptedAngleScore(60.0)
         documentScannerFrameHandler.setAcceptedSizeScore(75.0)
         documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
@@ -127,8 +127,8 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     }
 
     override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
-        // Here you are continuously notified about contour detection results.
-        // For example, you can show a user guidance text depending on the current detection status.
+        // Here you are continuously notified about document scanning results.
+        // For example, you can show a user guidance text depending on the current scanning status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success<*>) {
                 showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
@@ -189,8 +189,8 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
-        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#handling-camera-picture
-        // This is just a demo showing the detected document image as a downscaled(!) preview image.
+        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/classic-ui/
+        // This is just a demo showing the scanned document image as a downscaled(!) preview image.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
@@ -207,10 +207,10 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
-        // Run document detection on original image:
-        val detectedPolygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
+        // Run document scanning on original image:
+        val polygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }
 
         // continue scanning

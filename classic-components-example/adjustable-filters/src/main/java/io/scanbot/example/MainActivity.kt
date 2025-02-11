@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            val documentId = createAndDetectDocumentPage(uri)
+            val documentId = createAndScanDocumentPage(uri)
 
             if (documentId != null) {
                 filterActivityResultLauncher.launch(FilterActivity.newIntent(this@MainActivity, documentId))
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun createAndDetectDocumentPage(imageUri: Uri): String? {
+    private suspend fun createAndScanDocumentPage(imageUri: Uri): String? {
         val bitmap = withContext(Dispatchers.IO) {
             val inputStream = contentResolver.openInputStream(imageUri)
             BitmapFactory.decodeStream(inputStream)
@@ -106,18 +106,18 @@ class MainActivity : AppCompatActivity() {
             val result = sdk.createDocumentScanner().scanFromBitmap(bitmap)
 
             if (result == null) {
-                Log.e(Const.LOG_TAG, "Error detecting document (result is `null`)!")
-                showToast("Error detecting document!")
+                Log.e(Const.LOG_TAG, "Error finding document (result is `null`)!")
+                showToast("Error finding document!")
                 return@withContext null
             }
-            Log.d(Const.LOG_TAG, "Doc detected: ${result.status}")
+            Log.d(Const.LOG_TAG, "Doc found: ${result.status}")
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
              */
-            val isDetectionOk = result.status.name.startsWith("OK", true)
-            if (isDetectionOk.not()) {
-                Log.e(Const.LOG_TAG, "Bad document photo - detection status was ${result.status.name}!")
+            val isScanOk = result.status.name.startsWith("OK", true)
+            if (isScanOk.not()) {
+                Log.e(Const.LOG_TAG, "Bad document photo - scanning status was ${result.status.name}!")
                 showToast("Bad document photo - status ${result.status.name}!")
                 return@withContext null
             }

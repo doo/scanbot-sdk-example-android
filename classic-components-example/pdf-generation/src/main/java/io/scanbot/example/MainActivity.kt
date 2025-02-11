@@ -75,9 +75,9 @@ class MainActivity : AppCompatActivity() {
             uris.asSequence().forEach { uri ->
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
-                val pageDetected = documentScanner.scanFromBitmap(bitmap)?.pointsNormalized
+                val newPolygon = documentScanner.scanFromBitmap(bitmap)?.pointsNormalized
                     ?: PolygonHelper.getFullPolygon()
-                document.addPage(bitmap).apply(newPolygon = pageDetected, newFilters = filters)
+                document.addPage(bitmap).apply(newPolygon = newPolygon, newFilters = filters)
             }
             if (runOcr) {
                 pdfRenderer.generateWithOcrFromDocument(
