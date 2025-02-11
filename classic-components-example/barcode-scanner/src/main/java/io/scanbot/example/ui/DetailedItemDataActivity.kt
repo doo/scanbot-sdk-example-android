@@ -43,7 +43,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
         val barcodeDocumentFormat = item.extractedDocument?.let {
             BarcodeDocumentLibrary.wrapperFromGenericDocument(it)
         }
-            ?: return "${item.textWithExtension}\n\nBinary data:\n${item.rawBytes.toHexString()}" // for not supported by current barcode detector implementation
+            ?: return "${item.textWithExtension}\n\nBinary data:\n${item.rawBytes.toHexString()}" // for not supported by current barcode scanner implementation
 
         val barcodesResult = StringBuilder()
         when (barcodeDocumentFormat) {

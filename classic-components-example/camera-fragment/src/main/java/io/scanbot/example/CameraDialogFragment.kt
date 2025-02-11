@@ -44,10 +44,10 @@ class CameraDialogFragment : DialogFragment() {
             }, 700)
         }
         resultView = baseView.findViewById<View>(R.id.result) as ImageView
-        val contourDetectorFrameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
+        val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
         val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
-        contourDetectorFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
-        DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+        DocumentAutoSnappingController.attach(cameraView, frameHandler)
 
         cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {

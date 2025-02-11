@@ -28,10 +28,10 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: TextView
 
-    private lateinit var contourDetectorFrameHandler: DocumentScannerFrameHandler
+    private lateinit var frameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
-    private lateinit var contourDetector: DocumentScanner
+    private lateinit var scanner: DocumentScanner
     private lateinit var checkScanner: CheckScanner
 
     private var flashEnabled = false
@@ -54,27 +54,27 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         val scanbotSDK = ScanbotSDK(this)
 
         checkScanner = scanbotSDK.createCheckScanner()
-        contourDetector = scanbotSDK.createDocumentScanner()
+        scanner = scanbotSDK.createDocumentScanner()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
-        contourDetectorFrameHandler =
-            DocumentScannerFrameHandler.attach(cameraView, contourDetector)
+        frameHandler =
+            DocumentScannerFrameHandler.attach(cameraView, scanner)
 
-        contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
-        contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
-        contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
+        frameHandler.setAcceptedAngleScore(60.0)
+        frameHandler.setAcceptedSizeScore(75.0)
+        frameHandler.setIgnoreBadAspectRatio(true)
 
-        contourDetectorFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+        frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
         autoSnappingController =
-            DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+            DocumentAutoSnappingController.attach(cameraView, frameHandler)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
 
         cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                contourDetectorFrameHandler.isEnabled = false
+                frameHandler.isEnabled = false
                 processPictureTaken(image)
                 runOnUiThread {
                     polygonView.visibility = View.GONE
@@ -87,10 +87,10 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
 
-        contourDetectorFrameHandler.addResultHandler {
+        frameHandler.addResultHandler {
             if (it !is FrameHandlerResult.Success) {
                 if (!scanbotSDK.licenseInfo.isValid) {
-                    contourDetectorFrameHandler.isEnabled = false
+                    frameHandler.isEnabled = false
                     runOnUiThread {
                         Toast.makeText(
                             this,
@@ -109,7 +109,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         val options = BitmapFactory.Options()
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        val result = contourDetector.scanFromBitmap(originalBitmap)
+        val result = scanner.scanFromBitmap(originalBitmap)
 
         result?.pointsNormalized?.let { polygon ->
             ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
@@ -136,7 +136,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         cameraView.postDelayed({
             cameraView.continuousFocus()
             cameraView.startPreview()
-            contourDetectorFrameHandler.isEnabled = true
+            frameHandler.isEnabled = true
             polygonView.visibility = View.VISIBLE
         }, 1000)
     }

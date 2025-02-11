@@ -66,18 +66,18 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
         resultView = findViewById<View>(R.id.result) as ImageView
 
-        val contourDetectorFrameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
-        // contourDetectorFrameHandler.setAcceptedSizeScore(70)
+        val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
+        // frameHandler.setAcceptedSizeScore(70)
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
 
-        contourDetectorFrameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
-        contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
-        contourDetectorFrameHandler.addResultHandler(finderOverlayView.documentScannerFrameHandler)
-        contourDetectorFrameHandler.addResultHandler(this)
+        frameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
+        frameHandler.setIgnoreBadAspectRatio(true)
+        frameHandler.addResultHandler(finderOverlayView.documentScannerFrameHandler)
+        frameHandler.addResultHandler(this)
 
-        DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler).apply {
+        DocumentAutoSnappingController.attach(cameraView, frameHandler).apply {
             // setSensitivity(0.4f)
         }
 

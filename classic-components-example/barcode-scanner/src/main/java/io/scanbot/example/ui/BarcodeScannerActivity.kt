@@ -53,10 +53,10 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         }
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
-        val barcodeDetector = ScanbotSDK(this).createBarcodeScanner()
-        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
         scannerFrameHandler =
-            BarcodeScannerFrameHandler.attach(cameraView, barcodeDetector)
+            BarcodeScannerFrameHandler.attach(cameraView, scanner)
 
         scannerFrameHandler?.let { frameHandler ->
             frameHandler.setScanningInterval(1000)

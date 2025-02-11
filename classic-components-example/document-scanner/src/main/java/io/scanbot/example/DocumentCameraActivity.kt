@@ -43,7 +43,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSdk: ScanbotSDK
-    private lateinit var documentDetector: DocumentScanner
+    private lateinit var scanner: DocumentScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -54,7 +54,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         scanbotSdk = ScanbotSDK(this)
-        documentDetector = scanbotSdk.createDocumentScanner()
+        scanner = scanbotSdk.createDocumentScanner()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -67,7 +67,7 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         documentScannerView.apply {
             initCamera(CameraUiSettings(true))
-            initScanningBehavior(documentDetector,
+            initScanningBehavior(scanner,
                 { result ->
                     // Here you are continuously notified about contour detection results.
                     // For example, you can show a user guidance text depending on the current detection status.
@@ -203,7 +203,7 @@ class DocumentCameraActivity : AppCompatActivity() {
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document detection on original image:
-        val result = documentDetector.scanFromBitmap(originalBitmap)!!
+        val result = scanner.scanFromBitmap(originalBitmap)!!
         val detectedPolygon = result.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
