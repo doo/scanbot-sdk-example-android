@@ -21,7 +21,7 @@ class ScannerActivity : AppCompatActivity() {
 
     private lateinit var frameHandler: DocumentDataExtractorFrameHandler
 
-    private lateinit var documentRecognizer: DocumentDataExtractor
+    private lateinit var dataExtractor: DocumentDataExtractor
 
     private var useFlash = false
 
@@ -38,9 +38,9 @@ class ScannerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSdk = ScanbotSDK(this)
-        documentRecognizer = scanbotSdk.createDocumentDataExtractor()
+        dataExtractor = scanbotSdk.createDocumentDataExtractor()
 
-        frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, documentRecognizer, DocumentDataExtractionMode.LIVE)
+        frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor, DocumentDataExtractionMode.LIVE)
 
         frameHandler.addResultHandler { result ->
             var successLowConfidence = false // when status is `Success` but confidence is low

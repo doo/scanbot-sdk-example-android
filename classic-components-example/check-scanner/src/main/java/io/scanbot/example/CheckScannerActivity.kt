@@ -18,7 +18,7 @@ import io.scanbot.sdk.check.CheckScanningResult
 import io.scanbot.sdk.check.CheckRecognitionStatus
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
-class CheckRecognizerActivity : AppCompatActivity() {
+class CheckScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: TextView
     private lateinit var frameHandler: CheckScannerFrameHandler
@@ -82,7 +82,7 @@ class CheckRecognizerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, CheckRecognizerActivity::class.java)
+            return Intent(context, CheckScannerActivity::class.java)
         }
     }
 

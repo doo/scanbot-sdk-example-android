@@ -57,23 +57,6 @@ class ScannerActivity : AppCompatActivity() {
             })
         )
 
-
-        // TODO: If the string which is needed to scan is not clearly separated from other parts of the text
-        // then enable this setting. This will only work with 'pattern' variable from the validator:
-        //
-        // genericTextScanner.matchSubstringForPattern = true
-
-
-        // TODO: as an alternative it is possible to extract the valuable text from the raw scanned text manually
-        // using a Cleaner. The effective implementation of this function might significantly improve the speed
-        // of scanning
-        //
-        // genericTextScanner.setCleaner(object : GenericTextRecognizer.CleanRecognitionResultCallback {
-        //     override fun process(rawText: String): String {
-        //         return extractValuableDataFromText(rawText)
-        //     }
-        // })
-
         patternScannerFrameHandler = TextPatternScannerFrameHandler.attach(cameraView, patternScanner)
         patternScannerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {

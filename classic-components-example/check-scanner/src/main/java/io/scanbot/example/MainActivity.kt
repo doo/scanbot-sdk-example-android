@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.checkScanner.setOnClickListener {
-            startActivity(CheckRecognizerActivity.newIntent(this))
+            startActivity(CheckScannerActivity.newIntent(this))
         }
         binding.checkScannerAutoSnapping.setOnClickListener {
             startActivity(AutoSnappingCheckScannerActivity.newIntent(this))
@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val checkRecognizer = scanbotSdk.createCheckScanner()
-            checkRecognizer.scanFromBitmap(bitmap, 0)
+            val scanner = scanbotSdk.createCheckScanner()
+            scanner.scanFromBitmap(bitmap, 0)
         }
 
         withContext(Dispatchers.Main) {
