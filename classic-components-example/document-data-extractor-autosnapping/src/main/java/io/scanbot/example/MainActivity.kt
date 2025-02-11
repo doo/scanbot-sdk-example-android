@@ -13,11 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
-import io.scanbot.genericdocument.GenericDocumentRecognitionMode
-import io.scanbot.genericdocument.entity.DeDriverLicenseFront
-import io.scanbot.genericdocument.entity.DeIdCardFront
-import io.scanbot.genericdocument.entity.DeResidencePermitFront
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.documentdata.DocumentDataExtractionMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,12 +40,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             lifecycleScope.launch {
-                val documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
+                val dataExtractor = scanbotSdk.createDocumentDataExtractor()
 
             val result = withContext(Dispatchers.Default) {
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
-                documentRecognizer.scanBitmap(bitmap, 0, GenericDocumentRecognitionMode.SINGLE_SHOT)
+                dataExtractor.extractFromBitmap(bitmap, 0, DocumentDataExtractionMode.SINGLE_SHOT)
             }
 
                 withContext(Dispatchers.Main) {

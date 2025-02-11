@@ -5,23 +5,23 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.AspectRatio
-import io.scanbot.genericdocument.GenericDocumentRecognitionMode
-import io.scanbot.genericdocument.GenericDocumentRecognitionStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizer
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizerFrameHandler
+import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.documentdata.DocumentDataExtractionMode
+import io.scanbot.sdk.documentdata.DocumentDataExtractionStatus
+import io.scanbot.sdk.documentdata.DocumentDataExtractor
+import io.scanbot.sdk.documentdata.DocumentDataExtractorFrameHandler
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var resultTextView: TextView
 
-    private lateinit var frameHandler: GenericDocumentRecognizerFrameHandler
+    private lateinit var frameHandler: DocumentDataExtractorFrameHandler
 
-    private lateinit var documentRecognizer: GenericDocumentRecognizer
+    private lateinit var documentRecognizer: DocumentDataExtractor
 
     private var useFlash = false
 
@@ -38,15 +38,15 @@ class ScannerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSdk = ScanbotSDK(this)
-        documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
+        documentRecognizer = scanbotSdk.createDocumentDataExtractor()
 
-        frameHandler = GenericDocumentRecognizerFrameHandler.attach(cameraView, documentRecognizer, GenericDocumentRecognitionMode.LIVE)
+        frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, documentRecognizer, DocumentDataExtractionMode.LIVE)
 
         frameHandler.addResultHandler { result ->
             var successLowConfidence = false // when status is `Success` but confidence is low
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
-                    if (result.value.status == GenericDocumentRecognitionStatus.SUCCESS) {
+                    if (result.value.status == DocumentDataExtractionStatus.SUCCESS) {
                         if ((result.value.document?.confidence ?: 0.0) > 0.8) {
                             frameHandler.isEnabled = false
                             DocumentsResultsStorage.result = result.value

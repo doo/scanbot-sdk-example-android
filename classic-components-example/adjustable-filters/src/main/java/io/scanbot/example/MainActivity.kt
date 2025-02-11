@@ -103,29 +103,29 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val contourResult = sdk.createDocumentScanner().detect(bitmap)
+            val result = sdk.createDocumentScanner().scanFromBitmap(bitmap)
 
-            if (contourResult == null) {
+            if (result == null) {
                 Log.e(Const.LOG_TAG, "Error detecting document (result is `null`)!")
                 showToast("Error detecting document!")
                 return@withContext null
             }
-            Log.d(Const.LOG_TAG, "Doc detected: ${contourResult.status}")
+            Log.d(Const.LOG_TAG, "Doc detected: ${result.status}")
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
              */
-            val isDetectionOk = contourResult.status.name.startsWith("OK", true)
+            val isDetectionOk = result.status.name.startsWith("OK", true)
             if (isDetectionOk.not()) {
-                Log.e(Const.LOG_TAG, "Bad document photo - detection status was ${contourResult.status.name}!")
-                showToast("Bad document photo - status ${contourResult.status.name}!")
+                Log.e(Const.LOG_TAG, "Bad document photo - detection status was ${result.status.name}!")
+                showToast("Bad document photo - status ${result.status.name}!")
                 return@withContext null
             }
 
             val document = sdk.documentApi.createDocument()
             val page = document.addPage(bitmap)
             Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-            page.apply(newPolygon = contourResult.pointsNormalized)
+            page.apply(newPolygon = result.pointsNormalized)
             document
         }
 

@@ -9,12 +9,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import io.scanbot.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.genericdocument.entity.Field
+import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
+import io.scanbot.sdk.genericdocument.entity.Field
 
 class ResultActivity : AppCompatActivity() {
 
-    private lateinit var result: GenericDocumentRecognitionResult
+    private lateinit var result: DocumentDataExtractionResult
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this::result.isInitialized.not()) {
@@ -47,7 +47,7 @@ class ResultActivity : AppCompatActivity() {
  */
 object DocumentsResultsStorage {
 
-    var result: GenericDocumentRecognitionResult? = null
+    var result: DocumentDataExtractionResult? = null
         get() {
             val result = field
             field = null
@@ -55,7 +55,7 @@ object DocumentsResultsStorage {
         }
 }
 
-private class Adapter(private val scanResult: GenericDocumentRecognitionResult) :
+private class Adapter(private val scanResult: DocumentDataExtractionResult) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class FieldViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -80,7 +80,7 @@ private class Adapter(private val scanResult: GenericDocumentRecognitionResult) 
         private val croppedCard: ImageView = itemView.findViewById(R.id.croppedCard)
         private val cardType: TextView = itemView.findViewById(R.id.cardType)
 
-        fun bind(item: GenericDocumentRecognitionResult) {
+        fun bind(item: DocumentDataExtractionResult) {
             croppedCard.setImageBitmap(item.croppedImage?.toBitmap())
             cardType.text = item.document?.type?.name
         }

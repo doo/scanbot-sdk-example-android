@@ -5,10 +5,10 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -48,8 +48,8 @@ class ScannerActivity : AppCompatActivity() {
         vinScannerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
-                    if (result.value.validationSuccessful) {
-                        "VIN scanned:\n${result.value.rawText}"
+                    if (result.value.textResult.validationSuccessful) {
+                        "VIN scanned:\n${result.value.textResult.rawText}"
                     } else {
                         "VIN not validated"
                     }

@@ -9,12 +9,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import io.scanbot.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.genericdocument.entity.Field
+import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
+import io.scanbot.sdk.genericdocument.entity.Field
+
 
 class ResultActivity : AppCompatActivity() {
 
-    private lateinit var result: GenericDocumentRecognitionResult
+    private lateinit var result: DocumentDataExtractionResult
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this::result.isInitialized.not()) {
@@ -47,7 +48,7 @@ class ResultActivity : AppCompatActivity() {
  */
 object DocumentsResultsStorage {
 
-    var result: GenericDocumentRecognitionResult? = null
+    var result: DocumentDataExtractionResult? = null
         get() {
             val result = field
             field = null
@@ -56,7 +57,7 @@ object DocumentsResultsStorage {
 }
 
 private class Adapter(
-        private val scanResult: GenericDocumentRecognitionResult
+        private val result: DocumentDataExtractionResult
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class FieldViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -81,7 +82,7 @@ private class Adapter(
         private val croppedCard: ImageView = itemView.findViewById(R.id.croppedCard)
         private val cardType: TextView = itemView.findViewById(R.id.cardType)
 
-        fun bind(item: GenericDocumentRecognitionResult) {
+        fun bind(item: DocumentDataExtractionResult) {
             croppedCard.setImageBitmap(item.croppedImage?.toBitmap())
             cardType.text = item.document?.type?.name
         }
@@ -112,7 +113,7 @@ private class Adapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             ITEM_TYPE_HEADER -> {
-                (holder as HeaderViewHolder).bind(scanResult)
+                (holder as HeaderViewHolder).bind(result)
             }
             ITEM_TYPE_FIELD -> {
                 (holder as FieldViewHolder).bind(fieldsList()!![position - 1])
@@ -121,7 +122,7 @@ private class Adapter(
     }
 
     private fun fieldsList(): List<Field>? {
-        val document = scanResult.document
+        val document = result.document
         return document?.fields?.plus(
                 document.children.flatMap { depth1 ->
                     depth1.fields.plus(depth1.children.flatMap { depth2 -> depth2.fields })

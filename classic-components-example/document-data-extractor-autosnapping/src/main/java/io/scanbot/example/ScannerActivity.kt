@@ -6,27 +6,27 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.AspectRatio
-import io.scanbot.genericdocument.GenericDocumentRecognitionResult
-import io.scanbot.genericdocument.GenericDocumentRecognitionStatus
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.genericdocument.GenericDocumentAutoSnappingController
-import io.scanbot.sdk.genericdocument.GenericDocumentRecognizer
+import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.documentdata.DocumentDataAutoSnappingController
+import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
+import io.scanbot.sdk.documentdata.DocumentDataExtractionStatus
+import io.scanbot.sdk.documentdata.DocumentDataExtractor
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
 class ScannerActivity : AppCompatActivity() {
-    private lateinit var documentRecognizer: GenericDocumentRecognizer
+    private lateinit var dataExtractor: DocumentDataExtractor
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var autoSnappingController: GenericDocumentAutoSnappingController
+    private lateinit var autoSnappingController: DocumentDataAutoSnappingController
 
     private var useFlash = false
 
@@ -35,7 +35,7 @@ class ScannerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_scanner)
 
         val scanbotSdk = ScanbotSDK(this)
-        documentRecognizer = scanbotSdk.createGenericDocumentRecognizer()
+        dataExtractor = scanbotSdk.createDocumentDataExtractor()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(
@@ -44,7 +44,7 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        autoSnappingController = GenericDocumentAutoSnappingController.attach(cameraView, documentRecognizer)
+        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, dataExtractor)
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)
@@ -74,9 +74,9 @@ class ScannerActivity : AppCompatActivity() {
         }
 
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val recognitionResult = documentRecognizer.scanBitmap(bitmap, orientation = imageOrientation)
+        val recognitionResult = dataExtractor.extractFromBitmap(bitmap, orientation = imageOrientation)
 
-        val isSuccess = recognitionResult != null && recognitionResult.status == GenericDocumentRecognitionStatus.SUCCESS
+        val isSuccess = recognitionResult != null && recognitionResult.status == DocumentDataExtractionStatus.SUCCESS
 
         if (isSuccess) {
             recognitionResult?.document?.let {
@@ -91,7 +91,7 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun proceedToResult(result: GenericDocumentRecognitionResult) {
+    private fun proceedToResult(result: DocumentDataExtractionResult) {
         DocumentsResultsStorage.result = result
         startActivity(Intent(this, ResultActivity::class.java))
         finish()

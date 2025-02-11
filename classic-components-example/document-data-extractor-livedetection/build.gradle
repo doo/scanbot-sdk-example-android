@@ -36,7 +36,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
     implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
     implementation("io.scanbot:sdk-package-3:${project.ext.scanbotSdkVersion}")
-    implementation("io.scanbot:sdk-documentdata-assetss:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-documentdata-assets:${project.ext.scanbotSdkVersion}")
     implementation("androidx.recyclerview:recyclerview:${project.ext.recyclerViewVersion}")
     implementation project(':common')
 }
