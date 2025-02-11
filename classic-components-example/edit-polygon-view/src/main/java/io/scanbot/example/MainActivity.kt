@@ -12,10 +12,10 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.LineSegmentFloat
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.documentdetector.DocumentDetector
+import io.scanbot.sdk.common.LineSegmentFloat
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var originalBitmap: Bitmap
     private lateinit var previewBitmap: Bitmap
 
-    private lateinit var documentDetector: DocumentDetector
+    private lateinit var scanner: DocumentScanner
 
     private var lastRotationEventTs = 0L
     private var rotationDegrees = 0
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val scanbotSDK = ScanbotSDK(this)
-        documentDetector = scanbotSDK.createDocumentDetector()
+        scanner = scanbotSDK.createDocumentScanner()
 
         supportActionBar!!.hide()
 
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 originalBitmap = loadBitmapFromAssets("demo_image.jpg")
                 previewBitmap = resizeForPreview(originalBitmap)
 
-                val result = documentDetector.detect(originalBitmap)
+                val result = scanner.scanFromBitmap(originalBitmap)
                 return@withContext when (result?.status) {
                     DocumentDetectionStatus.OK,
                     DocumentDetectionStatus.OK_BUT_BAD_ANGLES,

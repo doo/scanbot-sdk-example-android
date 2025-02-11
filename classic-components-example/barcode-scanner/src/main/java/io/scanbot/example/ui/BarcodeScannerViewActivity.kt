@@ -15,10 +15,10 @@ import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.BarcodeItem
+import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
-import io.scanbot.sdk.barcodescanner.BarcodeScannerResult
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.ui.camera.CameraUiSettings
@@ -37,12 +37,12 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
 
-        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
+        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
 
         barcodeScannerView.apply {
             initCamera(CameraUiSettings(false))
-            initDetectionBehavior(barcodeDetector,
+            initScanningBehavior(scanner,
                 { result ->
                     if (result is FrameHandlerResult.Success) {
                         handleSuccess(result)
@@ -65,12 +65,16 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
                     override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
                         // we don't need full size pictures in this example
                     }
+
+                    override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
+
+                    }
                 }
             )
         }
 
         barcodeScannerView.viewController.apply {
-            barcodeDetectionInterval = 1000
+            barcodeScanningInterval = 1000
             autoSnappingEnabled = false
         }
     }

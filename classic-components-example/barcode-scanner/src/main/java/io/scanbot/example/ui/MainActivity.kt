@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (scanbotSdk.licenseInfo.isValid) {
-            lifecycleScope.launch { detectBarcodeAndShowResult(uri) }
+            lifecycleScope.launch { scanBarcodeAndShowResult(uri) }
         } else {
             this@MainActivity.showToast("1-minute trial license has expired!")
         }
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.importImage.setOnClickListener {
-            // select an image from photo library and run document detection on it:
+            // select an image from photo library and run document scanning on it:
             selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         binding.warningView.isVisible = ScanbotSDK(this).licenseInfo.status == Status.StatusTrial
     }
 
-    private suspend fun detectBarcodeAndShowResult(uri: Uri) {
+    private suspend fun scanBarcodeAndShowResult(uri: Uri) {
         withContext(Dispatchers.Main) {
             binding.progressBar.isVisible = true
         }
@@ -91,9 +91,9 @@ class MainActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val barcodeDetector = scanbotSdk.createBarcodeDetector()
-            barcodeDetector.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
-            val result = barcodeDetector.detectFromBitmap(bitmap, 0)
+            val scanner = scanbotSdk.createBarcodeScanner()
+            scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
+            val result = scanner.scanFromBitmap(bitmap, 0)
 
             BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, null, null) }
         }

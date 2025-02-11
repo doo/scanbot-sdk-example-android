@@ -14,11 +14,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.liveScannerBtn.setOnClickListener { startActivity(MRZLiveDetectionActivity.newIntent(this)) }
+        binding.liveScannerBtn.setOnClickListener { startActivity(MRZLiveScanningActivity.newIntent(this)) }
         val stillImageScannerBtn = findViewById<Button>(R.id.still_image_detection_btn)
 
         stillImageScannerBtn.setOnClickListener {
-            val intent = Intent(applicationContext, MrzStillImageDetectionActivity::class.java)
+            val intent = Intent(applicationContext, MrzStillImageScanningActivity::class.java)
             startActivity(intent)
         }
     }

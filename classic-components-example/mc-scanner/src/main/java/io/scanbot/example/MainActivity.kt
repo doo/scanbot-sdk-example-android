@@ -13,7 +13,7 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionParameters
+import io.scanbot.sdk.mc.MedicalCertificateScanningParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,15 +49,15 @@ class MainActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
-            val medicalCertificateRecognizer = scanbotSdk.createMedicalCertificateRecognizer()
+            val scanner = scanbotSdk.createMedicalCertificateScanner()
 
-            medicalCertificateRecognizer.recognizeMcBitmap(bitmap, 0, MedicalCertificateRecognitionParameters(true, true, true))
+            scanner.scanFromBitmap(bitmap, 0, MedicalCertificateScanningParameters(true, true, true))
         }
 
         withContext(Dispatchers.Main) {
             result?.let {
                 startActivity(MedicalCertificateResultActivity.newIntent(this@MainActivity, it))
-            } ?: this@MainActivity.showToast("Nothing detected on image")
+            } ?: this@MainActivity.showToast("Nothing found on image")
 
             binding.progressBar.isVisible = false
         }
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.scannerBtn.setOnClickListener { startActivity(MedicalCertificateRecognizerActivity.newIntent(this)) }
+        binding.scannerBtn.setOnClickListener { startActivity(MedicalCertificateScannerActivity.newIntent(this)) }
 
         binding.manualScannerBtn.setOnClickListener {
             startActivity(ManualMedicalCertificateScannerActivity.newIntent(this))

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.genericdocument.entity.MRZ
-import io.scanbot.sdk.mrzscanner.MrzScannerResult
+import io.scanbot.sdk.documentdata.entity.MRZ
+import io.scanbot.sdk.mrz.MrzScannerResult
 
 class MRZResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

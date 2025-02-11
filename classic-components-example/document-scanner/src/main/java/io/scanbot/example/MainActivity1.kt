@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             return@registerForActivityResult
         }
 
-        lifecycleScope.launch { processImageForAutoDocumentDetection(uri) }
+        lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Imports a selected image as original image and performs auto document detection on it. */
-    private suspend fun processImageForAutoDocumentDetection(uri: Uri) {
+    /** Imports a selected image as original image and performs auto document scanning on it. */
+    private suspend fun processImageForAutoDocumentScanning(uri: Uri) {
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.VISIBLE
             this@MainActivity.showToast("Importing page...")
@@ -79,10 +79,10 @@ class MainActivity : AppCompatActivity() {
             val document = scanbotSdk.documentApi.createDocument()
             val page = document.addPage(bitmap)
 
-            // run contour detection on the image:
-            val detectionResult = scanbotSdk.createDocumentDetector().detect(bitmap)
+            // run document scanning on the image:
+            val result = scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)
             // set the result to page:
-            page.apply(newPolygon = detectionResult?.pointsNormalized ?: PolygonHelper.getFullPolygon())
+            page.apply(newPolygon = result?.pointsNormalized ?: PolygonHelper.getFullPolygon())
             page
         }
 

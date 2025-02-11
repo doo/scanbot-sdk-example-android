@@ -9,13 +9,13 @@ allprojects {
         exampleAppId = "io.scanbot.example.sdk.android"
         submodulesNamespace = "io.scanbot.example"
 
-        compileSdkVersion = 34
+        compileSdkVersion = 35
         minSdkVersion = 21
-        targetSdkVersion = 34
+        targetSdkVersion = 35
 
         jvmToolchainVersion = 17
 
-        scanbotSdkVersion = "7.0.0.1030-SNAPSHOT"
+        scanbotSdkVersion = "7.0.0.1057-SNAPSHOT"
 
         androidCoreKtxVersion = "1.6.0"
         constraintLayoutVersion = "2.0.4"

@@ -25,16 +25,6 @@
         android:text="Load image + Run OCR"
         android:layout_alignParentStart="true" />
 
-    <CheckBox
-        android:id="@+id/with_pdf_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="With PDF"
-        android:checked="true"
-        android:layout_below="@id/scanButton"
-        />
-
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"

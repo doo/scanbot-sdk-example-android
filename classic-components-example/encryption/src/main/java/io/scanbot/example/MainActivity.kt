@@ -11,12 +11,12 @@ import io.scanbot.pdf.model.PageSize
 import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PdfRenderer
+import io.scanbot.sdk.process.PdfGenerator
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fileIOProcessor: FileIOProcessor
-    private lateinit var pdfRenderer: PdfRenderer
+    private lateinit var PdfGenerator: PdfGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
-        pdfRenderer = scanbotSDK.createPdfRenderer()
+        PdfGenerator = scanbotSDK.createPdfGenerator()
 
         findViewById<Button>(R.id.encrypt_image).setOnClickListener {
             writeEncryptedImage()
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = pdfRenderer.render(
+        val encryptedDestination = PdfGenerator.generateFromUris(
             imageFileUris.toTypedArray(),
             false,
             PdfConfiguration.default().copy(pageSize = PageSize.A4)

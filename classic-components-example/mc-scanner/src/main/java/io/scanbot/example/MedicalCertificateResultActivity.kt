@@ -8,10 +8,10 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.mcscanner.MedicalCertificateCheckBoxType
-import io.scanbot.sdk.mcscanner.MedicalCertificateDateRecordType
-import io.scanbot.sdk.mcscanner.MedicalCertificatePatientInfoField
-import io.scanbot.sdk.mcscanner.MedicalCertificateRecognitionResult
+import io.scanbot.sdk.mc.MedicalCertificateCheckBoxType
+import io.scanbot.sdk.mc.MedicalCertificateDateRecordType
+import io.scanbot.sdk.mc.MedicalCertificatePatientInfoField
+import io.scanbot.sdk.mc.MedicalCertificateScanningResult
 
 class MedicalCertificateResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -169,7 +169,7 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
         const val EXTRA_formType = "formType"
 
         @JvmStatic
-        fun newIntent(context: Context?, result: MedicalCertificateRecognitionResult): Intent {
+        fun newIntent(context: Context?, result: MedicalCertificateScanningResult): Intent {
             val intent = Intent(context, MedicalCertificateResultActivity::class.java)
             for (checkbox in result.checkBoxes) {
                 when (checkbox.type) {

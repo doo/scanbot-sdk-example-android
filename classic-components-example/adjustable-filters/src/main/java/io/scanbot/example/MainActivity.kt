@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            val documentId = createAndDetectDocumentPage(uri)
+            val documentId = createAndScanDocumentPage(uri)
 
             if (documentId != null) {
                 filterActivityResultLauncher.launch(FilterActivity.newIntent(this@MainActivity, documentId))
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun createAndDetectDocumentPage(imageUri: Uri): String? {
+    private suspend fun createAndScanDocumentPage(imageUri: Uri): String? {
         val bitmap = withContext(Dispatchers.IO) {
             val inputStream = contentResolver.openInputStream(imageUri)
             BitmapFactory.decodeStream(inputStream)
@@ -103,29 +103,29 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val contourResult = sdk.createDocumentDetector().detect(bitmap)
+            val result = sdk.createDocumentScanner().scanFromBitmap(bitmap)
 
-            if (contourResult == null) {
-                Log.e(Const.LOG_TAG, "Error detecting document (result is `null`)!")
-                showToast("Error detecting document!")
+            if (result == null) {
+                Log.e(Const.LOG_TAG, "Error finding document (result is `null`)!")
+                showToast("Error finding document!")
                 return@withContext null
             }
-            Log.d(Const.LOG_TAG, "Doc detected: ${contourResult.status}")
+            Log.d(Const.LOG_TAG, "Doc found: ${result.status}")
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
              */
-            val isDetectionOk = contourResult.status.name.startsWith("OK", true)
-            if (isDetectionOk.not()) {
-                Log.e(Const.LOG_TAG, "Bad document photo - detection status was ${contourResult.status.name}!")
-                showToast("Bad document photo - status ${contourResult.status.name}!")
+            val isScanOk = result.status.name.startsWith("OK", true)
+            if (isScanOk.not()) {
+                Log.e(Const.LOG_TAG, "Bad document photo - scanning status was ${result.status.name}!")
+                showToast("Bad document photo - status ${result.status.name}!")
                 return@withContext null
             }
 
             val document = sdk.documentApi.createDocument()
             val page = document.addPage(bitmap)
             Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-            page.apply(newPolygon = contourResult.pointsNormalized)
+            page.apply(newPolygon = result.pointsNormalized)
             document
         }
 

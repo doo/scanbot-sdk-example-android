@@ -13,28 +13,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.common.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.core.documentdetector.DocumentDetectionStatus
-import io.scanbot.sdk.core.documentdetector.DocumentDetector
-import io.scanbot.sdk.core.documentdetector.DocumentDetectorParameters
-import io.scanbot.sdk.documentdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.documentdetector.DocumentDetectorFrameHandler
+import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentScannerParameters
+import io.scanbot.sdk.document.DocumentAutoSnappingController
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
-class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
     private lateinit var userGuidanceHint: TextView
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var documentDetector: DocumentDetector
+    private lateinit var scanner: DocumentScanner
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         super.onCreate(savedInstanceState)
 
         scanbotSDK = ScanbotSDK(this)
-        documentDetector = scanbotSDK.createDocumentDetector()
+        scanner = scanbotSDK.createDocumentScanner()
 
         askPermission()
         setContentView(R.layout.activity_main)
@@ -66,18 +66,18 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         }
         resultView = findViewById<View>(R.id.result) as ImageView
 
-        val contourDetectorFrameHandler = DocumentDetectorFrameHandler.attach(cameraView, documentDetector)
-        // contourDetectorFrameHandler.setAcceptedSizeScore(70)
+        val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
+        // frameHandler.setAcceptedSizeScore(70)
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
 
-        contourDetectorFrameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
-        contourDetectorFrameHandler.setIgnoreBadAspectRatio(true)
-        contourDetectorFrameHandler.addResultHandler(finderOverlayView.documentDetectorFrameHandler)
-        contourDetectorFrameHandler.addResultHandler(this)
+        frameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
+        frameHandler.setIgnoreBadAspectRatio(true)
+        frameHandler.addResultHandler(finderOverlayView.documentScannerFrameHandler)
+        frameHandler.addResultHandler(this)
 
-        DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler).apply {
+        DocumentAutoSnappingController.attach(cameraView, frameHandler).apply {
             // setSensitivity(0.4f)
         }
 
@@ -100,14 +100,18 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
     }
 
     private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DocumentDetectorFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
-        // Here you are continuously notified about contour detection results.
-        // For example, you can show a user guidance text depending on the current detection status.
+    override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
+        // Here you are continuously notified about document scanning results.
+        // For example, you can show a user guidance text depending on the current scanning status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success) {
                 showUserGuidance(result.value.detectionStatus)
@@ -129,30 +133,37 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_OFF_CENTER -> {
                 userGuidanceHint.text = "Move to the center"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             else -> userGuidanceHint.visibility = View.GONE
         }
         lastUserGuidanceHintTs = System.currentTimeMillis()
@@ -175,14 +186,26 @@ class MainActivity : AppCompatActivity(), DocumentDetectorFrameHandler.ResultHan
         // Required for some Android devices like Samsung!
         if (imageOrientation > 0) {
             val matrix = Matrix()
-            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
+            matrix.setRotate(
+                imageOrientation.toFloat(),
+                originalBitmap.width / 2f,
+                originalBitmap.height / 2f
+            )
+            originalBitmap = Bitmap.createBitmap(
+                originalBitmap,
+                0,
+                0,
+                originalBitmap.width,
+                originalBitmap.height,
+                matrix,
+                false
+            )
         }
 
-        documentDetector.setParameters(DocumentDetectorParameters(aspectRatios = requiredPageAspectRatios))
-        val detectedPolygon = documentDetector.detect(originalBitmap)!!.pointsNormalized
+        scanner.setParameters(DocumentScannerParameters(aspectRatios = requiredPageAspectRatios))
+        val polygon = scanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post {
             resultView.setImageBitmap(documentImage)
             cameraView.continuousFocus()
