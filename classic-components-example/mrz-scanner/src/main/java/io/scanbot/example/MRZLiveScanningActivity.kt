@@ -22,7 +22,7 @@ import io.scanbot.sdk.util.log.LoggerProvider
 
 class MRZLiveScanningActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
-
+    // @Tag("Mrz Classic Camera")
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
 
@@ -34,8 +34,8 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         setContentView(R.layout.activity_mrz_live_scanner)
         askPermission()
         supportActionBar!!.hide()
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
-
+        // Configure Initial camera state
+        cameraView = findViewById(R.id.camera)
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.useFlash(flashEnabled)
@@ -43,14 +43,16 @@ class MRZLiveScanningActivity : AppCompatActivity() {
             }, 700)
         }
 
+        // Configure finder overlay with required aspect ratios
         finderOverlay = findViewById(R.id.finder_overlay)
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(5.0, 1.0)))
-
+        // Get the scanbot sdk instance
         val scanbotSDK = ScanbotSDK(this)
-
+        // Configure mrz scanner
         val mrzScanner = scanbotSDK.createMrzScanner()
+        // Attach mrz scanner to the camera
         val mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
-
+        // Handle live mrz scanning results
         mrzScannerFrameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
                 val scannerResult = result.value
@@ -77,7 +79,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
     }
-
+    // @EndTag("Mrz Classic Camera")
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
