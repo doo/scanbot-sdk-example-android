@@ -13,7 +13,7 @@ import io.scanbot.sdk.creditcard.CreditCardScanningStatus
 import io.scanbot.sdk.creditcard.entity.CreditCard
 
 class ScannerActivity : AppCompatActivity() {
-
+    // @Tag("Credit Card Classic Camera")
     private lateinit var binding: ActivityScannerBinding
 
     private lateinit var scanner: CreditCardScanner
@@ -26,15 +26,17 @@ class ScannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityScannerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        // init scanbot sdk and create credit card scanner
         scanner = ScanbotSDK(this).createCreditCardScanner()
-
+        // set aspect ration for finder overlay
         binding.finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.586, 1.0))) // standard credit card aspect ratio
 
+        // set camera preview mode to fit in the camera container
         binding.cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
+        // attach scanner to the camera view
         frameHandler = CreditCardScannerFrameHandler.attach(binding.cameraView, scanner)
-
+        // handle live credit card scanning results
         frameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
@@ -56,6 +58,7 @@ class ScannerActivity : AppCompatActivity() {
             false
         }
 
+        // configure camera view
         binding.cameraView.setCameraOpenCallback {
             binding.cameraView.useFlash(useFlash)
             binding.cameraView.continuousFocus()
@@ -67,4 +70,5 @@ class ScannerActivity : AppCompatActivity() {
         useFlash = !useFlash
         binding.cameraView.useFlash(useFlash)
     }
+    // @Tag("Credit Card Classic Camera")
 }

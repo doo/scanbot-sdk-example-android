@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- @Tag("Credit Card Camera Layout")-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -42,3 +43,4 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:text="1234 5678 9101 1121" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- @EndTag("Credit Card Camera Layout")-->
