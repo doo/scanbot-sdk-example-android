@@ -70,5 +70,5 @@ class ScannerActivity : AppCompatActivity() {
         useFlash = !useFlash
         binding.cameraView.useFlash(useFlash)
     }
-    // @Tag("Credit Card Classic Camera")
+    // @EndTag("Credit Card Classic Camera")
 }
