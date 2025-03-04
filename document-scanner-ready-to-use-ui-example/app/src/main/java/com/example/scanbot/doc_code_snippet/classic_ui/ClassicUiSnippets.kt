@@ -156,6 +156,7 @@ fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
                 result.value
                 // handle result here result.value.detectionResult
             }
+
             is FrameHandlerResult.Failure -> {
                 // there is a license problem that needs to be handled
             }
@@ -169,23 +170,34 @@ fun documentScanningParamsSnippet(cameraView: ScanbotCameraXView, context: Conte
     // @Tag("Customize Document Scanner Parameters")
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
     val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
-    frameHandler.setAcceptedAngleScore(75.0)
-    frameHandler.setAcceptedSizeScore(80.0)
+    scanner.setConfiguration(scanner.copyCurrentConfiguration().apply {
+        this.parameters.acceptedSizeScore = 80
+        this.parameters.acceptedAngleScore = 75
+    })
     // @EndTag("Customize Document Scanner Parameters")
 }
 
-fun addPolygonViewSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler) {
+fun addPolygonViewSnippet(
+    cameraView: ScanbotCameraXView,
+    frameHandler: DocumentScannerFrameHandler
+) {
     // @Tag("Bind PolygonView to DocumentScannerFrameHandler")
     val polygonView = cameraView.findViewById<PolygonView>(R.id.polygonView)
     frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
     // @EndTag("Bind PolygonView to DocumentScannerFrameHandler")
 }
 
-fun autoSnappingSnippet(cameraView: ScanbotCameraXView, frameHandler: DocumentScannerFrameHandler, context: Context) {
+fun autoSnappingSnippet(
+    cameraView: ScanbotCameraXView,
+    frameHandler: DocumentScannerFrameHandler,
+    context: Context
+) {
     // @Tag("Attach DocumentAutoSnappingController")
     val documentScanner = ScanbotSDK(context).createDocumentScanner()
-    val documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
-    val autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
+    val documentScannerFrameHandler =
+        DocumentScannerFrameHandler.attach(cameraView, documentScanner)
+    val autoSnappingController =
+        DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
     // @EndTag("Attach DocumentAutoSnappingController")
 }
 
@@ -195,9 +207,14 @@ fun autoSnappingSensitivitySnippet(autoSnappingController: DocumentAutoSnappingC
     // @EndTag("Set Auto Snapping Sensitivity")
 }
 
-fun autoSnappingVisualisationSnippet(scanbotCameraView: ScanbotCameraXView, documentScanner: DocumentScanner, polygonView: PolygonView) {
+fun autoSnappingVisualisationSnippet(
+    scanbotCameraView: ScanbotCameraXView,
+    documentScanner: DocumentScanner,
+    polygonView: PolygonView
+) {
     // @Tag("Auto Snapping Visualisation")
-    val autoSnappingController = DocumentAutoSnappingController.attach(scanbotCameraView, documentScanner)
+    val autoSnappingController =
+        DocumentAutoSnappingController.attach(scanbotCameraView, documentScanner)
     autoSnappingController.stateListener = polygonView
     // @EndTag("Auto Snapping Visualisation")
 }
@@ -209,6 +226,7 @@ fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentS
             is FrameHandlerResult.Success -> {
                 // handle result here result.value.detectionResult
             }
+
             is FrameHandlerResult.Failure -> {
                 // there is a license problem that needs to be handled
             }
@@ -236,7 +254,8 @@ fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Contex
             }
 
             // Decode image byte array to Bitmap, and rotate according to orientation:
-            val bitmap = ImageProcessor(image).rotate(captureInfo.imageOrientation).processedBitmap()
+            val bitmap =
+                ImageProcessor(image).rotate(captureInfo.imageOrientation).processedBitmap()
 
             if (bitmap == null) {
                 // license or feature is not available
@@ -279,7 +298,11 @@ fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Contex
     // @EndTag("Creating FinderPictureCallback")
 }
 
-fun editPolygonViewSetPointsSnippet(editPolygonView: EditPolygonImageView, context: Context, image: Bitmap) {
+fun editPolygonViewSetPointsSnippet(
+    editPolygonView: EditPolygonImageView,
+    context: Context,
+    image: Bitmap
+) {
     // @Tag("Set Scanned Contour to EditPolygonImageView")
     val scanner = ScanbotSDK(context).createDocumentScanner()
     val scanningResult = scanner.scanFromBitmap(image)
@@ -287,9 +310,15 @@ fun editPolygonViewSetPointsSnippet(editPolygonView: EditPolygonImageView, conte
     // @EndTag("Set Scanned Contour to EditPolygonImageView")
 }
 
-fun editPolygonViewSetLines(editPolygonView: EditPolygonImageView, scanningResult: DocumentDetectionResult) {
+fun editPolygonViewSetLines(
+    editPolygonView: EditPolygonImageView,
+    scanningResult: DocumentDetectionResult
+) {
     // @Tag("Set Scanned Lines to EditPolygonImageView")
-    editPolygonView.setLines(scanningResult?.horizontalLinesNormalized ?: emptyList(), scanningResult?.verticalLinesNormalized ?: emptyList())
+    editPolygonView.setLines(
+        scanningResult?.horizontalLinesNormalized ?: emptyList(),
+        scanningResult?.verticalLinesNormalized ?: emptyList()
+    )
     // @EndTag("Set Scanned Lines to EditPolygonImageView")
 }
 

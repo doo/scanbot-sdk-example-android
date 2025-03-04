@@ -28,6 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
+import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerScreenConfiguration
 
 class MainActivity : AppCompatActivity() {
 
@@ -97,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     private fun runSinglePageScanner() {
         val config = DocumentScanningFlow().apply {
             this.outputSettings.pagesScanLimit = 1
-            this.screens.camera.cameraConfiguration.requiredAspectRatios = listOf(
+            this.screens.camera.scannerParameters.aspectRatios = listOf(
                 AspectRatio(width = 21.0, height = 29.7) // allow only A4 format documents to be scanned
             )
         }
@@ -121,10 +123,10 @@ class MainActivity : AppCompatActivity() {
     private fun runFinderPageScanner() {
         val a4AspectRatio = AspectRatio(width = 21.0, height = 29.7)
         val config = DocumentScanningFlow().apply {
-            this.screens.camera.cameraConfiguration.requiredAspectRatios = listOf(a4AspectRatio)
+            this.screens.camera.scannerParameters.aspectRatios = listOf(a4AspectRatio)
             this.screens.camera.viewFinder.visible = true
             this.screens.camera.viewFinder.aspectRatio = a4AspectRatio
-            this.screens.camera.cameraConfiguration.acceptedSizeScore = 0.75
+            this.screens.camera.scannerParameters.acceptedSizeScore = 75
         }
         documentScannerResult.launch(config)
     }

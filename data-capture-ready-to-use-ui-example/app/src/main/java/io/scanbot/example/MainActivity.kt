@@ -26,8 +26,6 @@ import io.scanbot.sdk.ui.view.documentdata.*
 import io.scanbot.sdk.ui.view.documentdata.configuration.DocumentDataExtractorConfiguration
 import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
-import io.scanbot.sdk.ui.view.licenseplate.*
-import io.scanbot.sdk.ui.view.licenseplate.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
 import io.scanbot.sdk.ui.view.textpattern.*
@@ -46,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
-    private val licensePlateScannerResultLauncher: ActivityResultLauncher<LicensePlateScannerConfiguration>
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorConfiguration>
@@ -112,19 +109,6 @@ class MainActivity : AppCompatActivity() {
             )
 
             vinScannerResultLauncher.launch(vinScannerConfiguration)
-        }
-
-        findViewById<View>(R.id.license_plate_scanner_default_ui).setOnClickListener {
-            val licensePlateScannerConfiguration = LicensePlateScannerConfiguration()
-
-            licensePlateScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            licensePlateScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
-
-            licensePlateScannerResultLauncher.launch(licensePlateScannerConfiguration)
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
@@ -273,17 +257,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "VIN Scanned: ${vinScanResult.rawText}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-        licensePlateScannerResultLauncher =
-            registerForActivityResultOk(LicensePlateScannerActivity.ResultContract()) { resultEntity ->
-                // TODO: Process data from
-                // data.getParcelableExtra(LicensePlateScannerActivity.EXTRACTED_FIELDS_EXTRA) as LicensePlateScannerResult
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.license_plate_flow_finished),
                     Toast.LENGTH_LONG
                 ).show()
             }

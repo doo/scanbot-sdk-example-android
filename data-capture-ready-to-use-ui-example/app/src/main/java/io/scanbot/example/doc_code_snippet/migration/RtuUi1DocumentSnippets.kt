@@ -58,7 +58,7 @@ fun openDocumentScannerRtuV1(documentScannerResultLauncher: ActivityResultLaunch
     // Customize text resources, behavior and UI:
     val configuration = DocumentScannerConfiguration()
 
-    configuration.setIgnoreBadAspectRatio(true)
+    configuration.setIgnoreOrientationMismatch(true)
     configuration.setAutoSnappingSensitivity(0.75f)
 
     configuration.setTopBarBackgroundColor(Color.BLUE)

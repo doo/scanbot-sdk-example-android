@@ -20,13 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.licenseplate.*
 import io.scanbot.sdk.persistence.fileio.*
-import io.scanbot.sdk.ui.camera.*
-import io.scanbot.sdk.ui.view.licenseplate.*
-import io.scanbot.sdk.ui.view.licenseplate.configuration.LicensePlateScannerConfiguration
-import io.scanbot.sdk.ui.view.licenseplate.entity.LicensePlateScannerResult
 import java.io.File
 
 fun initializeCustomDir(application: Application) {

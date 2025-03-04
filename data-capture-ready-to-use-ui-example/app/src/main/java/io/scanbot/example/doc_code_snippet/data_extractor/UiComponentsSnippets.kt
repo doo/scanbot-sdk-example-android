@@ -204,9 +204,9 @@ fun getDocumentDataExtractorInstanceFromSdkSnippet(context: Context, cameraView:
     // )
 
     // To scan all the supported document types (default value)
-    documentDataExtractor.configuration = DocumentDataExtractorConfigurationBuilder()
-            .setAcceptedDocumentTypes(RootDocumentType.ALL_TYPES)
-            .build()
+    documentDataExtractor.setConfiguration(DocumentDataExtractorConfigurationBuilder()
+        .setAcceptedDocumentTypes(RootDocumentType.ALL_TYPES)
+        .build())
 
     val frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, documentDataExtractor)
     // @EndTag("Get DocumentDataExtractor instance and attach it to ScanbotCameraXView")

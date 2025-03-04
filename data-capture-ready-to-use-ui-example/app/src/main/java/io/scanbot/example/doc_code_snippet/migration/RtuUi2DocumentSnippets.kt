@@ -70,12 +70,12 @@ private fun openDocumentScannerRtuV2() {
     val configuration = DocumentScanningFlow().apply {
         screens.camera.apply {
             cameraConfiguration.apply {
-                // Equivalent to setIgnoreBadAspectRatio(true)
-                ignoreBadAspectRatio = true
-
                 // Equivalent to setAutoSnappingSensitivity(0.75f)
                 autoSnappingSensitivity = 0.75
             }
+
+            // Equivalent to ignoreOrientationMismatch(true)
+            screens.camera.scannerParameters.ignoreOrientationMismatch = true
 
             // Ready-to-Use UI v2 contains an acknowledgment screen to
             // verify the captured document with the built-in Document Quality Analyzer.

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "io.scanbot.sdk.usecases.documents"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.scanbot.example.document.usecases.android"
@@ -20,10 +20,12 @@ android {
         named("debug") {
             minifyEnabled = false
             shrinkResources = false
+            debuggable = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         named("release") {
             minifyEnabled = false
+            debuggable = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -37,14 +39,14 @@ android {
     }
 }
 
-
-def scanbotSdkVersion = "7.0.0.20-STAGING-SNAPSHOT"
+def scanbotSdkVersion = "7.0.0.1075-SNAPSHOT"
 
 dependencies {
 
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-docqualityanalyzer-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:bundle-sdk-barcode-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-1:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 

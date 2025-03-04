@@ -15,7 +15,7 @@ allprojects {
 
         jvmToolchainVersion = 17
 
-        scanbotSdkVersion = "7.0.0.1057-SNAPSHOT"
+        scanbotSdkVersion = "7.0.0.1075-SNAPSHOT"
 
         androidCoreKtxVersion = "1.6.0"
         constraintLayoutVersion = "2.0.4"

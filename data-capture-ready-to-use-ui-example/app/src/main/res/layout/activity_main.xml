@@ -104,14 +104,6 @@
                     android:text="@string/scan_vin" />
 
                 <Button
-                    android:id="@+id/license_plate_scanner_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_license_plate" />
-
-                <Button
                     android:id="@+id/ehic_default_ui"
                     style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                     android:layout_width="match_parent"
