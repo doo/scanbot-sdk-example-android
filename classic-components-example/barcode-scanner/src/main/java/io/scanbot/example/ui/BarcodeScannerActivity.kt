@@ -22,6 +22,7 @@ import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
 import io.scanbot.sdk.barcode.BarcodeScannerFrameHandler
 import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
@@ -54,7 +55,9 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
         val scanner = ScanbotSDK(this).createBarcodeScanner()
-        scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
         scannerFrameHandler =
             BarcodeScannerFrameHandler.attach(cameraView, scanner)
 

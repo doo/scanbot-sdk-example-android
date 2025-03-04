@@ -19,6 +19,7 @@ import io.scanbot.example.R
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.BarcodeItem
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.barcode.ui.BarcodePolygonsStaticView
 import io.scanbot.sdk.barcode.ui.BarcodeScanAndCountView
@@ -43,7 +44,9 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         snapResult = findViewById(R.id.snapped_message)
 
         val scanner = ScanbotSDK(this).createBarcodeScanner()
-        scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
         scanButton.setOnClickListener {
             scanCountView.viewController.scanAndCount() // call this to run the scan and count
         }

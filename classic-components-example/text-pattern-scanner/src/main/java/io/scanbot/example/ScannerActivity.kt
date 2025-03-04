@@ -44,7 +44,7 @@ class ScannerActivity : AppCompatActivity() {
         // TODO: set validation string and validation callback which matches the need of the task
         // For the pattern: # - digits, ? - for any character. Other characters represent themselves
         // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-        patternScanner.configuration = patternScanner.configuration.copy(
+        patternScanner.setConfiguration( patternScanner.copyCurrentConfiguration().copy(
             // validator = PresetContentValidator(preset = ValidatorPreset.VEHICLE_IDENTIFICATION_NUMBER),
             // validator = PatternContentValidator(pattern = "######"),
             validator = CustomContentValidator(callback =  object : ContentValidationCallback {
@@ -56,7 +56,7 @@ class ScannerActivity : AppCompatActivity() {
                     return text.firstOrNull() in listOf('1', '2') // TODO: add additional validation for the recognized text
                 }
             })
-        )
+        ))
 
         patternScannerFrameHandler = TextPatternScannerFrameHandler.attach(cameraView, patternScanner)
         patternScannerFrameHandler.addResultHandler { result ->

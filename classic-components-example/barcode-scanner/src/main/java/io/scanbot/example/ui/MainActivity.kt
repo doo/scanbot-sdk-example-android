@@ -18,6 +18,7 @@ import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -92,7 +93,9 @@ class MainActivity : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeStream(inputStream)
 
             val scanner = scanbotSdk.createBarcodeScanner()
-            scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
+            scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+                setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+            } )
             val result = scanner.scanFromBitmap(bitmap, 0)
 
             BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, null, null) }

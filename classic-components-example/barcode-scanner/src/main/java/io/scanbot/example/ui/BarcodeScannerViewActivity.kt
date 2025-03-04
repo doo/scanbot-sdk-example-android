@@ -17,6 +17,7 @@ import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
@@ -38,7 +39,9 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         resultView = findViewById(R.id.result)
 
         val scanner = ScanbotSDK(this).createBarcodeScanner()
-        scanner.setConfigurations(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList() )
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
 
         barcodeScannerView.apply {
             initCamera(CameraUiSettings(false))

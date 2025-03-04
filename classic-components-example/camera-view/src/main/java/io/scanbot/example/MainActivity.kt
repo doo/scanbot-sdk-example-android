@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
-    private val ignoreBadAspectRatio = true
+    private val ignoreOrientationMistmatch = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -85,11 +85,13 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
-        documentScannerFrameHandler.setAcceptedAngleScore(60.0)
-        documentScannerFrameHandler.setAcceptedSizeScore(75.0)
+        documentScanner.setParameters(documentScanner.copyCurrentConfiguration().parameters.apply {
+            this.ignoreOrientationMismatch = ignoreOrientationMistmatch
+            this.acceptedSizeScore = 75
+            this.acceptedAngleScore = 60
+        })
         documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
         documentScannerFrameHandler.addResultHandler(this)
-        documentScannerFrameHandler.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
 
         autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
 
@@ -169,7 +171,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 userGuidanceHint.visibility = View.VISIBLE
             }
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreBadAspectRatio) {
+                if (ignoreOrientationMistmatch) {
                     userGuidanceHint.text = "Don't move"
                     // change polygon color to "OK"
                     polygonView.setFillColor(POLYGON_FILL_COLOR_OK)

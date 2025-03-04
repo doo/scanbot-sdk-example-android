@@ -15,7 +15,7 @@ import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.check.CheckScannerFrameHandler
 import io.scanbot.sdk.check.CheckScannerFrameHandler.Companion.attach
 import io.scanbot.sdk.check.CheckScanningResult
-import io.scanbot.sdk.check.CheckRecognitionStatus
+import io.scanbot.sdk.check.CheckMagneticInkStripScanningStatus
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 class CheckScannerActivity : AppCompatActivity() {
@@ -46,7 +46,7 @@ class CheckScannerActivity : AppCompatActivity() {
         frameHandler.addResultHandler { result: FrameHandlerResult<CheckScanningResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
                 val scanningResult = (result as FrameHandlerResult.Success<*>).value as CheckScanningResult?
-                if (scanningResult?.status == CheckRecognitionStatus.SUCCESS) {
+                if (scanningResult?.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
                     frameHandler.isEnabled = false
                     startActivity(CheckScannerResultActivity.newIntent(this, scanningResult))
                 }

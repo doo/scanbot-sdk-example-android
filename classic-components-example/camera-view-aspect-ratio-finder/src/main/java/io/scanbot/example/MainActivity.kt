@@ -71,9 +71,10 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
-
-        frameHandler.setRequiredAspectRatios(requiredPageAspectRatios)
-        frameHandler.setIgnoreBadAspectRatio(true)
+        scanner.setParameters(scanner.copyCurrentConfiguration().parameters.apply {
+            this.aspectRatios = requiredPageAspectRatios
+            this.ignoreOrientationMismatch = true
+        })
         frameHandler.addResultHandler(finderOverlayView.documentScannerFrameHandler)
         frameHandler.addResultHandler(this)
 

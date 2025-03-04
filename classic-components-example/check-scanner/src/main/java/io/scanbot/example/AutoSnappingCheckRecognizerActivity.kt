@@ -61,9 +61,11 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         frameHandler =
             DocumentScannerFrameHandler.attach(cameraView, scanner)
 
-        frameHandler.setAcceptedAngleScore(60.0)
-        frameHandler.setAcceptedSizeScore(75.0)
-        frameHandler.setIgnoreBadAspectRatio(true)
+        scanner.setParameters(scanner.copyCurrentConfiguration().parameters.apply {
+            this.ignoreOrientationMismatch = true
+            this.acceptedSizeScore = 75
+            this.acceptedAngleScore = 60
+        })
 
         frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
         autoSnappingController =

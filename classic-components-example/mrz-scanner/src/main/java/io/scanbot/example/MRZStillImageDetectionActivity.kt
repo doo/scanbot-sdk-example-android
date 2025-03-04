@@ -73,7 +73,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
             val config = DocumentScanningFlow().apply {
                 this.outputSettings.pagesScanLimit = 1
                 this.screens.camera.cameraConfiguration.autoSnappingEnabled = false
-                this.screens.camera.cameraConfiguration.ignoreBadAspectRatio = true
+                this.screens.camera.scannerParameters.ignoreOrientationMismatch = true
             }
             docScannerResultLauncher.launch(config)
         }
