@@ -33,7 +33,6 @@ include(
     ":document-data-extractor-livedetection",
     ":text-pattern-scanner",
     ":vin-scanner",
-    ":licenseplate-scanner",
     ":tiff-generation",
     ":check-scanner",
     ":creditcard-scanner",
