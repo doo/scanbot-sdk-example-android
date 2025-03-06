@@ -3,8 +3,14 @@ package io.scanbot.example.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.squareup.picasso.Picasso
+import io.scanbot.example.R
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityBarcodeResultBinding
 import io.scanbot.example.databinding.BarcodeItemBinding
 import io.scanbot.example.databinding.SnapImageItemBinding
@@ -21,6 +27,8 @@ class BarcodeResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         showSnapImageIfExists(
             BarcodeResultRepository.barcodeResultBundle?.previewPath

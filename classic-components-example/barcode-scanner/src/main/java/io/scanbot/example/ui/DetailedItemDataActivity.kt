@@ -1,7 +1,14 @@
 package io.scanbot.example.ui
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import io.scanbot.example.R
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityDetailedItemDataBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.BarcodeItem
@@ -26,6 +33,8 @@ class DetailedItemDataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
             binding.container?.also {

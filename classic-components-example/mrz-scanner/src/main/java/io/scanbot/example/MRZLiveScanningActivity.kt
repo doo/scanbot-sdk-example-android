@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.common.AspectRatio
@@ -34,6 +35,8 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         setContentView(R.layout.activity_mrz_live_scanner)
         askPermission()
         supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
+
         // Configure Initial camera state
         cameraView = findViewById(R.id.camera)
         cameraView.setCameraOpenCallback {

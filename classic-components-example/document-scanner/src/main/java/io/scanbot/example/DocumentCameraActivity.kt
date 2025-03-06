@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -52,6 +53,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
         askPermission()
         supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         scanbotSdk = ScanbotSDK(this)
         scanner = scanbotSdk.createDocumentScanner()

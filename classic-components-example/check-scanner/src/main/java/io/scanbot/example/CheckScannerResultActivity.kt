@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.check.CheckScanningResult
 import io.scanbot.sdk.genericdocument.entity.GenericDocument
 
@@ -18,6 +19,8 @@ class CheckScannerResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_result)
+        supportActionBar!!.hide()
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         val fieldsLayout = findViewById<LinearLayout>(R.id.check_result_fields_layout)
         checkResultImageView = findViewById(R.id.check_result_image)

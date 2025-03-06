@@ -2,6 +2,7 @@ package io.scanbot.example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityScannerBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -26,6 +27,9 @@ class ScannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityScannerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar!!.hide()
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
+
         // init scanbot sdk and create credit card scanner
         scanner = ScanbotSDK(this).createCreditCardScanner()
         // set aspect ration for finder overlay

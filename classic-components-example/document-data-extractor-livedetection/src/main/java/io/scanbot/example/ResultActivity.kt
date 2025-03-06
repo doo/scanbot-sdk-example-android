@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
 import io.scanbot.sdk.genericdocument.entity.Field
 
@@ -29,6 +30,7 @@ class ResultActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_idcard_scanner_result)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         val resultsRecyclerView = findViewById<RecyclerView>(R.id.resultsRecyclerView)
         val adapter = Adapter(result)
