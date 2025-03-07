@@ -10,12 +10,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import io.scanbot.example.common.applyEdgeToEdge
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         if (askPermission()) {
             startScannerActivity()

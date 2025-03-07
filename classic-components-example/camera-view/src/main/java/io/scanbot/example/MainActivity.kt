@@ -8,13 +8,18 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
@@ -54,6 +59,8 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         askPermission()
         setContentView(R.layout.activity_main)
         supportActionBar!!.hide()
+
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         scanbotSDK = ScanbotSDK(this)
         documentScanner = scanbotSDK.createDocumentScanner()

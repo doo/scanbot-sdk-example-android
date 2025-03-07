@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.getAppStorageDir
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
@@ -21,6 +22,7 @@ import io.scanbot.sdk.tiff.model.UserField
 import io.scanbot.sdk.tiff.model.UserFieldDoubleValue
 import io.scanbot.sdk.tiff.model.UserFieldIntValue
 import io.scanbot.sdk.tiff.model.UserFieldStringValue
+import io.scanbot.sdk.util.FileChooserUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,7 +32,7 @@ import java.util.UUID
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val tiffWriter by lazy { scanbotSdk.createTiffGenerator() }
+    private val tiffGenerator by lazy { scanbotSdk.createTiffGenerator() }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -63,6 +65,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        supportActionBar?.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         binding.selectImagesButton.setOnClickListener {
             binding.resultTextView.text = ""
@@ -82,7 +86,8 @@ class MainActivity : AppCompatActivity() {
 
         val result = withContext(Dispatchers.IO) {
 
-            val uris = imageUris.toTypedArray().map { uri ->
+            // Convert URIs to local files DON'T USE IN PRODUCTION
+            val files = imageUris.toTypedArray().map { uri ->
 
                 val file = appStorageDir.resolve(
                     UUID.randomUUID().toString() + ".jpg"
@@ -94,16 +99,16 @@ class MainActivity : AppCompatActivity() {
                         input?.copyTo(output)
                     }
                 }
-                file.toUri()
+                file
             }
 
-            // Convert URIs to local filed DON USE IN PRODUCTION
-            tiffWriter.generateFromUris(
-                uris.toTypedArray(),
+            tiffGenerator.generateFromFiles(
+                files.toTypedArray(),
                 false,
                 resultFile,
                 constructParameters(binarize, addCustomFields)
             )
+
         }
 
         withContext(Dispatchers.Main)

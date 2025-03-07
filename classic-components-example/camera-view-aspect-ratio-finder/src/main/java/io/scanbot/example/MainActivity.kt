@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         askPermission()
         setContentView(R.layout.activity_main)
         supportActionBar!!.hide()
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
+
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setPreviewMode(CameraPreviewMode.FILL_IN)
 

@@ -5,12 +5,19 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.example.R
 import io.scanbot.example.common.Const
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.model.BarcodeResultBundle
@@ -52,6 +59,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         binding.qrDemo.setOnClickListener {
             val intent = Intent(applicationContext, BarcodeScannerActivity::class.java)

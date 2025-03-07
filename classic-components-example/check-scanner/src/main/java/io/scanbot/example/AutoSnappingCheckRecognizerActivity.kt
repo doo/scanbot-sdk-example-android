@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
@@ -40,6 +41,9 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_autosnapping_check_scanner)
+        supportActionBar!!.hide()
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
+
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->
             cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
             cameraView.setCameraOpenCallback {

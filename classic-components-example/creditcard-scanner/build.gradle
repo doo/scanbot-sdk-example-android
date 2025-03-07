@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
     implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
     implementation("io.scanbot:sdk-package-3:${project.ext.scanbotSdkVersion}")

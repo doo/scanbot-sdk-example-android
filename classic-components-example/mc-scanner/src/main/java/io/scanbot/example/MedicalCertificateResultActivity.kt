@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.mc.MedicalCertificateCheckBoxType
 import io.scanbot.sdk.mc.MedicalCertificateDateRecordType
 import io.scanbot.sdk.mc.MedicalCertificatePatientInfoField
@@ -17,6 +18,7 @@ class MedicalCertificateResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mc_result)
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         val checkboxesLayout = findViewById<LinearLayout>(R.id.mc_result_checkboxes_layout)
         val datesLayout = findViewById<LinearLayout>(R.id.mc_result_dates_layout)

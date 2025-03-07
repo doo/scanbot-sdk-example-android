@@ -13,6 +13,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import io.scanbot.example.common.Const
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityFiltersTunesBinding
 import io.scanbot.example.fragment.ErrorFragment
@@ -53,6 +54,7 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         initActionBar()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         scanbotSdk = ScanbotSDK(application)
 

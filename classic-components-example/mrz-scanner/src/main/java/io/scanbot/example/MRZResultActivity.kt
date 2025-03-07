@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.documentdata.entity.MRZ
 import io.scanbot.sdk.mrz.MrzScannerResult
 
@@ -13,6 +14,7 @@ class MRZResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mrz_result)
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         val travelDocType = findViewById<TextView>(R.id.travelDocType)
         val documentNumber = findViewById<TextView>(R.id.document_number)

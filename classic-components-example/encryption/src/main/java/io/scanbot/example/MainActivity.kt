@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.pdf.model.PageSize
 import io.scanbot.pdf.model.PdfConfiguration
@@ -21,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
