@@ -57,13 +57,12 @@ object ExampleUtils {
 
     fun showEncryptedDocumentToast(
         context: Context,
-        pdfFile: File,
+        file: File,
         fileIOProcessor: FileIOProcessor
     ) {
-        val stream = fileIOProcessor.openFileInputStream(pdfFile)
+        val stream = fileIOProcessor.openFileInputStream(file)
         stream.use { inputStream ->
-            val unEncryptedFile = SharingDocumentStorage(context).getDocumentSharingDir(pdfFile.name)
-                .resolve("unencrypted.pdf")
+            val unEncryptedFile = SharingDocumentStorage(context).getDocumentSharingDir(file.parentFile.nameWithoutExtension).resolve("unencrypted.${file.extension}")
             FileOutputStream(unEncryptedFile).use { outputStream ->
                 inputStream?.copyTo(outputStream)
             }

@@ -56,17 +56,20 @@ class ExampleApplication : Application(), CoroutineScope {
                     Status.StatusFailureExpired -> {
                         Toast.makeText(this, "License error: $status ", Toast.LENGTH_LONG).show()
                     }
-                    else -> { /* Can be empty for the purpose of this example. */ }
+
+                    else -> { /* Can be empty for the purpose of this example. */
+                    }
                 }
 
             })
-            .useFileEncryption(USE_ENCRYPTION)
+            // .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
             .license(this, LICENSE_KEY)
             .initialize(this)
 
         launch {
             // Delete all existing documents on app start
-            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage()
+                .deleteAll()
         }
     }
 }
