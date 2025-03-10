@@ -75,7 +75,6 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped.
             }
         }
-        // @EndTag("Using Cropping UI")
 
     fun startCropping(document: Document) {
         // Retrieve the selected document page.
@@ -100,7 +99,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         // Start the recognizer activity.
         croppingResult.launch(configuration)
     }
-
+    // @EndTag("Using Cropping UI")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()
