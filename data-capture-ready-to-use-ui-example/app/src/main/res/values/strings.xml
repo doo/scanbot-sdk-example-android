@@ -16,6 +16,7 @@
     <string name="mrz_result_caption">Detected Medical Certificate Form</string>
     <string name="license_plate_flow_finished">License plate scanning flow finished</string>
     <string name="scan_text_data">Scan data</string>
+    <string name="scan_credit_card">Scan Credit Card</string>
     <string name="scan_vin">Scan VIN</string>
     <string name="scan_license_plate">Scan EU license plate</string>
     <string name="scan_generic_document">Scan Generic Document</string>

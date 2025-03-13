@@ -14,6 +14,7 @@ import io.scanbot.sap.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.*
 import io.scanbot.sdk.check.entity.*
+import io.scanbot.sdk.creditcard.entity.CreditCard
 import io.scanbot.sdk.documentdata.*
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ehicscanner.*
@@ -28,21 +29,24 @@ import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
-import io.scanbot.sdk.ui.view.textpattern.*
-import io.scanbot.sdk.ui.view.textpattern.configuration.*
-import io.scanbot.sdk.ui.view.textpattern.entity.*
 import io.scanbot.sdk.ui.view.vin.*
 import io.scanbot.sdk.ui.view.vin.configuration.*
+import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.*
+import io.scanbot.sdk.ui_v2.creditcard.CreditCardScannerActivity
+import io.scanbot.sdk.ui_v2.creditcard.configuration.CreditCardScannerScreenConfiguration
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
+import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
+import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
 
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
 
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
-    private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerConfiguration>
+    private val creditCardUiResultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration>
+    private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
@@ -61,41 +65,32 @@ class MainActivity : AppCompatActivity() {
             mrzCameraConfiguration.cameraConfiguration.apply {
                 flashEnabled = false
             }
-            mrzCameraConfiguration.mrzExampleOverlay = MrzFinderLayoutPreset.threeLineMrzFinderLayoutPreset()
+            mrzCameraConfiguration.mrzExampleOverlay =
+                MrzFinderLayoutPreset.threeLineMrzFinderLayoutPreset()
+            mrzCameraConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
+
             mrzDefaultUiResultLauncher.launch(mrzCameraConfiguration)
         }
 
-        findViewById<View>(R.id.text_data_scanner_default_ui).setOnClickListener {
-            val step = TextPatternScannerStep(
-                stepTag = "One-line text",
-                title = "One-line text scanning",
-                guidanceText = "Scan any one-line text",
-                // You may set a pattern for the expected text or use validation callback for that
-                // For the pattern: # - digits, ? - for any character. Other characters represent themselves
-                // pattern = "######",
-                // TODO: set validation string and validation callback which matches the need of the task
-                // For example we may be waiting for a string which starts with 1 or 2, and then 5 more digits
-                // validationCallback = object : TextDataScannerStep.GenericTextValidationCallback {
-                //     override fun validate(text: String): Boolean {
-                //         return text.first() in listOf('1', '2') // TODO: add additional validation for the recognized text
-                //     }
-                // },
-                // preferredZoom = 1.6f
-                // You may also set a cleaner callback to clean the recognized text before validation
-                // For example, we may want to remove all whitespaces from the recognized text or apply the regex
-                // cleanRecognitionResultCallback = ...
-            )
+        findViewById<View>(R.id.text_pattern_scanner_default_ui).setOnClickListener {
+            // Create the default configuration object.
+            val textPatternScannerConfiguration = TextPatternScannerScreenConfiguration()
+            // Configure what string should be passed as successfully scanned text.
+            /*     configuration.scannerConfiguration.validator = CustomContentValidator().apply {
+                     val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
+                     this.callback = object : ContentValidationCallback {
+                         override fun clean(rawText: String): String {
+                             return rawText.replace(" ", "")
+                         }
 
-            val textDataScannerConfiguration = TextPatternScannerConfiguration(step)
-
-            textDataScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            textDataScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
-
-            textDataScannerResultLauncher.launch(textDataScannerConfiguration)
+                         override fun validate(text: String): Boolean {
+                             val matcher = pattern.matcher(text)
+                             return matcher.find()
+                         }
+                     }
+                 }*/
+            textPatternScannerConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
+            textDataScannerResultLauncher.launch(textPatternScannerConfiguration)
         }
 
         findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
@@ -109,6 +104,12 @@ class MainActivity : AppCompatActivity() {
             )
 
             vinScannerResultLauncher.launch(vinScannerConfiguration)
+        }
+
+        findViewById<View>(R.id.credit_card_scanner_default_ui).setOnClickListener {
+            val creditCardScannerConfiguration = CreditCardScannerScreenConfiguration()
+            creditCardScannerConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
+            creditCardUiResultLauncher.launch(creditCardScannerConfiguration)
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
@@ -236,19 +237,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     init {
+        creditCardUiResultLauncher =
+            registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+                if (resultEntity.resultOk) {
+                    resultEntity.result?.creditCard?.let {
+                        val creditCard = CreditCard(it)
+                        val cardNumber: String = creditCard.cardNumber.value.text
+                        val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
+                        val expiryDate: String? = creditCard.expiryDate?.value?.text
+                        Toast.makeText(
+                            this,
+                            "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
         mrzDefaultUiResultLauncher =
             registerForActivityResultOk(MrzScannerActivity.ResultContract()) { resultEntity ->
-                resultEntity.result?.mrzDocument?.let { showMrzDialog(it) }
             }
 
         textDataScannerResultLauncher =
-            registerForActivityResultOk(TextPatternScannerActivity.ResultContract()) { resultEntity ->
-                val textDataScannerStepResult = resultEntity.result!!.first()
-                Toast.makeText(
-                    this@MainActivity,
-                    "Scanned: ${textDataScannerStepResult.text}",
-                    Toast.LENGTH_LONG
-                ).show()
+            registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
+                if (resultEntity.resultOk) {
+                    resultEntity.result?.rawText?.let {
+                        Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
 
         vinScannerResultLauncher =
