@@ -20,6 +20,8 @@ import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ehicscanner.*
 import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
+import io.scanbot.sdk.textpattern.ContentValidationCallback
+import io.scanbot.sdk.textpattern.CustomContentValidator
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.check.*
 import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
@@ -39,6 +41,7 @@ import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
 import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
+import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
@@ -76,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             // Create the default configuration object.
             val textPatternScannerConfiguration = TextPatternScannerScreenConfiguration()
             // Configure what string should be passed as successfully scanned text.
-            /*     configuration.scannerConfiguration.validator = CustomContentValidator().apply {
+         /*   textPatternScannerConfiguration.scannerConfiguration.validator = CustomContentValidator().apply {
                      val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
                      this.callback = object : ContentValidationCallback {
                          override fun clean(rawText: String): String {
