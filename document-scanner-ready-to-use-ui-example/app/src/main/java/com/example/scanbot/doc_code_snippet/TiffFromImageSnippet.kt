@@ -59,7 +59,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         )
         // notify the generator that the images are encrypted with global sdk-encryption settings
         val encryptionEnabled = false
-        // Render the images to a PDF file.
+        // Render the images to a Tiff file.
         val file = File("path/to/tiff/file")
         val created = tiffGenerator.generateFromUris(
             sourceImages = list.toTypedArray(),
@@ -69,7 +69,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         )
 
         if (created && file.exists()) {
-            // Do something with the PDF file
+            // Do something with the Tiff file
         }
     }
     // @EndTag("Creating a TIFF from images")
