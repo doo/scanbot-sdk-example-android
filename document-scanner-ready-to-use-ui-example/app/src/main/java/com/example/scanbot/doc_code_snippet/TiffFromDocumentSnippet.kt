@@ -52,7 +52,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
                                     }
                                     document.addPage(bitmap)
                                 }
-                            createPdfFromImages(document)
+                            createTiffFromImages(document)
                         }
                     }
                 }
@@ -63,7 +63,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
     // Create tiff generator instance
     val tiffGenerator = scanbotSDK.createTiffGenerator()
 
-    fun createPdfFromImages(document: Document) {
+    fun createTiffFromImages(document: Document) {
         val config = TiffGeneratorParameters(
             binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
@@ -71,16 +71,16 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
-        val pdfGenerated = tiffGenerator.generateFromDocument(
+        val tiffGenerated = tiffGenerator.generateFromDocument(
             document,
             tiffFile,
             config
         )
         val file = tiffFile
-        if (pdfGenerated && file.exists()) {
-            // Do something with the PDF file
+        if (tiffGenerated && file.exists()) {
+            // Do something with the Tiff file
         } else {
-            Log.e("PdfFromDocumentSnippet", "Failed to create PDF")
+            Log.e("TiffFromDocumentSnippet", "Failed to create Tiff")
         }
     }
     // @EndTag("Creating a TIFF from a Document")
