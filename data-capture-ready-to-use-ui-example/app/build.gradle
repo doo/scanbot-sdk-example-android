@@ -92,6 +92,9 @@ dependencies {
     // This dependency is only needed if you plan to use Medical Certificate scanner feature
     implementation("io.scanbot:sdk-mc-assets:$scanbotSdkVersion")
 
+    // This dependency is only needed if you plan to use Credit Card Scanner feature
+    implementation("io.scanbot:sdk-creditcard-assets:$scanbotSdkVersion")
+
     // This dependency is only needed if you plan to use EHIC scanner feature
     implementation("io.scanbot:sdk-ehic-assets:$scanbotSdkVersion")
 
