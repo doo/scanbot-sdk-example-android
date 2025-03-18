@@ -22,25 +22,25 @@ fun wrapCheck(genericDocument: GenericDocument) {
             val number = wrapper.accountNumber
         }
         FRACheck.DOCUMENT_TYPE  -> {
-            // Handle ID card back
+            // Handle FRACheck
         }
         KWTCheck.DOCUMENT_TYPE  -> {
-            // Handle passport
+            // Handle KWTCheck
         }
         AUSCheck.DOCUMENT_TYPE  -> {
-            // Handle driver license front
+            // Handle AUSCheck
         }
         INDCheck.DOCUMENT_TYPE  -> {
-            // Handle driver license back
+            // Handle INDCheck
         }
         ISRCheck.DOCUMENT_TYPE  -> {
-            // Handle residence permit front
+            // Handle ISRCheck
         }
         UAECheck.DOCUMENT_TYPE  -> {
-            // Handle residence permit back
+            // Handle UAECheck
         }
         CANCheck.DOCUMENT_TYPE  -> {
-            // Handle health insurance card front
+            // Handle CANCheck
         }
         else -> {
             // Handle other document types
