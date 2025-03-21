@@ -259,6 +259,11 @@ class MainActivity : AppCompatActivity() {
 
         mrzDefaultUiResultLauncher =
             registerForActivityResultOk(MrzScannerActivity.ResultContract()) { resultEntity ->
+                if (resultEntity.resultOk) {
+                    resultEntity.result?.mrzDocument?.let {
+                        showMrzDialog(it)
+                    }
+                }
             }
 
         textDataScannerResultLauncher =
