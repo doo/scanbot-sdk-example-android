@@ -25,15 +25,13 @@ import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 class AutoSnappingCheckScannerActivity : AppCompatActivity() {
+    private lateinit var scanbotSDK: ScanbotSDK
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: TextView
 
     private lateinit var frameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
-
-    private lateinit var scanner: DocumentScanner
-    private lateinit var checkScanner: CheckScanner
 
     private var flashEnabled = false
 
@@ -55,17 +53,16 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         }
 
         resultView = findViewById<View>(R.id.result) as TextView
-        val scanbotSDK = ScanbotSDK(this)
+        scanbotSDK = ScanbotSDK(this)
 
-        checkScanner = scanbotSDK.createCheckScanner()
-        scanner = scanbotSDK.createDocumentScanner()
+        val documentScanner = scanbotSDK.createDocumentScanner()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
         frameHandler =
-            DocumentScannerFrameHandler.attach(cameraView, scanner)
+            DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
-        scanner.setParameters(scanner.copyCurrentConfiguration().parameters.apply {
+        documentScanner.setParameters(documentScanner.copyCurrentConfiguration().parameters.apply {
             this.ignoreOrientationMismatch = true
             this.acceptedSizeScore = 75
             this.acceptedAngleScore = 60
@@ -115,13 +112,15 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         val options = BitmapFactory.Options()
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        val result = scanner.scanFromBitmap(originalBitmap)
+        val documentScanner = scanbotSDK.createDocumentScanner()
+        val result = documentScanner.scanFromBitmap(originalBitmap)
 
         result?.pointsNormalized?.let { polygon ->
             ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
                 ?.let { documentImage ->
                     // documentImage will be recycled inside scanCheckBitmap
                     val imageCopy = Bitmap.createBitmap(documentImage)
+                    val checkScanner = scanbotSDK.createCheckScanner()
                     val checkResult = checkScanner.scanFromBitmap(documentImage, 0)
                     if (checkResult?.check != null) {
                         CheckScannerResultActivity.tempDocumentImage = imageCopy

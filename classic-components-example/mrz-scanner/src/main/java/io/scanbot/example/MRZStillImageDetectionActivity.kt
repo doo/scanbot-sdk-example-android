@@ -30,7 +30,12 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMrzStillImageScanningBinding.inflate(layoutInflater) }
     private val scanbotSdk by lazy { ScanbotSDK(this) }
-    private val mrzScanner by lazy { scanbotSdk.createMrzScanner() }
+    private val mrzScanner by lazy { scanbotSdk.createMrzScanner().apply {
+        setConfiguration(this.copyCurrentConfiguration().apply {
+            // frame accumulation is not needed for still image scanning
+            this.frameAccumulationConfiguration.minimumNumberOfRequiredFramesWithEqualScanningResult = 1
+        })
+    } }
 
     private lateinit var page: Page
 
@@ -58,6 +63,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        supportActionBar!!.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         docScannerResultLauncher =

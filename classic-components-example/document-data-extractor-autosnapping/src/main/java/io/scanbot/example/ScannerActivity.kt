@@ -22,7 +22,7 @@ import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
 class ScannerActivity : AppCompatActivity() {
-    private lateinit var dataExtractor: DocumentDataExtractor
+    private lateinit var scanbotSdk: ScanbotSDK
 
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var shutterButton: ShutterButton
@@ -37,8 +37,7 @@ class ScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
-        val scanbotSdk = ScanbotSDK(this)
-        dataExtractor = scanbotSdk.createDocumentDataExtractor()
+        scanbotSdk = ScanbotSDK(this)
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(
@@ -47,7 +46,7 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, dataExtractor)
+        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, scanbotSdk.createDocumentDataExtractor())
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)
@@ -77,7 +76,9 @@ class ScannerActivity : AppCompatActivity() {
         }
 
         val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val result = dataExtractor.extractFromBitmap(bitmap, orientation = imageOrientation)
+        val result = scanbotSdk.createDocumentDataExtractor()
+            .apply { setConfiguration(this.copyCurrentConfiguration().apply { resultAccumulationConfig.minConfirmations = 1 }) }
+            .extractFromBitmap(bitmap, orientation = imageOrientation)
 
         val isSuccess = result != null && result.status == DocumentDataExtractionStatus.SUCCESS
 

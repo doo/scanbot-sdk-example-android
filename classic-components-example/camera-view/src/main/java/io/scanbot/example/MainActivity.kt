@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
@@ -63,7 +62,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         scanbotSDK = ScanbotSDK(this)
-        documentScanner = scanbotSDK.createDocumentScanner()
+        val documentScanner = scanbotSDK.createDocumentScanner()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -217,6 +216,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document scanning on original image:
+        val documentScanner = scanbotSDK.createDocumentScanner()
         val polygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
