@@ -225,8 +225,8 @@ class MrzIntroductionSnippet : AppCompatActivity() {
             dividerColor = ScanbotColor("#EFEFEF")
 
             // Configure the text.
-            text.color = ScanbotColor("#000000")
-            text.text =
+            explanation.color = ScanbotColor("#000000")
+            explanation.text =
                 "The Machine Readable Zone (MRZ) is a special code on your ID document (such as a passport or ID card) that contains your personal information in a machine-readable format.\n\nTo scan it, simply hold your camera over the document, so that it aligns with the MRZ section. Once scanned, the data will be automatically processed, and you will be directed to the results screen.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.

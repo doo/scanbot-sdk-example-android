@@ -1,5 +1,7 @@
 package io.scanbot.example
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -7,6 +9,8 @@ import android.util.Log
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
@@ -47,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
+        askPermission()
+
         binding.checkScanner.setOnClickListener {
             startActivity(CheckScannerActivity.newIntent(this))
         }
@@ -76,5 +82,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         withContext(Dispatchers.Main) { binding.progressBar.isVisible = false }
+    }
+
+    private fun askPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
+        }
     }
 }

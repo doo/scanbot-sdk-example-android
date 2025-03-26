@@ -228,8 +228,8 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
             dividerColor = ScanbotColor("#EFEFEF")
 
             // Configure the text.
-            text.color = ScanbotColor("#000000")
-            text.text =
+            explanation.color = ScanbotColor("#000000")
+            explanation.text =
                 "To quickly and securely input your credit card details, please hold your device over the credit card, so that the camera aligns with the numbers on the front of the card.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.

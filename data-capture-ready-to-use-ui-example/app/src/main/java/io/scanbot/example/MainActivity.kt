@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                 val vinScanResult = resultEntity.result!!
                 Toast.makeText(
                     this@MainActivity,
-                    "VIN Scanned: ${vinScanResult.rawText}",
+                    "VIN Scanned: ${vinScanResult.textResult.rawText}",
                     Toast.LENGTH_LONG
                 ).show()
             }

@@ -45,7 +45,7 @@ fun startVinScannerRTUAndHandleResultSnippet(activity: AppCompatActivity, myButt
 
     vinScannerResultLauncher = activity.registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
         if (resultEntity.resultOk) {
-            Toast.makeText(activity, resultEntity.result?.rawText, Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, resultEntity.result?.textResult?.rawText, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -75,7 +75,7 @@ fun handleResultDeprecatedSnippet(requestCode: Int, resultCode: Int, data: Inten
     if (requestCode == VIN_SCANNER_REQUEST_CODE_CONSTANT) {
         val result: VinScannerActivity.Result = VinScannerActivity.extractResult(resultCode, data)
         if (result.resultOk) {
-            Toast.makeText(context, result.result?.rawText, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, result.result?.textResult?.rawText, Toast.LENGTH_LONG).show()
         }
     }
     // @EndTag("(DEPRECATED) Handle RTU Vin Scanner result")
@@ -95,9 +95,9 @@ fun setVinScannerRTUConfigurationSnippet(context: Context) {
 fun handleVinScannerRTUResultSnippet(context: Context, result: VinScannerActivity.Result) {
     // @Tag("Handle RTU Vin Scanner result")
     val scannedVinString = StringBuilder()
-            .append("VIN code: ${result.result?.rawText}")
-            .append("\nConfidence: ${result.result?.confidence}")
-            .append("\nValidation success: ${result.result?.validationSuccessful}")
+            .append("VIN code: ${result.result?.textResult?.rawText}")
+            .append("\nConfidence: ${result.result?.textResult?.confidence}")
+            .append("\nValidation success: ${result.result?.textResult?.validationSuccessful}")
             .toString()
     Toast.makeText(context, scannedVinString, Toast.LENGTH_LONG).show()
     // @EndTag("Handle RTU Vin Scanner result")

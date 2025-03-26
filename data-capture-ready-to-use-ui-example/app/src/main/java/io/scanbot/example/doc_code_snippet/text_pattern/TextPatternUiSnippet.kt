@@ -211,8 +211,8 @@ class TextPatternIntroductionSnippet : AppCompatActivity() {
             dividerColor = ScanbotColor("#EFEFEF")
 
             // Configure the text.
-            text.color = ScanbotColor("#000000")
-            text.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
+            explanation.color = ScanbotColor("#000000")
+            explanation.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
