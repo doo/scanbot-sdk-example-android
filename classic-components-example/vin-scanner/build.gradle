@@ -38,4 +38,5 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
     implementation("io.scanbot:sdk-package-2:${project.ext.scanbotSdkVersion}")
     implementation("io.scanbot:sdk-textpattern-assets:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:bundle-sdk-barcode-assets:${project.ext.scanbotSdkVersion}")
 }
