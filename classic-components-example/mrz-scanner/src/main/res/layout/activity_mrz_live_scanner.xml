@@ -1,6 +1,8 @@
+<!-- @Tag("Mrz Camera Layout")-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -23,11 +25,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/mrz_finder_hint"
         android:layout_above="@id/finder_overlay"
         android:layout_margin="16dp"
-        android:textColor="@android:color/holo_red_dark"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="@string/mrz_finder_hint"
+        android:textColor="@android:color/holo_red_dark" />
 
     <Button
         android:id="@+id/flash"
@@ -37,3 +39,4 @@
         android:layout_alignParentEnd="true"
         android:text="Flash" />
 </RelativeLayout>
+    <!-- @EndTag("Mrz Camera Layout")-->

@@ -12,9 +12,9 @@ import androidx.fragment.app.DialogFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
-import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.core.contourdetector.ContourDetector
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentAutoSnappingController
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -24,14 +24,14 @@ class CameraDialogFragment : DialogFragment() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
 
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var scanner: DocumentScanner
 
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val scanbotSDK = ScanbotSDK(requireContext())
-        contourDetector = scanbotSDK.createContourDetector()
+        scanner = scanbotSDK.createDocumentScanner()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,10 +44,10 @@ class CameraDialogFragment : DialogFragment() {
             }, 700)
         }
         resultView = baseView.findViewById<View>(R.id.result) as ImageView
-        val contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
+        val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
         val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
-        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
-        DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+        DocumentAutoSnappingController.attach(cameraView, frameHandler)
 
         cameraView.addPictureCallback(object : PictureCallback() {
             override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
@@ -74,8 +74,8 @@ class CameraDialogFragment : DialogFragment() {
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
-        // This is just a demo showing detected image as downscaled preview image.
+        // Implement a suitable async(!) scanning and image handling here.
+        // This is just a demo showing scanning image as downscaled preview image.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
@@ -91,9 +91,9 @@ class CameraDialogFragment : DialogFragment() {
                 Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
 
-        // Run document detection on original image:
-        val detectionResult = contourDetector.detect(originalBitmap)
-        detectionResult?.polygonF?.let { polygonF ->
+        // Run document scanning on original image:
+        val result = scanner.scanFromBitmap(originalBitmap)
+        result?.pointsNormalized?.let { polygonF ->
             val documentImage = ImageProcessor(originalBitmap).crop(polygonF).processedBitmap()
             if (documentImage != null) resultView.post {
                 resultView.setImageBitmap(documentImage)

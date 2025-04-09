@@ -10,13 +10,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
+import io.scanbot.sdk.ocr.OcrEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,40 +26,36 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val opticalCharacterRecognizer: OpticalCharacterRecognizer by lazy { scanbotSdk.createOcrRecognizer() }
+    private val opticalCharacterRecognizer: OcrEngine by lazy { scanbotSdk.createOcrEngine() }
 
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
-
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
-
-        binding.progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch {
-            val document = createDocument(uri)
-            if (ocrWithPdf) {
-                recognizeTextWithPDF(document)
-            } else {
-                recognizeTextWithoutPDF(document)
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
             }
-            binding.progressBar.visibility = View.GONE
-        }
-    }
 
-    private val ocrWithPdf: Boolean
-        get() = binding.withPdfCheckbox.isChecked
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
+
+            binding.progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                val document = createDocument(uri)
+                recognizeTextWithoutPDF(document)
+                binding.progressBar.visibility = View.GONE
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         binding.scanButton.setOnClickListener {
             selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -75,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun recognizeTextWithoutPDF(document: Document) {
         val ocrResult = withContext(Dispatchers.Default) {
-            opticalCharacterRecognizer.recognizeTextFromUris(document.pages.map { it.documentFileUri })
+            opticalCharacterRecognizer.recognizeFromUris(document.pages.map { it.documentFileUri })
         }
 
         withContext(Dispatchers.Main) {
@@ -83,21 +80,6 @@ class MainActivity : AppCompatActivity() {
                 if (it.ocrPages.isNotEmpty()) {
                     this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
                 }
-            }
-        }
-    }
-
-    private suspend fun recognizeTextWithPDF(document: Document) {
-        val ocrResult = withContext(Dispatchers.Default) {
-            opticalCharacterRecognizer.recognizeTextWithPdfFromDocument(
-                document,
-                PdfConfig.defaultConfig().copy(pageSize = PageSize.A4),
-            )
-        }
-
-        withContext(Dispatchers.Main) {
-            ocrResult.sandwichedPdfDocumentFile?.let { file ->
-                this@MainActivity.showToast("See PDF file: ${file.path}")
             }
         }
     }

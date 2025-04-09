@@ -6,25 +6,28 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PDFRenderer
+import io.scanbot.sdk.process.PdfGenerator
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fileIOProcessor: FileIOProcessor
-    private lateinit var pdfRenderer: PDFRenderer
+    private lateinit var PdfGenerator: PdfGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
-        pdfRenderer = scanbotSDK.createPdfRenderer()
+        PdfGenerator = scanbotSDK.createPdfGenerator()
 
         findViewById<Button>(R.id.encrypt_image).setOnClickListener {
             writeEncryptedImage()
@@ -58,10 +61,10 @@ class MainActivity : AppCompatActivity() {
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = pdfRenderer.render(
+        val encryptedDestination = PdfGenerator.generateFromUris(
             imageFileUris.toTypedArray(),
             false,
-            PdfConfig.defaultConfig().copy(pageSize = PageSize.A4)
+            PdfConfiguration.default().copy(pageSize = PageSize.A4)
         ) ?: return
 
         showToast("The encrypted pdf was written to: $encryptedDestination")

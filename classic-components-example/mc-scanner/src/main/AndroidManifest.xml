@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MedicalCertificateRecognizerActivity" />
+        <activity android:name=".MedicalCertificateScannerActivity" />
         <activity android:name=".ManualMedicalCertificateScannerActivity" />
         <activity android:name=".MedicalCertificateResultActivity" />
     </application>

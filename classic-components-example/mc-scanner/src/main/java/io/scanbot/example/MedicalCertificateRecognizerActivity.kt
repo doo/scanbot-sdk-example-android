@@ -16,30 +16,33 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.MedicalCertificateResultActivity.Companion.newIntent
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateAutoSnappingController
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateFrameHandler
-import io.scanbot.sdk.mcrecognizer.MedicalCertificateRecognizer
+import io.scanbot.sdk.mc.MedicalCertificateAutoSnappingController
+import io.scanbot.sdk.mc.MedicalCertificateFrameHandler
+import io.scanbot.sdk.mc.MedicalCertificateScanner
+import io.scanbot.sdk.mc.MedicalCertificateScanningParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import kotlin.math.roundToInt
 
-class MedicalCertificateRecognizerActivity : AppCompatActivity() {
+class MedicalCertificateScannerActivity : AppCompatActivity() {
 
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultImageView: ImageView
 
     private var flashEnabled = false
 
-    private lateinit var medicalCertificateRecognizer: MedicalCertificateRecognizer
+    private lateinit var scanner: MedicalCertificateScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mc_recognizer)
+        setContentView(R.layout.activity_mc_scanner)
         supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
         askPermission()
         resultImageView = findViewById(R.id.resultImageView)
 
@@ -58,12 +61,12 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSDK = ScanbotSDK(this)
-        medicalCertificateRecognizer = scanbotSDK.createMedicalCertificateRecognizer()
+        scanner = scanbotSDK.createMedicalCertificateScanner()
 
-        // Attach `FrameHandler`, that will be detecting Medical Certificate document on the camera frames
+        // Attach `FrameHandler`, that will be scanning for Medical Certificate document on the camera frames
         val frameHandler =
-            MedicalCertificateFrameHandler.attach(cameraView, medicalCertificateRecognizer)
-        // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will detect Medical Certificate document on the frame successfully
+            MedicalCertificateFrameHandler.attach(cameraView, scanner)
+        // Attach `AutoSnappingController`, that will trigger the snap as soon as `FrameHandler` will scanning Medical Certificate document on the frame successfully
         MedicalCertificateAutoSnappingController.attach(cameraView, frameHandler).apply {
             // possibly adjust auto-snapping parameters here
 //            setSensitivity(0.5f)
@@ -88,27 +91,29 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
 
     private fun processPictureTaken(image: ByteArray) {
         // Here we get the full image from the camera.
-        // Implement a suitable async(!) detection and image handling here.
+        // Implement a suitable async(!) scanning and image handling here.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
         options.inSampleSize = 2 // use 1 for full, no downscaled image.
         var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
 
-        // And finally run Medical Certificate recognition on prepared document image:
-        val resultInfo = medicalCertificateRecognizer.recognizeMcBitmap(
+        // And finally run Medical Certificate scanning on prepared document image:
+        val resultInfo = scanner.scanFromBitmap(
             originalBitmap,
             0,
-            shouldCropDocument = true,
-            returnCroppedDocument = true,
-            recognizePatientInfo = true,
-            recognizeBarcode = true
+            MedicalCertificateScanningParameters(
+                shouldCropDocument = true,
+                extractCroppedImage = true,
+                recognizePatientInfoBox = true,
+                recognizeBarcode = true
+            )
         )
 
-        if (resultInfo != null && resultInfo.recognitionSuccessful) {
+        if (resultInfo != null && resultInfo.scanningSuccessful) {
             // Show the cropped image as thumbnail preview
-            resultInfo.croppedImage?.let {
-                val thumbnailImage = resizeImage(it, 600f, 600f)
+            resultInfo.croppedImage?.toBitmap()?.let { image ->
+                val thumbnailImage = resizeImage(image, 600f, 600f)
                 runOnUiThread {
                     resultImageView.setImageBitmap(thumbnailImage)
                 }
@@ -119,7 +124,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
             runOnUiThread {
                 val toast = Toast.makeText(
                     this,
-                    "No Medical Certificate content was recognized!",
+                    "No Medical Certificate content was found!",
                     Toast.LENGTH_LONG
                 )
                 toast.setGravity(Gravity.CENTER, 0, 0)
@@ -158,7 +163,7 @@ class MedicalCertificateRecognizerActivity : AppCompatActivity() {
     companion object {
         @JvmStatic
         fun newIntent(context: Context?): Intent {
-            return Intent(context, MedicalCertificateRecognizerActivity::class.java)
+            return Intent(context, MedicalCertificateScannerActivity::class.java)
         }
     }
 }

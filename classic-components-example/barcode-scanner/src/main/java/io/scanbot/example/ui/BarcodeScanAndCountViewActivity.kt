@@ -7,6 +7,7 @@ import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,11 +15,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import io.scanbot.example.R
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeItem
+import io.scanbot.sdk.barcode.BarcodeItem
+import io.scanbot.sdk.barcode.setBarcodeFormats
+import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.barcode.ui.BarcodePolygonsStaticView
 import io.scanbot.sdk.barcode.ui.BarcodeScanAndCountView
 import io.scanbot.sdk.barcode.ui.IBarcodeScanCountViewCallback
@@ -36,16 +43,17 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_barcode_count_view)
 
+        applyEdgeToEdge(findViewById(R.id.root_view))
+
         scanCountView = findViewById(R.id.barcode_scanner_view)
         scanButton = findViewById(R.id.snapButton)
         nextButton = findViewById(R.id.nextButton)
         snapResult = findViewById(R.id.snapped_message)
 
-        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.modifyConfig {
-            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
-            setSaveCameraPreviewFrame(false)
-        }
+        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
         scanButton.setOnClickListener {
             scanCountView.viewController.scanAndCount() // call this to run the scan and count
         }
@@ -60,8 +68,8 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
 
         scanCountView.apply {
             initCamera()
-            initDetectionBehavior(
-                barcodeDetector,
+            initScanningBehavior(
+                scanner,
                 callback = object : IBarcodeScanCountViewCallback {
                     override fun onCameraOpen() {
                         scanCountView.viewController.useFlash(flashEnabled)
@@ -98,8 +106,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
                 defaultStyle: BarcodePolygonsStaticView.BarcodePolygonStyle,
                 barcodeItem: BarcodeItem
             ): BarcodePolygonsStaticView.BarcodePolygonStyle {
-                // you can customize the style of the barcode polygon here
-                return defaultStyle
+               return defaultStyle
             }
         })
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :
@@ -111,7 +118,11 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         })
         scanCountView.counterOverlayController.setBarcodeItemViewBinder(object :
             BarcodePolygonsStaticView.BarcodeItemViewBinder {
-            override fun bindView(view: View, barcodeItem: BarcodeItem, isBarcodeAccepted: Boolean) {
+            override fun bindView(
+                view: View,
+                barcodeItem: BarcodeItem,
+                isBarcodeAccepted: Boolean
+            ) {
                 val valueTextView = view.findViewById<TextView>(R.id.custom_ar_view_value)
                 val imageView = view.findViewById<ImageView>(R.id.custom_ar_view)
 //                valueTextView.isVisible = false //uncomment to show barcode value

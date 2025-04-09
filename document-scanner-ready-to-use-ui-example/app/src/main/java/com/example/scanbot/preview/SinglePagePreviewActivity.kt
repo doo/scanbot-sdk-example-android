@@ -138,14 +138,13 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 val imageQualityResult = withContext(Dispatchers.Default) {
                     // Result is represented by `DocumentQuality` enum.
                     page.documentImage?.let {
-                        exampleSingleton.pageDocQualityAnalyzer().analyzeInBitmap(it, 0)
+                        exampleSingleton.pageDocQualityAnalyzer().analyzeOnBitmap(it, 0)
                     }
                 }
                 withContext(Dispatchers.Main) {
                     imageQualityResult?.let { qualityResult ->
-                        val text = "Image quality: ${qualityResult.name}"
-                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG)
-                            .show()
+                        val text = "Image quality: ${qualityResult.quality?.name}"
+                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG).show()
 
                         updateImageView()
                         progress.visibility = View.GONE

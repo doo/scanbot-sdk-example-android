@@ -1,11 +1,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DocumentCameraActivity">
 
-    <io.scanbot.sdk.docdetection.ui.DocumentScannerView
+    <io.scanbot.sdk.document.ui.DocumentScannerView
         android:id="@+id/document_scanner_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

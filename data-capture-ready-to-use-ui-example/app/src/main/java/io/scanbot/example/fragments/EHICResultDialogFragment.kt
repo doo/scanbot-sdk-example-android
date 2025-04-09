@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import io.scanbot.ehicscanner.model.EhicRecognitionResult
 import io.scanbot.example.R
+import io.scanbot.sdk.ehicscanner.EuropeanHealthInsuranceCardRecognitionResult
 
 
 class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
@@ -22,7 +22,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "EHICResultDialogFragment"
 
         @JvmStatic
-        fun newInstance(recognitionResult: EhicRecognitionResult): EHICResultDialogFragment {
+        fun newInstance(recognitionResult: EuropeanHealthInsuranceCardRecognitionResult): EHICResultDialogFragment {
             val frag = EHICResultDialogFragment()
             val args = Bundle()
             args.putParcelable(EHIC_DATA, recognitionResult)
@@ -31,7 +31,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         }
     }
 
-    private var ehicRecognitionResult: EhicRecognitionResult? = null
+    private var ehicRecognitionResult: EuropeanHealthInsuranceCardRecognitionResult? = null
 
     private fun addContentView(inflater: LayoutInflater, container: ViewGroup?): View? {
         ehicRecognitionResult = requireArguments().getParcelable(EHIC_DATA)
@@ -80,7 +80,7 @@ class EHICResultDialogFragment : androidx.fragment.app.DialogFragment() {
         return dialog
     }
 
-    private fun extractData(result: EhicRecognitionResult): String {
+    private fun extractData(result: EuropeanHealthInsuranceCardRecognitionResult): String {
         val builder = StringBuilder()
         for (field in result.fields) {
             builder.append(field.type.name).append(": ").append(field.value).append("\n\n")

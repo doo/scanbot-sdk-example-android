@@ -1,0 +1,41 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = project.ext.submodulesNamespace
+    compileSdk = project.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        named("debug") {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
+        }
+    }
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+    implementation("androidx.constraintlayout:constraintlayout:${project.ext.constraintLayoutVersion}")
+    implementation("io.scanbot:sdk-package-3:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-creditcard-assets:${project.ext.scanbotSdkVersion}")
+}

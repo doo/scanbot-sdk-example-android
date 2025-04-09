@@ -11,14 +11,14 @@ import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.tiff.model.CompressionMode
+import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
 
 
 class TiffFromDocumentSnippet : AppCompatActivity() {
@@ -52,36 +52,38 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
                                     }
                                     document.addPage(bitmap)
                                 }
-                            createPdfFromImages(document)
+                            createTiffFromImages(document)
                         }
                     }
                 }
             }
         }
 
-    // Create tiif writer instance
-    val tiffWriter = scanbotSDK.createTiffWriter()
+    // @Tag("Creating a TIFF from a Document")
+    // Create tiff generator instance
+    val tiffGenerator = scanbotSDK.createTiffGenerator()
 
-    fun createPdfFromImages(document: Document) {
-        val config = TIFFImageWriterParameters(
+    fun createTiffFromImages(document: Document) {
+        val config = TiffGeneratorParameters(
             binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
-            compression = TIFFImageWriterCompressionOptions.COMPRESSION_NONE,
-            userDefinedFields = arrayListOf()
+            compression = CompressionMode.NONE,
+            userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
-        val pdfRendered = tiffWriter.writeTIFF(
+        val tiffGenerated = tiffGenerator.generateFromDocument(
             document,
             tiffFile,
             config
         )
         val file = tiffFile
-        if (pdfRendered && file.exists()) {
-            // Do something with the PDF file
+        if (tiffGenerated && file.exists()) {
+            // Do something with the Tiff file
         } else {
-            Log.e("PdfFromDocumentSnippet", "Failed to create PDF")
+            Log.e("TiffFromDocumentSnippet", "Failed to create Tiff")
         }
     }
+    // @EndTag("Creating a TIFF from a Document")
 
 
     private fun importImagesFromLibrary() {

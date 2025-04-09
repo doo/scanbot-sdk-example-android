@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation(project(":common"))
     implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
     implementation("io.scanbot:sdk-package-1:${project.ext.scanbotSdkVersion}")
 }

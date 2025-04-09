@@ -3,19 +3,19 @@ package com.example.scanbot.di
 import android.content.Context
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.PdfPagesExtractor
-import io.scanbot.sdk.ocr.OpticalCharacterRecognizer
+import io.scanbot.sdk.ocr.OcrEngine
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.persistence.page.PageFileStorage
 import io.scanbot.sdk.process.DocumentQualityAnalyzer
-import io.scanbot.sdk.process.PDFRenderer
-import io.scanbot.sdk.tiff.TIFFWriter
+import io.scanbot.sdk.process.PdfGenerator
+import io.scanbot.sdk.tiff.TiffGenerator
 
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
 interface ExampleSingleton {
     fun pagePdfExtractorInstance(): PdfPagesExtractor
-    fun pageOpticalCharacterRecognizer(): OpticalCharacterRecognizer
-    fun pagePDFRenderer(): PDFRenderer
-    fun pageTIFFWriter(): TIFFWriter
+    fun pageOcrEngine(): OcrEngine
+    fun pagePDFRenderer(): PdfGenerator
+    fun pageTIFFWriter(): TiffGenerator
     fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer
     fun fileIOProcessor(): FileIOProcessor
     fun pageFileStorage(): PageFileStorage
@@ -33,25 +33,25 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
         return pdfExtractor!!
     }
 
-    override fun pageOpticalCharacterRecognizer(): OpticalCharacterRecognizer {
+    override fun pageOcrEngine(): OcrEngine {
         if (textRecognition == null) {
-            textRecognition = scanbotSdk.createOcrRecognizer()
+            textRecognition = scanbotSdk.createOcrEngine()
         }
         return textRecognition!!
     }
 
-    override fun pagePDFRenderer(): PDFRenderer {
-        if (pdfRenderer == null) {
-            pdfRenderer = scanbotSdk.createPdfRenderer()
+    override fun pagePDFRenderer(): PdfGenerator {
+        if (pdfGenerator == null) {
+            pdfGenerator = scanbotSdk.createPdfGenerator()
         }
-        return pdfRenderer!!
+        return pdfGenerator!!
     }
 
-    override fun pageTIFFWriter(): TIFFWriter {
-        if (tiffWriter == null) {
-            tiffWriter = scanbotSdk.createTiffWriter()
+    override fun pageTIFFWriter(): TiffGenerator {
+        if (tiffGenerator == null) {
+            tiffGenerator = scanbotSdk.createTiffGenerator()
         }
-        return tiffWriter!!
+        return tiffGenerator!!
     }
 
     override fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer {
@@ -77,9 +77,9 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
 
     companion object {
         private var pdfExtractor: PdfPagesExtractor? = null
-        private var textRecognition: OpticalCharacterRecognizer? = null
-        private var pdfRenderer: PDFRenderer? = null
-        private var tiffWriter: TIFFWriter? = null
+        private var textRecognition: OcrEngine? = null
+        private var pdfGenerator: PdfGenerator? = null
+        private var tiffGenerator: TiffGenerator? = null
         private var documentQualityAnalyzer: DocumentQualityAnalyzer? = null
         private var fileIOProcessor: FileIOProcessor? = null
         private var pageFileStorage: PageFileStorage? = null

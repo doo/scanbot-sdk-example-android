@@ -4,18 +4,26 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import io.scanbot.example.R
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.BarcodeItem
+import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
@@ -33,18 +41,19 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_barcode_scanner_view)
 
+        applyEdgeToEdge(findViewById(R.id.root_view))
+
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
 
-        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.modifyConfig {
-            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
-            setSaveCameraPreviewFrame(false)
-        }
+        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
 
         barcodeScannerView.apply {
             initCamera(CameraUiSettings(false))
-            initDetectionBehavior(barcodeDetector,
+            initScanningBehavior(scanner,
                 { result ->
                     if (result is FrameHandlerResult.Success) {
                         handleSuccess(result)
@@ -67,12 +76,16 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
                     override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
                         // we don't need full size pictures in this example
                     }
+
+                    override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
+
+                    }
                 }
             )
         }
 
         barcodeScannerView.viewController.apply {
-            barcodeDetectionInterval = 1000
+            barcodeScanningInterval = 1000
             autoSnappingEnabled = false
         }
     }
@@ -91,7 +104,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView.viewController.onPause()
     }
 
-    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {
+    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScannerResult?>) {
         result.value?.let {
             BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
             val intent = Intent(this, BarcodeResultActivity::class.java)

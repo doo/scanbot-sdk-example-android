@@ -9,14 +9,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.tiff.model.TIFFImageWriterCompressionOptions
-import io.scanbot.sdk.tiff.model.TIFFImageWriterParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.tiff.model.CompressionMode
+import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
 
 
 class TiffFromImageSnippet : AppCompatActivity() {
@@ -36,8 +36,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                            getUrisFromGalleryResult(imagePickerResult).asSequence() // process images one by one instead of collecting the whole list - less memory consumption
                                 .apply {
                                     createTiffFromImages(this.toList())
                                 }
@@ -47,33 +46,33 @@ class TiffFromImageSnippet : AppCompatActivity() {
             }
         }
 
-    // Create tiff writer instance
-    val tiffWriter = scanbotSDK.createTiffWriter()
+    // @Tag("Creating a TIFF from images")
+    // Create tiff generator instance
+    val tiffGenerator = scanbotSDK.createTiffGenerator()
     fun createTiffFromImages(list: List<Uri>) {
-        list.forEach { imageUri ->
-            // Create the default PDF rendering options.
-            val config = TIFFImageWriterParameters(
-                binarizationFilter = ScanbotBinarizationFilter(),
-                dpi = 200,
-                compression = TIFFImageWriterCompressionOptions.COMPRESSION_NONE,
-                userDefinedFields = arrayListOf()
-            )
-            // notify the renderer that the images are encrypted with global sdk-encryption settings
-            val encryptionEnabled = false
-            // Render the images to a PDF file.
-            val file = File("path/to/tiff/file")
-            val created = tiffWriter.writeTIFF(
-                sourceImages = list.toTypedArray(),
-                sourceFilesEncrypted = encryptionEnabled,
-                targetFile = file,
-                parameters = config
-            )
+        // Create the default Tiff generation options.
+        val config = TiffGeneratorParameters(
+            binarizationFilter = ScanbotBinarizationFilter(),
+            dpi = 200,
+            compression = CompressionMode.NONE,
+            userFields = arrayListOf()
+        )
+        // notify the generator that the images are encrypted with global sdk-encryption settings
+        val encryptionEnabled = false
+        // Render the images to a Tiff file.
+        val file = File("path/to/tiff/file")
+        val created = tiffGenerator.generateFromUris(
+            sourceImages = list.toTypedArray(),
+            sourceFilesEncrypted = encryptionEnabled,
+            targetFile = file,
+            parameters = config
+        )
 
-            if (created && file.exists()) {
-                // Do something with the PDF file
-            }
+        if (created && file.exists()) {
+            // Do something with the Tiff file
         }
     }
+    // @EndTag("Creating a TIFF from images")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()
@@ -82,8 +81,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
         imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
         imageIntent.putExtra(
-            Intent.EXTRA_MIME_TYPES,
-            arrayOf("image/jpeg", "image/png", "image/webp", "image/heic")
+            Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png", "image/webp", "image/heic")
         )
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
