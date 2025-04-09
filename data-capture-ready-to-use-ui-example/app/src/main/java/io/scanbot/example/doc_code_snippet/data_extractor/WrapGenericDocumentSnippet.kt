@@ -48,6 +48,11 @@ fun wrapGenericDocument(genericDocument: GenericDocument) {
         }
         EuropeanHealthInsuranceCard.DOCUMENT_TYPE  -> {
             // Handle European health insurance card back
+            val wrapper = EuropeanHealthInsuranceCard(genericDocument)
+            val name = wrapper.issuerName
+            val number = wrapper.issuerNumber
+            val expirationDate = wrapper.expiryDate
+            // ...
         }
         else -> {
             // Handle other document types
