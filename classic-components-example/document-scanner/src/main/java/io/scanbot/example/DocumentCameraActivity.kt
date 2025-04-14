@@ -44,6 +44,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSdk: ScanbotSDK
+    private lateinit var documentScanner: DocumentScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -55,7 +56,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         scanbotSdk = ScanbotSDK(this)
-        val documentScanner = scanbotSdk.createDocumentScanner()
+        documentScanner = scanbotSdk.createDocumentScanner()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -204,7 +205,6 @@ class DocumentCameraActivity : AppCompatActivity() {
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document scanning on original image:
-        val documentScanner = scanbotSdk.createDocumentScanner()
         val result = documentScanner.scanFromBitmap(originalBitmap)!!
         val polygon = result.pointsNormalized
 
