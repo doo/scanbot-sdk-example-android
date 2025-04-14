@@ -77,19 +77,19 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    // @Tag("Extracting document data from an image")
-    // Create a data extractor  instance
+    // Create a data extractor instance
     val dataExtractor = scanbotSDK.createDocumentDataExtractor()
 
     private fun processImage(
         dataExtractor: DocumentDataExtractor,
         bitmap: Bitmap
     ) {
+        // @Tag("Extracting document data from an image")
         val result = dataExtractor.extractFromBitmap(bitmap, 0)
         result?.document?.let { wrapGenericDocument(it) }
         // Data extraction results are processed
+        // @EndTag("Extracting document data from an image")
     }
-    // @EndTag("Extracting document data from an image")
 }
 
 
