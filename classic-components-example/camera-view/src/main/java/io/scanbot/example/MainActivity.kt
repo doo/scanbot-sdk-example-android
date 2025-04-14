@@ -46,12 +46,12 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
+    private lateinit var  documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
     private val ignoreOrientationMistmatch = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
@@ -62,7 +62,9 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         scanbotSDK = ScanbotSDK(this)
-        val documentScanner = scanbotSDK.createDocumentScanner().apply {
+         documentScanner = scanbotSDK.createDocumentScanner()
+
+        documentScanner .apply {
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
             setParameters(copyCurrentConfiguration().parameters.apply {
                 this.ignoreOrientationMismatch = ignoreOrientationMistmatch
@@ -217,7 +219,6 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
         // Run document scanning on original image:
-        val documentScanner = scanbotSDK.createDocumentScanner()
         val polygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
         val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
