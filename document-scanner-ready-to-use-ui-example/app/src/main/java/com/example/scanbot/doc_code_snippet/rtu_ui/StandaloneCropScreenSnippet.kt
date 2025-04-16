@@ -57,9 +57,9 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                 }
             }
         }
-
+    
+    // @Tag("Using Cropping UI")
     private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
-        // @Tag("Using Cropping UI")
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { result ->
