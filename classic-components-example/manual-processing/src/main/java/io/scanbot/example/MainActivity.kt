@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.Const
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        supportActionBar?.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         binding.scanButton.setOnClickListener {
             selectGalleryImageResultLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         val page = withContext(Dispatchers.Default) {
             val inputStream = contentResolver.openInputStream(imageUri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
-            val detectedPolygon = scanbotSdk.createContourDetector().detect(bitmap)?.polygonF ?: PolygonHelper.getFullPolygon()
+            val detectedPolygon = scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)?.pointsNormalized ?: PolygonHelper.getFullPolygon()
             val document = scanbotSdk.documentApi.createDocument()
             return@withContext document.addPage(bitmap).apply {
                 apply(newPolygon = detectedPolygon, newFilters = listOf(ParametricFilter.grayscaleFilter()))

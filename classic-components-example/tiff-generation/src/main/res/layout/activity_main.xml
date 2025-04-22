@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scanbot SDK TIFFWriter Example" />
+
+    <Button
+        android:id="@+id/selectImagesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/title"
+        android:layout_marginTop="20dp"
+        android:text="Select image(s) + Create TIFF" />
+
+    <CheckBox
+        android:id="@+id/binarizationCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/selectImagesButton"
+        android:layout_marginTop="20dp"
+        android:checked="true"
+        android:text="Perform binarization (1-bit black &amp; white images)" />
+
+    <CheckBox
+        android:id="@+id/customFieldsCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/binarizationCheckBox"
+        android:layout_marginTop="20dp"
+        android:text="Add custom fields" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/customFieldsCheckBox"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textIsSelectable="true" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/resultTextView"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:visibility="gone" />
+</RelativeLayout>

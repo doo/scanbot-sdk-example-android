@@ -15,14 +15,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
-import io.scanbot.sdk.docdetection.ui.DocumentScannerView
-import io.scanbot.sdk.docdetection.ui.IDocumentScannerViewCallback
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.document.ui.DocumentScannerView
+import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.CameraUiSettings
 import io.scanbot.sdk.ui.camera.ShutterButton
@@ -33,7 +34,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
-    private val ignoreBadAspectRatio = true
+    private val ignoreOrientationMistmatch = true
 
     private lateinit var documentScannerView: DocumentScannerView
 
@@ -43,7 +44,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var scanbotSdk: ScanbotSDK
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var documentScanner: DocumentScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -52,9 +53,10 @@ class DocumentCameraActivity : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
         askPermission()
         supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         scanbotSdk = ScanbotSDK(this)
-        contourDetector = scanbotSdk.createContourDetector()
+        documentScanner = scanbotSdk.createDocumentScanner()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -67,13 +69,13 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         documentScannerView.apply {
             initCamera(CameraUiSettings(true))
-            initDetectionBehavior(contourDetector,
+            initScanningBehavior(documentScanner,
                 { result ->
-                    // Here you are continuously notified about contour detection results.
-                    // For example, you can show a user guidance text depending on the current detection status.
+                    // Here you are continuously notified about document scanning results.
+                    // For example, you can show a user guidance text depending on the current scanning status.
                     userGuidanceHint.post {
                         if (result is FrameHandlerResult.Success<*>) {
-                            showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
+                            showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
                         }
                     }
                     false // typically you need to return false
@@ -105,7 +107,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
             setAcceptedSizeScore(75.0)
-            setIgnoreBadAspectRatio(ignoreBadAspectRatio)
+            setIgnoreOrientationMismatch(ignoreOrientationMistmatch)
 
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/autosnapping/#sensitivity
             setAutoSnappingSensitivity(0.85f)
@@ -176,7 +178,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                 userGuidanceHint.visibility = View.VISIBLE
             }
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreBadAspectRatio) {
+                if (ignoreOrientationMistmatch) {
                     userGuidanceHint.text = "Don't move"
                 } else {
                     userGuidanceHint.text = "Wrong aspect ratio.\nRotate your device."
@@ -202,11 +204,11 @@ class DocumentCameraActivity : AppCompatActivity() {
             matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
-        // Run document detection on original image:
-        val result = contourDetector.detect(originalBitmap)!!
-        val detectedPolygon = result.polygonF
+        // Run document scanning on original image:
+        val result = documentScanner.scanFromBitmap(originalBitmap)!!
+        val polygon = result.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }
     }
 

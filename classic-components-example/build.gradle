@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application") version "8.3.2" apply false
     id("com.android.library") version "8.3.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.23" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.25" apply false
 }
 
 allprojects {
@@ -9,13 +9,13 @@ allprojects {
         exampleAppId = "io.scanbot.example.sdk.android"
         submodulesNamespace = "io.scanbot.example"
 
-        compileSdkVersion = 34
+        compileSdkVersion = 35
         minSdkVersion = 21
-        targetSdkVersion = 34
+        targetSdkVersion = 35
 
         jvmToolchainVersion = 17
 
-        scanbotSdkVersion = "6.2.1"
+        scanbotSdkVersion = "7.0.0"
 
         androidCoreKtxVersion = "1.6.0"
         constraintLayoutVersion = "2.0.4"

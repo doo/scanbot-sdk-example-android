@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace = "io.scanbot.example"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.scanbot.example.sdk.rtu.android"
-        targetSdk = 34
+        targetSdk = 35
         minSdk = 21
         versionCode = 1
         versionName = "1.0"
@@ -74,25 +74,26 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
-    def scanbotSdkVersion = "6.2.1"
+    def scanbotSdkVersion = "7.0.0"
+
     implementation("io.scanbot:sdk-package-4:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-ui:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Generic Document Recognizer feature
-    implementation("io.scanbot:sdk-genericdocument-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:sdk-documentdata-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Document Quality Analyzer feature
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use data scanner feature
-    implementation("io.scanbot:sdk-generictext-assets:$scanbotSdkVersion")
-
-    // This dependency is only needed if you plan to use license plate scanner feature
-    implementation("io.scanbot:sdk-licenseplate-assets:$scanbotSdkVersion")
+    implementation("io.scanbot:sdk-textpattern-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use Medical Certificate scanner feature
     implementation("io.scanbot:sdk-mc-assets:$scanbotSdkVersion")
+
+    // This dependency is only needed if you plan to use Credit Card Scanner feature
+    implementation("io.scanbot:sdk-creditcard-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use EHIC scanner feature
     implementation("io.scanbot:sdk-ehic-assets:$scanbotSdkVersion")

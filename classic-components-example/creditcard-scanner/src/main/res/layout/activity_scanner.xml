@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @Tag("Credit Card Camera Layout")-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="#000"
+    tools:context=".ScannerActivity"
+    tools:ignore="HardcodedText,PrivateResource">
+
+    <io.scanbot.sdk.ui.camera.ScanbotCameraXView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <io.scanbot.sdk.ui.camera.FinderOverlayView
+        android:id="@+id/finder_overlay"
+        android:layout_width="match_parent"
+        app:fixed_height="30dp"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/flash_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/result_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:background="#D31C1A1A"
+        android:padding="10dp"
+        android:textColor="#FFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="1234 5678 9101 1121" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- @EndTag("Credit Card Camera Layout")-->

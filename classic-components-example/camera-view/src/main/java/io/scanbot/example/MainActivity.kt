@@ -8,29 +8,33 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler
-import io.scanbot.sdk.contourdetector.ContourDetectorFrameHandler.DetectedFrame
-import io.scanbot.sdk.contourdetector.DocumentAutoSnappingController
-import io.scanbot.sdk.core.contourdetector.ContourDetector
-import io.scanbot.sdk.core.contourdetector.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentDetectionStatus
+import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.document.DocumentAutoSnappingController
+import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
 
-class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHandler {
+class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var polygonView: PolygonView
     private lateinit var resultView: ImageView
@@ -38,17 +42,16 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var contourDetectorFrameHandler: ContourDetectorFrameHandler
+    private lateinit var documentScannerFrameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var contourDetector: ContourDetector
+    private lateinit var  documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
-    private val ignoreBadAspectRatio = true
-
+    private val ignoreOrientationMistmatch = true
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
@@ -56,8 +59,19 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         setContentView(R.layout.activity_main)
         supportActionBar!!.hide()
 
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
+
         scanbotSDK = ScanbotSDK(this)
-        contourDetector = scanbotSDK.createContourDetector()
+         documentScanner = scanbotSDK.createDocumentScanner()
+
+        documentScanner .apply {
+            // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
+            setParameters(copyCurrentConfiguration().parameters.apply {
+                this.ignoreOrientationMismatch = ignoreOrientationMistmatch
+                this.acceptedSizeScore = 75
+                this.acceptedAngleScore = 60
+            })
+        }
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -83,16 +97,12 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
 
-        contourDetectorFrameHandler = ContourDetectorFrameHandler.attach(cameraView, contourDetector)
+        documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
-        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#contour-detection-parameters
-        contourDetectorFrameHandler.setAcceptedAngleScore(60.0)
-        contourDetectorFrameHandler.setAcceptedSizeScore(75.0)
-        contourDetectorFrameHandler.addResultHandler(polygonView.contourDetectorResultHandler)
-        contourDetectorFrameHandler.addResultHandler(this)
-        contourDetectorFrameHandler.setIgnoreBadAspectRatio(ignoreBadAspectRatio)
+        documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+        documentScannerFrameHandler.addResultHandler(this)
 
-        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, contourDetectorFrameHandler)
+        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
@@ -127,12 +137,12 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DetectedFrame, SdkLicenseError>): Boolean {
-        // Here you are continuously notified about contour detection results.
-        // For example, you can show a user guidance text depending on the current detection status.
+    override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
+        // Here you are continuously notified about document scanning results.
+        // For example, you can show a user guidance text depending on the current scanning status.
         userGuidanceHint.post {
             if (result is FrameHandlerResult.Success<*>) {
-                showUserGuidance((result as FrameHandlerResult.Success<DetectedFrame>).value.detectionStatus)
+                showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
             }
         }
         return false // typically you need to return false
@@ -170,7 +180,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
                 userGuidanceHint.visibility = View.VISIBLE
             }
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreBadAspectRatio) {
+                if (ignoreOrientationMistmatch) {
                     userGuidanceHint.text = "Don't move"
                     // change polygon color to "OK"
                     polygonView.setFillColor(POLYGON_FILL_COLOR_OK)
@@ -190,8 +200,8 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
         // Here we get the full image from the camera.
-        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#handling-camera-picture
-        // This is just a demo showing the detected document image as a downscaled(!) preview image.
+        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/classic-ui/
+        // This is just a demo showing the scanned document image as a downscaled(!) preview image.
 
         // Decode Bitmap from bytes of original image:
         val options = BitmapFactory.Options()
@@ -208,10 +218,10 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
             matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
             originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
         }
-        // Run document detection on original image:
-        val detectedPolygon = contourDetector.detect(originalBitmap)!!.polygonF
+        // Run document scanning on original image:
+        val polygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
 
-        val documentImage = ImageProcessor(originalBitmap).crop(detectedPolygon).processedBitmap()
+        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
         resultView.post { resultView.setImageBitmap(documentImage) }
 
         // continue scanning
@@ -223,7 +233,7 @@ class MainActivity : AppCompatActivity(), ContourDetectorFrameHandler.ResultHand
 
     private fun setAutoSnapEnabled(enabled: Boolean) {
         autoSnappingController.isEnabled = enabled
-        contourDetectorFrameHandler.isEnabled = enabled
+        documentScannerFrameHandler.isEnabled = enabled
         polygonView.visibility = if (enabled) View.VISIBLE else View.GONE
         autoSnappingToggleButton.text = "Automatic ${if (enabled) "ON" else "OFF"}"
         if (enabled) {

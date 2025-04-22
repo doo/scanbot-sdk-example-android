@@ -5,10 +5,11 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.sdk.AspectRatio
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -28,13 +29,16 @@ class ScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
+        supportActionBar!!.hide()
+        applyEdgeToEdge(findViewById(R.id.root_view))
+
         vinScanner = ScanbotSDK(this).createVinScanner()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
 
         val finderOverlay = findViewById<FinderOverlayView>(R.id.finder_overlay)
-        // The smaller finder view brings better performance and allows user to detect VIN more precise
+        // The smaller finder view brings better performance and allows user to scan VIN more precise
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(9.0, 1.0)))
         finderOverlay.setFixedFinderHeight(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -48,8 +52,8 @@ class ScannerActivity : AppCompatActivity() {
         vinScannerFrameHandler.addResultHandler { result ->
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
-                    if (result.value.validationSuccessful) {
-                        "VIN scanned:\n${result.value.rawText}"
+                    if (result.value.textResult.validationSuccessful) {
+                        "VIN scanned:\n${result.value.textResult.rawText}"
                     } else {
                         "VIN not validated"
                     }

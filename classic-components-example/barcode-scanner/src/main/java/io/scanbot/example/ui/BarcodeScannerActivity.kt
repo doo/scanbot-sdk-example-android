@@ -14,32 +14,35 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.R
+import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
-import io.scanbot.sdk.AspectRatio
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.barcode.BarcodeAutoSnappingController
-import io.scanbot.sdk.barcode.BarcodeDetectorFrameHandler
-import io.scanbot.sdk.barcode.entity.BarcodeScanningResult
+import io.scanbot.sdk.barcode.BarcodeScannerFrameHandler
+import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.camera.*
+import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
 
-class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.ResultHandler {
+class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
     private lateinit var finderOverlay: FinderOverlayView
 
     private var flashEnabled = false
-    private var barcodeDetectorFrameHandler: BarcodeDetectorFrameHandler? = null
+    private var scannerFrameHandler: BarcodeScannerFrameHandler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_barcode_scanner)
+        applyEdgeToEdge(findViewById(R.id.root_view))
 
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
@@ -53,16 +56,15 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         }
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
-        val barcodeDetector = ScanbotSDK(this).createBarcodeDetector()
-        barcodeDetector.modifyConfig {
-            setBarcodeFormats(BarcodeTypeRepository.selectedTypes.toList())
-            setSaveCameraPreviewFrame(true)
-        }
-        barcodeDetectorFrameHandler =
-            BarcodeDetectorFrameHandler.attach(cameraView, barcodeDetector)
+        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+        } )
+        scannerFrameHandler =
+            BarcodeScannerFrameHandler.attach(cameraView, scanner)
 
-        barcodeDetectorFrameHandler?.let { frameHandler ->
-            frameHandler.setDetectionInterval(1000)
+        scannerFrameHandler?.let { frameHandler ->
+            frameHandler.setScanningInterval(1000)
             frameHandler.addResultHandler(this)
 
             val barcodeAutoSnappingController =
@@ -93,7 +95,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         }
     }
 
-    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScanningResult?>) {
+    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScannerResult?>) {
         result.value?.let {
             BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
             val intent = Intent(this, BarcodeResultActivity::class.java)
@@ -117,7 +119,12 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
         }
     }
 
-    override fun handle(result: FrameHandlerResult<BarcodeScanningResult?, SdkLicenseError>): Boolean {
+
+    companion object {
+        private const val REQUEST_PERMISSION_CODE = 200
+    }
+
+    override fun handle(result: FrameHandlerResult<BarcodeScannerResult?, SdkLicenseError>): Boolean {
         if (result is FrameHandlerResult.Success) {
             handleSuccess(result)
         } else {
@@ -130,9 +137,5 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeDetectorFrameHandler.
             }
         }
         return false
-    }
-
-    companion object {
-        private const val REQUEST_PERMISSION_CODE = 200
     }
 }

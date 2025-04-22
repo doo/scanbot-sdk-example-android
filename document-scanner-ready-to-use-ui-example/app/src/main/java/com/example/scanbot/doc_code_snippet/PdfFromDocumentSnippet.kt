@@ -11,17 +11,17 @@ import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.scanbot.pdf.model.PageDirection
 import io.scanbot.pdf.model.PageFit
 import io.scanbot.pdf.model.PageSize
 import io.scanbot.pdf.model.PdfAttributes
-import io.scanbot.pdf.model.PdfConfig
+import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.pdf.model.ResamplingMethod
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {
@@ -62,12 +62,13 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             }
         }
 
+    // @Tag("Creating a PDF from an Document")
     // Create instance of PdfRenderer
-    val pdfRenderer = scanbotSDK.createPdfRenderer()
+    val pdfGenerator = scanbotSDK.createPdfGenerator()
 
     fun createPdfFromImages(document: Document) {
-        val config = PdfConfig(
-            pdfAttributes = PdfAttributes(
+        val config = PdfConfiguration(
+            attributes = PdfAttributes(
                 author = "",
                 title = "",
                 subject = "",
@@ -81,17 +82,18 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             pageFit = PageFit.NONE,
             resamplingMethod = ResamplingMethod.NONE,
         )
-        val pdfRendered = pdfRenderer.render(
+        val pdfGenerated = pdfGenerator.generateFromDocument(
             document,
             config
         )
         val pdfFile = document.pdfUri.toFile()
-        if (pdfRendered && pdfFile.exists()) {
+        if (pdfGenerated && pdfFile.exists()) {
             // Do something with the PDF file
         } else {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")
         }
     }
+    // @EndTag("Creating a PDF from an Document")
 
 
     private fun importImagesFromLibrary() {
