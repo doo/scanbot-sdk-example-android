@@ -80,6 +80,14 @@
                     android:text="@string/scan_mrz" />
 
                 <Button
+                    android:id="@+id/mrz_camera_compose_ui"
+                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/scan_mrz_compose" />
+
+                <Button
                     android:id="@+id/generic_document_default_ui"
                     style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                     android:layout_width="match_parent"
