@@ -46,29 +46,20 @@ class ScannerActivity : AppCompatActivity() {
         frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor, DocumentDataExtractionMode.LIVE)
 
         frameHandler.addResultHandler { result ->
-            var successLowConfidence = false // when status is `Success` but confidence is low
             val resultText: String = when (result) {
                 is FrameHandlerResult.Success -> {
                     if (result.value.status == DocumentDataExtractionStatus.SUCCESS) {
-                        if ((result.value.document?.confidence ?: 0.0) > 0.8) {
                             frameHandler.isEnabled = false
                             DocumentsResultsStorage.result = result.value
                             startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
                             finish()
-                        } else {
-                            successLowConfidence = true
-                        }
                     }
                     result.value.status.toString()
                 }
                 is FrameHandlerResult.Failure -> "Check your setup or license"
             }
 
-            runOnUiThread { resultTextView.text = if (successLowConfidence) {
-                "$resultText\n(but confidence low - try again)"
-            } else {
-                resultText
-            }}
+            runOnUiThread { resultTextView.text =  resultText}
 
             false
         }
