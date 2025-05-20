@@ -4,9 +4,10 @@ import android.app.Application
 import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.ui.camera.ScanbotCameraXConfigProvider
 import io.scanbot.sdk.util.log.LoggerProvider
 
-class ExampleApplication : Application() {
+class ExampleApplication : Application(), ScanbotCameraXConfigProvider {
     /*
      * TODO 1/2: Add the Scanbot SDK license key here.
      * Please note: The Scanbot SDK will run without a license key for one minute per session!
