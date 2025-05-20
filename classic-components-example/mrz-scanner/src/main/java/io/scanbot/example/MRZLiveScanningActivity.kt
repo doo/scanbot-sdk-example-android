@@ -86,8 +86,9 @@ class MRZLiveScanningActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
+        mrzScannerFrameHandler.isEnabled = true
     }
+
     // @EndTag("Mrz Classic Camera")
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(

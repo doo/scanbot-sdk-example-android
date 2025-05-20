@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 7.0.0
+Open Source libraries used in the Scanbot SDK for Android version 7.0.2
 
 CWAC-Camera
 
@@ -171,7 +171,7 @@ limitations under the License.
 
 Boost C++
 
-Version 1.79.0
+Version 1.88.0
 (https://github.com/boostorg/boost)
 
 Boost Software License - Version 1.0 - August 17th, 2003
@@ -2144,7 +2144,7 @@ Version 1.1.0h
 
 spdlog
 
-Version v1.14.1
+Version v1.15.2
 (https://github.com/gabime/spdlog)
 
 The MIT License (MIT)
@@ -2689,7 +2689,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 xsimd
 
-Version 13.0.0
+Version 13.2.0
 (https://github.com/xtensor-stack/xsimd)
 
 Copyright (c) 2016, Johan Mabille, Sylvain Corlay, Wolf Vollprecht and Martin Renou
@@ -2727,7 +2727,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 xtensor
 
-Version 0.25.0
+Version 0.25.0-41-gd3dc83b8
 (https://github.com/doo/xtensor)
 
 Copyright (c) 2016, Johan Mabille, Sylvain Corlay and Wolf Vollprecht
@@ -2764,7 +2764,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 xtl
 
-Version 0.7.7
+Version 0.8.0
 (https://github.com/xtensor-stack/xtl)
 
 BSD 3-Clause License
