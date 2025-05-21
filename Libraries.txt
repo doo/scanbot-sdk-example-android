@@ -2727,7 +2727,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 xtensor
 
-Version 0.25.0-41-gd3dc83b8
+Version 0.26.0
 (https://github.com/doo/xtensor)
 
 Copyright (c) 2016, Johan Mabille, Sylvain Corlay and Wolf Vollprecht
