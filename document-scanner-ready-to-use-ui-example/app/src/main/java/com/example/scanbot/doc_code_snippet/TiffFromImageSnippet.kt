@@ -52,9 +52,8 @@ class TiffFromImageSnippet : AppCompatActivity() {
     fun createTiffFromImages(list: List<Uri>) {
         // Create the default Tiff generation options.
         val config = TiffGeneratorParameters(
-            binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
-            compression = CompressionMode.NONE,
+            compression = CompressionMode.LZW,
             userFields = arrayListOf()
         )
         // notify the generator that the images are encrypted with global sdk-encryption settings
