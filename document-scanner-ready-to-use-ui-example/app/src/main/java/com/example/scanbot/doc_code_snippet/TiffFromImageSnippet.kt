@@ -53,7 +53,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         // Create the default Tiff generation options.
         val config = TiffGeneratorParameters(
             dpi = 200,
-            compression = CompressionMode.LZW,
+            compression = TiffGeneratorParameters.defaultCompression,  // Use default compression (LZW)
             userFields = arrayListOf()
         )
         // notify the generator that the images are encrypted with global sdk-encryption settings

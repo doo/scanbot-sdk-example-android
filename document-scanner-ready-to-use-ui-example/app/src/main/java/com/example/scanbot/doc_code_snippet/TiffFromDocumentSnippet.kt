@@ -89,7 +89,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
         val config = TiffGeneratorParameters(
             binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
-            compression = TiffGeneratorParameters.binaryDocumentOptimizedCompression, // default compression is `CompressionMode.CCITT_T6`
+            compression = TiffGeneratorParameters.binaryDocumentOptimizedCompression, // compression is `CompressionMode.CCITT_T6`
             userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
