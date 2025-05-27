@@ -4,7 +4,7 @@ package com.example.scanbot.doc_code_snippet.rtu_ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
-// @Tag("Single Page With Finder Overlay")
+// @Tag("Jetpack Compose: Single Page With Finder Overlay")
 import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.ui_v2.common.FinderStyle
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
@@ -70,5 +70,5 @@ class ComposeSnippet : AppCompatActivity() {
         }
     }
 }
-// @EndPage("Single Page With Finder Overlay")
+// @EndPage("Jetpack Compose: Single Page With Finder Overlay")
 

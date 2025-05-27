@@ -26,7 +26,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
     // @Tag("Mrz Classic Camera")
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
-
+    private lateinit var mrzScannerFrameHandler : MrzScannerFrameHandler
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         // Configure mrz scanner
         val mrzScanner = scanbotSDK.createMrzScanner()
         // Attach mrz scanner to the camera
-        val mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
+        mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
         // Handle live mrz scanning results
         mrzScannerFrameHandler.addResultHandler { result ->
             if (result is FrameHandlerResult.Success) {
@@ -66,6 +66,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
                 if (scannerResult.success
                     && mrzDocument?.checkDigitGeneral?.isValid == true
                 ) {
+                    mrzScannerFrameHandler.isEnabled = false
                     startActivity(MRZResultActivity.newIntent(this, scannerResult))
                 }
             }
@@ -82,6 +83,12 @@ class MRZLiveScanningActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
     }
+
+    override fun onResume() {
+        super.onResume()
+        mrzScannerFrameHandler.isEnabled = true
+    }
+
     // @EndTag("Mrz Classic Camera")
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(

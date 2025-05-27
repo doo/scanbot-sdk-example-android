@@ -52,7 +52,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
                                     }
                                     document.addPage(bitmap)
                                 }
-                            createTiffFromImages(document)
+                            createTiffFromDocument(document)
                         }
                     }
                 }
@@ -63,11 +63,10 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
     // Create tiff generator instance
     val tiffGenerator = scanbotSDK.createTiffGenerator()
 
-    fun createTiffFromImages(document: Document) {
+    fun createTiffFromDocument(document: Document) {
         val config = TiffGeneratorParameters(
-            binarizationFilter = ScanbotBinarizationFilter(),
             dpi = 200,
-            compression = CompressionMode.NONE,
+            compression = TiffGeneratorParameters.defaultCompression, // default compression is `CompressionMode.LZW`
             userFields = arrayListOf()
         )
         val tiffFile = document.tiffUri.toFile()
@@ -84,6 +83,29 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
         }
     }
     // @EndTag("Creating a TIFF from a Document")
+
+    // @Tag("Creating a binarized TIFF from a Document")
+    fun createBinarizedTiffFromDocument(document: Document) {
+        val config = TiffGeneratorParameters(
+            binarizationFilter = ScanbotBinarizationFilter(),
+            dpi = 200,
+            compression = TiffGeneratorParameters.binaryDocumentOptimizedCompression, // compression is `CompressionMode.CCITT_T6`
+            userFields = arrayListOf()
+        )
+        val tiffFile = document.tiffUri.toFile()
+        val tiffGenerated = tiffGenerator.generateFromDocument(
+            document,
+            tiffFile,
+            config
+        )
+        val file = tiffFile
+        if (tiffGenerated && file.exists()) {
+            // Do something with the Tiff file
+        } else {
+            Log.e("TiffFromDocumentSnippet", "Failed to create Tiff")
+        }
+    }
+    // @EndTag("Creating a binarized TIFF from a Document")
 
 
     private fun importImagesFromLibrary() {
