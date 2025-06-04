@@ -1,5 +1,6 @@
 package io.scanbot.example
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -20,8 +21,6 @@ import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ehicscanner.*
 import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
-import io.scanbot.sdk.textpattern.ContentValidationCallback
-import io.scanbot.sdk.textpattern.CustomContentValidator
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.check.*
 import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
@@ -41,7 +40,6 @@ import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
 import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
-import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
@@ -94,6 +92,11 @@ class MainActivity : AppCompatActivity() {
                  }*/
             textPatternScannerConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
             textDataScannerResultLauncher.launch(textPatternScannerConfiguration)
+        }
+
+        findViewById<View>(R.id.mrz_camera_compose_ui).setOnClickListener {
+            val intent = Intent(this, MrzScannerComposeActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
