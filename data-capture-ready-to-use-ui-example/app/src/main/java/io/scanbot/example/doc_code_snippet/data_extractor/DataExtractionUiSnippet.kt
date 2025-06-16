@@ -321,12 +321,6 @@ class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
         // Create the default configuration object.
         val configuration = DocumentDataExtractorScreenConfiguration()
 
-        // Configure the finder example overlay. You can choose between the two-line and three-line preset.
-        // Each example preset has a default text for each line, but you can change it accordingly to your liking.
-        // Each preset has a fixed aspect ratio adjusted to it's number of lines. To override, please use 'aspectRatio'
-        // parameter in 'viewFinder' field in the main configuration object.
-        // For this example we will use the three-line preset.
-
         // Configure finder overlay appearance
         configuration.viewFinder.apply {
             style = FinderStyle.finderStrokedStyle().apply {
