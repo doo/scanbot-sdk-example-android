@@ -29,6 +29,7 @@ import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
 
 //Rtu ui snippets
 fun initializeScanbotSDK(application: Application) {
+    
     // @Tag("InitializeScanbotSDK")
     ScanbotSDKInitializer()
         .initialize(application)

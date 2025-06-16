@@ -28,7 +28,6 @@ import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.ui.camera.CameraUiSettings
 
 class BarcodeScannerViewActivity : AppCompatActivity() {
     private lateinit var barcodeScannerView: BarcodeScannerView
@@ -52,7 +51,7 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         } )
 
         barcodeScannerView.apply {
-            initCamera(CameraUiSettings(false))
+            initCamera()
             initScanningBehavior(scanner,
                 { result ->
                     if (result is FrameHandlerResult.Success) {

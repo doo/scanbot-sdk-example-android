@@ -25,8 +25,6 @@ import io.scanbot.sdk.textpattern.CustomContentValidator
 import io.scanbot.sdk.ui.registerForActivityResultOk
 import io.scanbot.sdk.ui.view.check.*
 import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
-import io.scanbot.sdk.ui.view.documentdata.*
-import io.scanbot.sdk.ui.view.documentdata.configuration.DocumentDataExtractorConfiguration
 import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
@@ -37,6 +35,9 @@ import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.CreditCardScannerActivity
 import io.scanbot.sdk.ui_v2.creditcard.configuration.CreditCardScannerScreenConfiguration
+import io.scanbot.sdk.ui_v2.documentdata.DocumentDataExtractorActivity
+import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.DocumentDataExtractorScreenConfiguration
+import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.DocumentDataExtractorUiResult
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
-    private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorConfiguration>
+    private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration>
     private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerConfiguration>
 
     private lateinit var binding: ActivityMainBinding
@@ -79,19 +80,19 @@ class MainActivity : AppCompatActivity() {
             // Create the default configuration object.
             val textPatternScannerConfiguration = TextPatternScannerScreenConfiguration()
             // Configure what string should be passed as successfully scanned text.
-         /*   textPatternScannerConfiguration.scannerConfiguration.validator = CustomContentValidator().apply {
-                     val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
-                     this.callback = object : ContentValidationCallback {
-                         override fun clean(rawText: String): String {
-                             return rawText.replace(" ", "")
-                         }
+            /*   textPatternScannerConfiguration.scannerConfiguration.validator = CustomContentValidator().apply {
+                        val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
+                        this.callback = object : ContentValidationCallback {
+                            override fun clean(rawText: String): String {
+                                return rawText.replace(" ", "")
+                            }
 
-                         override fun validate(text: String): Boolean {
-                             val matcher = pattern.matcher(text)
-                             return matcher.find()
-                         }
-                     }
-                 }*/
+                            override fun validate(text: String): Boolean {
+                                val matcher = pattern.matcher(text)
+                                return matcher.find()
+                            }
+                        }
+                    }*/
             textPatternScannerConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
             textDataScannerResultLauncher.launch(textPatternScannerConfiguration)
         }
@@ -116,24 +117,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
-            val genericDocumentConfiguration = DocumentDataExtractorConfiguration()
-            genericDocumentConfiguration.setTopBarButtonsInactiveColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            genericDocumentConfiguration.setTopBarBackgroundColor(
+            val genericDocumentConfiguration = DocumentDataExtractorScreenConfiguration()
+
+            genericDocumentConfiguration.topBar.backgroundColor = ScanbotColor(
                 ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            genericDocumentConfiguration.setFieldsDisplayConfiguration(
-                hashMapOf(
-                    DePassport.NormalizedFieldNames.PHOTO to FieldProperties(
-                        "My passport photo",
-                        FieldProperties.DisplayState.AlwaysVisible
-                    ),
-                    MRZ.NormalizedFieldNames.CHECK_DIGIT_GENERAL to FieldProperties(
-                        "Check digit general",
-                        FieldProperties.DisplayState.AlwaysVisible
-                    )
-                )
             )
             dataExtractorResultLauncher.launch(genericDocumentConfiguration)
         }
@@ -191,7 +178,7 @@ class MainActivity : AppCompatActivity() {
             if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
-    private fun handleGenericDocScannerResult(result: List<DocumentDataExtractionResult>) {
+    private fun handleGenericDocScannerResult(result: List<DocumentDataExtractorUiResult>) {
         result
         Toast.makeText(
             this,
@@ -292,7 +279,7 @@ class MainActivity : AppCompatActivity() {
 
         dataExtractorResultLauncher =
             registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
-                handleGenericDocScannerResult(resultEntity.result!!)
+                handleGenericDocScannerResult(listOfNotNull(resultEntity.result))
             }
 
         medicalCertificateScannerActivityResultLauncher =
