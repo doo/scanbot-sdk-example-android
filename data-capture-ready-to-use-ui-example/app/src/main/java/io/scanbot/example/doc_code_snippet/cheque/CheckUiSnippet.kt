@@ -190,7 +190,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an Credit Card"
+            title.text = "How to scan an Check"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
@@ -209,7 +209,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
             explanation.text =
-                "To quickly and securely input your credit card details, please hold your device over the credit card, so that the camera aligns with the numbers on the front of the card.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
+                "To quickly and securely input your check details, please hold your device over the check, so that the camera aligns with the document.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
@@ -265,7 +265,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
                 // Show the user guidance.
                 visible = true
                 // Configure the title.
-                title.text = "Scan the Credit Card"
+                title.text = "Scan the Check"
                 title.color = ScanbotColor("#FFFFFF")
                 // Configure the background.
                 background.fillColor = ScanbotColor("#7A000000")
