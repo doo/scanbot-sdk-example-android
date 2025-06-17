@@ -552,6 +552,6 @@ class ComposeSnippet : AppCompatActivity() {
 
         }
     }
-    // @EndPage("Compose Example")
+    // @EndTag("Compose Example")
 }
 
