@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.documentdata.DocumentDataExtractorCommonConfiguration
+import io.scanbot.sdk.documentdata.DocumentDataExtractorConfigurationBuilder
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.documentdata.*
@@ -72,8 +74,8 @@ class DocumentDataExtractorPaletteSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -122,8 +124,8 @@ class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -158,8 +160,8 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -222,8 +224,8 @@ class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -266,8 +268,8 @@ class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -310,8 +312,8 @@ class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -345,8 +347,8 @@ class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -401,8 +403,8 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-               resultEntity.result?.document?.let { document ->
-                   wrapGenericDocument(document)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -411,7 +413,15 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
 
         // Create the default configuration object.
         val configuration = DocumentDataExtractorScreenConfiguration()
-
+        // Initiate scanner with de id card document type to scan
+        configuration.scannerConfiguration.configurations = listOf(
+            DocumentDataExtractorCommonConfiguration(
+                listOf(
+                    DeIdCardFront.DOCUMENT_TYPE,
+                    DeIdCardBack.DOCUMENT_TYPE
+                )
+            )
+        )
         // Configure camera properties.
         // e.g
         configuration.cameraConfiguration.zoomSteps = listOf(1.0, 2.0, 5.0)
@@ -437,6 +447,7 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
         configuration.sound.successBeepEnabled = true
         configuration.sound.soundType = SoundType.MODERN_BEEP
         resultLauncher.launch(configuration)
+
     }
 // @EndTag("Scanning")
 }
