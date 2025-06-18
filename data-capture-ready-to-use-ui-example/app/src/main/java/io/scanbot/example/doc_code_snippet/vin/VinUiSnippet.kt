@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.creditcard
+package io.scanbot.example.doc_code_snippet.vin
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -18,10 +18,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.creditcard.entity.*
 import io.scanbot.sdk.ui_v2.common.*
-import io.scanbot.sdk.ui_v2.creditcard.*
-import io.scanbot.sdk.ui_v2.creditcard.configuration.*
+import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
+import io.scanbot.sdk.ui_v2.vin.VinScannerView
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroCustomImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroDefaultImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroNoImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinScannerScreenConfiguration
+import java.util.regex.Pattern
+
 
 //Rtu ui snippets
 fun initSdkSnippet(application: Application, licenseKey: String) {
@@ -33,7 +38,7 @@ fun initSdkSnippet(application: Application, licenseKey: String) {
     // @EndTag("InitializeScanbotSDK")
 }
 
-class StartCreditCardUiSnippet : AppCompatActivity() {
+class StartVinUiSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
@@ -42,34 +47,25 @@ class StartCreditCardUiSnippet : AppCompatActivity() {
 
     // @Tag("Launching the scanner")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
 
     private fun startScanning() {
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
-
+        val configuration = VinScannerScreenConfiguration()
         // Start the recognizer activity.
         resultLauncher.launch(configuration)
     }
     // @EndTag("Launching the scanner")
 }
 
-class CreditCardPaletteSnippet : AppCompatActivity() {
+class VinPaletteSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,19 +74,11 @@ class CreditCardPaletteSnippet : AppCompatActivity() {
     }
     // @Tag("Palette")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -98,7 +86,7 @@ class CreditCardPaletteSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the palette from the configuration object.
         configuration.palette.apply {
@@ -127,7 +115,7 @@ class CreditCardPaletteSnippet : AppCompatActivity() {
     // @EndTag("Palette")
 }
 
-class CreditCardLocalizationSnippet : AppCompatActivity() {
+class VinLocalizationSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,19 +124,11 @@ class CreditCardLocalizationSnippet : AppCompatActivity() {
     }
     // @Tag("Localization")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -156,7 +136,7 @@ class CreditCardLocalizationSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the localization from the configuration object.
         configuration.localization.apply {
@@ -171,7 +151,7 @@ class CreditCardLocalizationSnippet : AppCompatActivity() {
 // @EndTag("Localization")
 }
 
-class CreditCardIntroductionSnippet : AppCompatActivity() {
+class VinIntroductionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,19 +160,11 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
     }
     // @Tag("Introduction")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -200,7 +172,7 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the intro screen from the configuration object.
         configuration.introScreen.apply {
@@ -211,15 +183,15 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an Credit Card"
+            title.text = "How to scan an text"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
-            image = CreditCardNoImage()
+            image = VinIntroNoImage()
             // For a custom image...
-            image = CreditCardIntroCustomImage(uri = "PathToImage")
+            image = VinIntroCustomImage(uri = "PathToImage")
             // Or you can also use our default image.
-            image = CreditCardIntroOneSideImage()
+            image = VinIntroDefaultImage()
 
             // Configure the color of the handler on top.
             handlerColor = ScanbotColor("#EFEFEF")
@@ -229,8 +201,7 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
 
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
-            explanation.text =
-                "To quickly and securely input your credit card details, please hold your device over the credit card, so that the camera aligns with the numbers on the front of the card.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
+            explanation.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
@@ -243,7 +214,7 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
 // @EndTag("Introduction")
 }
 
-class CreditCardUserGuidanceSnippet : AppCompatActivity() {
+class VinUserGuidanceSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -252,19 +223,11 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
     }
     // @Tag("User guidance")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -272,7 +235,7 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Configure user guidance's
 
@@ -289,11 +252,11 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
 
             // Finder overlay user guidance
             // Retrieve the instance of the finder overlay user guidance from the configuration object.
-            configuration.scanStatusUserGuidance.apply {
+            configuration.finderViewUserGuidance.apply {
                 // Show the user guidance.
                 visible = true
                 // Configure the title.
-                title.text = "Scan the Credit Card"
+                title.text = "DD.MM.YY"
                 title.color = ScanbotColor("#FFFFFF")
                 // Configure the background.
                 background.fillColor = ScanbotColor("#7A000000")
@@ -304,7 +267,7 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
 // @EndTag("User guidance")
 }
 
-class CreditCardTopBarSnippet : AppCompatActivity() {
+class VinTopBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -313,19 +276,11 @@ class CreditCardTopBarSnippet : AppCompatActivity() {
     }
     // @Tag("Top bar")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -333,7 +288,7 @@ class CreditCardTopBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the top user guidance from the configuration object.
         configuration.topBar.apply {
@@ -356,7 +311,7 @@ class CreditCardTopBarSnippet : AppCompatActivity() {
 // @EndTag("Top bar")
 }
 
-class CreditCardFinderSnippet : AppCompatActivity() {
+class VinFinderSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -365,19 +320,11 @@ class CreditCardFinderSnippet : AppCompatActivity() {
     }
     // @Tag("Finder overlay")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -385,9 +332,8 @@ class CreditCardFinderSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
-        configuration.exampleOverlayVisible = true
         // Configure finder overlay appearance
         configuration.viewFinder.apply {
             style = FinderStyle.finderStrokedStyle().apply {
@@ -400,7 +346,7 @@ class CreditCardFinderSnippet : AppCompatActivity() {
 // @EndTag("Finder overlay")
 }
 
-class CreditCardActionBarSnippet : AppCompatActivity() {
+class VinActionBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -409,19 +355,11 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
     }
     // @Tag("Action bar")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -429,7 +367,7 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
         // Retrieve the instance of the action bar from the configuration object.
         configuration.actionBar.apply {
 
@@ -464,7 +402,7 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
 // @EndTag("Action bar")
 }
 
-class CreditCardScanningSnippet : AppCompatActivity() {
+class VinScanningSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -473,19 +411,11 @@ class CreditCardScanningSnippet : AppCompatActivity() {
     }
     // @Tag("Scanning")
 
-    val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
-                    val cardNumber: String = creditCard.cardNumber.value.text
-                    val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
-                    val expiryDate: String? = creditCard.expiryDate?.value?.text
-                    Toast.makeText(
-                        this,
-                        "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
-                        Toast.LENGTH_LONG
-                    ).show()
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -493,7 +423,7 @@ class CreditCardScanningSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CreditCardScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Configure camera properties.
         // e.g
@@ -519,6 +449,7 @@ class CreditCardScanningSnippet : AppCompatActivity() {
         // Configure the sound.
         configuration.sound.successBeepEnabled = true
         configuration.sound.soundType = SoundType.MODERN_BEEP
+
         resultLauncher.launch(configuration)
     }
 // @EndTag("Scanning")
@@ -532,12 +463,12 @@ class ComposeSnippet : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ComposeView(this).apply {
             setContent {
-                CreditCardScannerView(
+                VinScannerView(
                     configuration = getConfiguration(),
-                    onCreditCardScanned = { document ->
+                    onVinScanned = { document ->
                         // Handle the document.
                     },
-                    onCreditCardScannerClosed = { reason ->
+                    onVinScannerClosed = { reason ->
                         // Indicates that the cancel button was tapped.
                     }
                 )
@@ -546,9 +477,9 @@ class ComposeSnippet : AppCompatActivity() {
     }
 
 
-    fun getConfiguration(): CreditCardScannerScreenConfiguration {
+    fun getConfiguration(): VinScannerScreenConfiguration {
         // Create the default configuration object.
-        return CreditCardScannerScreenConfiguration().apply {
+        return VinScannerScreenConfiguration().apply {
 
         }
     }

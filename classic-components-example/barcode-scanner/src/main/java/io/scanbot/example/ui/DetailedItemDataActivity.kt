@@ -74,7 +74,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
             is BoardingPass -> {
                 barcodesResult.append("\n")
                     .append("Boarding Pass Document\n")
-                    .append("${barcodeDocumentFormat.name}\n")
+                    .append("${barcodeDocumentFormat.passengerName}\n")
                 barcodeDocumentFormat.legs?.forEach { leg ->
                     leg.document.fields.forEach {
                         barcodesResult.append("${it.type.name}:${it.value}\n")
