@@ -19,7 +19,7 @@
     <string name="scan_credit_card">Scan Credit Card</string>
     <string name="scan_vin">Scan VIN</string>
     <string name="scan_license_plate">Scan EU license plate</string>
-    <string name="scan_generic_document">Scan Generic Document</string>
+    <string name="extract_data">Extract Data from Document</string>
     <string name="scan_check">Scan check</string>
     <string name="detected_mrz">Detected MRZ</string>
     <string name="ehic_result">EHIC Result</string>

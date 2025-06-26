@@ -9,20 +9,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.databinding.*
 import io.scanbot.example.fragments.*
-import io.scanbot.genericdocument.entity.*
 import io.scanbot.sap.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.*
 import io.scanbot.sdk.check.entity.*
-import io.scanbot.sdk.creditcard.entity.CreditCard
-import io.scanbot.sdk.documentdata.*
-import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.creditcard.entity.*
 import io.scanbot.sdk.ehicscanner.*
 import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
-import io.scanbot.sdk.textpattern.ContentValidationCallback
-import io.scanbot.sdk.textpattern.CustomContentValidator
-import io.scanbot.sdk.ui.registerForActivityResultOk
+import io.scanbot.sdk.ui.*
 import io.scanbot.sdk.ui.view.check.*
 import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
 import io.scanbot.sdk.ui.view.hic.*
@@ -31,18 +26,16 @@ import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
 import io.scanbot.sdk.ui.view.vin.*
 import io.scanbot.sdk.ui.view.vin.configuration.*
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
+import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
-import io.scanbot.sdk.ui_v2.creditcard.CreditCardScannerActivity
-import io.scanbot.sdk.ui_v2.creditcard.configuration.CreditCardScannerScreenConfiguration
-import io.scanbot.sdk.ui_v2.documentdata.DocumentDataExtractorActivity
-import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.DocumentDataExtractorScreenConfiguration
-import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.DocumentDataExtractorUiResult
+import io.scanbot.sdk.ui_v2.creditcard.*
+import io.scanbot.sdk.ui_v2.creditcard.configuration.*
+import io.scanbot.sdk.ui_v2.documentdata.*
+import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.*
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
-import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
-import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
-import java.util.regex.Pattern
+import io.scanbot.sdk.ui_v2.textpattern.*
+import io.scanbot.sdk.ui_v2.textpattern.configuration.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -116,13 +109,13 @@ class MainActivity : AppCompatActivity() {
             creditCardUiResultLauncher.launch(creditCardScannerConfiguration)
         }
 
-        findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
-            val genericDocumentConfiguration = DocumentDataExtractorScreenConfiguration()
+        findViewById<View>(R.id.data_extractor_default_ui).setOnClickListener {
+            val configuration = DocumentDataExtractorScreenConfiguration()
 
-            genericDocumentConfiguration.topBar.backgroundColor = ScanbotColor(
+            configuration.topBar.backgroundColor = ScanbotColor(
                 ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
-            dataExtractorResultLauncher.launch(genericDocumentConfiguration)
+            dataExtractorResultLauncher.launch(configuration)
         }
 
         binding.ehicDefaultUi.setOnClickListener {
