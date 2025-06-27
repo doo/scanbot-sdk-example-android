@@ -24,8 +24,6 @@ import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
-import io.scanbot.sdk.ui.view.vin.*
-import io.scanbot.sdk.ui.view.vin.configuration.*
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.*
@@ -36,6 +34,8 @@ import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.*
 import io.scanbot.sdk.ui_v2.textpattern.configuration.*
+import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
+import io.scanbot.sdk.ui_v2.vin.configuration.VinScannerScreenConfiguration
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
     private val creditCardUiResultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration>
-    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
+    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration>
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration>
@@ -91,14 +91,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
-            val vinScannerConfiguration = VinScannerConfiguration()
+            val vinScannerConfiguration = VinScannerScreenConfiguration()
 
-            vinScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            vinScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
 
             vinScannerResultLauncher.launch(vinScannerConfiguration)
         }
