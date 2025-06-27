@@ -18,12 +18,13 @@ import io.scanbot.sdk.ehicscanner.*
 import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
 import io.scanbot.sdk.ui.*
-import io.scanbot.sdk.ui.view.check.*
-import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
 import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
+import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
+import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerScreenConfiguration
+import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerUiResult
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.*
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration>
-    private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerConfiguration>
+    private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration>
 
     private lateinit var binding: ActivityMainBinding
 
@@ -128,14 +129,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.checkRecognizerUi.setOnClickListener {
-            val config = CheckScannerConfiguration().apply {
-                setTopBarBackgroundColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.colorPrimaryDark
-                    )
-                )
-                setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
+            val config = CheckScannerScreenConfiguration().apply {
+
             }
 
             checkScannerResultLauncher.launch(config)
@@ -204,11 +199,11 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
 
-    private fun handleCheckScannerResult(result: CheckScanningResult) {
+    private fun handleCheckScannerResult(result: CheckScannerUiResult) {
         showCheckScannerResult(result)
     }
 
-    private fun showCheckScannerResult(recognitionResult: CheckScanningResult) {
+    private fun showCheckScannerResult(recognitionResult: CheckScannerUiResult) {
         val document = recognitionResult.check?.let { Check(it) } // Convert to the document model
         Toast.makeText(this, recognitionResult.toString(), Toast.LENGTH_SHORT).show()
     }
