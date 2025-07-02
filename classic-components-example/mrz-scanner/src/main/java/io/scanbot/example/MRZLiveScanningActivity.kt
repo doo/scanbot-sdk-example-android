@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.camera.CameraModule
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.documentdata.entity.MRZ
@@ -39,6 +40,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
 
         // Configure Initial camera state
         cameraView = findViewById(R.id.camera)
+        cameraView.setCameraModule(CameraModule.FRONT)
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.useFlash(flashEnabled)
