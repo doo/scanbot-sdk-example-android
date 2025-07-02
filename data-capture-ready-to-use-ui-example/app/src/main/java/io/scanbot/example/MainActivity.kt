@@ -33,7 +33,7 @@ import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
 import io.scanbot.sdk.ui.view.vin.*
 import io.scanbot.sdk.ui.view.vin.configuration.*
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
+import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.CreditCardScannerActivity
 import io.scanbot.sdk.ui_v2.creditcard.configuration.CreditCardScannerScreenConfiguration
@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             val mrzCameraConfiguration = MrzScannerScreenConfiguration()
             mrzCameraConfiguration.cameraConfiguration.apply {
                 flashEnabled = false
+                cameraModule = CameraModule.FRONT
             }
             mrzCameraConfiguration.mrzExampleOverlay =
                 MrzFinderLayoutPreset.threeLineMrzFinderLayoutPreset()
