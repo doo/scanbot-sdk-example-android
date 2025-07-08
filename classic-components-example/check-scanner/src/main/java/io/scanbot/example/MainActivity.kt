@@ -28,21 +28,22 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-        lifecycleScope.launch { scanCheck(uri) }
-    }
+            lifecycleScope.launch { scanCheck(uri) }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             result?.let {
+                CheckScannerResultActivity.tempDocumentImage = it.croppedImage?.toBitmap()
                 startActivity(CheckScannerResultActivity.newIntent(this@MainActivity, it))
             } ?: this@MainActivity.showToast("No  data found!")
         }
