@@ -20,6 +20,7 @@ import com.example.scanbot.sharing.SharingDocumentStorage
 import com.example.scanbot.usecases.GeneratePdfForSharingUseCase
 import com.example.scanbot.usecases.GenerateTiffForSharingUseCase
 import com.example.scanbot.utils.ExampleUtils
+import com.example.scanbot.utils.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
@@ -56,6 +57,7 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pages_preview)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         initActionBar()
         initMenu()
