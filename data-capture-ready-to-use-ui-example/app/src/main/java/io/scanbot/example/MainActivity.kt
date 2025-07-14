@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.databinding.*
 import io.scanbot.example.fragments.*
+import io.scanbot.example.util.applyEdgeToEdge
 import io.scanbot.sap.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.*
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         findViewById<View>(R.id.mrz_camera_default_ui).setOnClickListener {
             val mrzCameraConfiguration = MrzScannerScreenConfiguration()
