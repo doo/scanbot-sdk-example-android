@@ -12,7 +12,6 @@ import io.scanbot.example.fragments.*
 import io.scanbot.example.util.applyEdgeToEdge
 import io.scanbot.sap.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.check.*
 import io.scanbot.sdk.check.entity.*
 import io.scanbot.sdk.creditcard.entity.*
 import io.scanbot.sdk.ehicscanner.*
@@ -162,7 +161,7 @@ class MainActivity : AppCompatActivity() {
             if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
-    private fun handleGenericDocScannerResult(result: List<DocumentDataExtractorUiResult>) {
+    private fun handleDocumentDataExtractorResult(result: List<DocumentDataExtractorUiResult>) {
         result
         Toast.makeText(
             this,
@@ -263,7 +262,7 @@ class MainActivity : AppCompatActivity() {
 
         dataExtractorResultLauncher =
             registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
-                handleGenericDocScannerResult(listOfNotNull(resultEntity.result))
+                handleDocumentDataExtractorResult(listOfNotNull(resultEntity.result))
             }
 
         medicalCertificateScannerActivityResultLauncher =
