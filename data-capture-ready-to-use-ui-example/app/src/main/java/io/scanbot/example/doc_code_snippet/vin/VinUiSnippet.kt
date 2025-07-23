@@ -183,7 +183,7 @@ class VinIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an text"
+            title.text = "How to scan a VIN"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
@@ -201,7 +201,7 @@ class VinIntroductionSnippet : AppCompatActivity() {
 
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
-            explanation.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
+            explanation.text = "The VIN (Vehicle Identification Number) is a unique code you'll find on your windshield or inside the driver's door.\n\nTo read the VIN, hold your camera over it. Make sure it's aligned in the frame. Your VIN will be automatically extracted.\n\nTap 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
