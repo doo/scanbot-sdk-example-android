@@ -180,7 +180,7 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an DocumentDataExtractor"
+            title.text = "How to scan an ID document"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
@@ -199,7 +199,7 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
             explanation.text =
-                "The Machine Readable Zone (DocumentDataExtractor) is a special code on your ID document (such as a passport or ID card) that contains your personal information in a machine-readable format.\n\nTo scan it, simply hold your camera over the document, so that it aligns with the DocumentDataExtractor section. Once scanned, the data will be automatically processed, and you will be directed to the results screen.\n\nPress 'Start Scanning' to begin."
+                "To scan your ID, position the document within the viewfinder, ensuring it is properly aligned and all key details are clearly visible. The scanner will automatically extract essential information, such as your name, date of birth, and document number. Once the scan is complete, the scanner will close, and the extracted data will be processed accordingly.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
