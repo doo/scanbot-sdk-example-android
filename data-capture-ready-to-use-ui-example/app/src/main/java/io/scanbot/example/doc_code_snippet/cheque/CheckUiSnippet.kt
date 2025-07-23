@@ -11,6 +11,7 @@ package io.scanbot.example.doc_code_snippet.cheque
 // Page URLs using this code:
 // TODO: add URLs here
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -18,6 +19,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.check.CheckScanner
+import io.scanbot.sdk.check.CheckScannerFrameHandler
+import io.scanbot.sdk.check.CheckScanningResult
+import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
 import io.scanbot.sdk.ui_v2.check.CheckScannerView
 import io.scanbot.sdk.ui_v2.check.configuration.CheckIntroCustomImage
@@ -497,4 +503,44 @@ class ComposeSnippet : AppCompatActivity() {
         }
     }
     // @EndTag("Compose Example")
+}
+
+
+
+//Classic snippets
+
+fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
+    // @Tag("Get Instances")
+    val scanbotSDK = ScanbotSDK(context)
+    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner()
+    val checkScannerFrameHandler: CheckScannerFrameHandler =
+        CheckScannerFrameHandler.attach(cameraView, checkScanner)
+    // @EndTag("Get Instances")
+}
+
+fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
+    // @Tag("Handle Result")
+    checkScannerFrameHandler.addResultHandler(object : CheckScannerFrameHandler.ResultHandler {
+        override fun handle(result: FrameHandlerResult<CheckScanningResult, SdkLicenseError>): Boolean {
+            when (result) {
+                is FrameHandlerResult.Success -> {
+                    val checkResult: CheckScanningResult? =
+                        (result as FrameHandlerResult.Success<CheckScanningResult?>).value
+                    if (checkResult?.check != null) {
+                        // do something with result here
+                        val checkDocument = checkResult.check
+                        if (checkDocument != null) {
+                            wrapCheck(checkDocument)
+                        }
+                    }
+                }
+
+                is FrameHandlerResult.Failure -> {
+                } // handle license error here
+            }
+
+            return false
+        }
+    })
+    // @EndTag("Handle Result")
 }
