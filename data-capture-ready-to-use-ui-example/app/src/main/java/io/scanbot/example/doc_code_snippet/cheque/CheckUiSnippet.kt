@@ -196,7 +196,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an check"
+            title.text = "How to scan a check"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
