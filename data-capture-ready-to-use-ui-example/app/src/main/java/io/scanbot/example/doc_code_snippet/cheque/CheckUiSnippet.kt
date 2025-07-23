@@ -196,7 +196,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan an Check"
+            title.text = "How to scan an check"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
@@ -260,7 +260,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
             // Show the user guidance.
             visible = true
             // Configure the title.
-            title.text = "Scan your Identity Document"
+            title.text = "Scan your check"
             title.color = ScanbotColor("#FFFFFF")
             // Configure the background.
             background.fillColor = ScanbotColor("#7A000000")
