@@ -9,39 +9,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.databinding.*
 import io.scanbot.example.fragments.*
-import io.scanbot.genericdocument.entity.*
+import io.scanbot.example.util.applyEdgeToEdge
 import io.scanbot.sap.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.check.*
 import io.scanbot.sdk.check.entity.*
-import io.scanbot.sdk.creditcard.entity.CreditCard
-import io.scanbot.sdk.documentdata.*
-import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.creditcard.entity.*
 import io.scanbot.sdk.ehicscanner.*
 import io.scanbot.sdk.genericdocument.entity.*
 import io.scanbot.sdk.mc.*
-import io.scanbot.sdk.textpattern.ContentValidationCallback
-import io.scanbot.sdk.textpattern.CustomContentValidator
-import io.scanbot.sdk.ui.registerForActivityResultOk
-import io.scanbot.sdk.ui.view.check.*
-import io.scanbot.sdk.ui.view.check.configuration.CheckScannerConfiguration
-import io.scanbot.sdk.ui.view.documentdata.*
-import io.scanbot.sdk.ui.view.documentdata.configuration.DocumentDataExtractorConfiguration
+import io.scanbot.sdk.ui.*
 import io.scanbot.sdk.ui.view.hic.*
 import io.scanbot.sdk.ui.view.hic.configuration.*
 import io.scanbot.sdk.ui.view.mc.*
 import io.scanbot.sdk.ui.view.mc.configuration.*
-import io.scanbot.sdk.ui.view.vin.*
-import io.scanbot.sdk.ui.view.vin.configuration.*
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
+import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
+import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerScreenConfiguration
+import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerUiResult
+import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
-import io.scanbot.sdk.ui_v2.creditcard.CreditCardScannerActivity
-import io.scanbot.sdk.ui_v2.creditcard.configuration.CreditCardScannerScreenConfiguration
+import io.scanbot.sdk.ui_v2.creditcard.*
+import io.scanbot.sdk.ui_v2.creditcard.configuration.*
+import io.scanbot.sdk.ui_v2.documentdata.*
+import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.*
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
-import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
-import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
-import java.util.regex.Pattern
+import io.scanbot.sdk.ui_v2.textpattern.*
+import io.scanbot.sdk.ui_v2.textpattern.configuration.*
+import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
+import io.scanbot.sdk.ui_v2.vin.configuration.VinScannerScreenConfiguration
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,11 +45,11 @@ class MainActivity : AppCompatActivity() {
     private val mrzDefaultUiResultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration>
     private val creditCardUiResultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration>
-    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerConfiguration>
+    private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration>
     private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
     private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
-    private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorConfiguration>
-    private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerConfiguration>
+    private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration>
+    private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration>
 
     private lateinit var binding: ActivityMainBinding
 
@@ -62,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         findViewById<View>(R.id.mrz_camera_default_ui).setOnClickListener {
             val mrzCameraConfiguration = MrzScannerScreenConfiguration()
@@ -79,32 +75,26 @@ class MainActivity : AppCompatActivity() {
             // Create the default configuration object.
             val textPatternScannerConfiguration = TextPatternScannerScreenConfiguration()
             // Configure what string should be passed as successfully scanned text.
-         /*   textPatternScannerConfiguration.scannerConfiguration.validator = CustomContentValidator().apply {
-                     val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
-                     this.callback = object : ContentValidationCallback {
-                         override fun clean(rawText: String): String {
-                             return rawText.replace(" ", "")
-                         }
+            /*   textPatternScannerConfiguration.scannerConfiguration.validator = CustomContentValidator().apply {
+                        val pattern = Pattern.compile("^[0-9]{4}$") // e.g. 4 digits
+                        this.callback = object : ContentValidationCallback {
+                            override fun clean(rawText: String): String {
+                                return rawText.replace(" ", "")
+                            }
 
-                         override fun validate(text: String): Boolean {
-                             val matcher = pattern.matcher(text)
-                             return matcher.find()
-                         }
-                     }
-                 }*/
+                            override fun validate(text: String): Boolean {
+                                val matcher = pattern.matcher(text)
+                                return matcher.find()
+                            }
+                        }
+                    }*/
             textPatternScannerConfiguration.topBar.backgroundColor = ScanbotColor(Color.BLACK)
             textDataScannerResultLauncher.launch(textPatternScannerConfiguration)
         }
 
         findViewById<View>(R.id.vin_scanner_default_ui).setOnClickListener {
-            val vinScannerConfiguration = VinScannerConfiguration()
+            val vinScannerConfiguration = VinScannerScreenConfiguration()
 
-            vinScannerConfiguration.setTopBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            )
-            vinScannerConfiguration.setTopBarButtonsColor(
-                ContextCompat.getColor(this, R.color.greyColor)
-            )
 
             vinScannerResultLauncher.launch(vinScannerConfiguration)
         }
@@ -115,27 +105,13 @@ class MainActivity : AppCompatActivity() {
             creditCardUiResultLauncher.launch(creditCardScannerConfiguration)
         }
 
-        findViewById<View>(R.id.generic_document_default_ui).setOnClickListener {
-            val genericDocumentConfiguration = DocumentDataExtractorConfiguration()
-            genericDocumentConfiguration.setTopBarButtonsInactiveColor(
-                ContextCompat.getColor(this, android.R.color.white)
-            )
-            genericDocumentConfiguration.setTopBarBackgroundColor(
+        findViewById<View>(R.id.data_extractor_default_ui).setOnClickListener {
+            val configuration = DocumentDataExtractorScreenConfiguration()
+
+            configuration.topBar.backgroundColor = ScanbotColor(
                 ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
-            genericDocumentConfiguration.setFieldsDisplayConfiguration(
-                hashMapOf(
-                    DePassport.NormalizedFieldNames.PHOTO to FieldProperties(
-                        "My passport photo",
-                        FieldProperties.DisplayState.AlwaysVisible
-                    ),
-                    MRZ.NormalizedFieldNames.CHECK_DIGIT_GENERAL to FieldProperties(
-                        "Check digit general",
-                        FieldProperties.DisplayState.AlwaysVisible
-                    )
-                )
-            )
-            dataExtractorResultLauncher.launch(genericDocumentConfiguration)
+            dataExtractorResultLauncher.launch(configuration)
         }
 
         binding.ehicDefaultUi.setOnClickListener {
@@ -154,14 +130,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.checkRecognizerUi.setOnClickListener {
-            val config = CheckScannerConfiguration().apply {
-                setTopBarBackgroundColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.colorPrimaryDark
-                    )
-                )
-                setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
+            val config = CheckScannerScreenConfiguration().apply {
+
             }
 
             checkScannerResultLauncher.launch(config)
@@ -191,7 +161,7 @@ class MainActivity : AppCompatActivity() {
             if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
     }
 
-    private fun handleGenericDocScannerResult(result: List<DocumentDataExtractionResult>) {
+    private fun handleDocumentDataExtractorResult(result: List<DocumentDataExtractorUiResult>) {
         result
         Toast.makeText(
             this,
@@ -230,11 +200,11 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
 
-    private fun handleCheckScannerResult(result: CheckScanningResult) {
+    private fun handleCheckScannerResult(result: CheckScannerUiResult) {
         showCheckScannerResult(result)
     }
 
-    private fun showCheckScannerResult(recognitionResult: CheckScanningResult) {
+    private fun showCheckScannerResult(recognitionResult: CheckScannerUiResult) {
         val document = recognitionResult.check?.let { Check(it) } // Convert to the document model
         Toast.makeText(this, recognitionResult.toString(), Toast.LENGTH_SHORT).show()
     }
@@ -292,7 +262,7 @@ class MainActivity : AppCompatActivity() {
 
         dataExtractorResultLauncher =
             registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
-                handleGenericDocScannerResult(resultEntity.result!!)
+                handleDocumentDataExtractorResult(listOfNotNull(resultEntity.result))
             }
 
         medicalCertificateScannerActivityResultLauncher =

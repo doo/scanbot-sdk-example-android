@@ -39,4 +39,5 @@ dependencies {
     implementation("io.scanbot:sdk-package-3:${project.ext.scanbotSdkVersion}")
     implementation("io.scanbot:rtu-ui-v2-bundle:${project.ext.scanbotSdkVersion}")
     implementation("io.scanbot:sdk-mrz-assets:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-docqualityanalyzer-assets:${project.ext.scanbotSdkVersion}")
 }

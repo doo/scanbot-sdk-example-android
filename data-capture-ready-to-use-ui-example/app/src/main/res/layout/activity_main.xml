@@ -1,164 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scroll_view"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/title_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="20dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/scanbot_sdk_demo"
-                android:textColor="#ffffff"
-                android:textSize="34sp"
-                android:textStyle="normal" />
-
-            <FrameLayout
-                android:id="@+id/warning_view"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="32dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="32dp"
-                android:background="@drawable/warning_shape">
+                android:layout_marginStart="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/scanbot_sdk_demo"
+                    android:textColor="#ffffff"
+                    android:textSize="34sp"
+                    android:textStyle="normal" />
+
+                <FrameLayout
+                    android:id="@+id/warning_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="32dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/warning_shape">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="8dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/no_license_found_the_app_will_terminate_after_one_minute"
+                        android:textColor="#ffffff"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/data_detectors_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.17"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/data_detectors"
+                    android:textAllCaps="true"
+                    android:textColor="#99ffffff"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+
+                <LinearLayout
+                    android:id="@+id/buttons_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingEnd="8dp"
+                    app:divider="@drawable/divider_menu_items"
+                    app:showDividers="middle">
+
+                    <Button
+                        android:id="@+id/mrz_camera_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_mrz" />
+
+                    <Button
+                        android:id="@+id/data_extractor_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/extract_data" />
+
+                    <Button
+                        android:id="@+id/text_pattern_scanner_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_text_data" />
+
+                    <Button
+                        android:id="@+id/credit_card_scanner_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_credit_card" />
+
+                    <Button
+                        android:id="@+id/vin_scanner_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_vin" />
+
+                    <Button
+                        android:id="@+id/ehic_default_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_ehic" />
+
+                    <Button
+                        android:id="@+id/mc_scanner_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_mc" />
+
+                    <Button
+                        android:id="@+id/check_recognizer_ui"
+                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/scan_check" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="8dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="32dp"
                     android:fontFamily="sans-serif"
-                    android:text="@string/no_license_found_the_app_will_terminate_after_one_minute"
-                    android:textColor="#ffffff"
-                    android:textSize="14sp"
+                    android:letterSpacing="0.03"
+                    android:lineSpacingExtra="4sp"
+                    android:text="@string/copyright_note"
+                    android:textColor="#99ffffff"
+                    android:textSize="12sp"
                     android:textStyle="normal" />
-            </FrameLayout>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/data_detectors_title"
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.17"
-                android:lineSpacingExtra="4sp"
-                android:text="@string/data_detectors"
-                android:textAllCaps="true"
-                android:textColor="#99ffffff"
-                android:textSize="12sp"
-                android:textStyle="normal" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/buttons_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingEnd="8dp"
-                app:divider="@drawable/divider_menu_items"
-                app:showDividers="middle">
-
-                <Button
-                    android:id="@+id/mrz_camera_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_mrz" />
-
-                <Button
-                    android:id="@+id/generic_document_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_generic_document" />
-
-                <Button
-                    android:id="@+id/text_pattern_scanner_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_text_data" />
-
-                <Button
-                    android:id="@+id/credit_card_scanner_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_credit_card" />
-
-                <Button
-                    android:id="@+id/vin_scanner_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_vin" />
-
-                <Button
-                    android:id="@+id/ehic_default_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_ehic" />
-
-                <Button
-                    android:id="@+id/mc_scanner_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_mc" />
-
-                <Button
-                    android:id="@+id/check_recognizer_ui"
-                    style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/scan_check" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="32dp"
-                android:fontFamily="sans-serif"
-                android:letterSpacing="0.03"
-                android:lineSpacingExtra="4sp"
-                android:text="@string/copyright_note"
-                android:textColor="#99ffffff"
-                android:textSize="12sp"
-                android:textStyle="normal" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible" />
-    </FrameLayout>
-</ScrollView>
+                android:layout_gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
+    </ScrollView>
+</FrameLayout>

@@ -21,6 +21,7 @@ import com.example.scanbot.usecases.GeneratePngForSharingUseCase
 import com.example.scanbot.usecases.GenerateTiffForSharingUseCase
 import com.example.scanbot.utils.ExampleUtils
 import com.example.scanbot.utils.ExampleUtils.showEncryptedDocumentToast
+import com.example.scanbot.utils.applyEdgeToEdge
 import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
@@ -75,6 +76,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_page_preview)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         initActionBar()
         initMenu()

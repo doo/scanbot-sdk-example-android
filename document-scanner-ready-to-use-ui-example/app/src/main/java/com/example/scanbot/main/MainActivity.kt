@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.scanbot.Const
 import com.example.scanbot.preview.DocumentPreviewActivity
 import com.example.scanbot.preview.SinglePagePreviewActivity
+import com.example.scanbot.utils.applyEdgeToEdge
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
 import io.scanbot.sdk.ScanbotSDK
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         documentScannerResult =
             registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { activityResult ->

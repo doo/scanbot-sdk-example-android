@@ -31,10 +31,10 @@ fun wrapGenericDocument(genericDocument: GenericDocument) {
         DePassport.DOCUMENT_TYPE  -> {
             // Handle passport
         }
-        DeDriverLicenseFront.DOCUMENT_TYPE  -> {
+        EuropeanDriverLicenseFront.DOCUMENT_TYPE  -> {
             // Handle driver license front
         }
-        DeDriverLicenseBack.DOCUMENT_TYPE  -> {
+        EuropeanDriverLicenseBack.DOCUMENT_TYPE  -> {
             // Handle driver license back
         }
         DeResidencePermitFront.DOCUMENT_TYPE  -> {

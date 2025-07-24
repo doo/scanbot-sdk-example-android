@@ -111,31 +111,22 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
     private fun processPictureTaken(image: ByteArray) {
         val options = BitmapFactory.Options()
         val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-
-        val documentScanner = scanbotSDK.createDocumentScanner()
-        val result = documentScanner.scanFromBitmap(originalBitmap)
-
-        result?.pointsNormalized?.let { polygon ->
-            ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
-                ?.let { documentImage ->
-                    // documentImage will be recycled inside scanCheckBitmap
-                    val imageCopy = Bitmap.createBitmap(documentImage)
-                    val checkScanner = scanbotSDK.createCheckScanner()
-                    val checkResult = checkScanner.scanFromBitmap(documentImage, 0)
-                    if (checkResult?.check != null) {
-                        CheckScannerResultActivity.tempDocumentImage = imageCopy
-                        startActivity(CheckScannerResultActivity.newIntent(this, checkResult))
-                    } else {
-                        runOnUiThread {
-                            Toast.makeText(
-                                this,
-                                "Check is not found - please, try agian",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
+        // documentImage will be recycled inside scanCheckBitmap
+        val checkScanner = scanbotSDK.createCheckScanner()
+        val checkResult = checkScanner.scanFromBitmap(originalBitmap, 0)
+        if (checkResult?.check != null) {
+            CheckScannerResultActivity.tempDocumentImage = checkResult.croppedImage?.toBitmap()
+            startActivity(CheckScannerResultActivity.newIntent(this, checkResult))
+        } else {
+            runOnUiThread {
+                Toast.makeText(
+                    this,
+                    "Check is not found - please, try agian",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
+
 
         // continue scanning
         cameraView.postDelayed({

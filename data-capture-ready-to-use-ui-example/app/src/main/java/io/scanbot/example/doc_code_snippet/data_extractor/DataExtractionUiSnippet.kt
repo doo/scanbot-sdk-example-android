@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.cheque
+package io.scanbot.example.doc_code_snippet.data_extractor
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -11,42 +11,30 @@ package io.scanbot.example.doc_code_snippet.cheque
 // Page URLs using this code:
 // TODO: add URLs here
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.check.CheckScanner
-import io.scanbot.sdk.check.CheckScannerFrameHandler
-import io.scanbot.sdk.check.CheckScanningResult
-import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
-import io.scanbot.sdk.ui_v2.check.CheckScannerView
-import io.scanbot.sdk.ui_v2.check.configuration.CheckIntroCustomImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckIntroDefaultImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckNoImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerScreenConfiguration
-import io.scanbot.sdk.ui_v2.common.FinderStyle
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.SoundType
-import io.scanbot.sdk.ui_v2.common.StatusBarMode
-import io.scanbot.sdk.ui_v2.common.TopBarMode
+import io.scanbot.sdk.documentdata.DocumentDataExtractorCommonConfiguration
+import io.scanbot.sdk.documentdata.DocumentDataExtractorConfigurationBuilder
+import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.ui_v2.common.*
+import io.scanbot.sdk.ui_v2.documentdata.*
+import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.*
 
 //Rtu ui snippets
-fun initSdkSnippet(application: Application, licenseKey: String) {
+fun initializeScanbotSDK(application: Application) {
     // @Tag("InitializeScanbotSDK")
-    ScanbotSDKInitializer()
-        .license(application, licenseKey)
-        .prepareOCRLanguagesBlobs(true)
-        .initialize(application)
+    ScanbotSDKInitializer().initialize(application)
     // @EndTag("InitializeScanbotSDK")
 }
 
-class StartCheckUiSnippet : AppCompatActivity() {
+class StartDocumentDataExtractorUiSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
@@ -55,19 +43,18 @@ class StartCheckUiSnippet : AppCompatActivity() {
 
     // @Tag("Launching the scanner")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
 
     private fun startScanning() {
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Start the recognizer activity.
         resultLauncher.launch(configuration)
@@ -75,7 +62,7 @@ class StartCheckUiSnippet : AppCompatActivity() {
     // @EndTag("Launching the scanner")
 }
 
-class CheckPaletteSnippet : AppCompatActivity() {
+class DocumentDataExtractorPaletteSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,12 +71,11 @@ class CheckPaletteSnippet : AppCompatActivity() {
     }
     // @Tag("Palette")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -97,7 +83,7 @@ class CheckPaletteSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Retrieve the instance of the palette from the configuration object.
         configuration.palette.apply {
@@ -126,7 +112,7 @@ class CheckPaletteSnippet : AppCompatActivity() {
     // @EndTag("Palette")
 }
 
-class CheckLocalizationSnippet : AppCompatActivity() {
+class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,12 +121,11 @@ class CheckLocalizationSnippet : AppCompatActivity() {
     }
     // @Tag("Localization")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -148,7 +133,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Retrieve the instance of the localization from the configuration object.
         configuration.localization.apply {
@@ -163,7 +148,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
 // @EndTag("Localization")
 }
 
-class CheckIntroductionSnippet : AppCompatActivity() {
+class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,12 +157,11 @@ class CheckIntroductionSnippet : AppCompatActivity() {
     }
     // @Tag("Introduction")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -185,7 +169,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Retrieve the instance of the intro screen from the configuration object.
         configuration.introScreen.apply {
@@ -196,15 +180,15 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan a check"
+            title.text = "How to scan an ID document"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
-            image = CheckNoImage()
+            image = DocumentDataIntroNoImage()
             // For a custom image...
-            image = CheckIntroCustomImage(uri = "PathToImage")
+            image = DocumentDataIntroCustomImage(uri = "PathToImage")
             // Or you can also use our default image.
-            image = CheckIntroDefaultImage()
+            image = DocumentDataIntroDefaultImage()
 
             // Configure the color of the handler on top.
             handlerColor = ScanbotColor("#EFEFEF")
@@ -215,7 +199,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
             explanation.text =
-                "To quickly and securely input your check details, please hold your device over the check, so that the camera aligns with the document.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
+                "To scan your ID, position the document within the viewfinder, ensuring it is properly aligned and all key details are clearly visible. The scanner will automatically extract essential information, such as your name, date of birth, and document number. Once the scan is complete, the scanner will close, and the extracted data will be processed accordingly.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
@@ -228,7 +212,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
 // @EndTag("Introduction")
 }
 
-class CheckUserGuidanceSnippet : AppCompatActivity() {
+class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,12 +221,11 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
     }
     // @Tag("User guidance")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -250,7 +233,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Configure user guidance's
 
@@ -260,29 +243,20 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
             // Show the user guidance.
             visible = true
             // Configure the title.
-            title.text = "Scan your check"
+            title.text = "Scan your Identity Document"
             title.color = ScanbotColor("#FFFFFF")
             // Configure the background.
             background.fillColor = ScanbotColor("#7A000000")
 
-            // Finder overlay user guidance
-            // Retrieve the instance of the finder overlay user guidance from the configuration object.
-            configuration.scanStatusUserGuidance.apply {
-                // Show the user guidance.
-                visible = true
-                // Configure the title.
-                title.text = "Scan the Check"
-                title.color = ScanbotColor("#FFFFFF")
-                // Configure the background.
-                background.fillColor = ScanbotColor("#7A000000")
-            }
             resultLauncher.launch(configuration)
         }
+        configuration.scanStatusUserGuidance.statesTitles.noDocumentFound = "No Document Found"
+        configuration.scanStatusUserGuidance.statesTitles.tooDark = "Try to move to some light"
     }
 // @EndTag("User guidance")
 }
 
-class CheckTopBarSnippet : AppCompatActivity() {
+class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -291,12 +265,11 @@ class CheckTopBarSnippet : AppCompatActivity() {
     }
     // @Tag("Top bar")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -304,7 +277,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
         // Retrieve the instance of the top user guidance from the configuration object.
         configuration.topBar.apply {
@@ -327,7 +300,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
 // @EndTag("Top bar")
 }
 
-class CheckFinderSnippet : AppCompatActivity() {
+class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -336,12 +309,11 @@ class CheckFinderSnippet : AppCompatActivity() {
     }
     // @Tag("Finder overlay")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -349,9 +321,8 @@ class CheckFinderSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
 
-        configuration.exampleOverlayVisible = true
         // Configure finder overlay appearance
         configuration.viewFinder.apply {
             style = FinderStyle.finderStrokedStyle().apply {
@@ -364,7 +335,7 @@ class CheckFinderSnippet : AppCompatActivity() {
 // @EndTag("Finder overlay")
 }
 
-class CheckActionBarSnippet : AppCompatActivity() {
+class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -373,12 +344,11 @@ class CheckActionBarSnippet : AppCompatActivity() {
     }
     // @Tag("Action bar")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -386,7 +356,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = DocumentDataExtractorScreenConfiguration()
         // Retrieve the instance of the action bar from the configuration object.
         configuration.actionBar.apply {
 
@@ -421,7 +391,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
 // @EndTag("Action bar")
 }
 
-class CheckScanningSnippet : AppCompatActivity() {
+class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -430,12 +400,11 @@ class CheckScanningSnippet : AppCompatActivity() {
     }
     // @Tag("Scanning")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.document?.let { document ->
+                    wrapGenericDocument(document)
                 }
             }
         }
@@ -443,8 +412,16 @@ class CheckScanningSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
-
+        val configuration = DocumentDataExtractorScreenConfiguration()
+        // Initiate scanner with de id card document type to scan
+        configuration.scannerConfiguration.configurations = listOf(
+            DocumentDataExtractorCommonConfiguration(
+                listOf(
+                    DeIdCardFront.DOCUMENT_TYPE,
+                    DeIdCardBack.DOCUMENT_TYPE
+                )
+            )
+        )
         // Configure camera properties.
         // e.g
         configuration.cameraConfiguration.zoomSteps = listOf(1.0, 2.0, 5.0)
@@ -470,10 +447,10 @@ class CheckScanningSnippet : AppCompatActivity() {
         configuration.sound.successBeepEnabled = true
         configuration.sound.soundType = SoundType.MODERN_BEEP
         resultLauncher.launch(configuration)
+
     }
 // @EndTag("Scanning")
 }
-
 
 class ComposeSnippet : AppCompatActivity() {
 
@@ -482,12 +459,15 @@ class ComposeSnippet : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ComposeView(this).apply {
             setContent {
-                CheckScannerView(
+                // integrate the DocumentDataExtractor scanner compose view
+                DocumentDataExtractorView(
+                    modifier = Modifier.fillMaxSize(),
                     configuration = getConfiguration(),
-                    onCheckScanned = { document ->
+                    enableBackNavigation = false,
+                    onDocumentExtracted = { document ->
                         // Handle the document.
                     },
-                    onCheckScannerClosed = { reason ->
+                    onDocumentExtractorClosed = { reason ->
                         // Indicates that the cancel button was tapped.
                     }
                 )
@@ -496,51 +476,11 @@ class ComposeSnippet : AppCompatActivity() {
     }
 
 
-    fun getConfiguration(): CheckScannerScreenConfiguration {
+    fun getConfiguration(): DocumentDataExtractorScreenConfiguration {
         // Create the default configuration object.
-        return CheckScannerScreenConfiguration().apply {
+        return DocumentDataExtractorScreenConfiguration().apply {
 
         }
     }
     // @EndTag("Compose Example")
-}
-
-
-
-//Classic snippets
-
-fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
-    // @Tag("Get Instances")
-    val scanbotSDK = ScanbotSDK(context)
-    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner()
-    val checkScannerFrameHandler: CheckScannerFrameHandler =
-        CheckScannerFrameHandler.attach(cameraView, checkScanner)
-    // @EndTag("Get Instances")
-}
-
-fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
-    // @Tag("Handle Result")
-    checkScannerFrameHandler.addResultHandler(object : CheckScannerFrameHandler.ResultHandler {
-        override fun handle(result: FrameHandlerResult<CheckScanningResult, SdkLicenseError>): Boolean {
-            when (result) {
-                is FrameHandlerResult.Success -> {
-                    val checkResult: CheckScanningResult? =
-                        (result as FrameHandlerResult.Success<CheckScanningResult?>).value
-                    if (checkResult?.check != null) {
-                        // do something with result here
-                        val checkDocument = checkResult.check
-                        if (checkDocument != null) {
-                            wrapCheck(checkDocument)
-                        }
-                    }
-                }
-
-                is FrameHandlerResult.Failure -> {
-                } // handle license error here
-            }
-
-            return false
-        }
-    })
-    // @EndTag("Handle Result")
 }

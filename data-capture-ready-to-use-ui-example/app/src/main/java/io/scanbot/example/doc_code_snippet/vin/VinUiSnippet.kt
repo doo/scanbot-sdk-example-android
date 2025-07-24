@@ -1,4 +1,4 @@
-package io.scanbot.example.doc_code_snippet.cheque
+package io.scanbot.example.doc_code_snippet.vin
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -11,7 +11,6 @@ package io.scanbot.example.doc_code_snippet.cheque
 // Page URLs using this code:
 // TODO: add URLs here
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -19,22 +18,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.check.CheckScanner
-import io.scanbot.sdk.check.CheckScannerFrameHandler
-import io.scanbot.sdk.check.CheckScanningResult
-import io.scanbot.sdk.ui.camera.ScanbotCameraXView
-import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
-import io.scanbot.sdk.ui_v2.check.CheckScannerView
-import io.scanbot.sdk.ui_v2.check.configuration.CheckIntroCustomImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckIntroDefaultImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckNoImage
-import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerScreenConfiguration
-import io.scanbot.sdk.ui_v2.common.FinderStyle
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.SoundType
-import io.scanbot.sdk.ui_v2.common.StatusBarMode
-import io.scanbot.sdk.ui_v2.common.TopBarMode
+import io.scanbot.sdk.ui_v2.common.*
+import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
+import io.scanbot.sdk.ui_v2.vin.VinScannerView
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroCustomImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroDefaultImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroNoImage
+import io.scanbot.sdk.ui_v2.vin.configuration.VinScannerScreenConfiguration
+import java.util.regex.Pattern
+
 
 //Rtu ui snippets
 fun initSdkSnippet(application: Application, licenseKey: String) {
@@ -46,7 +38,7 @@ fun initSdkSnippet(application: Application, licenseKey: String) {
     // @EndTag("InitializeScanbotSDK")
 }
 
-class StartCheckUiSnippet : AppCompatActivity() {
+class StartVinUiSnippet : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
@@ -55,27 +47,25 @@ class StartCheckUiSnippet : AppCompatActivity() {
 
     // @Tag("Launching the scanner")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
 
     private fun startScanning() {
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
-
+        val configuration = VinScannerScreenConfiguration()
         // Start the recognizer activity.
         resultLauncher.launch(configuration)
     }
     // @EndTag("Launching the scanner")
 }
 
-class CheckPaletteSnippet : AppCompatActivity() {
+class VinPaletteSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,12 +74,11 @@ class CheckPaletteSnippet : AppCompatActivity() {
     }
     // @Tag("Palette")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -97,7 +86,7 @@ class CheckPaletteSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the palette from the configuration object.
         configuration.palette.apply {
@@ -126,7 +115,7 @@ class CheckPaletteSnippet : AppCompatActivity() {
     // @EndTag("Palette")
 }
 
-class CheckLocalizationSnippet : AppCompatActivity() {
+class VinLocalizationSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,12 +124,11 @@ class CheckLocalizationSnippet : AppCompatActivity() {
     }
     // @Tag("Localization")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -148,7 +136,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the localization from the configuration object.
         configuration.localization.apply {
@@ -163,7 +151,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
 // @EndTag("Localization")
 }
 
-class CheckIntroductionSnippet : AppCompatActivity() {
+class VinIntroductionSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,12 +160,11 @@ class CheckIntroductionSnippet : AppCompatActivity() {
     }
     // @Tag("Introduction")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -185,7 +172,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the intro screen from the configuration object.
         configuration.introScreen.apply {
@@ -196,15 +183,15 @@ class CheckIntroductionSnippet : AppCompatActivity() {
             backgroundColor = ScanbotColor("#FFFFFF")
 
             // Configure the title for the intro screen.
-            title.text = "How to scan a check"
+            title.text = "How to scan a VIN"
 
             // Configure the image for the introduction screen.
             // If you want to have no image...
-            image = CheckNoImage()
+            image = VinIntroNoImage()
             // For a custom image...
-            image = CheckIntroCustomImage(uri = "PathToImage")
+            image = VinIntroCustomImage(uri = "PathToImage")
             // Or you can also use our default image.
-            image = CheckIntroDefaultImage()
+            image = VinIntroDefaultImage()
 
             // Configure the color of the handler on top.
             handlerColor = ScanbotColor("#EFEFEF")
@@ -214,8 +201,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
 
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
-            explanation.text =
-                "To quickly and securely input your check details, please hold your device over the check, so that the camera aligns with the document.\n\nThe scanner will guide you to the optimal scanning position. Once the scan is complete, your card details will automatically be extracted and processed.\n\nPress 'Start Scanning' to begin."
+            explanation.text = "The VIN (Vehicle Identification Number) is a unique code you'll find on your windshield or inside the driver's door.\n\nTo read the VIN, hold your camera over it. Make sure it's aligned in the frame. Your VIN will be automatically extracted.\n\nTap 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
@@ -228,7 +214,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
 // @EndTag("Introduction")
 }
 
-class CheckUserGuidanceSnippet : AppCompatActivity() {
+class VinUserGuidanceSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,12 +223,11 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
     }
     // @Tag("User guidance")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -250,7 +235,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Configure user guidance's
 
@@ -260,18 +245,18 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
             // Show the user guidance.
             visible = true
             // Configure the title.
-            title.text = "Scan your check"
+            title.text = "Scan your Identity Document"
             title.color = ScanbotColor("#FFFFFF")
             // Configure the background.
             background.fillColor = ScanbotColor("#7A000000")
 
             // Finder overlay user guidance
             // Retrieve the instance of the finder overlay user guidance from the configuration object.
-            configuration.scanStatusUserGuidance.apply {
+            configuration.finderViewUserGuidance.apply {
                 // Show the user guidance.
                 visible = true
                 // Configure the title.
-                title.text = "Scan the Check"
+                title.text = "Point the view finder towards the VIN"
                 title.color = ScanbotColor("#FFFFFF")
                 // Configure the background.
                 background.fillColor = ScanbotColor("#7A000000")
@@ -282,7 +267,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
 // @EndTag("User guidance")
 }
 
-class CheckTopBarSnippet : AppCompatActivity() {
+class VinTopBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -291,12 +276,11 @@ class CheckTopBarSnippet : AppCompatActivity() {
     }
     // @Tag("Top bar")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -304,7 +288,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Retrieve the instance of the top user guidance from the configuration object.
         configuration.topBar.apply {
@@ -327,7 +311,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
 // @EndTag("Top bar")
 }
 
-class CheckFinderSnippet : AppCompatActivity() {
+class VinFinderSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -336,12 +320,11 @@ class CheckFinderSnippet : AppCompatActivity() {
     }
     // @Tag("Finder overlay")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -349,9 +332,8 @@ class CheckFinderSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
-        configuration.exampleOverlayVisible = true
         // Configure finder overlay appearance
         configuration.viewFinder.apply {
             style = FinderStyle.finderStrokedStyle().apply {
@@ -364,7 +346,7 @@ class CheckFinderSnippet : AppCompatActivity() {
 // @EndTag("Finder overlay")
 }
 
-class CheckActionBarSnippet : AppCompatActivity() {
+class VinActionBarSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -373,12 +355,11 @@ class CheckActionBarSnippet : AppCompatActivity() {
     }
     // @Tag("Action bar")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -386,7 +367,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
         // Retrieve the instance of the action bar from the configuration object.
         configuration.actionBar.apply {
 
@@ -421,7 +402,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
 // @EndTag("Action bar")
 }
 
-class CheckScanningSnippet : AppCompatActivity() {
+class VinScanningSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -430,12 +411,11 @@ class CheckScanningSnippet : AppCompatActivity() {
     }
     // @Tag("Scanning")
 
-    val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
+    val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
-                    // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
-                    wrapCheck(it)
+                resultEntity.result?.textResult?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -443,7 +423,7 @@ class CheckScanningSnippet : AppCompatActivity() {
     private fun startScanning() {
 
         // Create the default configuration object.
-        val configuration = CheckScannerScreenConfiguration()
+        val configuration = VinScannerScreenConfiguration()
 
         // Configure camera properties.
         // e.g
@@ -469,6 +449,7 @@ class CheckScanningSnippet : AppCompatActivity() {
         // Configure the sound.
         configuration.sound.successBeepEnabled = true
         configuration.sound.soundType = SoundType.MODERN_BEEP
+
         resultLauncher.launch(configuration)
     }
 // @EndTag("Scanning")
@@ -482,12 +463,12 @@ class ComposeSnippet : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ComposeView(this).apply {
             setContent {
-                CheckScannerView(
+                VinScannerView(
                     configuration = getConfiguration(),
-                    onCheckScanned = { document ->
+                    onVinScanned = { document ->
                         // Handle the document.
                     },
-                    onCheckScannerClosed = { reason ->
+                    onVinScannerClosed = { reason ->
                         // Indicates that the cancel button was tapped.
                     }
                 )
@@ -496,51 +477,12 @@ class ComposeSnippet : AppCompatActivity() {
     }
 
 
-    fun getConfiguration(): CheckScannerScreenConfiguration {
+    fun getConfiguration(): VinScannerScreenConfiguration {
         // Create the default configuration object.
-        return CheckScannerScreenConfiguration().apply {
+        return VinScannerScreenConfiguration().apply {
 
         }
     }
     // @EndTag("Compose Example")
 }
 
-
-
-//Classic snippets
-
-fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
-    // @Tag("Get Instances")
-    val scanbotSDK = ScanbotSDK(context)
-    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner()
-    val checkScannerFrameHandler: CheckScannerFrameHandler =
-        CheckScannerFrameHandler.attach(cameraView, checkScanner)
-    // @EndTag("Get Instances")
-}
-
-fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
-    // @Tag("Handle Result")
-    checkScannerFrameHandler.addResultHandler(object : CheckScannerFrameHandler.ResultHandler {
-        override fun handle(result: FrameHandlerResult<CheckScanningResult, SdkLicenseError>): Boolean {
-            when (result) {
-                is FrameHandlerResult.Success -> {
-                    val checkResult: CheckScanningResult? =
-                        (result as FrameHandlerResult.Success<CheckScanningResult?>).value
-                    if (checkResult?.check != null) {
-                        // do something with result here
-                        val checkDocument = checkResult.check
-                        if (checkDocument != null) {
-                            wrapCheck(checkDocument)
-                        }
-                    }
-                }
-
-                is FrameHandlerResult.Failure -> {
-                } // handle license error here
-            }
-
-            return false
-        }
-    })
-    // @EndTag("Handle Result")
-}

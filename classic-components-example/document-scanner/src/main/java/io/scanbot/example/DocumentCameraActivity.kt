@@ -25,7 +25,6 @@ import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.document.ui.DocumentScannerView
 import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
 import io.scanbot.sdk.process.ImageProcessor
-import io.scanbot.sdk.ui.camera.CameraUiSettings
 import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 
@@ -68,7 +67,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         }
 
         documentScannerView.apply {
-            initCamera(CameraUiSettings(true))
+            initCamera()
             initScanningBehavior(documentScanner,
                 { result ->
                     // Here you are continuously notified about document scanning results.

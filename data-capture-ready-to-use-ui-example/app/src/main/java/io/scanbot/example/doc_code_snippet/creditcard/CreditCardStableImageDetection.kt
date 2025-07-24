@@ -49,7 +49,7 @@ class ExampleApplication : Application() {
 fun createCreditCardScannerSnippet(context: Context) {
     // @Tag("Create Credit Card Scanner")
     val scanbotSDK = ScanbotSDK(context)
-    val mrzScanner = scanbotSDK.createCreditCardScanner()
+    val scanner = scanbotSDK.createCreditCardScanner()
     // @EndTag("Create Credit Card Scanner")
 }
 
