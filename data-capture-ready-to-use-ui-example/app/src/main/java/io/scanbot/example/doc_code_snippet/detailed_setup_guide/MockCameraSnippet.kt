@@ -14,8 +14,8 @@ class MockCameraSnippet {
      * Make sure to replace the image path with a valid one in your project.
      *
      * `MockCameraResourceProvider` - delegate that used for feeding camera with fake frames.
-     * `getFrameImagePath()` - should return path to the absolute path to the `File` in format without `file://` schema
-     * `getCapturedImagePath()` - should return path to the absolute path to the `File` in format without `file://` schema
+     * `getFrameImagePath()` - should return path to the absolute path to the `File` in format without `file://` schema and will be used as detection frame.
+     * `getCapturedImagePath()` - should return path to the absolute path to the `File` in format without `file://` schema and will be used as captured image.
      * `showDebugImage` - if true, the mock camera will show `getFrameImagePath` file  as image preview.
      * `tryHideFinderView` - if true, the finder view will be hidden.
      * `tryHidePolygonView` - if true, the ar overlay polygon view will be hidden.
