@@ -19,6 +19,10 @@ class MockCameraSnippet {
      * `showDebugImage` - if true, the mock camera will show `getFrameImagePath` file  as image preview.
      * `tryHideFinderView` - if true, the finder view will be hidden.
      * `tryHidePolygonView` - if true, the ar overlay polygon view will be hidden.
+     * `delayBetweenFramesMs` - delay between frames in milliseconds, used to simulate a camera feed.
+     * `forceImageUploadOnSamePath` - if true, the mock camera will reload the image from the file system even if the path has not changed. This is useful for testing scenarios where the image file might be updated.
+     * `imageFileReadAttemptLimit` - the number of attempts to read the image file. Helps to handle cases where the file might not be immediately available.
+     * `imageFileReadAttemptDelay` - delay between attempts to read the image file. Helps to avoid busy-waiting and allows the file system to stabilize if the file is being written to.
      */
     fun initMockCamera() {
         ScanbotCameraViewConfigurationProvider.cameraViewType =
@@ -34,7 +38,8 @@ class MockCameraSnippet {
                 },
                 showDebugImage = true,
                 tryHideFinderView = false,
-                tryHidePolygonView = false
+                tryHidePolygonView = false,
+                delayBetweenFramesMs = 100L
             )
     }
     // @EndTag("Mock Camera Initialization")
