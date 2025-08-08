@@ -245,7 +245,7 @@ class VinUserGuidanceSnippet : AppCompatActivity() {
             // Show the user guidance.
             visible = true
             // Configure the title.
-            title.text = "Scan your Identity Document"
+            title.text = "Scan your VIN"
             title.color = ScanbotColor("#FFFFFF")
             // Configure the background.
             background.fillColor = ScanbotColor("#7A000000")
