@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 7.1.0
+Open Source libraries used in the Scanbot SDK for Android version 7.1.1
 
 CWAC-Camera
 
@@ -47,6 +47,27 @@ Version 89aa9f9ebe803480ec697fb39470ed106869e272
 (https://pdfium.googlesource.com/pdfium)
 
 Copyright 2014 The PDFium Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+PdfiumAndroid
+
+Version 103d5855f797af78a6f33f94cb306ef1c23b2290
+(https://github.com/barteksc/PdfiumAndroid)
+
+Original work Copyright 2015 Bekket McClane
+Modified work Copyright 2016 Bartosz Schiller
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
