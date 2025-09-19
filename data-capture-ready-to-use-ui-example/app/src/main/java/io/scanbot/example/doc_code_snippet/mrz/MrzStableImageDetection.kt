@@ -10,9 +10,12 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.mrz.*
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,10 +41,10 @@ class ExampleApplication : Application() {
 
         // Initialize the Scanbot Scanner SDK:
         ScanbotSDKInitializer()
-                .license(this, licenseKey)
-                // TODO: other configuration calls
-                .prepareOCRLanguagesBlobs(true)
-                .initialize(this)
+            .license(this, licenseKey)
+            // TODO: other configuration calls
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this)
     }
 }
 // @EndTag("Initialize SDK")
@@ -73,7 +76,7 @@ class MrzStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
+                                .map { it.toImageRef(contentResolver) }
                                 .forEach { bitmap ->
                                     if (bitmap == null) {
                                         Log.e(
@@ -107,10 +110,10 @@ class MrzStableImageDetection : AppCompatActivity() {
 
     // @Tag("Extracting mrz data from an image")
     // Create a data extractor  instance
-    val mrzScanner = scanbotSDK.createMrzScanner()
+    val mrzScanner = scanbotSDK.createMrzScanner().getOrThrow()
 
-    private fun processImage(mrzScanner: MrzScanner, bitmap: Bitmap) {
-        val mrzRecognitionResult = mrzScanner.scanFromBitmap(bitmap, 0)
+    private fun processImage(mrzScanner: MrzScanner, image: ImageRef) {
+        val mrzRecognitionResult = mrzScanner.run(image)
         // Proceed MRZ scanner result
         // processResult(result)
     }

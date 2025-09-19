@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -512,7 +513,7 @@ class ComposeSnippet : AppCompatActivity() {
 fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
     // @Tag("Get Instances")
     val scanbotSDK = ScanbotSDK(context)
-    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner()
+    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner().getOrThrow()
     val checkScannerFrameHandler: CheckScannerFrameHandler =
         CheckScannerFrameHandler.attach(cameraView, checkScanner)
     // @EndTag("Get Instances")

@@ -11,6 +11,7 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.content.Context
 import android.widget.Toast
+import io.scanbot.common.getOrThrow
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.FrameHandlerResult
@@ -18,7 +19,7 @@ import io.scanbot.sdk.documentdata.*
 
 fun useDocumentDataExtractorFrameHandler(context: Context) {
     // @Tag("Add a frame handler for DocumentDataExtractor")
-    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor()
+    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor().getOrThrow()
     val frameHandler = DocumentDataExtractorFrameHandler(dataExtractor)
 
     frameHandler.addResultHandler(object : DocumentDataExtractorFrameHandler.ResultHandler {

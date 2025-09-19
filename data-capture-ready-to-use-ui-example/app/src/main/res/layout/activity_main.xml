@@ -125,14 +125,6 @@
                         android:text="@string/scan_ehic" />
 
                     <Button
-                        android:id="@+id/mc_scanner_ui"
-                        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="@string/scan_mc" />
-
-                    <Button
                         android:id="@+id/check_recognizer_ui"
                         style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
                         android:layout_width="match_parent"

@@ -2,11 +2,11 @@ package com.example.scanbot.usecases
 
 import com.example.scanbot.sharing.ISharingDocumentStorage
 import com.example.scanbot.sharing.ensureFileExists
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.docprocessing.Document
 import java.io.File
 import javax.inject.Inject
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.process.PdfGenerator
 
 class GeneratePdfForSharingUseCase @Inject constructor(

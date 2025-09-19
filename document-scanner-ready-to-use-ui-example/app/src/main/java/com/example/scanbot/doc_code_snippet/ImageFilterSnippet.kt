@@ -3,23 +3,24 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.ImageRotation
-import io.scanbot.sdk.document.DocumentDetectionStatus
-import io.scanbot.sdk.imagefilters.BrightnessFilter
-import io.scanbot.sdk.imagefilters.OutputMode
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.image.ImageRotation
+import io.scanbot.sdk.imageprocessing.BrightnessFilter
+import io.scanbot.sdk.imageprocessing.OutputMode
+import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
 import io.scanbot.sdk.process.ImageProcessor
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import io.scanbot.sdk.util.isDefault
 
 
@@ -43,10 +44,9 @@ class ImageFilterSnippet : AppCompatActivity() {
                             val document = scanbotSDK.documentApi.createDocument()
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .mapNotNull { it.toBitmap(contentResolver) }.apply {
+                                .mapNotNull { it.toImageRef(contentResolver) }.apply {
                                     startFiltering(this.toList())
                                 }
-
                         }
                     }
                 }
@@ -55,11 +55,11 @@ class ImageFilterSnippet : AppCompatActivity() {
 
     // @Tag("Processing an image")
     // Create a document detector instance
-    val documentScanner = scanbotSDK.createDocumentScanner()
-    fun startFiltering(list: List<Bitmap>) {
+    val documentScanner = scanbotSDK.createDocumentScanner().getOrNull()
+    fun startFiltering(list: List<ImageRef>) {
         list.forEach { image ->
             // Run detection on the picked image
-            val detectionResult = documentScanner.scanFromBitmap(image)
+            val detectionResult = documentScanner?.run(image)?.getOrNull()
 
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&

@@ -13,6 +13,7 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.getOrNull
 import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
@@ -59,12 +60,12 @@ class DocumentDetectionSnippet : AppCompatActivity() {
 
     // @Tag("Direct Document detection on page")
     // Create a document detector instance
-    val documentScanner = scanbotSDK.createDocumentScanner()
+    val documentScanner = scanbotSDK.createDocumentScanner().getOrNull()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
             // Run detection on the created page
-            val detectionResult = documentScanner.scanFromBitmap(page.originalImage!!)
+            val detectionResult = documentScanner?.run(page.originalImageRef!!)?.getOrNull()
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
                 detectionResult.pointsNormalized.isNotEmpty() &&

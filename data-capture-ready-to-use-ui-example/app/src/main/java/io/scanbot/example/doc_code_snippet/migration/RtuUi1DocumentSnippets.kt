@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.common.*
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.persistence.page.*
 import io.scanbot.sdk.ui.*
 import io.scanbot.sdk.ui.view.camera.*

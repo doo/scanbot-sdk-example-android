@@ -2,6 +2,7 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.app.Application
 import android.content.Context
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.*
 import io.scanbot.sdk.documentdata.entity.*
@@ -41,8 +42,8 @@ fun extractorCreationSnippet(context: Context) {
 fun ehicExtractorCreationSnippet(context: Context) {
     // @Tag("Create Document Data Extractor for EHIC")
     val scanbotSdk = ScanbotSDK(context)
-    val dataExtractor = scanbotSdk.createDocumentDataExtractor()
-    dataExtractor.setConfiguration(
+    val dataExtractor = scanbotSdk.createDocumentDataExtractor().getOrNull()
+    dataExtractor?.setConfiguration(
         DocumentDataExtractorConfigurationBuilder()
             .setAcceptedDocumentTypes(listOf(RootDocumentType.EuropeanHealthInsuranceCard, RootDocumentType.DeHealthInsuranceCardFront))
             .build())

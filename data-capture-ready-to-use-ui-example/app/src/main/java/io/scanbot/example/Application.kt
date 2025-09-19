@@ -5,9 +5,9 @@ import android.util.Log
 import android.widget.Toast
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
-import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.licensing.LicenseStatus
 import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.page.PageStorageSettings
@@ -60,11 +60,11 @@ class Application : Application(), CoroutineScope {
                 .prepareOCRLanguagesBlobs(true)
                 .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
                 .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
+                .licenseErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
                     // or missing SDK feature (see SDK feature packages on https://scanbot.io).
-                    val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
+                    val errorMsg = if (status != LicenseStatus.OKAY && status != LicenseStatus.TRIAL) {
                         "License Error! License status: ${status.name}. $statusMessage"
                     } else {
                         "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"

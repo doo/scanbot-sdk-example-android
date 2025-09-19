@@ -2,10 +2,8 @@ package io.scanbot.example.doc_code_snippet.detailed_setup_guide
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.example.*
-import io.scanbot.sap.*
-import io.scanbot.sap.Status.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.licensing.*
 import io.scanbot.sdk.util.log.*
 
 /*
@@ -25,7 +23,10 @@ fun checkLicenseStatusSnippet(activity: AppCompatActivity) {
     val licenseInfo = ScanbotSDK(activity).licenseInfo
     LoggerProvider.logger.d("ExampleApplication", "License status: ${licenseInfo.status}")
     LoggerProvider.logger.d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
-    LoggerProvider.logger.d("ExampleApplication", "License message: ${licenseInfo.licenseStatusMessage}")
+    LoggerProvider.logger.d(
+        "ExampleApplication",
+        "License message: ${licenseInfo.licenseStatusMessage}"
+    )
 
     if (licenseInfo.isValid) {
         // Making your call into ScanbotSDK API is now safe.
@@ -37,23 +38,34 @@ fun checkLicenseStatusSnippet(activity: AppCompatActivity) {
 fun handleLicenseStatusSnippet(application: Application) {
     // @Tag("Handle License Status")
     val licenseInfo = ScanbotSDKInitializer()
-            .license(application, "YOUR_SCANBOT_SDK_LICENSE_KEY")
-            .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, message ->
-                LoggerProvider.logger.d("ScanbotSDK", "license status:${status.name}, message: $message")
-                when (status) {
-                    StatusFailureNotSet,
-                    StatusFailureCorrupted,
-                    StatusFailureWrongOS,
-                    StatusFailureAppIDMismatch,
-                    StatusFailureExpired -> {
-                        // license is completely invalid
-                    }
-                    StatusOkay,
-                    StatusTrial -> {
+        .license(application, "YOUR_SCANBOT_SDK_LICENSE_KEY")
+        .licenseErrorHandler { status, feature, message ->
+            LoggerProvider.logger.d(
+                "ScanbotSDK",
+                "license status:${status.name}, message: $message"
+            )
+            when (status) {
+                LicenseStatus.OKAY,
+                LicenseStatus.TRIAL -> {
 
-                    }
                 }
-            })
-            .initialize(application)
+
+                LicenseStatus.OKAY_EXPIRING_SOON -> {
+
+                }
+
+                LicenseStatus.FAILURE_NOT_SET,
+                LicenseStatus.FAILURE_CORRUPTED,
+                LicenseStatus.FAILURE_WRONG_OS,
+                LicenseStatus.FAILURE_APP_ID_MISMATCH,
+                LicenseStatus.FAILURE_EXPIRED,
+                LicenseStatus.FAILURE_SERVER,
+                LicenseStatus.FAILURE_VERSION,
+                LicenseStatus.FAILURE_INACTIVE -> {
+
+                }
+            }
+        }
+        .initialize(application)
     // @EndTag("Handle License Status")
 }

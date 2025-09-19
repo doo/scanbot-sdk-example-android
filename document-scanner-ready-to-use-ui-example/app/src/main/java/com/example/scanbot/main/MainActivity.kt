@@ -18,19 +18,17 @@ import com.example.scanbot.preview.SinglePagePreviewActivity
 import com.example.scanbot.utils.applyEdgeToEdge
 import com.example.scanbot.utils.getUrisFromGalleryResult
 import com.example.scanbot.utils.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 import io.scanbot.sdk.usecases.documents.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import io.scanbot.sdk.common.AspectRatio
-import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerScreenConfiguration
 
 class MainActivity : AppCompatActivity() {
 
@@ -102,7 +100,10 @@ class MainActivity : AppCompatActivity() {
         val config = DocumentScanningFlow().apply {
             this.outputSettings.pagesScanLimit = 1
             this.screens.camera.scannerParameters.aspectRatios = listOf(
-                AspectRatio(width = 21.0, height = 29.7) // allow only A4 format documents to be scanned
+                AspectRatio(
+                    width = 21.0,
+                    height = 29.7
+                ) // allow only A4 format documents to be scanned
             )
         }
         documentScannerResult.launch(config)

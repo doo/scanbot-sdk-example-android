@@ -22,7 +22,6 @@ import com.example.scanbot.usecases.GenerateTiffForSharingUseCase
 import com.example.scanbot.utils.ExampleUtils
 import com.example.scanbot.utils.ExampleUtils.showEncryptedDocumentToast
 import com.example.scanbot.utils.applyEdgeToEdge
-import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
@@ -37,10 +36,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
+import io.scanbot.common.getOrNull
+import io.scanbot.sdk.imageprocessing.ParametricFilter
 
 class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener,
     CoroutineScope {
-
     private val scanbotSdk by lazy { ScanbotSDK(application) }
 
     private lateinit var imageView: ImageView
@@ -139,14 +139,15 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
             lifecycleScope.launch {
                 val imageQualityResult = withContext(Dispatchers.Default) {
                     // Result is represented by `DocumentQuality` enum.
-                    page.documentImage?.let {
-                        exampleSingleton.pageDocQualityAnalyzer().analyzeOnBitmap(it, 0)
+                    page.documentImageRef?.let {
+                        exampleSingleton.pageDocQualityAnalyzer().run(it)
                     }
                 }
                 withContext(Dispatchers.Main) {
-                    imageQualityResult?.let { qualityResult ->
+                    imageQualityResult?.getOrNull()?.let { qualityResult ->
                         val text = "Image quality: ${qualityResult.quality?.name}"
-                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG)
+                            .show()
 
                         updateImageView()
                         progress.visibility = View.GONE
@@ -202,7 +203,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         supportActionBar?.title = getString(R.string.scan_results)
     }
 
-    override fun onFilterApplied(filter: ParametricFilter) {
+    override fun onFilterApplied(filter: ParametricFilter?) {
         applyFilter(filter)
     }
 
@@ -222,12 +223,12 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         saveDocumentImage(false)
     }
 
-    private fun applyFilter(filter: ParametricFilter) {
+    private fun applyFilter(filter: ParametricFilter?) {
         if (!scanbotSdk.licenseInfo.isValid) showLicenseToast()
 
         progress.visibility = View.VISIBLE
         lifecycleScope.launch {
-            page.apply(newFilters = listOf(filter))
+            page.apply(newFilters = filter?.let { listOf(filter) })
             withContext(Dispatchers.Main) {
                 updateImageView()
                 progress.visibility = View.GONE

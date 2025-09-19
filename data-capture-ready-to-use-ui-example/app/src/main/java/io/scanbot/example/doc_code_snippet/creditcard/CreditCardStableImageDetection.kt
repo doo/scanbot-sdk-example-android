@@ -10,9 +10,12 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrNull
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.creditcard.*
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,16 +75,16 @@ class CreditCardStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver) }
+                                .forEach { imageRef ->
+                                    if (imageRef == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load imageRef from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(creditCardScanner, bitmap)
+                                    creditCardScanner?.let { processImage(it, imageRef) }
                                 }
 
                         }
@@ -106,10 +109,10 @@ class CreditCardStableImageDetection : AppCompatActivity() {
 
     // @Tag("Extracting credit card data from an image")
     // Create a data extractor  instance
-    val creditCardScanner = scanbotSDK.createCreditCardScanner()
+    val creditCardScanner = scanbotSDK.createCreditCardScanner().getOrNull()
 
-    private fun processImage(scanner: CreditCardScanner, bitmap: Bitmap) {
-        val result = scanner.scanFromBitmap(bitmap, 0)
+    private fun processImage(scanner: CreditCardScanner, image: ImageRef) {
+        val result = scanner.run(image)
         // Proceed MRZ scanner result
         // processResult(result)
     }

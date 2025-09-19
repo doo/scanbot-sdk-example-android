@@ -23,6 +23,7 @@ import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.common.*
 import io.scanbot.sdk.docprocessing.*
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.document.*

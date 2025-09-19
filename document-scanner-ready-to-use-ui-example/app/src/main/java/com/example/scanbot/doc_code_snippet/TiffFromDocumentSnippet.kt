@@ -14,11 +14,11 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.tiff.model.CompressionMode
-import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
+import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
+import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
 
 
 class TiffFromDocumentSnippet : AppCompatActivity() {
@@ -61,7 +61,7 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
 
     // @Tag("Creating a TIFF from a Document")
     // Create tiff generator instance
-    val tiffGenerator = scanbotSDK.createTiffGenerator()
+    val tiffGenerator = scanbotSDK.createTiffGeneratorManager()
 
     fun createTiffFromDocument(document: Document) {
         val config = TiffGeneratorParameters(
@@ -74,9 +74,9 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             document,
             tiffFile,
             config
-        )
+        ).getOrNull()
         val file = tiffFile
-        if (tiffGenerated && file.exists()) {
+        if (tiffGenerated != null && file.exists()) {
             // Do something with the Tiff file
         } else {
             Log.e("TiffFromDocumentSnippet", "Failed to create Tiff")
@@ -97,9 +97,9 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
             document,
             tiffFile,
             config
-        )
+        ).getOrNull()
         val file = tiffFile
-        if (tiffGenerated && file.exists()) {
+        if (tiffGenerated != null && file.exists()) {
             // Do something with the Tiff file
         } else {
             Log.e("TiffFromDocumentSnippet", "Failed to create Tiff")

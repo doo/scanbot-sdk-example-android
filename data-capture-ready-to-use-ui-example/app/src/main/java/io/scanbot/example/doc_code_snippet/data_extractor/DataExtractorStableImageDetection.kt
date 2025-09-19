@@ -8,10 +8,13 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrNull
 import io.scanbot.example.doc_code_snippet.data_extractor.*
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.*
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,16 +48,16 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver) }
+                                .forEach { imageRef ->
+                                    if (imageRef == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load imageRef from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(dataExtractor, bitmap)
+                                    dataExtractor?.let { processImage(it, imageRef) }
                                 }
 
                         }
@@ -78,15 +81,15 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
     }
 
     // Create a data extractor instance
-    val dataExtractor = scanbotSDK.createDocumentDataExtractor()
+    val dataExtractor = scanbotSDK.createDocumentDataExtractor().getOrNull()
 
     private fun processImage(
         dataExtractor: DocumentDataExtractor,
-        bitmap: Bitmap
+        image: ImageRef
     ) {
         // @Tag("Extracting document data from an image")
-        val result = dataExtractor.extractFromBitmap(bitmap, 0)
-        result?.document?.let { wrapGenericDocument(it) }
+        val result = dataExtractor.run(image)
+        result.getOrNull()?.document?.let { wrapGenericDocument(it) }
         // Data extraction results are processed
         // @EndTag("Extracting document data from an image")
     }
