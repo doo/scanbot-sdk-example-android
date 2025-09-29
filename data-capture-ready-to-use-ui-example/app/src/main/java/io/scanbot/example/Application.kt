@@ -40,6 +40,7 @@ class Application : Application(), CoroutineScope {
         const val USE_ENCRYPTION = false
         // TODO: you should store a password in a secure place or let the user enter it manually
         private const val ENCRYPTION_PASSWORD = "password"
+
         // TODO: you can select an encryption method
         private val ENCRYPTION_METHOD = AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
     }
@@ -73,10 +74,10 @@ class Application : Application(), CoroutineScope {
                     Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
                 })
 
-                // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
-                // .useCameraXRtuUi(false)
-                .license(this, LICENSE_KEY)
-                .initialize(this)
+            // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
+            // .useCameraXRtuUi(false)
+            .license(this, LICENSE_KEY)
+            .initialize(this)
 
         // Check the Scanbot SDK license status:
         Log.d("ScanbotSDKExample", "Is license valid: " + sdkLicenseInfo.isValid)
@@ -105,7 +106,8 @@ class Application : Application(), CoroutineScope {
         // - https://developer.android.com/guide/topics/data/data-storage
         // - https://developer.android.com/training/data-storage/files
 
-        val customDir = File(this.getExternalFilesDir(null), "my-custom-storage-folder")
+        val customDir =
+            File(this.getExternalFilesDir(null) ?: this.filesDir, "my-custom-storage-folder")
         customDir.mkdirs()
         return customDir
     }
