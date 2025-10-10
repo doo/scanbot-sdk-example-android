@@ -6,16 +6,19 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.documentdata.DocumentDataAutoSnappingController
 import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
 import io.scanbot.sdk.documentdata.DocumentDataExtractionStatus
 import io.scanbot.sdk.documentdata.DocumentDataExtractor
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -46,14 +49,14 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, scanbotSdk.createDocumentDataExtractor())
+        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, scanbotSdk.createDocumentDataExtractor().getOrThrow())
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)
             cameraView.continuousFocus()
         }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -67,7 +70,7 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
         // pause autoSnappingController to stop scanning on a preview during the data extraction on the full-size picture
         autoSnappingController.isEnabled = false
 
@@ -75,12 +78,12 @@ class ScannerActivity : AppCompatActivity() {
             shutterButton.isEnabled = false
         }
 
-        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val result = scanbotSdk.createDocumentDataExtractor()
-            .apply { setConfiguration(this.copyCurrentConfiguration().apply { resultAccumulationConfig.minConfirmations = 1 }) }
-            .extractFromBitmap(bitmap, orientation = imageOrientation)
 
-        val isSuccess = result != null && result.status == DocumentDataExtractionStatus.SUCCESS
+        val result = scanbotSdk.createDocumentDataExtractor().getOrThrow()
+            .apply { setConfiguration(this.copyCurrentConfiguration().apply { resultAccumulationConfig.minConfirmations = 1 }) }
+            .run(image).getOrNull()
+
+        val isSuccess = result != null && result.status == DocumentDataExtractionStatus.OK
 
         if (isSuccess) {
             result?.document?.let {
