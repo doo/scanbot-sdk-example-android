@@ -19,16 +19,20 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.Result
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.document.DocumentDetectionStatus
-import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
     private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var  documentScanner: DocumentScanner
+    private lateinit var documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
@@ -62,14 +66,16 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         scanbotSDK = ScanbotSDK(this)
-         documentScanner = scanbotSDK.createDocumentScanner()
+        documentScanner = scanbotSDK.createDocumentScanner().getOrThrow()
 
-        documentScanner .apply {
+        documentScanner.apply {
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
-            setParameters(copyCurrentConfiguration().parameters.apply {
-                this.ignoreOrientationMismatch = ignoreOrientationMistmatch
-                this.acceptedSizeScore = 75
-                this.acceptedAngleScore = 60
+            setConfiguration(copyCurrentConfiguration().apply {
+                parameters.apply {
+                    this.ignoreOrientationMismatch = ignoreOrientationMistmatch
+                    this.acceptedSizeScore = 75
+                    this.acceptedAngleScore = 60
+                }
             })
         }
 
@@ -97,18 +103,20 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
 
-        documentScannerFrameHandler = DocumentScannerFrameHandler.attach(cameraView, documentScanner)
+        documentScannerFrameHandler =
+            DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
         documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
         documentScannerFrameHandler.addResultHandler(this)
 
-        autoSnappingController = DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
+        autoSnappingController =
+            DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
 
         // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
         autoSnappingController.setSensitivity(0.85f)
 
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -132,7 +140,11 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     }
 
     private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
@@ -163,22 +175,27 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                 if (ignoreOrientationMistmatch) {
                     userGuidanceHint.text = "Don't move"
@@ -189,40 +206,34 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 }
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             else -> userGuidanceHint.visibility = View.GONE
         }
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // Here we get the full image from the camera.
-        // Please see https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/classic-ui/
-        // This is just a demo showing the scanned document image as a downscaled(!) preview image.
-
-        // Decode Bitmap from bytes of original image:
-        val options = BitmapFactory.Options()
-        // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
-        options.inSampleSize = 8
-        // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
-        //options.inSampleSize = 1
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-
-        // Rotate the original image based on the imageOrientation value.
-        // Required for some Android devices like Samsung!
-        if (imageOrientation > 0) {
-            val matrix = Matrix()
-            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
-        }
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
         // Run document scanning on original image:
-        val polygon = documentScanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
+        val polygon =
+            documentScanner.run(image).getOrNull()?.pointsNormalized ?: throw IllegalStateException(
+                "No document detected"
+            )
 
-        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
-        resultView.post { resultView.setImageBitmap(documentImage) }
+        val documentImage =
+            ImageProcessor(image).resize(200).crop(polygon).processedBitmap().getOrNull()
+        resultView.post {
+            val bm = image.toBitmap()
+            when(bm){
+                is Result.Success<*> -> {}
+                is Result.Unexpected ->{ throw  IllegalStateException(bm.message) }
+            }
+            resultView.setImageBitmap(bm.getOrNull())
+        }
 
         // continue scanning
         cameraView.postDelayed({
