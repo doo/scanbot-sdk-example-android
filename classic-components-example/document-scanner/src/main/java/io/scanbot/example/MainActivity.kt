@@ -2,7 +2,6 @@ package io.scanbot.example
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +10,14 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,15 +77,16 @@ class MainActivity : AppCompatActivity() {
 
         val page = withContext(Dispatchers.Default) {
             // load the selected image
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
+            val image = ImageRef.fromInputStream(inputStream)
 
             // create a new Page object with given image as original image:
             val document = scanbotSdk.documentApi.createDocument()
-            val page = document.addPage(bitmap)
+            val page = document.addPage(image)
 
             // run document scanning on the image:
-            val result = scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)
+            val scaner= scanbotSdk.createDocumentScanner().getOrThrow()
+            val result = scaner.run(image)?.getOrNull()
             // set the result to page:
             page.apply(newPolygon = result?.pointsNormalized ?: PolygonHelper.getFullPolygon())
             page

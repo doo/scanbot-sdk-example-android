@@ -15,15 +15,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.document.DocumentDetectionStatus
-import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.document.ui.DocumentScannerView
 import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
@@ -55,7 +58,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         scanbotSdk = ScanbotSDK(this)
-        documentScanner = scanbotSdk.createDocumentScanner()
+        documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
@@ -88,7 +91,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                         documentScannerView.viewController.useFlash(flashEnabled)
                     }
 
-                    override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+                    override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                         processPictureTaken(image, captureInfo.imageOrientation)
 
                         // continue scanning
@@ -193,21 +196,13 @@ class DocumentCameraActivity : AppCompatActivity() {
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
 
-        // Rotate the original image based on the imageOrientation value.
-        // Required for some Android devices like Samsung!
-        if (imageOrientation > 0) {
-            val matrix = Matrix()
-            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
-        }
         // Run document scanning on original image:
-        val result = documentScanner.scanFromBitmap(originalBitmap)!!
-        val polygon = result.pointsNormalized
+        val result = documentScanner.run(image).getOrNull()
+        val polygon = result?.pointsNormalized ?: throw IllegalStateException("No document detected")
 
-        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
+        val documentImage = ImageProcessor(image).resize(200).crop(polygon).processedBitmap().getOrNull()
         resultView.post { resultView.setImageBitmap(documentImage) }
     }
 
