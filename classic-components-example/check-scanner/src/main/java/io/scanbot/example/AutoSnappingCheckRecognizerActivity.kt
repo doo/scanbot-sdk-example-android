@@ -10,17 +10,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.check.CheckScanner
-import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
-import io.scanbot.sdk.process.ImageProcessor
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
@@ -55,17 +55,19 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         scanbotSDK = ScanbotSDK(this)
 
-        val documentScanner = scanbotSDK.createDocumentScanner()
+        val documentScanner = scanbotSDK.createDocumentScanner().getOrThrow()
 
         polygonView = findViewById<View>(R.id.polygonView) as PolygonView
 
         frameHandler =
             DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
-        documentScanner.setParameters(documentScanner.copyCurrentConfiguration().parameters.apply {
-            this.ignoreOrientationMismatch = true
-            this.acceptedSizeScore = 75
-            this.acceptedAngleScore = 60
+        documentScanner.setConfiguration(documentScanner.copyCurrentConfiguration().apply {
+            parameters.apply {
+                this.ignoreOrientationMismatch = true
+                this.acceptedSizeScore = 75
+                this.acceptedAngleScore = 60
+            }
         })
 
         frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
@@ -76,7 +78,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         autoSnappingController.setSensitivity(0.85f)
 
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 frameHandler.isEnabled = false
                 processPictureTaken(image)
                 runOnUiThread {
@@ -108,14 +110,12 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun processPictureTaken(image: ByteArray) {
-        val options = BitmapFactory.Options()
-        val originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-        // documentImage will be recycled inside scanCheckBitmap
-        val checkScanner = scanbotSDK.createCheckScanner()
-        val checkResult = checkScanner.scanFromBitmap(originalBitmap, 0)
+    private fun processPictureTaken(image: ImageRef) {
+
+        val checkScanner = scanbotSDK.createCheckScanner().getOrThrow()
+        val checkResult = checkScanner.run(image).getOrNull()
         if (checkResult?.check != null) {
-            CheckScannerResultActivity.tempDocumentImage = checkResult.croppedImage?.toBitmap()
+            CheckScannerResultActivity.tempDocumentImage = checkResult.croppedImage?.toBitmap()?.getOrNull()
             startActivity(CheckScannerResultActivity.newIntent(this, checkResult))
         } else {
             runOnUiThread {

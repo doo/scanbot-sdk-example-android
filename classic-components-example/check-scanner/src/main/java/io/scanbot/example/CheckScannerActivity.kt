@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
@@ -45,7 +46,7 @@ class CheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        val checkScanner = scanbotSDK.createCheckScanner()
+        val checkScanner = scanbotSDK.createCheckScanner().getOrThrow()
         frameHandler = attach(cameraView, checkScanner)
         frameHandler.addResultHandler { result: FrameHandlerResult<CheckScanningResult?, SdkLicenseError?>? ->
             if (result is FrameHandlerResult.Success<*>) {
