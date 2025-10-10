@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle
@@ -28,6 +29,7 @@ import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.image.ImageRef
 
 class BarcodeScannerViewActivity : AppCompatActivity() {
     private lateinit var barcodeScannerView: BarcodeScannerView
@@ -45,14 +47,15 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
 
-        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
         scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
             setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        } )
+        })
 
         barcodeScannerView.apply {
             initCamera()
-            initScanningBehavior(scanner,
+            initScanningBehavior(
+                scanner,
                 { result ->
                     if (result is FrameHandlerResult.Success) {
                         handleSuccess(result)
@@ -72,8 +75,11 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
                         barcodeScannerView.viewController.useFlash(flashEnabled)
                     }
 
-                    override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                        // we don't need full size pictures in this example
+                    override fun onPictureTaken(
+                        image: ImageRef,
+                        captureInfo: CaptureInfo
+                    ) {
+                        TODO("Not yet implemented")
                     }
 
                     override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
@@ -92,9 +98,17 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         barcodeScannerView.viewController.onResume()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Use onActivityResult to handle permission rejection
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSION_CODE
+            )
         }
     }
 

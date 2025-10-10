@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.repository.BarcodeTypeRepository
@@ -50,7 +51,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.nextButton)
         snapResult = findViewById(R.id.snapped_message)
 
-        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
         scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
             setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
         } )

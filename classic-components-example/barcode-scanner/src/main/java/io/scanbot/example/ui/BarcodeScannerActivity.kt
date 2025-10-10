@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle
@@ -25,7 +26,8 @@ import io.scanbot.sdk.barcode.BarcodeScannerFrameHandler
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 
@@ -56,10 +58,10 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         }
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
-        val scanner = ScanbotSDK(this).createBarcodeScanner()
+        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
         scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
             setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        } )
+        })
         scannerFrameHandler =
             BarcodeScannerFrameHandler.attach(cameraView, scanner)
 
@@ -73,7 +75,11 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
 
         }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+
+            override fun onPictureTaken(
+                image: ImageRef,
+                captureInfo: CaptureInfo
+            ) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -104,8 +110,8 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         }
     }
 
-    fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+    fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
+        val bitmap = image.toBitmap().getOrThrow()
 
         val matrix = Matrix()
         matrix.setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)

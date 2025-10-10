@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.getOrNull
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityDetailedItemDataBinding
@@ -38,7 +39,7 @@ class DetailedItemDataActivity : AppCompatActivity() {
 
         BarcodeResultRepository.selectedBarcodeItem?.let { item ->
             binding.container?.also {
-                binding.image.setImageBitmap(item.sourceImage?.toBitmap())
+                binding.image.setImageBitmap(item.sourceImage?.toBitmap()?.getOrNull())
                 binding.barcodeFormat.text = item.format.name
                 binding.docFormat.text = item.extractedDocument?.let {
                     it::class.java.simpleName
