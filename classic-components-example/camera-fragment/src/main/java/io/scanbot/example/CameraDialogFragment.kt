@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -31,7 +34,7 @@ class CameraDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val scanbotSDK = ScanbotSDK(requireContext())
-        scanner = scanbotSDK.createDocumentScanner()
+        scanner = scanbotSDK.createDocumentScanner().getOrThrow()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -50,7 +53,7 @@ class CameraDialogFragment : DialogFragment() {
         DocumentAutoSnappingController.attach(cameraView, frameHandler)
 
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -72,30 +75,13 @@ class CameraDialogFragment : DialogFragment() {
         }
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // Here we get the full image from the camera.
-        // Implement a suitable async(!) scanning and image handling here.
-        // This is just a demo showing scanning image as downscaled preview image.
-
-        // Decode Bitmap from bytes of original image:
-        val options = BitmapFactory.Options()
-        options.inSampleSize = 8 // use 1 for original size (if you want no downscale)!
-        // in this demo we downscale the image to 1/8 for the preview.
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-
-        // rotate original image if required:
-        if (imageOrientation > 0) {
-            val matrix = Matrix()
-            matrix.setRotate(imageOrientation.toFloat(), originalBitmap.width / 2f, originalBitmap.height / 2f)
-            originalBitmap =
-                Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, false)
-        }
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
 
         // Run document scanning on original image:
-        val result = scanner.scanFromBitmap(originalBitmap)
+        val result = scanner.run(image).getOrNull()
         result?.pointsNormalized?.let { polygonF ->
-            val documentImage = ImageProcessor(originalBitmap).crop(polygonF).processedBitmap()
-            if (documentImage != null) resultView.post {
+            val documentImage = ImageProcessor(image).crop(polygonF).resize(200).processedBitmap().getOrNull()
+            resultView.post {
                 resultView.setImageBitmap(documentImage)
                 cameraView.continuousFocus()
                 cameraView.startPreview()
