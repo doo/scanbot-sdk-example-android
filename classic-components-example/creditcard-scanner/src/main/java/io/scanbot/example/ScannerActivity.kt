@@ -2,16 +2,17 @@ package io.scanbot.example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityScannerBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.creditcard.CreditCardScanner
 import io.scanbot.sdk.creditcard.CreditCardScannerFrameHandler
 import io.scanbot.sdk.creditcard.CreditCardScanningStatus
 import io.scanbot.sdk.creditcard.entity.CreditCard
+import io.scanbot.sdk.geometry.AspectRatio
 
 class ScannerActivity : AppCompatActivity() {
     // @Tag("Credit Card Classic Camera")
@@ -31,7 +32,7 @@ class ScannerActivity : AppCompatActivity() {
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         // init scanbot sdk and create credit card scanner
-        scanner = ScanbotSDK(this).createCreditCardScanner()
+        scanner = ScanbotSDK(this).createCreditCardScanner().getOrThrow()
         // set aspect ration for finder overlay
         binding.finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.586, 1.0))) // standard credit card aspect ratio
 
