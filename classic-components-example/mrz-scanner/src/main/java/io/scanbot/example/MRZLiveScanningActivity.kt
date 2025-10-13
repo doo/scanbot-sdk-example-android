@@ -11,11 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.documentdata.entity.MRZ
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.mrz.MrzScannerFrameHandler
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -52,7 +53,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         // Get the scanbot sdk instance
         val scanbotSDK = ScanbotSDK(this)
         // Configure mrz scanner
-        val mrzScanner = scanbotSDK.createMrzScanner()
+        val mrzScanner = scanbotSDK.createMrzScanner().getOrThrow()
         // Attach mrz scanner to the camera
         mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
         // Handle live mrz scanning results
