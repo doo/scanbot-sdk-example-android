@@ -26,10 +26,12 @@ import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.documentscanner.DocumentScannerParameters
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
+import io.scanbot.sdk.util.PolygonHelper
 
 class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
@@ -186,11 +188,18 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 this.ignoreOrientationMismatch = true
             }
         })
-        val polygon = scanner.run(image).getOrNull()?.pointsNormalized ?: throw Exception("Document detection failed")
+        val polygon = scanner.run(image).getOrNull()?.pointsNormalized
+            ?: throw Exception("Document detection failed")
 
-        val documentImage = ImageProcessor(image).crop(polygon).processedBitmap().getOrNull()
+        val polygonCrop =
+            polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
+        var documentImage = ScanbotSdkImageProcessor.create()
+            .crop(image, polygonCrop)
+            .getOrThrow()
+        documentImage = ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrThrow()
+
         resultView.post {
-            resultView.setImageBitmap(documentImage)
+            resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
             cameraView.continuousFocus()
             cameraView.startPreview()
         }
