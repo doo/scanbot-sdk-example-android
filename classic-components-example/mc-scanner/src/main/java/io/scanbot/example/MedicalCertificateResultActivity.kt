@@ -9,10 +9,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
-import io.scanbot.sdk.mc.MedicalCertificateCheckBoxType
-import io.scanbot.sdk.mc.MedicalCertificateDateRecordType
-import io.scanbot.sdk.mc.MedicalCertificatePatientInfoField
-import io.scanbot.sdk.mc.MedicalCertificateScanningResult
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateCheckBoxType
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateDateRecordType
+import io.scanbot.sdk.medicalcertificate.MedicalCertificatePatientInfoField
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanningResult
 
 class MedicalCertificateResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
