@@ -33,10 +33,12 @@ import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
 import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.PolygonView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
+import io.scanbot.sdk.util.PolygonHelper
 
 class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
@@ -223,16 +225,14 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             documentScanner.run(image).getOrNull()?.pointsNormalized ?: throw IllegalStateException(
                 "No document detected"
             )
+        val polygonCrop = polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
+        var documentImage = ScanbotSdkImageProcessor.create()
+            .crop(image, polygonCrop)
+            .getOrThrow()
+        documentImage = ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrThrow()
 
-        val documentImage =
-            ImageProcessor(image).resize(200).crop(polygon).processedBitmap().getOrNull()
         resultView.post {
-            val bm = image.toBitmap()
-            when(bm){
-                is Result.Success<*> -> {}
-                is Result.Unexpected ->{ throw  IllegalStateException(bm.message) }
-            }
-            resultView.setImageBitmap(bm.getOrNull())
+            resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
         }
 
         // continue scanning

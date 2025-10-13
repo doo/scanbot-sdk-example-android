@@ -83,7 +83,7 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             pageFit = PageFit.NONE,
             resamplingMethod = ResamplingMethod.NONE,
         )
-        val result = pdfGenerator.generateFromDocument(
+        val result = pdfGenerator.generate(
             document,
             config
         )

@@ -5,11 +5,12 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -32,7 +33,7 @@ class ScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
-        vinScanner = ScanbotSDK(this).createVinScanner()
+        vinScanner = ScanbotSDK(this).createVinScanner().getOrThrow()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)

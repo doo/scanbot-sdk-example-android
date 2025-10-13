@@ -56,8 +56,8 @@ class PdfFromImageSnippet : AppCompatActivity() {
             // notify the generator that the images are encrypted with global sdk-encryption settings
             val encryptionEnabled = false
             // Join the images into a PDF file.
-            val pdfFile = pdfGenerator.generateFromUris(
-                imageFileUris = list.toTypedArray(),
+            val pdfFile = pdfGenerator.generate(
+                imageFileUris = list,
                 sourceFilesEncrypted = encryptionEnabled,
                 config
             ).getOrNull()
