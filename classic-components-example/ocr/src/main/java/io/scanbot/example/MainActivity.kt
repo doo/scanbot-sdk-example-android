@@ -9,15 +9,16 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ocr.OcrEngine
+import io.scanbot.sdk.ocr.OcrEngineManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val opticalCharacterRecognizer: OcrEngine by lazy { scanbotSdk.createOcrEngine() }
+    private val opticalCharacterRecognizer: OcrEngineManager by lazy { scanbotSdk.createOcrEngineManager() }
 
 
     private val selectGalleryImageResultLauncher =
@@ -73,11 +74,12 @@ class MainActivity : AppCompatActivity() {
     private suspend fun recognizeTextWithoutPDF(document: Document) {
         val ocrResult = withContext(Dispatchers.Default) {
             opticalCharacterRecognizer.recognizeFromUris(document.pages.map { it.documentFileUri })
+                .getOrThrow()
         }
 
         withContext(Dispatchers.Main) {
             ocrResult.let {
-                if (it.ocrPages.isNotEmpty()) {
+                if (it.ocrPages!!.isNotEmpty()) {
                     this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
                 }
             }
