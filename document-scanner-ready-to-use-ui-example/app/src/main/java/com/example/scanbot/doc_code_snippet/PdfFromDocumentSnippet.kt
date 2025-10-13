@@ -14,14 +14,15 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.pdf.model.PageDirection
-import io.scanbot.pdf.model.PageFit
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfAttributes
-import io.scanbot.pdf.model.PdfConfiguration
-import io.scanbot.pdf.model.ResamplingMethod
+import io.scanbot.common.Result
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.pdfgeneration.PageDirection
+import io.scanbot.sdk.pdfgeneration.PageFit
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfAttributes
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
+import io.scanbot.sdk.pdfgeneration.ResamplingMethod
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {
@@ -82,12 +83,12 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             pageFit = PageFit.NONE,
             resamplingMethod = ResamplingMethod.NONE,
         )
-        val pdfGenerated = pdfGenerator.generateFromDocument(
+        val result = pdfGenerator.generateFromDocument(
             document,
             config
         )
         val pdfFile = document.pdfUri.toFile()
-        if (pdfGenerated && pdfFile.exists()) {
+        if (result is Result.Success && pdfFile.exists()) {
             // Do something with the PDF file
         } else {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")

@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 // @Tag("Automatic Filtering")
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.imageprocessing.WhiteBlackPointFilter
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 

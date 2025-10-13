@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.getOrThrow
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.ui.camera.*
@@ -106,7 +107,7 @@ fun handleVinScannerRTUResultSnippet(context: Context, result: VinScannerActivit
 fun useVinScannerFrameHandlerSnippet(context: Context, cameraView: ScanbotCameraXView) {
     // @Tag("Attach Vin Scanner to ScanbotCameraXView")
     val scanbotSdk = ScanbotSDK(context)
-    val vinScanner = scanbotSdk.createVinScanner()
+    val vinScanner = scanbotSdk.createVinScanner().getOrThrow()
     val vinScannerFrameHandler = VinScannerFrameHandler.attach(cameraView, vinScanner)
     // @EndTag("Attach Vin Scanner to ScanbotCameraXView")
 }

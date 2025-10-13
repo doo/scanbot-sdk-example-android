@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.squareup.picasso.Picasso
+import io.scanbot.common.getOrNull
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityBarcodeResultBinding
@@ -58,7 +59,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                 BarcodeItemBinding.inflate(layoutInflater, binding.scannedItems, false)
                     .also {
                         item.sourceImage?.let { image ->
-                            it.image.setImageBitmap(image.toBitmap())
+                            it.image.setImageBitmap(image.toBitmap()?.getOrNull())
                         }
                         it.barcodeFormat.text = item.format.name
                         it.docFormat.text = item.extractedDocument?.let {

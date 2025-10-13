@@ -5,14 +5,19 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
-import io.scanbot.pdf.model.*
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.*
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.entity.*
 import io.scanbot.sdk.ocr.*
 import io.scanbot.sdk.ocr.intelligence.*
-import io.scanbot.sdk.ocr.model.*
 import io.scanbot.sdk.ocr.process.*
+import io.scanbot.sdk.pdfgeneration.PageDirection
+import io.scanbot.sdk.pdfgeneration.PageFit
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfAttributes
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
+import io.scanbot.sdk.pdfgeneration.ResamplingMethod
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -28,58 +33,59 @@ import io.scanbot.sdk.ocr.process.*
 fun initSdkSnippet(application: Application, licenseKey: String) {
     // @Tag("Initialize SDK")
     ScanbotSDKInitializer()
-            .license(application, licenseKey)
-            .prepareOCRLanguagesBlobs(true)
-            //...
-            .initialize(application)
+        .license(application, licenseKey)
+        .prepareOCRLanguagesBlobs(true)
+        //...
+        .initialize(application)
     // @EndTag("Initialize SDK")
 }
 
 fun createOcrEngine(context: Context) {
     // @Tag("Create OCR Engine")
     val scanbotSDK = ScanbotSDK(context)
-    val ocrRecognizer = scanbotSDK.createOcrEngine()
+    val ocrEngine = scanbotSDK.createOcrEngineManager()
     // @EndTag("Create OCR Engine")
 }
 
 fun enableBinarizationInOcrSettingsSnippet(application: Application) {
     // @Tag("Enable Binarization in OCR Settings")
     ScanbotSDKInitializer()
-            .useOcrSettings(OcrSettings.Builder().binarizeImage(true).build())
-            //...
-            .initialize(application)
+        .useOcrSettings(OcrSettings.Builder().binarizeImage(true).build())
+        //...
+        .initialize(application)
     // @EndTag("Enable Binarization in OCR Settings")
 }
 
 fun engineModeTesseractSnippet(context: Context) {
     // @Tag("Engine Mode Tesseract")
-    val ocrRecognizer = ScanbotSDK(context).createOcrEngine()
+    val ocrRecognizer = ScanbotSDK(context).createOcrEngineManager()
 
     val languages = mutableSetOf<Language>()
     languages.add(Language.ENG)
 
     ocrRecognizer.setOcrConfig(
-            OcrEngine.OcrConfig(
-                    engineMode = OcrEngine.EngineMode.TESSERACT,
-                    languages = languages,
-            )
+        OcrEngineManager.OcrConfig(
+            engineMode = OcrEngineManager.EngineMode.TESSERACT,
+            languages = languages,
+        )
     )
     // @EndTag("Engine Mode Tesseract")
 }
 
-fun runOcrOnUrisSnippet(ocrEngine: OcrEngine) {
+fun runOcrOnUrisSnippet(ocrEngine: OcrEngineManager) {
     // @Tag("Run OCR from images")
-    val imageFileUris: List<Uri> = listOf() // ["file:///some/path/file1.jpg", "file:///some/path/file2.jpg", ...]
+    val imageFileUris: List<Uri> =
+        listOf() // ["file:///some/path/file1.jpg", "file:///some/path/file2.jpg", ...]
 
-    var result: OcrResult = ocrEngine.recognizeFromUris(imageFileUris, false)
+    var result: OcrResult? = ocrEngine.recognizeFromUris(imageFileUris, false).getOrNull()
     // @EndTag("Run OCR from images")
 }
 
-fun runOcrOnDocumentSnippet(ocrEngine: OcrEngine, yourDocument: Document) {
+fun runOcrOnDocumentSnippet(ocrEngine: OcrEngineManager, yourDocument: Document) {
     // @Tag("Run OCR from Document")
     val document: Document = yourDocument
 
-    var result: OcrResult = ocrEngine.recognizeFromDocument(document)
+    var result: OcrResult? = ocrEngine.recognizeFromDocument(document).getOrNull()
     // @EndTag("Run OCR from Document")
 }
 
@@ -100,30 +106,30 @@ fun generatePdfWithOcrLayerSnippet(scanbotSDK: ScanbotSDK, document: Document) {
     val pdfGenerator = scanbotSDK.createPdfGenerator()
 
     val pdfConfig = PdfConfiguration(
-            attributes = PdfAttributes(
-                    author = "",
-                    title = "",
-                    subject = "",
-                    keywords = "",
-                    creator = ""
-            ),
-            pageSize = PageSize.A4,
-            pageDirection = PageDirection.AUTO,
-            dpi = 200,
-            jpegQuality = 100,
-            pageFit = PageFit.NONE,
-            resamplingMethod = ResamplingMethod.NONE,
+        attributes = PdfAttributes(
+            author = "",
+            title = "",
+            subject = "",
+            keywords = "",
+            creator = ""
+        ),
+        pageSize = PageSize.A4,
+        pageDirection = PageDirection.AUTO,
+        dpi = 200,
+        jpegQuality = 100,
+        pageFit = PageFit.NONE,
+        resamplingMethod = ResamplingMethod.NONE,
     )
-    val ocrConfig = OcrEngine.OcrConfig(
-            engineMode = OcrEngine.EngineMode.SCANBOT_OCR
+    val ocrConfig = OcrEngineManager.OcrConfig(
+        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
     )
     val pdfGenerated = pdfGenerator.generateWithOcrFromDocument(
-            document = document,
-            pdfConfig = pdfConfig,
-            ocrConfig = ocrConfig
-    )
+        document = document,
+        pdfConfig = pdfConfig,
+        ocrConfig = ocrConfig
+    ).getOrNull()
     val pdfFile = document.pdfUri.toFile()
-    if (pdfGenerated && pdfFile.exists()) {
+    if (pdfGenerated != null && pdfFile.exists()) {
         // Do something with the PDF file
     } else {
         Log.e("PdfWithOcrFromDocument", "Failed to create PDF")
@@ -137,27 +143,27 @@ fun generatePdfWithOcrLayerFormUrisSnippet(scanbotSDK: ScanbotSDK, imageFileUris
     val pdfGenerator = scanbotSDK.createPdfGenerator()
 
     val pdfConfig = PdfConfiguration(
-            attributes = PdfAttributes(
-                    author = "",
-                    title = "",
-                    subject = "",
-                    keywords = "",
-                    creator = ""
-            ),
-            pageSize = PageSize.A4,
-            pageDirection = PageDirection.AUTO,
-            dpi = 200,
-            jpegQuality = 100,
-            pageFit = PageFit.NONE,
-            resamplingMethod = ResamplingMethod.NONE,
+        attributes = PdfAttributes(
+            author = "",
+            title = "",
+            subject = "",
+            keywords = "",
+            creator = ""
+        ),
+        pageSize = PageSize.A4,
+        pageDirection = PageDirection.AUTO,
+        dpi = 200,
+        jpegQuality = 100,
+        pageFit = PageFit.NONE,
+        resamplingMethod = ResamplingMethod.NONE,
     )
-    val ocrConfig = OcrEngine.OcrConfig(
-            engineMode = OcrEngine.EngineMode.SCANBOT_OCR
+    val ocrConfig = OcrEngineManager.OcrConfig(
+        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
     )
     val generatedPdfFile = pdfGenerator.generateWithOcrFromUris(
-            imageFileUris = imageFileUris,
-            pdfConfig = pdfConfig,
-            ocrConfig = ocrConfig
+        imageFileUris = imageFileUris,
+        pdfConfig = pdfConfig,
+        ocrConfig = ocrConfig
     )
     if (generatedPdfFile != null) {
         // Do something with the PDF file

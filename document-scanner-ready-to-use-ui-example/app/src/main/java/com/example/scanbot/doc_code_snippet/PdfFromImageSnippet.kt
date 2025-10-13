@@ -12,8 +12,9 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.pdf.model.PdfConfiguration
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 
 
 class PdfFromImageSnippet : AppCompatActivity() {
@@ -59,7 +60,7 @@ class PdfFromImageSnippet : AppCompatActivity() {
                 imageFileUris = list.toTypedArray(),
                 sourceFilesEncrypted = encryptionEnabled,
                 config
-            )
+            ).getOrNull()
 
             if (pdfFile != null && pdfFile.exists()) {
                 // Do something with the PDF file

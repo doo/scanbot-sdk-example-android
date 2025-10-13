@@ -9,22 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import io.scanbot.example.databinding.*
 import io.scanbot.example.fragments.*
-import io.scanbot.example.util.applyEdgeToEdge
-import io.scanbot.sap.*
+import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.entity.*
 import io.scanbot.sdk.creditcard.entity.*
-import io.scanbot.sdk.ehicscanner.*
-import io.scanbot.sdk.genericdocument.entity.*
-import io.scanbot.sdk.mc.*
-import io.scanbot.sdk.ui.*
-import io.scanbot.sdk.ui.view.hic.*
-import io.scanbot.sdk.ui.view.hic.configuration.*
-import io.scanbot.sdk.ui.view.mc.*
-import io.scanbot.sdk.ui.view.mc.configuration.*
-import io.scanbot.sdk.ui_v2.check.CheckScannerActivity
-import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerScreenConfiguration
-import io.scanbot.sdk.ui_v2.check.configuration.CheckScannerUiResult
+import io.scanbot.sdk.documentdata.*
+import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.genericdocument.*
+import io.scanbot.sdk.licensing.*
+import io.scanbot.sdk.ui_v2.check.*
+import io.scanbot.sdk.ui_v2.check.configuration.*
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.*
@@ -35,8 +29,8 @@ import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.*
 import io.scanbot.sdk.ui_v2.textpattern.configuration.*
-import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
-import io.scanbot.sdk.ui_v2.vin.configuration.VinScannerScreenConfiguration
+import io.scanbot.sdk.ui_v2.vin.*
+import io.scanbot.sdk.ui_v2.vin.configuration.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,8 +40,6 @@ class MainActivity : AppCompatActivity() {
     private val creditCardUiResultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration>
     private val textDataScannerResultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration>
     private val vinScannerResultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration>
-    private val medicalCertificateScannerActivityResultLauncher: ActivityResultLauncher<MedicalCertificateScannerConfiguration>
-    private val ehicScannerResultLauncher: ActivityResultLauncher<HealthInsuranceCardScannerConfiguration>
     private val dataExtractorResultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration>
     private val checkScannerResultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration>
 
@@ -115,18 +107,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.ehicDefaultUi.setOnClickListener {
-            val ehicScannerConfig = HealthInsuranceCardScannerConfiguration()
-            ehicScannerConfig.setTopBarButtonsColor(Color.WHITE)
-            ehicScannerConfig.setRecognizerParameters(
-                EuropeanHealthInsuranceCardRecognizerConfiguration(
-                    // Add your parameters here if needed
+            val configuration = DocumentDataExtractorScreenConfiguration()
+            configuration.scannerConfiguration.configurations =
+                listOf(
+                    DocumentDataExtractorCommonConfiguration(
+                        acceptedDocumentTypes = listOf(
+                            EuropeanHealthInsuranceCard.DOCUMENT_TYPE
+                        )
+                    ),
+                    EuropeanHealthInsuranceCardConfiguration(expectedCountry = EuropeanHealthInsuranceCardIssuingCountry.GERMANY)
                 )
+            configuration.topBar.backgroundColor = ScanbotColor(
+                ContextCompat.getColor(this, R.color.colorPrimaryDark)
             )
-            // ehicScannerConfig.setTopBarBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
-            // ehicScannerConfig.setFinderTextHint("custom text")
-            // ...
-
-            ehicScannerResultLauncher.launch(ehicScannerConfig)
+            dataExtractorResultLauncher.launch(configuration)
         }
 
         binding.checkRecognizerUi.setOnClickListener {
@@ -136,20 +130,6 @@ class MainActivity : AppCompatActivity() {
 
             checkScannerResultLauncher.launch(config)
         }
-
-        binding.mcScannerUi.setOnClickListener {
-            val config = MedicalCertificateScannerConfiguration().apply {
-                setTopBarBackgroundColor(
-                    ContextCompat.getColor(
-                        this@MainActivity,
-                        R.color.colorPrimaryDark
-                    )
-                )
-                setTopBarButtonsColor(ContextCompat.getColor(this@MainActivity, R.color.greyColor))
-            }
-
-            medicalCertificateScannerActivityResultLauncher.launch(config)
-        }
     }
 
     override fun onResume() {
@@ -158,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             showLicenseDialog()
         }
         binding.warningView.visibility =
-            if (scanbotSdk.licenseInfo.status != Status.StatusOkay) View.VISIBLE else View.GONE
+            if (scanbotSdk.licenseInfo.status != LicenseStatus.OKAY) View.VISIBLE else View.GONE
     }
 
     private fun handleDocumentDataExtractorResult(result: List<DocumentDataExtractorUiResult>) {
@@ -182,22 +162,6 @@ class MainActivity : AppCompatActivity() {
     private fun showMrzDialog(genericDocument: GenericDocument) {
         val dialogFragment = MRZDialogFragment.newInstance(genericDocument)
         dialogFragment.show(supportFragmentManager, MRZDialogFragment.NAME)
-    }
-
-    private fun showEHICResultDialog(recognitionResult: EuropeanHealthInsuranceCardRecognitionResult) {
-        val dialogFragment = EHICResultDialogFragment.newInstance(recognitionResult)
-        dialogFragment.show(supportFragmentManager, EHICResultDialogFragment.NAME)
-    }
-
-    private fun handleMedicalCertificateResult(resultWrapper: MedicalCertificateScanningResult) {
-
-
-        showMedicalCertificateScannerResult(resultWrapper!!)
-    }
-
-    private fun showMedicalCertificateScannerResult(recognitionResult: MedicalCertificateScanningResult) {
-        val dialogFragment = MedicalCertificateResultDialogFragment.newInstance(recognitionResult)
-        dialogFragment.show(supportFragmentManager, MedicalCertificateResultDialogFragment.NAME)
     }
 
     private fun handleCheckScannerResult(result: CheckScannerUiResult) {
@@ -255,19 +219,9 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-        ehicScannerResultLauncher =
-            registerForActivityResultOk(HealthInsuranceCardScannerActivity.ResultContract()) { resultEntity ->
-                showEHICResultDialog(resultEntity.result!!)
-            }
-
         dataExtractorResultLauncher =
             registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
                 handleDocumentDataExtractorResult(listOfNotNull(resultEntity.result))
-            }
-
-        medicalCertificateScannerActivityResultLauncher =
-            registerForActivityResultOk(MedicalCertificateScannerActivity.ResultContract()) { resultEntity ->
-                handleMedicalCertificateResult(resultEntity.result!!)
             }
 
         checkScannerResultLauncher =

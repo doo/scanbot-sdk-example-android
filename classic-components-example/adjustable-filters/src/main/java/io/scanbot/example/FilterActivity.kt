@@ -18,10 +18,10 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityFiltersTunesBinding
 import io.scanbot.example.fragment.ErrorFragment
 import io.scanbot.example.fragment.FiltersBottomSheetMenuFragment
-import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.imageprocessing.ParametricFilter
 import kotlinx.coroutines.*
 
 class FilterActivity : AppCompatActivity(), FiltersListener {

@@ -3,18 +3,19 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.process.DocumentQuality
+import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 
 
 class ImageQualityCheckSnippet : AppCompatActivity() {
@@ -36,7 +37,7 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .mapNotNull { it.toBitmap(contentResolver) }.apply {
+                                .mapNotNull { it.toImageRef(contentResolver) }.apply {
                                     startFiltering(this.toList())
                                 }
 
@@ -48,11 +49,11 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
 
     // @Tag("Analyze the quality of an image")
     // Create a document quality analyzer instance
-    val qualityAnalyter = scanbotSDK.createDocumentQualityAnalyzer()
-    fun startFiltering(list: List<Bitmap>) {
+    val qualityAnalyter = scanbotSDK.createDocumentQualityAnalyzer().getOrNull()
+    fun startFiltering(list: List<ImageRef>) {
         list.forEach { image ->
             // Run quality check on the picked image
-            val documentQuality = qualityAnalyter.analyzeOnBitmap(image, orientation = 0)
+            val documentQuality = qualityAnalyter?.run(image)?.getOrNull()
             // proceed the result
             if (documentQuality != null) {
                 printResult(documentQuality.quality)

@@ -16,14 +16,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.MedicalCertificateResultActivity.Companion.newIntent
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.mc.MedicalCertificateScanner
-import io.scanbot.sdk.mc.MedicalCertificateScanningParameters
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanner
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanningParameters
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import kotlin.math.roundToInt
 
@@ -44,7 +47,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
 
         askPermission()
         val scanbotSDK = ScanbotSDK(this)
-        scanner = scanbotSDK.createMedicalCertificateScanner()
+        scanner = scanbotSDK.createMedicalCertificateScanner().getOrThrow()
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setCameraOpenCallback {
@@ -54,7 +57,7 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
             }, 700)
         }
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -81,48 +84,21 @@ class ManualMedicalCertificateScannerActivity : AppCompatActivity() {
         Toast.makeText(this, "Scanning Medical Certificate...", Toast.LENGTH_LONG)
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // Here we get the full image from the camera.
-        // Implement a suitable async(!) scanning and image handling here.
-
-        // Decode Bitmap from bytes of original image:
-        val options = BitmapFactory.Options()
-        options.inSampleSize = 2 // use 1 for full, no downscaled image.
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-
-        // rotate original image if required:
-        if (imageOrientation > 0) {
-            val matrix = Matrix()
-            matrix.setRotate(
-                imageOrientation.toFloat(),
-                originalBitmap.width / 2f,
-                originalBitmap.height / 2f
-            )
-            originalBitmap = Bitmap.createBitmap(
-                originalBitmap,
-                0,
-                0,
-                originalBitmap.width,
-                originalBitmap.height,
-                matrix,
-                false
-            )
-        }
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
 
         // And finally run Medical Certificate scanning on prepared document image:
-        val resultInfo = scanner.scanFromBitmap(
-            originalBitmap,
-            0,
+        val resultInfo = scanner.run(
+            image,
             MedicalCertificateScanningParameters(
                 shouldCropDocument = true,
                 extractCroppedImage = true,
                 recognizePatientInfoBox = true,
                 recognizeBarcode = true
             )
-        )
+        ).getOrNull()
         if (resultInfo != null && resultInfo.scanningSuccessful) {
             // Show the cropped image as thumbnail preview
-            resultInfo.croppedImage?.toBitmap()?.let { image ->
+            resultInfo.croppedImage?.toBitmap()?.getOrNull()?.let { image ->
                 val thumbnailImage = resizeImage(image, 600f, 600f)
                 runOnUiThread {
                     resultImageView.setImageBitmap(thumbnailImage)

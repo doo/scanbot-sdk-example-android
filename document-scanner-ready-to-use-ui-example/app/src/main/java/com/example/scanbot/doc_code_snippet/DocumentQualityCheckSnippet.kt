@@ -13,9 +13,10 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.process.DocumentQuality
+import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
 
 
 class DocumentQualityCheckSnippet : AppCompatActivity() {
@@ -58,13 +59,13 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
 
     // @Tag("Analyze the quality of a document image")
     // Create a document detector instance
-    val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer()
+    val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer().getOrNull()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
             // Run quality check on the created page
             val documentQuality =
-                qualityAnalyzer.analyzeOnBitmap(page.originalImage!!, orientation = 0)
+                qualityAnalyzer?.run(page.originalImageRef!!)?.getOrNull()
             // proceed the result
             if (documentQuality != null) {
                 printResult(documentQuality.quality)

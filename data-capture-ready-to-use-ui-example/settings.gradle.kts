@@ -15,6 +15,7 @@ dependencyResolutionManagement {
         maven(url = "https://nexus.scanbot.io/nexus/content/repositories/releases/")
         maven(url = "https://nexus.scanbot.io/nexus/content/repositories/snapshots/")
     }
+
 }
 
 include(":app")

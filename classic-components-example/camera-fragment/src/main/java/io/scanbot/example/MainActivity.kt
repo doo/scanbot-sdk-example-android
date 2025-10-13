@@ -1,7 +1,6 @@
 package io.scanbot.example
 
 import android.Manifest
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +11,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.getOrNull
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,7 +26,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val scanner: DocumentScanner by lazy { scanbotSdk.createDocumentScanner() }
+    private val scanner: DocumentScanner by lazy { scanbotSdk.createDocumentScanner().getOrThrow() }
 
     private val requestCameraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -95,15 +97,15 @@ class MainActivity : AppCompatActivity() {
 
         val page = withContext(Dispatchers.Default) {
             // load the selected image:
-            val inputStream = contentResolver.openInputStream(imageUri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = contentResolver.openInputStream(imageUri) ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
+            val image = ImageRef.fromInputStream(inputStream)
 
             // create a new Document object with given image as original image:
             val newDocument = scanbotSdk.documentApi.createDocument()
-            val page = newDocument.addPage(bitmap)
+            val page = newDocument.addPage(image)
 
             // run auto document scanning on it:
-            val result = scanner.scanFromBitmap(bitmap)
+            val result = scanner.run(image).getOrNull()
 
             /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
              * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.

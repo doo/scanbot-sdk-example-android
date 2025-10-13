@@ -12,7 +12,7 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 // TODO: add URLs here
 
 import io.scanbot.sdk.documentdata.entity.*
-import io.scanbot.sdk.genericdocument.entity.*
+import io.scanbot.sdk.genericdocument.*
 
 fun wrapGenericDocument(genericDocument: GenericDocument) {
 

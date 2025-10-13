@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.util.log.LoggerProvider
@@ -28,15 +27,20 @@ class ExampleApplication : Application() {
             .withLogging(true)
             // TODO 2/3: Enable the Scanbot SDK license key
             //.license(this, licenseKey)
-            .licenceErrorHandler { status, feature, statusMessage ->
-                LoggerProvider.logger.d("ExampleApplication", "+++> License status: ${status.name}. Status message: $statusMessage")
-                if (feature != SdkFeature.NoSdkFeature) {
-                    LoggerProvider.logger.d("ExampleApplication", "+++> Feature not available: ${feature.name}")
+            .licenseErrorHandler { status, feature, statusMessage ->
+                LoggerProvider.logger.d(
+                    "ExampleApplication",
+                    "+++> License status: ${status.name}. Status message: $statusMessage"
+                )
+                LoggerProvider.logger.d(
+                    "ExampleApplication",
+                    "+++> Feature not available: ${feature.name}"
+                )
 
-                    // TODO: 3/3 Handle license error properly
-                    uiHandler.post {
-                        Toast.makeText(applicationContext, "Trial license expired", Toast.LENGTH_SHORT).show()
-                    }
+                // TODO: 3/3 Handle license error properly
+                uiHandler.post {
+                    Toast.makeText(applicationContext, "Trial license expired", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
@@ -47,6 +51,9 @@ class ExampleApplication : Application() {
         val licenseInfo = ScanbotSDK(this).licenseInfo
         LoggerProvider.logger.d("ExampleApplication", "License status: ${licenseInfo.status}")
         LoggerProvider.logger.d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
-        LoggerProvider.logger.d("ExampleApplication", "License expirationDate: ${licenseInfo.expirationDate}")
+        LoggerProvider.logger.d(
+            "ExampleApplication",
+            "License expirationDate: ${licenseInfo.expirationDateString}"
+        )
     }
 }

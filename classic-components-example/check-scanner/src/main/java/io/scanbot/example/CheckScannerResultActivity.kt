@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.check.CheckScanningResult
-import io.scanbot.sdk.genericdocument.entity.GenericDocument
+import io.scanbot.sdk.genericdocument.GenericDocument
 
 class CheckScannerResultActivity : AppCompatActivity() {
     private lateinit var checkResultImageView: ImageView

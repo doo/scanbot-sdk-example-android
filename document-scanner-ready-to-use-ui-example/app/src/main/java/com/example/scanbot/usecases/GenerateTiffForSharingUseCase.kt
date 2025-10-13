@@ -5,12 +5,12 @@ import com.example.scanbot.sharing.ensureFileExists
 import io.scanbot.sdk.docprocessing.Document
 import java.io.File
 import javax.inject.Inject
-import io.scanbot.sdk.tiff.TiffGenerator
-import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
+import io.scanbot.sdk.tiff.TiffGeneratorManager
+import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
 
 class GenerateTiffForSharingUseCase @Inject constructor(
     sharingDocumentStorage: ISharingDocumentStorage,
-    private val tiffGenerator: TiffGenerator,
+    private val tiffGenerator: TiffGeneratorManager,
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
 
     override suspend fun generateFilesForDocument(documentSharingDir: File, document: Document): List<File> {
