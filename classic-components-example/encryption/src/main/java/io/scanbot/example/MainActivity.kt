@@ -8,9 +8,9 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.process.PdfGenerator
 import java.io.File
