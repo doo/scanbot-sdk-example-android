@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.getOrThrow
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.textpattern.ContentValidationCallback
 import io.scanbot.sdk.textpattern.CustomContentValidator
 import io.scanbot.sdk.textpattern.TextPatternScanner
@@ -42,7 +43,7 @@ class ScannerActivity : AppCompatActivity() {
         zoomFinderOverlay.zoomLevel = 1.8f
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
-        patternScanner = ScanbotSDK(this).createTextPatternScanner()
+        patternScanner = ScanbotSDK(this).createTextPatternScanner().getOrThrow()
 
         // TODO: set validation string and validation callback which matches the need of the task
         // For the pattern: # - digits, ? - for any character. Other characters represent themselves
