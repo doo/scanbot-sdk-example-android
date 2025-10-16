@@ -38,8 +38,10 @@ class Application : Application(), CoroutineScope {
 
         // TODO: you can enable encryption of all the image files and generated PDFs by changing this property
         const val USE_ENCRYPTION = false
+
         // TODO: you should store a password in a secure place or let the user enter it manually
         private const val ENCRYPTION_PASSWORD = "password"
+
         // TODO: you can select an encryption method
         private val ENCRYPTION_METHOD = AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
     }
@@ -47,36 +49,39 @@ class Application : Application(), CoroutineScope {
     override fun onCreate() {
         super.onCreate()
         val sdkLicenseInfo = ScanbotSDKInitializer()
-                .withLogging(BuildConfig.DEBUG)
-                // Optional, custom SDK files directory. Please see the comments below!
-                .sdkFilesDirectory(this, customStorageDirectory())
-                .usePageStorageSettings(
-                        PageStorageSettings.Builder()
-                                .imageFormat(CameraImageFormat.JPG)
-                                .imageQuality(80)
-                                .previewTargetMax(1500)
-                                .build()
-                )
-                .prepareOCRLanguagesBlobs(true)
-                .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
-                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
-                .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
-                    // Optional license failure handler implementation. Handle license issues here.
-                    // A license issue can either be an invalid or expired license key
-                    // or missing SDK feature (see SDK feature packages on https://scanbot.io).
-                    val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
-                        "License Error! License status: ${status.name}. $statusMessage"
-                    } else {
-                        "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"
-                    }
-                    Log.d("ScanbotSDKExample", errorMsg)
-                    Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
-                })
+            .withLogging(BuildConfig.DEBUG)
+            // Optional, custom SDK files directory. Please see the comments below!
+            .sdkFilesDirectory(this, customStorageDirectory())
+            .usePageStorageSettings(
+                PageStorageSettings.Builder()
+                    .imageFormat(CameraImageFormat.JPG)
+                    .imageQuality(80)
+                    .previewTargetMax(1500)
+                    .build()
+            )
+            .prepareOCRLanguagesBlobs(true)
+            .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
+            .useFileEncryption(
+                USE_ENCRYPTION,
+                AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD)
+            )
+            .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
+                // Optional license failure handler implementation. Handle license issues here.
+                // A license issue can either be an invalid or expired license key
+                // or missing SDK feature (see SDK feature packages on https://scanbot.io).
+                val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
+                    "License Error! License status: ${status.name}. $statusMessage"
+                } else {
+                    "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"
+                }
+                Log.d("ScanbotSDKExample", errorMsg)
+                Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
+            })
 
-                // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
-                // .useCameraXRtuUi(false)
-                .license(this, LICENSE_KEY)
-                .initialize(this)
+            // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
+            // .useCameraXRtuUi(false)
+            .license(this, LICENSE_KEY)
+            .initialize(this)
 
         // Check the Scanbot SDK license status:
         Log.d("ScanbotSDKExample", "Is license valid: " + sdkLicenseInfo.isValid)
@@ -105,7 +110,8 @@ class Application : Application(), CoroutineScope {
         // - https://developer.android.com/guide/topics/data/data-storage
         // - https://developer.android.com/training/data-storage/files
 
-        val customDir = File(this.getExternalFilesDir(null), "my-custom-storage-folder")
+        val customDir =
+            File(this.getExternalFilesDir(null) ?: this.filesDir, "my-custom-storage-folder")
         customDir.mkdirs()
         return customDir
     }

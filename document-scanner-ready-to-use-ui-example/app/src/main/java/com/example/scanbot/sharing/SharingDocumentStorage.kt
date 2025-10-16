@@ -7,7 +7,8 @@ import java.io.IOException
 class SharingDocumentStorage(private val context: Context) : ISharingDocumentStorage {
 
     override fun getSharingDir(): File {
-        return context.externalCacheDir?.resolve("sharing")?.ensureFileExists()
+        return (context.externalCacheDir ?: context.cacheDir)?.resolve("sharing")
+            ?.ensureFileExists()
             ?: throw IOException("Unable to create sharing dir")
     }
 
