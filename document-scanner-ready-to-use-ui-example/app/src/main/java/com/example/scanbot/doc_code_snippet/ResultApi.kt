@@ -104,7 +104,7 @@ class ResultApi {
     }
     // @EndTag("Chain Result with SDK calls")
 
-    // @Tag("Chain Result with SDK calls")
+    // @Tag("Combine Result of SDK calls")
     fun combineWithScannerCall(
         image: ImageRef,
         barcoderScanner: ScanbotSdkBarcodeScanner,
@@ -125,5 +125,5 @@ class ResultApi {
         }.getOrDefault(emptyList())
 
     }
-    // @EndTag("Chain Result with SDK calls")
+    // @EndTag("Combine Result of SDK calls"")
 }
