@@ -82,12 +82,12 @@ class ResultApi {
     }
     // @EndTag("Handle Result with chain API")
 
+    // @Tag("Chain Result with SDK calls")
     fun chainWithScannerCall(
         image: ImageRef,
         barcoderScanner: ScanbotSdkBarcodeScanner,
         documentScanner: ScanbotSdkDocumentScanner
     ) {
-        // @Tag("Chain Result with SDK calls")
         val polygon = barcoderScanner.run(image)
             .mapSuccess { barcodeScanResult ->
                 // Transform barcode scan result to document scan result if the document contains barcode with specified type
@@ -100,6 +100,6 @@ class ResultApi {
                 // return document polygon if scanning result if successful
                 documentScanResult.pointsNormalized
             }.getOrDefault(emptyList())
-        // @EndTag("Chain Result with SDK calls")
     }
+    // @EndTag("Chain Result with SDK calls")
 }
