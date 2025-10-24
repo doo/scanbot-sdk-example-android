@@ -7,6 +7,7 @@ import io.scanbot.common.getOrThrow
 import io.scanbot.common.mapFailure
 import io.scanbot.common.mapSuccess
 import io.scanbot.common.onFailure
+import io.scanbot.common.combineResults
 import io.scanbot.common.onSuccess
 import io.scanbot.sdk.barcode.BarcodeFormat
 import io.scanbot.sdk.barcode.BarcodeScannerResult
@@ -100,6 +101,29 @@ class ResultApi {
                 // return document polygon if scanning result if successful
                 documentScanResult.pointsNormalized
             }.getOrDefault(emptyList())
+    }
+    // @EndTag("Chain Result with SDK calls")
+
+    // @Tag("Chain Result with SDK calls")
+    fun combineWithScannerCall(
+        image: ImageRef,
+        barcoderScanner: ScanbotSdkBarcodeScanner,
+        documentScanner: ScanbotSdkDocumentScanner
+    ) {
+
+        val polygon = combineResults(
+            barcoderScanner.run(image),
+            documentScanner.run(image)
+        ) { barcodeResult, documentResult ->
+            // Transform barcode scan result to document scan result if the document contains barcode with specified type
+            if (barcodeResult.barcodes.none { item -> item.format == BarcodeFormat.QR_CODE }) {
+                // return from mapSuccess with Result.IllegalStateError
+                return@combineResults Result.IllegalStateError("Document should contain unique qr code to be accepted")
+            }
+            // return document polygon if scanning result if successful
+            Result.Success(documentResult.pointsNormalized)
+        }.getOrDefault(emptyList())
+
     }
     // @EndTag("Chain Result with SDK calls")
 }

@@ -18,4 +18,5 @@ public class ResultJ {
             Log.e("TAG", "Barcode scanning failed: " + message);
         }
     }
+    // @Tag("Handle Result with ifs")
 }
