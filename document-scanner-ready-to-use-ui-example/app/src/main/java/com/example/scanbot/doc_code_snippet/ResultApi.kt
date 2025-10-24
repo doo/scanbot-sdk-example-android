@@ -55,7 +55,7 @@ class ResultApi {
                 emptyList(),
                 false
             )
-        ) // get value or throw exception if unsuccessful then handle exception with try-catch
+        )
     }
     // @EndTag("Handle Result with getter functions")
 
