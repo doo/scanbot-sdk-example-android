@@ -2,7 +2,7 @@ package io.scanbot.example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.getOrThrow
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityScannerBinding
 import io.scanbot.sdk.ScanbotSDK

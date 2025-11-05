@@ -11,8 +11,8 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
-import io.scanbot.common.getOrThrow
+
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus

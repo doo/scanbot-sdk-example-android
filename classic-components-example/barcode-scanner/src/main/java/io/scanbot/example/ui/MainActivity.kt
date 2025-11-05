@@ -9,8 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
-import io.scanbot.common.getOrThrow
+
+
 import io.scanbot.example.R
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge

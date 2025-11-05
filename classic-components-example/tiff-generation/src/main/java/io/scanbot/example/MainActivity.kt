@@ -15,13 +15,13 @@ import io.scanbot.example.common.getAppStorageDir
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.tiff.model.CompressionMode
-import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
-import io.scanbot.sdk.tiff.model.UserField
-import io.scanbot.sdk.tiff.model.UserFieldDoubleValue
-import io.scanbot.sdk.tiff.model.UserFieldIntValue
-import io.scanbot.sdk.tiff.model.UserFieldStringValue
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.tiffgeneration.CompressionMode
+import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
+import io.scanbot.sdk.tiffgeneration.UserField
+import io.scanbot.sdk.tiffgeneration.UserFieldDoubleValue
+import io.scanbot.sdk.tiffgeneration.UserFieldIntValue
+import io.scanbot.sdk.tiffgeneration.UserFieldStringValue
 import io.scanbot.sdk.util.FileChooserUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ import java.util.UUID
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val tiffGenerator by lazy { scanbotSdk.createTiffGenerator() }
+    private val tiffGenerator by lazy { scanbotSdk.createTiffGeneratorManager() }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -107,14 +107,13 @@ class MainActivity : AppCompatActivity() {
                 false,
                 resultFile,
                 constructParameters(binarize, addCustomFields)
-            )
-
+            ).getOrNull()
         }
 
         withContext(Dispatchers.Main)
         {
             binding.progressBar.visibility = View.GONE
-            if (result) {
+            if (result != null) {
                 binding.resultTextView.text = "TIFF file created: ${resultFile.path}"
             } else {
                 this@MainActivity.showToast("ERROR: Could not create TIFF file.")

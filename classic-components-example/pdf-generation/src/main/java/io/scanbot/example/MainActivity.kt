@@ -2,7 +2,6 @@ package io.scanbot.example
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -17,11 +16,13 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.process.PdfGenerator
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.ocr.OcrEngineManager
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
+import io.scanbot.sdk.pdfgeneration.PdfGenerator
 import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,8 +31,8 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private val runOcr = false
-    private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val pdfRenderer: PdfGenerator by lazy { scanbotSdk.createPdfGenerator() }
+    private val scanbotSdk by lazy { ScanbotSDK(this) }
+    private val pdfGenerator by lazy { scanbotSdk.createPdfGenerator(if (runOcr) OcrEngineManager.OcrConfig() else null) }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -73,28 +74,25 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
         val renderedPdfFile = withContext(Dispatchers.Default) {
-            val documentScanner = scanbotSdk.createDocumentScanner()
+            val documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
             val document = scanbotSdk.documentApi.createDocument()
             uris.asSequence().forEach { uri ->
-                val inputStream = contentResolver.openInputStream(uri)
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-                val newPolygon = documentScanner.scanFromBitmap(bitmap)?.pointsNormalized
+                val imageRef = contentResolver.openInputStream(uri)?.use { inputStream ->
+                    ImageRef.fromInputStream(inputStream)
+                }
+                if (imageRef == null) {
+                    Log.w(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+                    return@forEach
+                }
+                val newPolygon = documentScanner.run(imageRef).getOrNull()?.pointsNormalized
                     ?: PolygonHelper.getFullPolygon()
-                document.addPage(bitmap).apply(newPolygon = newPolygon, newFilters = filters)
+                document.addPage(imageRef).apply(newPolygon = newPolygon, newFilters = filters)
             }
-            if (runOcr) {
-                pdfRenderer.generateWithOcrFromDocument(
+                pdfGenerator.generate(
                     document,
                     PdfConfiguration.default().copy(pageSize = PageSize.A4)
                 )
                 document.pdfUri.toFile()
-            } else {
-                pdfRenderer.generateFromDocument(
-                    document,
-                    PdfConfiguration.default().copy(pageSize = PageSize.A4)
-                )
-                document.pdfUri.toFile()
-            }
         }
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE

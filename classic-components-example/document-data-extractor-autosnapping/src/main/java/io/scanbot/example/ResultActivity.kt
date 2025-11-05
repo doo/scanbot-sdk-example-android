@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import io.scanbot.common.getOrNull
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
 import io.scanbot.sdk.genericdocument.Field

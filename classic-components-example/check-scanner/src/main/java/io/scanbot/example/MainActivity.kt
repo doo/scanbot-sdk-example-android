@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
-import io.scanbot.common.getOrThrow
+
+
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast

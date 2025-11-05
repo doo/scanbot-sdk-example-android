@@ -9,15 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.ocr.pdf.generate
+import io.scanbot.sdk.pdf.PdfGenerator
 import io.scanbot.sdk.pdfgeneration.PageSize
 import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PdfGenerator
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fileIOProcessor: FileIOProcessor
-    private lateinit var PdfGenerator: PdfGenerator
+    private lateinit var pdfGenerator: PdfGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
-        PdfGenerator = scanbotSDK.createPdfGenerator()
+        pdfGenerator = scanbotSDK.createPdfGenerator()
 
         findViewById<Button>(R.id.encrypt_image).setOnClickListener {
             writeEncryptedImage()
@@ -61,11 +62,11 @@ class MainActivity : AppCompatActivity() {
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = PdfGenerator.generateFromUris(
-            imageFileUris.toTypedArray(),
+        val encryptedDestination = pdfGenerator.generate(
+            imageFileUris,
             false,
             PdfConfiguration.default().copy(pageSize = PageSize.A4)
-        ) ?: return
+        ).getOrNull()
 
         showToast("The encrypted pdf was written to: $encryptedDestination")
 

@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import io.scanbot.common.getOrThrow
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.repository.BarcodeTypeRepository

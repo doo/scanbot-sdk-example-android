@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.squareup.picasso.Picasso
-import io.scanbot.common.getOrNull
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityBarcodeResultBinding

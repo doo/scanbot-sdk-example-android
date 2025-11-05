@@ -20,8 +20,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import io.scanbot.common.Result
-import io.scanbot.common.getOrNull
-import io.scanbot.common.getOrThrow
+
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError

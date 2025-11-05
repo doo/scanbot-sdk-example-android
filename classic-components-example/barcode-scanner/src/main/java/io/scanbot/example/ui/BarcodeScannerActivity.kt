@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import io.scanbot.common.getOrThrow
+
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle

@@ -11,8 +11,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
-import io.scanbot.common.getOrThrow
+
+
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
