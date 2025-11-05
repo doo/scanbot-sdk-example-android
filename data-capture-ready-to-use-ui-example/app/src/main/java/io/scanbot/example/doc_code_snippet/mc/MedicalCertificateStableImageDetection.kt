@@ -8,9 +8,14 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onSuccess
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.mc.*
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanner
+import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanningParameters
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,7 +49,7 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
+                                .map { it.toImageRef(contentResolver) }
                                 .forEach { bitmap ->
                                     if (bitmap == null) {
                                         Log.e(
@@ -78,26 +83,27 @@ class DataExtractorStableImageDetection : AppCompatActivity() {
 
     // @Tag("Extracting medical certificate data from an image")
     // Create a medical certificate scanner instance
-    val medicalCertificateScanner = scanbotSDK.createMedicalCertificateScanner()
+    val medicalCertificateScanner = scanbotSDK.createMedicalCertificateScanner().getOrThrow()
 
     fun processImage(
         medicalCertificateScanner: MedicalCertificateScanner,
-        bitmap: Bitmap
+        image: ImageRef
     ) {
-        val result = medicalCertificateScanner.scanFromBitmap(
-            bitmap,
-            0,
+        val result = medicalCertificateScanner.run(
+            image,
             parameters = MedicalCertificateScanningParameters(
                 shouldCropDocument = true,
                 extractCroppedImage = true,
                 recognizePatientInfoBox = true,
                 recognizeBarcode = true
             )
-        )
-        if (result != null && result.scanningSuccessful) {
-            // Document scanning results are processed
-            // processResul
+        ).onSuccess {
+            if (it.scanningSuccessful) {
+                // Document scanning results are processed
+                // processResul
+            }
         }
+
     }
     // @EndTag("Extracting medical certificate data from an image")
 }

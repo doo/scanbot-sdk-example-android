@@ -3,17 +3,14 @@ package com.example.scanbot.doc_code_snippet
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus

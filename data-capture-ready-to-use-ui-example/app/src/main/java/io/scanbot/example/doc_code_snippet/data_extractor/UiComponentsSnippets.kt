@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.scanbot.common.getOrThrow
 import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.*

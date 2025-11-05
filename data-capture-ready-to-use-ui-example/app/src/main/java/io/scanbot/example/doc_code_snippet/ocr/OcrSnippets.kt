@@ -5,13 +5,14 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
-import io.scanbot.common.getOrNull
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
+
 import io.scanbot.sdk.*
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.entity.*
 import io.scanbot.sdk.ocr.*
 import io.scanbot.sdk.ocr.intelligence.*
-import io.scanbot.sdk.ocr.process.*
 import io.scanbot.sdk.pdfgeneration.PageDirection
 import io.scanbot.sdk.pdfgeneration.PageFit
 import io.scanbot.sdk.pdfgeneration.PageSize
@@ -103,7 +104,10 @@ fun ocrResultHandlingSnippet(result: OcrResult) {
 fun generatePdfWithOcrLayerSnippet(scanbotSDK: ScanbotSDK, document: Document) {
     // @Tag("Creating a PDF from a Document")
     // Create instance of PdfGenerator
-    val pdfGenerator = scanbotSDK.createPdfGenerator()
+    val ocrConfig = OcrEngineManager.OcrConfig(
+        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
+    )
+    val pdfGenerator = scanbotSDK.createPdfGenerator(ocrConfiguration = ocrConfig)
 
     val pdfConfig = PdfConfiguration(
         attributes = PdfAttributes(
@@ -120,27 +124,27 @@ fun generatePdfWithOcrLayerSnippet(scanbotSDK: ScanbotSDK, document: Document) {
         pageFit = PageFit.NONE,
         resamplingMethod = ResamplingMethod.NONE,
     )
-    val ocrConfig = OcrEngineManager.OcrConfig(
-        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
-    )
-    val pdfGenerated = pdfGenerator.generateWithOcrFromDocument(
+
+    val pdfGenerated = pdfGenerator.generate(
         document = document,
         pdfConfig = pdfConfig,
-        ocrConfig = ocrConfig
-    ).getOrNull()
-    val pdfFile = document.pdfUri.toFile()
-    if (pdfGenerated != null && pdfFile.exists()) {
+    ).onSuccess {
+        val pdfFile = document.pdfUri.toFile()
         // Do something with the PDF file
-    } else {
-        Log.e("PdfWithOcrFromDocument", "Failed to create PDF")
+        Log.i("PdfWithOcrFromImages", "PDF created at: ${pdfFile.path}")
+    }.onFailure { error ->
+        Log.e("PdfWithOcrFromImages", "Failed to create PDF")
     }
     // @EndTag("Creating a PDF from a Document")
 }
 
 fun generatePdfWithOcrLayerFormUrisSnippet(scanbotSDK: ScanbotSDK, imageFileUris: List<Uri>) {
     // @Tag("Creating a PDF from images with OCR")
+    val ocrConfig = OcrEngineManager.OcrConfig(
+        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
+    )
     // Create instance of PdfGenerator
-    val pdfGenerator = scanbotSDK.createPdfGenerator()
+    val ocrEngineManager = scanbotSDK.createPdfGenerator(ocrConfig)
 
     val pdfConfig = PdfConfiguration(
         attributes = PdfAttributes(
@@ -157,18 +161,16 @@ fun generatePdfWithOcrLayerFormUrisSnippet(scanbotSDK: ScanbotSDK, imageFileUris
         pageFit = PageFit.NONE,
         resamplingMethod = ResamplingMethod.NONE,
     )
-    val ocrConfig = OcrEngineManager.OcrConfig(
-        engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
-    )
-    val generatedPdfFile = pdfGenerator.generateWithOcrFromUris(
+
+    val generatedPdfFile = ocrEngineManager.generate(
         imageFileUris = imageFileUris,
         pdfConfig = pdfConfig,
-        ocrConfig = ocrConfig
-    )
-    if (generatedPdfFile != null) {
+    ).onSuccess { pdfFile ->
         // Do something with the PDF file
-    } else {
+        Log.i("PdfWithOcrFromImages", "PDF created at: ${pdfFile.path}")
+    }.onFailure { error ->
         Log.e("PdfWithOcrFromImages", "Failed to create PDF")
     }
+
     // @EndTag("Creating a PDF from images with OCR")
 }

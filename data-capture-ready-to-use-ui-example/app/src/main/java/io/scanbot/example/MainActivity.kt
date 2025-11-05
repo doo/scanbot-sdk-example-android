@@ -24,7 +24,7 @@ import io.scanbot.sdk.ui_v2.common.activity.*
 import io.scanbot.sdk.ui_v2.creditcard.*
 import io.scanbot.sdk.ui_v2.creditcard.configuration.*
 import io.scanbot.sdk.ui_v2.documentdata.*
-import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.*
+import io.scanbot.sdk.ui_v2.documentdata.configuration.*
 import io.scanbot.sdk.ui_v2.mrz.*
 import io.scanbot.sdk.ui_v2.mrz.configuration.*
 import io.scanbot.sdk.ui_v2.textpattern.*

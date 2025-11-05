@@ -25,7 +25,7 @@ import io.scanbot.sdk.documentdata.DocumentDataExtractorConfigurationBuilder
 import io.scanbot.sdk.documentdata.entity.*
 import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.documentdata.*
-import io.scanbot.sdk.ui_v2.documentdataextractor.configuration.*
+import io.scanbot.sdk.ui_v2.documentdata.configuration.*
 
 //Rtu ui snippets
 fun initializeScanbotSDK(application: Application) {

@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
 

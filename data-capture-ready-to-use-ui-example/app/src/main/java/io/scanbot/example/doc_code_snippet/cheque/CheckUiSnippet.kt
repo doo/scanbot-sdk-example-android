@@ -17,7 +17,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
-import io.scanbot.common.getOrThrow
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.camera.FrameHandlerResult

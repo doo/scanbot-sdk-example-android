@@ -11,7 +11,6 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.content.Context
 import android.widget.Toast
-import io.scanbot.common.getOrThrow
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.FrameHandlerResult

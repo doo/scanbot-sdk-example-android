@@ -2,21 +2,24 @@ package io.scanbot.example.doc_code_snippet.cheque
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.*
-import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.image.*
 import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.arrayOf
+import kotlin.collections.asSequence
+import kotlin.let
+import kotlin.sequences.forEach
+import kotlin.sequences.map
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.

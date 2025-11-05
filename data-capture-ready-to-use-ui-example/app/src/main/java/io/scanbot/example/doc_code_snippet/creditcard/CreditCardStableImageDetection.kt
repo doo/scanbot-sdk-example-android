@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.scanbot.common.getOrNull
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.creditcard.*

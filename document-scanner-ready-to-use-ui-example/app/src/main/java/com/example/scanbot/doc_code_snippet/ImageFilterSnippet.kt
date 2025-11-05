@@ -11,7 +11,6 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
 import io.scanbot.sdk.image.ImageRef

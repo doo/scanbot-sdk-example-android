@@ -1,17 +1,14 @@
 package com.example.scanbot.di
 
 import android.content.Context
-import io.scanbot.common.getOrNull
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.PdfPagesExtractor
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQualityAnalyzer
-import io.scanbot.sdk.ocr.OcrEngine
 import io.scanbot.sdk.ocr.OcrEngineManager
 import io.scanbot.sdk.pdf.PdfGenerator
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.persistence.page.PageFileStorage
 import io.scanbot.sdk.tiff.TiffGeneratorManager
-import io.scanbot.sdk.tiffgeneration.TiffGenerator
 
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
 interface ExampleSingleton {

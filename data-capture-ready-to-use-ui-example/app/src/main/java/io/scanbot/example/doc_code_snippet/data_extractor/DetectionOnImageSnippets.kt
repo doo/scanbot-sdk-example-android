@@ -2,7 +2,6 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.app.Application
 import android.content.Context
-import io.scanbot.common.getOrNull
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.*
 import io.scanbot.sdk.documentdata.entity.*

@@ -4,8 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import java.io.File
 import java.io.InputStream
-import java.io.OutputStream
-import io.scanbot.common.getOrThrow
 import io.scanbot.sdk.barcode.BarcodeScanner
 import io.scanbot.sdk.image.BasicImageLoadOptions
 import io.scanbot.sdk.image.BufferImageLoadOptions
@@ -16,7 +14,6 @@ import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.image.PathImageLoadOptions
 import io.scanbot.sdk.image.PathLoadMode
 import io.scanbot.sdk.image.SaveImageOptions
-import io.scanbot.sdk.persistence.fileio.CoreStreamProvider
 
 // @Tag("ImageRef from bitmap")
 fun createImageRefFrom(bitmap: Bitmap) {
@@ -127,8 +124,13 @@ fun createImageRefFrom(filePath: String) {
 fun useImageRef(imageRef: ImageRef, barcodeScanner: BarcodeScanner) {
     // use image ref to detect barcodes on it
     val barcodes = barcodeScanner.run(imageRef)
-    // clear image resources after usage to free memory
+    // clear image resources after usage to free memory like bitmaps
     imageRef.close()
+
+    // or use 'use' extension function to auto-close after usage
+    imageRef.use { imgRef ->
+        val barcodes2 = barcodeScanner.run(imgRef)
+    }
 }
 // @EndTag("Using ImageRef)
 

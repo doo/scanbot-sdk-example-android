@@ -22,13 +22,6 @@ import com.example.scanbot.usecases.GenerateTiffForSharingUseCase
 import com.example.scanbot.utils.ExampleUtils
 import com.example.scanbot.utils.ExampleUtils.showEncryptedDocumentToast
 import com.example.scanbot.utils.applyEdgeToEdge
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.docprocessing.Page
-import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
-import io.scanbot.sdk.ui_v2.document.CroppingActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
-import io.scanbot.sdk.usecases.documents.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,8 +29,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
-import io.scanbot.common.getOrNull
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
+import io.scanbot.sdk.ui_v2.document.CroppingActivity
+import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
+import io.scanbot.sdk.usecases.documents.R
 
 class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener,
     CoroutineScope {
