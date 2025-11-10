@@ -21,6 +21,7 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.geometry.AspectRatio
@@ -56,18 +57,22 @@ class MainActivity : AppCompatActivity() {
                     activityResult.data?.let { imagePickerResult ->
                         lifecycleScope.launch {
                             withContext(Dispatchers.Default) {
-                                val document = scanbotSDK.documentApi.createDocument()
-                                getUrisFromGalleryResult(imagePickerResult)
-                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                    .map { it.toBitmap(contentResolver) }
-                                    .forEach { bitmap ->
-                                        if (bitmap == null) {
-                                            Log.e("MainActivity", "Failed to load bitmap from URI")
-                                            return@forEach
+                                scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                    getUrisFromGalleryResult(imagePickerResult)
+                                        .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                        .map { it.toBitmap(contentResolver) }
+                                        .forEach { bitmap ->
+                                            if (bitmap == null) {
+                                                Log.e(
+                                                    "MainActivity",
+                                                    "Failed to load bitmap from URI"
+                                                )
+                                                return@forEach
+                                            }
+                                            document.addPage(bitmap)
                                         }
-                                        document.addPage(bitmap)
-                                    }
-                                runImagesFromGalleryScanner(document.uuid)
+                                    runImagesFromGalleryScanner(document.uuid)
+                                }
                             }
                         }
                     }
@@ -147,11 +152,11 @@ class MainActivity : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    private suspend fun createDocumentFromUris(uris: List<Uri>): Document {
+    private suspend fun createDocumentFromUris(uris: List<Uri>): Document? {
         return withContext(Dispatchers.Default) {
-            val document = scanbotSDK.documentApi.createDocument()
+            val document = scanbotSDK.documentApi.createDocument().getOrNull()
             uris.forEach { imageUri ->
-                document.addPage(imageUri)
+                document?.addPage(imageUri)
             }
             document
         }

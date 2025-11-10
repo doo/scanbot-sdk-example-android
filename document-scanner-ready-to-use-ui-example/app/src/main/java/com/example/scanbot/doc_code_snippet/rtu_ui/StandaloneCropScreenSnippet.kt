@@ -15,6 +15,7 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
@@ -39,25 +40,29 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
-                            getUrisFromGalleryResult(imagePickerResult)
-                                // Process images one by one instead of collecting the whole list - less memory consumption.
-                                .asSequence()
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e("StandaloneCropSnippet", "Failed to load bitmap from URI")
-                                        return@forEach
+                            scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                getUrisFromGalleryResult(imagePickerResult)
+                                    // Process images one by one instead of collecting the whole list - less memory consumption.
+                                    .asSequence()
+                                    .map { it.toBitmap(contentResolver) }
+                                    .forEach { bitmap ->
+                                        if (bitmap == null) {
+                                            Log.e(
+                                                "StandaloneCropSnippet",
+                                                "Failed to load bitmap from URI"
+                                            )
+                                            return@forEach
+                                        }
+                                        document.addPage(bitmap)
                                     }
-                                    document.addPage(bitmap)
-                                }
-                            startCropping(document)
+                                startCropping(document)
+                            }
                         }
                     }
                 }
             }
         }
-    
+
     // @Tag("Using Cropping UI")
     private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
@@ -67,9 +72,10 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                     val document =
                         ScanbotSDK(this@StandaloneCropScreenSnippet).documentApi.loadDocument(
                             documentId = result.documentUuid
-                        ) ?: return@let
-                    val page = document.pageWithId(result.pageUuid) ?: return@let
-
+                        ).onSuccess { document ->
+                            val page = document.pageWithId(result.pageUuid)
+                            // Proceed the page as needed.
+                        }
                 }
             } else {
                 // Indicates that the cancel button was tapped.

@@ -14,6 +14,7 @@ import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
@@ -37,21 +38,22 @@ class TiffFromDocumentSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e(
-                                            "StandaloneCropSnippet",
-                                            "Failed to load bitmap from URI"
-                                        )
-                                        return@forEach
+                            scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                getUrisFromGalleryResult(imagePickerResult)
+                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                    .map { it.toBitmap(contentResolver) }
+                                    .forEach { bitmap ->
+                                        if (bitmap == null) {
+                                            Log.e(
+                                                "StandaloneCropSnippet",
+                                                "Failed to load bitmap from URI"
+                                            )
+                                            return@forEach
+                                        }
+                                        document.addPage(bitmap)
                                     }
-                                    document.addPage(bitmap)
-                                }
-                            createTiffFromDocument(document)
+                                createTiffFromDocument(document)
+                            }
                         }
                     }
                 }

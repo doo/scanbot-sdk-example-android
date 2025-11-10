@@ -63,7 +63,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         registerForActivityResultOk(CroppingActivity.ResultContract()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.result?.let { croppingResult ->
-                    document = scanbotSdk.documentApi.loadDocument(croppingResult.documentUuid)
+                    document = scanbotSdk.documentApi.loadDocument(croppingResult.documentUuid).getOrNull()
                         ?: throw IllegalStateException("No such document!")
                     page = document.pages.firstOrNull()
                         ?: throw IllegalStateException("No pages in document!")
@@ -99,7 +99,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
 
         val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
             ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId)
+        document = scanbotSdk.documentApi.loadDocument(docId).getOrNull()
             ?: throw IllegalStateException("No such document!")
         page = document.pages.firstOrNull() ?: throw IllegalStateException("No pages in document!")
 

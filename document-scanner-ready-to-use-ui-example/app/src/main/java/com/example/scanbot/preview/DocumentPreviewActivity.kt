@@ -64,7 +64,7 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
 
         val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
             ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId)
+        document = scanbotSdk.documentApi.loadDocument(docId).getOrNull()
             ?: throw IllegalStateException("No such document!")
 
         exampleSingleton = ExampleSingletonImpl(this)

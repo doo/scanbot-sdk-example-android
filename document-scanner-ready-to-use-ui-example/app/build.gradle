@@ -35,16 +35,15 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
-def scanbotSdkVersion =  "8.0.0.57-STAGING-SNAPSHOT"
+def scanbotSdkVersion =  "8.0.0.58-STAGING-SNAPSHOT"
 
 dependencies {
 
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
-    implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-docqualityanalyzer-assets:$scanbotSdkVersion")
     implementation("io.scanbot:bundle-sdk-barcode-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-1:$scanbotSdkVersion")

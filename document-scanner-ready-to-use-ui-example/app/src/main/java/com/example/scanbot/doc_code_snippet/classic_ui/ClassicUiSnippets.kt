@@ -4,13 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.camera.CameraModule
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FinderPictureCallback
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.document.DocumentAutoSnappingController
@@ -151,16 +152,12 @@ fun startDocumentScannerShortSnippet(cameraView: ScanbotCameraXView, context: Co
 
 fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
     // @Tag("Handle results")
-    frameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
-        when (result) {
-            is FrameHandlerResult.Success -> {
-                result.value
-                // handle result here result.value.detectionResult
-            }
-
-            is FrameHandlerResult.Failure -> {
-                // there is a license problem that needs to be handled
-            }
+    frameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result, frame ->
+        result.onSuccess { detectedFrame ->
+            detectedFrame
+            // handle result here detectedFrame.detectionResult
+        }.onFailure { exception ->
+            // there is a license or other sdk problem that needs to be handled
         }
         false
     })
@@ -222,15 +219,11 @@ fun autoSnappingVisualisationSnippet(
 
 fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentScannerFrameHandler) {
     // @Tag("Handle Document Scanning Results")
-    documentScannerFrameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
-        when (result) {
-            is FrameHandlerResult.Success -> {
-                // handle result here result.value.detectionResult
-            }
-
-            is FrameHandlerResult.Failure -> {
-                // there is a license problem that needs to be handled
-            }
+    documentScannerFrameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result, frame ->
+        result.onSuccess { detectedFrame ->
+            // Handle successful document detection result
+        }.onFailure { exception ->
+            // Handle error during document detection
         }
         false
     })

@@ -36,7 +36,7 @@ class ImageQualityCheckSnippet : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .mapNotNull { it.toImageRef(contentResolver) }.apply {
+                                .mapNotNull { it.toImageRef(contentResolver)?.getOrNull() }.apply {
                                     startFiltering(this.toList())
                                 }
 

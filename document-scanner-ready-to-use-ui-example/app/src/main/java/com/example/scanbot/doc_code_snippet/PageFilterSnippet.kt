@@ -23,7 +23,7 @@ class PageFilterSnippet : AppCompatActivity() {
     fun startFiltering() {
         // @Tag("Processing Scanned Page")
         // Retrieve the scanned document
-        val document = scanbotSDK.documentApi.loadDocument("SOME_SAVED_UUID")
+        val document = scanbotSDK.documentApi.loadDocument("SOME_SAVED_UUID").getOrNull()
 
         // Retrieve the selected document page.
         document?.pages?.forEach { page ->
