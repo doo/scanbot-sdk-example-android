@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,6 +16,7 @@ import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 
 
 class DocumentQualityCheckSnippet : AppCompatActivity() {
@@ -39,16 +39,16 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
                             scanbotSDK.documentApi.createDocument().onSuccess { document ->
                                 getUrisFromGalleryResult(imagePickerResult)
                                     .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                    .map { it.toBitmap(contentResolver) }
-                                    .forEach { bitmap ->
-                                        if (bitmap == null) {
+                                    .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                    .forEach { image ->
+                                        if (image == null) {
                                             Log.e(
                                                 "StandaloneCropSnippet",
-                                                "Failed to load bitmap from URI"
+                                                "Failed to load image from URI"
                                             )
                                             return@forEach
                                         }
-                                        document.addPage(bitmap)
+                                        document.addPage(image)
                                     }
                                 startCropping(document)
                             }

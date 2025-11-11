@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,6 +23,7 @@ import io.scanbot.sdk.pdfgeneration.PageSize
 import io.scanbot.sdk.pdfgeneration.PdfAttributes
 import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.pdfgeneration.ResamplingMethod
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {
@@ -46,7 +46,7 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
                             scanbotSDK.documentApi.createDocument().onSuccess { document ->
                                 getUrisFromGalleryResult(imagePickerResult)
                                     .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                    .map { it.toBitmap(contentResolver) }
+                                    .map { it.toImageRef(contentResolver)?.getOrNull() }
                                     .forEach { bitmap ->
                                         if (bitmap == null) {
                                             Log.e(

@@ -17,7 +17,6 @@ import com.example.scanbot.preview.DocumentPreviewActivity
 import com.example.scanbot.preview.SinglePagePreviewActivity
 import com.example.scanbot.utils.applyEdgeToEdge
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,6 +28,7 @@ import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import io.scanbot.sdk.usecases.documents.R
 
 class MainActivity : AppCompatActivity() {
@@ -60,16 +60,16 @@ class MainActivity : AppCompatActivity() {
                                 scanbotSDK.documentApi.createDocument().onSuccess { document ->
                                     getUrisFromGalleryResult(imagePickerResult)
                                         .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                        .map { it.toBitmap(contentResolver) }
-                                        .forEach { bitmap ->
-                                            if (bitmap == null) {
+                                        .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                        .forEach { image ->
+                                            if (image == null) {
                                                 Log.e(
                                                     "MainActivity",
-                                                    "Failed to load bitmap from URI"
+                                                    "Failed to load image from URI"
                                                 )
                                                 return@forEach
                                             }
-                                            document.addPage(bitmap)
+                                            document.addPage(image)
                                         }
                                     runImagesFromGalleryScanner(document.uuid)
                                 }

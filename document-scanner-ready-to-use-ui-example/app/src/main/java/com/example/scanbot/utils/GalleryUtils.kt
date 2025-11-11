@@ -32,51 +32,6 @@ fun getUrisFromGalleryResult(data: Intent): List<Uri> {
     }
 }
 
-fun Uri.toBitmap(
-    contentResolver: ContentResolver,
-    onException: (Exception) -> Unit = {}
-): Bitmap? {
-    val maxImageSideSize = 4090
-    try {
-        var bitmap: Bitmap? = null
-
-        val input = contentResolver.openInputStream(this)
-        var orientation = 0
-
-        input.use {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val exif = ExifInterface(input!!)
-                orientation = exifToGrad(exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0))
-            }
-        }
-        val inputNew = contentResolver.openInputStream(this)
-
-        bitmap = inputNew.use { BitmapFactory.decodeStream(inputNew) }
-
-        val width = bitmap.width
-        val height = bitmap.height
-        if (bitmap != null && (orientation != 0 || width > maxImageSideSize || height > maxImageSideSize)) {
-            val matrix = Matrix()
-            if (orientation != 0) {
-                matrix.setRotate(orientation.toFloat(), width / 2f, height / 2f)
-            }
-            if (width > maxImageSideSize || height > maxImageSideSize) {
-                val scale = if (width > height) {
-                    maxImageSideSize / width.toFloat()
-                } else {
-                    maxImageSideSize / height.toFloat()
-                }
-                matrix.postScale(scale, scale)
-            }
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false)
-        }
-        return bitmap
-    } catch (e: IOException) {
-        onException(e)
-    }
-
-    return null
-}
 
 private fun exifToGrad(exifOrientation: Int): Int {
     return when (exifOrientation) {

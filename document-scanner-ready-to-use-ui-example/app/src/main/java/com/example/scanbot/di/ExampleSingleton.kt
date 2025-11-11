@@ -10,6 +10,13 @@ import io.scanbot.sdk.persistence.fileio.FileIOProcessor
 import io.scanbot.sdk.persistence.page.PageFileStorage
 import io.scanbot.sdk.tiff.TiffGeneratorManager
 
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
+
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
 interface ExampleSingleton {
     fun pagePdfExtractorInstance(): PdfPagesExtractor
