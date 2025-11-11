@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.mapSuccess
 import io.scanbot.common.onSuccess
 
 import io.scanbot.example.common.Const
@@ -20,7 +21,12 @@ import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+/**
+ Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+ Please, check the official documentation for more details:
+ Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -113,36 +119,38 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val documentScanner = sdk.createDocumentScanner().getOrNull()
-            val result = documentScanner?.scan(imageRef)
-                ?.getOrNull() // it is also possible to check specific error by che
-            val detectionResult = result?.detectionResult
-            Log.d(Const.LOG_TAG, "Doc found: ${result}")
+            sdk.createDocumentScanner().mapSuccess { documentScanner ->
 
-            val status = detectionResult?.status ?: DocumentDetectionStatus.ERROR_NOTHING_DETECTED
+                val result = documentScanner?.scan(imageRef)
+                    ?.getOrReturn() // it is also possible to check specific error by che
+                val detectionResult = result?.detectionResult
+                Log.d(Const.LOG_TAG, "Doc found: ${result}")
 
-            /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
-             * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
-             */
+                val status =
+                    detectionResult?.status ?: DocumentDetectionStatus.ERROR_NOTHING_DETECTED
 
-            val isScanOk = status?.name?.startsWith("OK", true) ?: false
-            if (isScanOk.not()) {
-                Log.e(
-                    Const.LOG_TAG,
-                    "Bad document photo - scanning status was ${status.name}!"
-                )
-                showToast("Bad document photo - status ${status.name}!")
-                return@withContext null
+                /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
+                 * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
+                 */
+
+                val isScanOk = status?.name?.startsWith("OK", true) ?: false
+                if (isScanOk.not()) {
+                    Log.e(
+                        Const.LOG_TAG,
+                        "Bad document photo - scanning status was ${status.name}!"
+                    )
+                    showToast("Bad document photo - status ${status.name}!")
+                    throw Exception("Bad document photo - scanning status was ${status.name}!")
+                }
+
+                sdk.documentApi.createDocument().onSuccess { document ->
+                    val page = document.addPage(imageRef).getOrReturn() //can be handled with .getOrNull() if needed
+                    Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
+                    page.apply(newPolygon = detectionResult?.pointsNormalized)
+                    document
+                }.getOrReturn()
             }
-
-            sdk.documentApi.createDocument().onSuccess { document ->
-                val page = document.addPage(imageRef)
-                    .getOrReturn() //can be handled with .getOrNull() if needed
-                Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-                page.apply(newPolygon = detectionResult?.pointsNormalized)
-                document
-            }.getOrNull() //can be handled with .getOrNull() if needed
-        }
+        }.getOrNull()
 
         binding.progressBar.visibility = View.GONE
         Log.d(Const.LOG_TAG, "Document created: ${resultDocument?.uuid}")

@@ -1,7 +1,5 @@
 package io.scanbot.example
 
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Pair
@@ -11,8 +9,6 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-
-
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
@@ -20,13 +16,19 @@ import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.geometry.LineSegmentFloat
 import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.image.ImageRotation
+import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.sdk.imageprocessing.ImageProcessor
-import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity() {
 
