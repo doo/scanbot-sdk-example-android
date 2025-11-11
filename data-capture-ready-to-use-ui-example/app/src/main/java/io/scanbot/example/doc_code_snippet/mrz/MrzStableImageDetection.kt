@@ -75,16 +75,16 @@ class MrzStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toImageRef(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver)?.getOrNull()}
+                                .forEach { image ->
+                                    if (image == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load image from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(mrzScanner, bitmap)
+                                    processImage(mrzScanner, image)
                                 }
 
                         }

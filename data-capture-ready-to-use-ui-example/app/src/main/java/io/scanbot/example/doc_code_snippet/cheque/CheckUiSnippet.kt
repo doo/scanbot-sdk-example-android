@@ -17,9 +17,12 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.check.CheckScanner
 import io.scanbot.sdk.check.CheckScannerFrameHandler
 import io.scanbot.sdk.check.CheckScanningResult
@@ -294,7 +297,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
         registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+                resultEntity.result?.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
@@ -339,7 +342,7 @@ class CheckFinderSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
         registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+                resultEntity.result?.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
@@ -376,7 +379,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
         registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+                resultEntity.result?.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
@@ -433,7 +436,7 @@ class CheckScanningSnippet : AppCompatActivity() {
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
         registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
             if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+                resultEntity.result?.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
@@ -506,7 +509,6 @@ class ComposeSnippet : AppCompatActivity() {
 }
 
 
-
 //Classic snippets
 
 fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
@@ -520,27 +522,21 @@ fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
 
 fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
     // @Tag("Handle Result")
-    checkScannerFrameHandler.addResultHandler(object : CheckScannerFrameHandler.ResultHandler {
-        override fun handle(result: FrameHandlerResult<CheckScanningResult, SdkLicenseError>): Boolean {
-            when (result) {
-                is FrameHandlerResult.Success -> {
-                    val checkResult: CheckScanningResult? =
-                        (result as FrameHandlerResult.Success<CheckScanningResult?>).value
-                    if (checkResult?.check != null) {
-                        // do something with result here
-                        val checkDocument = checkResult.check
-                        if (checkDocument != null) {
-                            wrapCheck(checkDocument)
-                        }
-                    }
+    checkScannerFrameHandler.addResultHandler { result, frame ->
+        result.onSuccess { checkResult ->
+            if (checkResult?.check != null) {
+                // do something with result here
+                val checkDocument = checkResult.check
+                if (checkDocument != null) {
+                    wrapCheck(checkDocument)
                 }
-
-                is FrameHandlerResult.Failure -> {
-                } // handle license error here
             }
-
-            return false
+        }.onFailure {
+            // handle error here
         }
-    })
-    // @EndTag("Handle Result")
+        false
+    }
+
+    false
 }
+// @EndTag("Handle Result")

@@ -142,7 +142,7 @@ class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
                     resultEntity.result?.let {
                         val documentApi = ScanbotSDK(this).documentApi
                         // This way you can access the document from the Document API:
-                        val document = documentApi.loadDocument(documentId = it.documentUuid)
+                        val document = documentApi.loadDocument(documentId = it.documentUuid).getOrNull()
                         val previewImage = document?.pageWithId(it.pageUuid)?.documentPreviewImage
                         previewImageView.setImageBitmap(previewImage)
                     }

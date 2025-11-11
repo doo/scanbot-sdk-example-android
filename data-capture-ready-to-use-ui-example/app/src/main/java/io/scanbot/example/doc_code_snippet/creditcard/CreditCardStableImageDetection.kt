@@ -74,7 +74,7 @@ class CreditCardStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toImageRef(contentResolver) }
+                                .map { it.toImageRef(contentResolver)?.getOrNull() }
                                 .forEach { imageRef ->
                                     if (imageRef == null) {
                                         Log.e(
