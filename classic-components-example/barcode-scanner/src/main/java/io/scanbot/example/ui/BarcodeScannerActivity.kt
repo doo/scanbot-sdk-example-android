@@ -111,17 +111,17 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
     }
 
     fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
-        val bitmap = image.toBitmap().getOrThrow()
+        image.toBitmap().onSuccess { bitmap ->
+            val matrix = Matrix()
+            matrix.setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)
+            val resultBitmap =
+                Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
 
-        val matrix = Matrix()
-        matrix.setRotate(imageOrientation.toFloat(), bitmap.width / 2f, bitmap.height / 2f)
-        val resultBitmap =
-            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
-
-        resultView.post {
-            resultView.setImageBitmap(resultBitmap)
-            cameraView.continuousFocus()
-            cameraView.startPreview()
+            resultView.post {
+                resultView.setImageBitmap(resultBitmap)
+                cameraView.continuousFocus()
+                cameraView.startPreview()
+            }
         }
     }
 

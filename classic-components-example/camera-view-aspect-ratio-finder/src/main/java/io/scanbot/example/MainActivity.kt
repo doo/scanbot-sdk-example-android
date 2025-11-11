@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.common.Result
+import io.scanbot.common.mapSuccess
 import io.scanbot.common.onSuccess
 
 
@@ -193,20 +194,21 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 this.ignoreOrientationMismatch = true
             }
         })
-        val polygon = scanner.run(image).getOrNull()?.pointsNormalized
-            ?: throw Exception("Document detection failed")
-
-        val polygonCrop =
+        val image = scanner.run(image).mapSuccess { result ->
+            val polygon = result.pointsNormalized
             polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
-        var documentImage = ScanbotSdkImageProcessor.create()
-            .crop(image, polygonCrop)
-            .getOrThrow()
-        documentImage = ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrThrow()
-
-        resultView.post {
-            resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
-            cameraView.continuousFocus()
-            cameraView.startPreview()
+        }.mapSuccess { polygonCrop ->
+            var documentImage = ScanbotSdkImageProcessor.create()
+                .crop(image, polygonCrop)
+                .getOrReturn()
+            ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrReturn()
+        }.onSuccess { documentImage ->
+            resultView.post {
+                resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
+                documentImage.close()
+                cameraView.continuousFocus()
+                cameraView.startPreview()
+            }
         }
     }
 }

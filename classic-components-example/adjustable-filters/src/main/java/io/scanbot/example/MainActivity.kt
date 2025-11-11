@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onSuccess
 
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
@@ -70,7 +71,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val page =
-                    ScanbotSDK(this).documentApi.loadDocument(documentId).getOrNull()?.pages?.firstOrNull()
+                    ScanbotSDK(this).documentApi.loadDocument(documentId)
+                        .getOrNull()?.pages?.firstOrNull()
                 if (page == null) {
                     Log.e(Const.LOG_TAG, "Error loading document with page!")
                     showToast("Error loading document with page!")
@@ -133,11 +135,13 @@ class MainActivity : AppCompatActivity() {
                 return@withContext null
             }
 
-            val document = sdk.documentApi.createDocument().getOrThrow()
-            val page = document.addPage(imageRef).getOrThrow()
-            Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-            page.apply(newPolygon = detectionResult?.pointsNormalized)
-            document
+            sdk.documentApi.createDocument().onSuccess { document ->
+                val page = document.addPage(imageRef)
+                    .getOrReturn() //can be handled with .getOrNull() if needed
+                Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
+                page.apply(newPolygon = detectionResult?.pointsNormalized)
+                document
+            }.getOrNull() //can be handled with .getOrNull() if needed
         }
 
         binding.progressBar.visibility = View.GONE

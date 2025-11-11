@@ -17,6 +17,7 @@ import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.common.catchWithResult
 import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
@@ -96,32 +97,37 @@ class MainActivity : AppCompatActivity() {
         }
 
         val page = withContext(Dispatchers.Default) {
-            // load the selected image:
-            val inputStream = contentResolver.openInputStream(imageUri) ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
-            val image = ImageRef.fromInputStream(inputStream)
+            catchWithResult {
+                // load the selected image:
+                val inputStream = contentResolver.openInputStream(imageUri)
+                    ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
+                val image = ImageRef.fromInputStream(inputStream)
 
-            // create a new Document object with given image as original image:
-            val newDocument = scanbotSdk.documentApi.createDocument().getOrThrow() // can be handled with .getOrNull() if needed
-            val page = newDocument.addPage(image).getOrThrow() // can be handled with .getOrNull() if needed
+                // create a new Document object with given image as original image:
+                val newDocument = scanbotSdk.documentApi.createDocument()
+                    .getOrReturn() // can be handled with .getOrNull() if needed
+                val page = newDocument.addPage(image)
+                    .getOrReturn() // can be handled with .getOrNull() if needed
 
-            // run auto document scanning on it:
-            val result = scanner.run(image).getOrNull()
+                // run auto document scanning on it:
+                val result = scanner.run(image).getOrReturn()
 
-            /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
-             * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
-             */
-            val statusOk = (result?.status?.name?.startsWith("OK_")) ?: false
-            if (result != null && statusOk && result.pointsNormalized.isNotEmpty()) {
-                // apply the detected polygon to the new page:
-                page.apply(newPolygon = result.pointsNormalized)
-            }
-            page
+                /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
+                 * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
+                 */
+                val statusOk = (result.status?.name?.startsWith("OK_")) ?: false
+                if (statusOk && result.pointsNormalized.isNotEmpty()) {
+                    // apply the detected polygon to the new page:
+                    page.apply(newPolygon = result.pointsNormalized)
+                }
+                page
+            }.getOrNull()
         }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
             // show Page's document image:
-            importResultImage.setImageBitmap(page.documentImage)
+            importResultImage.setImageBitmap(page?.documentImage)
             importResultImage.visibility = View.VISIBLE
         }
     }

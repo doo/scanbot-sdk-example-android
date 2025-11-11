@@ -20,6 +20,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import io.scanbot.common.Result
+import io.scanbot.common.mapSuccess
 import io.scanbot.common.onSuccess
 
 
@@ -151,12 +152,15 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
     }
 
-    override fun handle(result: Result<DocumentScannerFrameHandler.DetectedFrame>, frame: FrameHandler.Frame): Boolean {
+    override fun handle(
+        result: Result<DocumentScannerFrameHandler.DetectedFrame>,
+        frame: FrameHandler.Frame
+    ): Boolean {
         // Here you are continuously notified about document scanning results.
         // For example, you can show a user guidance text depending on the current scanning status.
         result.onSuccess { data ->
             userGuidanceHint.post {
-                    showUserGuidance(data.detectionStatus)
+                showUserGuidance(data.detectionStatus)
             }
         }
 
@@ -226,14 +230,16 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             documentScanner.run(image).getOrNull()?.pointsNormalized ?: throw IllegalStateException(
                 "No document detected"
             )
-        val polygonCrop = polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
-        var documentImage = ScanbotSdkImageProcessor.create()
+        val polygonCrop =
+            polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
+        val documentImage = ScanbotSdkImageProcessor.create()
             .crop(image, polygonCrop)
-            .getOrThrow()
-        documentImage = ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrThrow()
+            .mapSuccess { documentImage ->
+                ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrReturn()
+            }.getOrNull()
 
         resultView.post {
-            resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
+            resultView.setImageBitmap(documentImage?.toBitmap()?.getOrNull())
         }
 
         // continue scanning

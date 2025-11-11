@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
@@ -26,6 +28,7 @@ import io.scanbot.sdk.pdfgeneration.PdfGenerator
 import io.scanbot.sdk.util.PolygonHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -73,34 +76,36 @@ class MainActivity : AppCompatActivity() {
             if (applyGrayscale) listOf(ParametricFilter.grayscaleFilter()) else emptyList()
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
-        val renderedPdfFile = withContext(Dispatchers.Default) {
-            val documentScanner = scanbotSdk.createDocumentScanner()
-                .getOrThrow() //can be handled with .getOrNull() if needed
-            val document = scanbotSdk.documentApi.createDocument()
-                .getOrThrow() //can be handled with .getOrNull() if needed
-            uris.asSequence().forEach { uri ->
-                val imageRef = contentResolver.openInputStream(uri)?.use { inputStream ->
-                    ImageRef.fromInputStream(inputStream)
+        withContext(Dispatchers.Default) {
+            scanbotSdk.createDocumentScanner().mapSuccess { documentScanner ->
+                //can be handled with .getOrNull() if needed
+                val document = scanbotSdk.documentApi.createDocument()
+                    .getOrReturn() //can be handled with .getOrNull() if needed
+                uris.asSequence().forEach { uri ->
+                    val imageRef = contentResolver.openInputStream(uri)?.use { inputStream ->
+                        ImageRef.fromInputStream(inputStream)
+                    }
+                    if (imageRef == null) {
+                        Log.w(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+                        return@forEach
+                    }
+                    val newPolygon = documentScanner.run(imageRef).getOrNull()?.pointsNormalized
+                        ?: PolygonHelper.getFullPolygon()
+                    val page = document.addPage(imageRef)
+                        .getOrReturn() //can be handled with .getOrNull() if needed
+                    page.apply(newPolygon = newPolygon, newFilters = filters)
                 }
-                if (imageRef == null) {
-                    Log.w(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
-                    return@forEach
+                pdfGenerator.generate(
+                    document,
+                    PdfConfiguration.default().copy(pageSize = PageSize.A4)
+                )
+                document.pdfUri.toFile()
+            }.onSuccess { renderedPdfFile ->
+                runBlocking(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    openPdfDocument(renderedPdfFile)
                 }
-                val newPolygon = documentScanner.run(imageRef).getOrNull()?.pointsNormalized
-                    ?: PolygonHelper.getFullPolygon()
-                val page = document.addPage(imageRef)
-                    .getOrThrow() //can be handled with .getOrNull() if needed
-                page.apply(newPolygon = newPolygon, newFilters = filters)
             }
-            pdfGenerator.generate(
-                document,
-                PdfConfiguration.default().copy(pageSize = PageSize.A4)
-            )
-            document.pdfUri.toFile()
-        }
-        withContext(Dispatchers.Main) {
-            binding.progressBar.visibility = View.GONE
-            openPdfDocument(renderedPdfFile)
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.example.common.Const
@@ -16,12 +17,14 @@ import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.common.catchWithResult
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ocr.OcrEngine
 import io.scanbot.sdk.ocr.OcrEngineManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
@@ -64,28 +67,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun createDocument(uri: Uri): Document?{
+    private suspend fun createDocument(uri: Uri): Document? {
         return withContext(Dispatchers.IO) {
 
             val image = contentResolver.openInputStream(uri)?.use { inputStream ->
                 ImageRef.fromInputStream(inputStream)
             }
-            scanbotSdk.documentApi.createDocument().getOrNull()?.apply { image?.let { addPage(it) } }
+            scanbotSdk.documentApi.createDocument().getOrNull()
+                ?.apply { image?.let { addPage(it) } }
         }
     }
 
     private suspend fun recognizeTextWithoutPDF(document: Document) {
-        val ocrResult = withContext(Dispatchers.Default) {
+        withContext(Dispatchers.Default) {
             opticalCharacterRecognizer.recognizeFromUris(document.pages.map { it.documentFileUri })
-                .getOrThrow()
-        }
-
-        withContext(Dispatchers.Main) {
-            ocrResult.let {
-                if (it.ocrPages!!.isNotEmpty()) {
-                    this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
+                .onSuccess { ocrResult ->
+                    runBlocking(Dispatchers.Main) {
+                        ocrResult.let {
+                            if (it.ocrPages.isNotEmpty()) {
+                                this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
+                            }
+                        }
+                    }
                 }
-            }
         }
     }
 }
