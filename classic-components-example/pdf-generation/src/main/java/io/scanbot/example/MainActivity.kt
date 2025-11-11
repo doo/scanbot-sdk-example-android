@@ -74,8 +74,10 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
         val renderedPdfFile = withContext(Dispatchers.Default) {
-            val documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
+            val documentScanner = scanbotSdk.createDocumentScanner()
+                .getOrThrow() //can be handled with .getOrNull() if needed
             val document = scanbotSdk.documentApi.createDocument()
+                .getOrThrow() //can be handled with .getOrNull() if needed
             uris.asSequence().forEach { uri ->
                 val imageRef = contentResolver.openInputStream(uri)?.use { inputStream ->
                     ImageRef.fromInputStream(inputStream)
@@ -86,13 +88,15 @@ class MainActivity : AppCompatActivity() {
                 }
                 val newPolygon = documentScanner.run(imageRef).getOrNull()?.pointsNormalized
                     ?: PolygonHelper.getFullPolygon()
-                document.addPage(imageRef).apply(newPolygon = newPolygon, newFilters = filters)
+                val page = document.addPage(imageRef)
+                    .getOrThrow() //can be handled with .getOrNull() if needed
+                page.apply(newPolygon = newPolygon, newFilters = filters)
             }
-                pdfGenerator.generate(
-                    document,
-                    PdfConfiguration.default().copy(pageSize = PageSize.A4)
-                )
-                document.pdfUri.toFile()
+            pdfGenerator.generate(
+                document,
+                PdfConfiguration.default().copy(pageSize = PageSize.A4)
+            )
+            document.pdfUri.toFile()
         }
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE

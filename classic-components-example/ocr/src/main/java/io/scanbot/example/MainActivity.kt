@@ -17,6 +17,7 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ocr.OcrEngine
 import io.scanbot.sdk.ocr.OcrEngineManager
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch {
                 val document = createDocument(uri)
-                recognizeTextWithoutPDF(document)
+                document?.let { recognizeTextWithoutPDF(it) }
                 binding.progressBar.visibility = View.GONE
             }
         }
@@ -63,11 +64,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun createDocument(uri: Uri): Document {
+    private suspend fun createDocument(uri: Uri): Document?{
         return withContext(Dispatchers.IO) {
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            scanbotSdk.documentApi.createDocument().apply { addPage(bitmap) }
+
+            val image = contentResolver.openInputStream(uri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+            scanbotSdk.documentApi.createDocument().getOrNull()?.apply { image?.let { addPage(it) } }
         }
     }
 

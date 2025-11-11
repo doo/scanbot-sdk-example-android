@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val page =
-                    ScanbotSDK(this).documentApi.loadDocument(documentId)?.pages?.firstOrNull()
+                    ScanbotSDK(this).documentApi.loadDocument(documentId).getOrNull()?.pages?.firstOrNull()
                 if (page == null) {
                     Log.e(Const.LOG_TAG, "Error loading document with page!")
                     showToast("Error loading document with page!")
@@ -133,8 +133,8 @@ class MainActivity : AppCompatActivity() {
                 return@withContext null
             }
 
-            val document = sdk.documentApi.createDocument()
-            val page = document.addPage(imageRef)
+            val document = sdk.documentApi.createDocument().getOrThrow()
+            val page = document.addPage(imageRef).getOrThrow()
             Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
             page.apply(newPolygon = detectionResult?.pointsNormalized)
             document

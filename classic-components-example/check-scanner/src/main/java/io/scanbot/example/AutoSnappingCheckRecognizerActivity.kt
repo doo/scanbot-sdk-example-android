@@ -10,13 +10,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
@@ -92,13 +92,13 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
             cameraView.useFlash(flashEnabled)
         }
 
-        frameHandler.addResultHandler {
-            if (it !is FrameHandlerResult.Success) {
+        frameHandler.addResultHandler { result, frame ->
+            result.onSuccess {
                 if (!scanbotSDK.licenseInfo.isValid) {
                     frameHandler.isEnabled = false
                     runOnUiThread {
                         Toast.makeText(
-                            this,
+                            this@AutoSnappingCheckScannerActivity,
                             "License is expired",
                             Toast.LENGTH_LONG
                         ).show()

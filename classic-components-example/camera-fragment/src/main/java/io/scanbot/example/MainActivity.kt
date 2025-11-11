@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity() {
             val image = ImageRef.fromInputStream(inputStream)
 
             // create a new Document object with given image as original image:
-            val newDocument = scanbotSdk.documentApi.createDocument()
-            val page = newDocument.addPage(image)
+            val newDocument = scanbotSdk.documentApi.createDocument().getOrThrow() // can be handled with .getOrNull() if needed
+            val page = newDocument.addPage(image).getOrThrow() // can be handled with .getOrNull() if needed
 
             // run auto document scanning on it:
             val result = scanner.run(image).getOrNull()

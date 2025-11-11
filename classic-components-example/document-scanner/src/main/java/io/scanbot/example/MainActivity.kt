@@ -81,12 +81,12 @@ class MainActivity : AppCompatActivity() {
             val image = ImageRef.fromInputStream(inputStream)
 
             // create a new Page object with given image as original image:
-            val document = scanbotSdk.documentApi.createDocument()
-            val page = document.addPage(image)
+            val document = scanbotSdk.documentApi.createDocument().getOrThrow() //can be handled with .getOrNull() if needed
+            val page = document.addPage(image).getOrThrow() //can be handled with .getOrNull() if needed
 
             // run document scanning on the image:
-            val scaner= scanbotSdk.createDocumentScanner().getOrThrow()
-            val result = scaner.run(image)?.getOrNull()
+            val scanner= scanbotSdk.createDocumentScanner().getOrThrow()
+            val result = scanner.run(image)?.getOrNull()
             // set the result to page:
             page.apply(newPolygon = result?.pointsNormalized ?: PolygonHelper.getFullPolygon())
             page

@@ -126,8 +126,8 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
             val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
             val image = ImageRef.fromInputStream(inputStream)
 
-            val document = scanbotSdk.documentApi.createDocument()
-            val page = document.addPage(image)
+            val document = scanbotSdk.documentApi.createDocument().getOrThrow()
+            val page = document.addPage(image).getOrThrow()
 
             val documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
             val contourResult =

@@ -11,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.onSuccess
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.documentdata.entity.MRZ
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.mrz.MrzScannerFrameHandler
@@ -24,10 +24,11 @@ import io.scanbot.sdk.util.log.LoggerProvider
 
 class MRZLiveScanningActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
+
     // @Tag("Mrz Classic Camera")
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
-    private lateinit var mrzScannerFrameHandler : MrzScannerFrameHandler
+    private lateinit var mrzScannerFrameHandler: MrzScannerFrameHandler
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +58,8 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         // Attach mrz scanner to the camera
         mrzScannerFrameHandler = MrzScannerFrameHandler.attach(cameraView, mrzScanner)
         // Handle live mrz scanning results
-        mrzScannerFrameHandler.addResultHandler { result ->
-            if (result is FrameHandlerResult.Success) {
-                val scannerResult = result.value
-
+        mrzScannerFrameHandler.addResultHandler { result, frame ->
+            result.onSuccess { scannerResult ->
                 // It is recommended to use a frame accumulation as well and expect at least 2 of 4 frames to be equal
 
                 val mrzDocument = scannerResult.document?.let { MRZ(it) }
@@ -68,7 +67,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
                     && mrzDocument?.checkDigitGeneral?.isValid == true
                 ) {
                     mrzScannerFrameHandler.isEnabled = false
-                    startActivity(MRZResultActivity.newIntent(this, scannerResult))
+                    startActivity(MRZResultActivity.newIntent(this@MRZLiveScanningActivity, scannerResult))
                 }
             }
             false

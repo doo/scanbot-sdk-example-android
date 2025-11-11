@@ -13,11 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.Result
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
@@ -120,14 +121,18 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
+    override fun handle(
+        result: Result<DocumentScannerFrameHandler.DetectedFrame>,
+        frame: FrameHandler.Frame
+    ): Boolean {
         // Here you are continuously notified about document scanning results.
         // For example, you can show a user guidance text depending on the current scanning status.
-        userGuidanceHint.post {
-            if (result is FrameHandlerResult.Success) {
-                showUserGuidance(result.value.detectionStatus)
+        result.onSuccess { value ->
+            userGuidanceHint.post {
+                showUserGuidance(value.detectionStatus)
             }
         }
+
         return false // typically you need to return false
     }
 

@@ -67,7 +67,8 @@ class MainActivity : AppCompatActivity() {
             val detectedPolygon =
                 scanner.run(image).getOrNull()?.pointsNormalized ?: PolygonHelper.getFullPolygon()
             val document = scanbotSdk.documentApi.createDocument()
-            return@withContext document.addPage(image).apply {
+                .getOrThrow() // can be handled with .getOrNull() if needed
+            return@withContext document.addPage(image).getOrThrow().apply {
                 apply(
                     newPolygon = detectedPolygon,
                     newFilters = listOf(ParametricFilter.grayscaleFilter())

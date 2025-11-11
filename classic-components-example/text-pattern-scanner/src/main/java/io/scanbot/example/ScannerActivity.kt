@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.textpattern.ContentValidationCallback
 import io.scanbot.sdk.textpattern.CustomContentValidator
@@ -63,20 +62,8 @@ class ScannerActivity : AppCompatActivity() {
         ))
 
         patternScannerFrameHandler = TextPatternScannerFrameHandler.attach(cameraView, patternScanner)
-        patternScannerFrameHandler.addResultHandler { result ->
-            val resultText: String = when (result) {
-                is FrameHandlerResult.Success -> {
-                    when {
-                        result.value.validationSuccessful -> {
-                            result.value.rawText
-                            // TODO: you can open the screen with a result as soon as
-                        }
-                        else -> ""
-                    }
-                }
-                is FrameHandlerResult.Failure -> "Check your setup or license"
-            }
-
+        patternScannerFrameHandler.addResultHandler { result, frame ->
+            val resultText: String = result.getOrNull()?.rawText ?:   result.errorOrNull()?.localizedMessage ?: "No result"
             runOnUiThread { resultTextView.text = resultText }
 
             false

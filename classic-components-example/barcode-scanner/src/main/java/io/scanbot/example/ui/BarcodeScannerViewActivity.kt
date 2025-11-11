@@ -15,6 +15,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
@@ -28,7 +31,6 @@ import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.image.ImageRef
 
 class BarcodeScannerViewActivity : AppCompatActivity() {
@@ -56,16 +58,18 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
             initCamera()
             initScanningBehavior(
                 scanner,
-                { result ->
-                    if (result is FrameHandlerResult.Success) {
-                        handleSuccess(result)
-                    } else {
-                        barcodeScannerView.post {
-                            Toast.makeText(
-                                this@BarcodeScannerViewActivity,
-                                "1-minute trial license has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                { result, frame ->
+                    result.onSuccess { data ->
+                        handleSuccess(data)
+                    }.onFailure {
+                        if (it is Result.InvalidLicenseError) {
+                            barcodeScannerView.post {
+                                Toast.makeText(
+                                    this@BarcodeScannerViewActivity,
+                                    "1-minute trial license has expired!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                     false
@@ -117,13 +121,11 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView.viewController.onPause()
     }
 
-    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScannerResult?>) {
-        result.value?.let {
-            BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
-            val intent = Intent(this, BarcodeResultActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+    private fun handleSuccess(result: BarcodeScannerResult) {
+        BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(result)
+        val intent = Intent(this, BarcodeResultActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     companion object {

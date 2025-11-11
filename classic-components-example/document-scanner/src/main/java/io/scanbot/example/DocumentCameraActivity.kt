@@ -15,12 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.document.ui.DocumentScannerView
 import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
@@ -71,13 +71,14 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         documentScannerView.apply {
             initCamera()
-            initScanningBehavior(documentScanner,
-                { result ->
+            initScanningBehavior(
+                documentScanner,
+                { result, frame ->
                     // Here you are continuously notified about document scanning results.
                     // For example, you can show a user guidance text depending on the current scanning status.
-                    userGuidanceHint.post {
-                        if (result is FrameHandlerResult.Success<*>) {
-                            showUserGuidance((result as FrameHandlerResult.Success<DocumentScannerFrameHandler.DetectedFrame>).value.detectionStatus)
+                    result.onSuccess { data ->
+                        userGuidanceHint.post {
+                            showUserGuidance(data.detectionStatus)
                         }
                     }
                     false // typically you need to return false
@@ -86,7 +87,9 @@ class DocumentCameraActivity : AppCompatActivity() {
                     override fun onCameraOpen() {
                         // In this example we demonstrate how to lock the orientation of the UI (Activity)
                         // as well as the orientation of the taken picture to portrait.
-                        documentScannerView.cameraConfiguration.setCameraOrientationMode(CameraOrientationMode.PORTRAIT)
+                        documentScannerView.cameraConfiguration.setCameraOrientationMode(
+                            CameraOrientationMode.PORTRAIT
+                        )
 
                         documentScannerView.viewController.useFlash(flashEnabled)
                     }
@@ -135,7 +138,11 @@ class DocumentCameraActivity : AppCompatActivity() {
     }
 
     private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
     }
@@ -163,22 +170,27 @@ class DocumentCameraActivity : AppCompatActivity() {
                 userGuidanceHint.text = "Don't move"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
                 userGuidanceHint.text = "Move closer"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
                 userGuidanceHint.text = "Perspective"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
                 userGuidanceHint.text = "No Document"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_NOISY -> {
                 userGuidanceHint.text = "Background too noisy"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                 if (ignoreOrientationMistmatch) {
                     userGuidanceHint.text = "Don't move"
@@ -187,10 +199,12 @@ class DocumentCameraActivity : AppCompatActivity() {
                 }
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             DocumentDetectionStatus.ERROR_TOO_DARK -> {
                 userGuidanceHint.text = "Poor light"
                 userGuidanceHint.visibility = View.VISIBLE
             }
+
             else -> userGuidanceHint.visibility = View.GONE
         }
         lastUserGuidanceHintTs = System.currentTimeMillis()
@@ -200,9 +214,11 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         // Run document scanning on original image:
         val result = documentScanner.run(image).getOrNull()
-        val polygon = result?.pointsNormalized ?: throw IllegalStateException("No document detected")
+        val polygon =
+            result?.pointsNormalized ?: throw IllegalStateException("No document detected")
 
-        val documentImage = ImageProcessor(image).resize(200).crop(polygon).processedBitmap().getOrNull()
+        val documentImage =
+            ImageProcessor(image).resize(200).crop(polygon).processedBitmap().getOrNull()
         resultView.post { resultView.setImageBitmap(documentImage) }
     }
 

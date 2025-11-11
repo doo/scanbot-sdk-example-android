@@ -2,12 +2,12 @@ package io.scanbot.example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.mapSuccess
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityScannerBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.creditcard.CreditCardScanner
 import io.scanbot.sdk.creditcard.CreditCardScannerFrameHandler
 import io.scanbot.sdk.creditcard.CreditCardScanningStatus
@@ -42,20 +42,16 @@ class ScannerActivity : AppCompatActivity() {
         // attach scanner to the camera view
         frameHandler = CreditCardScannerFrameHandler.attach(binding.cameraView, scanner)
         // handle live credit card scanning results
-        frameHandler.addResultHandler { result ->
-            val resultText: String = when (result) {
-                is FrameHandlerResult.Success -> {
-                    if (result.value.scanningStatus == CreditCardScanningStatus.SUCCESS ||
-                        result.value.scanningStatus == CreditCardScanningStatus.INCOMPLETE
-                    ) {
-                        CreditCard(result.value.creditCard!!).cardNumber.value.text
-                    } else {
-                        "Credit card not found"
-                    }
+        frameHandler.addResultHandler { result, frame->
+            val resultText: String = result.mapSuccess { value ->
+                if (value.scanningStatus == CreditCardScanningStatus.SUCCESS ||
+                    value.scanningStatus == CreditCardScanningStatus.INCOMPLETE
+                ) {
+                    CreditCard(value.creditCard!!).cardNumber.value.text
+                } else {
+                    "Credit card not found"
                 }
-
-                is FrameHandlerResult.Failure -> "Check your setup or license"
-            }
+            }.getOrNull() ?: result.errorOrNull()?.message ?: "Unknown error"
 
             // NOTE: 'handle' method runs in background thread - don't forget to switch to main before touching any Views
             runOnUiThread { binding.resultTextView.text = resultText }
