@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private lateinit var documentScannerFrameHandler: DocumentScannerFrameHandler
     private lateinit var autoSnappingController: DocumentAutoSnappingController
 
-    private lateinit var scanbotSDK: ScanbotSDK
-    private lateinit var documentScanner: DocumentScanner
 
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
@@ -73,19 +71,36 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
-        scanbotSDK = ScanbotSDK(this)
-        documentScanner = scanbotSDK.createDocumentScanner().getOrThrow()
-
-        documentScanner.apply {
-            // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
-            setConfiguration(copyCurrentConfiguration().apply {
-                parameters.apply {
-                    this.ignoreOrientationMismatch = ignoreOrientationMistmatch
-                    this.acceptedSizeScore = 75
-                    this.acceptedAngleScore = 60
+        val scanbotSDK = ScanbotSDK(this)
+        scanbotSDK.createDocumentScanner().onSuccess { documentScanner ->
+            documentScanner.apply {
+                // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
+                setConfiguration(copyCurrentConfiguration().apply {
+                    parameters.apply {
+                        this.ignoreOrientationMismatch = ignoreOrientationMistmatch
+                        this.acceptedSizeScore = 75
+                        this.acceptedAngleScore = 60
+                    }
+                })
+            }
+            documentScannerFrameHandler =
+                DocumentScannerFrameHandler.attach(cameraView, documentScanner)
+            cameraView.addPictureCallback(object : PictureCallback() {
+                override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
+                    processPictureTaken(image, documentScanner)
                 }
             })
+
+            documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+            documentScannerFrameHandler.addResultHandler(this@MainActivity)
+
+            autoSnappingController =
+                DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
+
+            // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
+            autoSnappingController.setSensitivity(0.85f)
         }
+
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
 
@@ -111,23 +126,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         polygonView.setFillColor(POLYGON_FILL_COLOR)
         polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
 
-        documentScannerFrameHandler =
-            DocumentScannerFrameHandler.attach(cameraView, documentScanner)
 
-        documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
-        documentScannerFrameHandler.addResultHandler(this)
-
-        autoSnappingController =
-            DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
-
-        // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
-        autoSnappingController.setSensitivity(0.85f)
-
-        cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
-                processPictureTaken(image, captureInfo.imageOrientation)
-            }
-        })
         userGuidanceHint = findViewById(R.id.userGuidanceHint)
 
         shutterButton = findViewById(R.id.shutterButton)
@@ -229,7 +228,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
+    private fun processPictureTaken(image: ImageRef, documentScanner: DocumentScanner) {
         // Run document scanning on original image:
         val polygon =
             documentScanner.run(image).getOrNull()?.pointsNormalized ?: throw IllegalStateException(

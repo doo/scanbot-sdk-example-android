@@ -39,7 +39,7 @@ class ExampleApplication : Application(), CoroutineScope {
             //.license(this, licenseKey)
             .licenseErrorHandler { status, feature, statusMessage ->
                 logger.d(Const.LOG_TAG, "+++> License status: ${status.name}. Status message: $statusMessage")
-                    logger.d(Const.LOG_TAG, "+++> Feature not available: ${feature.name}")
+                logger.d(Const.LOG_TAG, "+++> Feature not available: ${feature.name}")
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
             .initialize(this)

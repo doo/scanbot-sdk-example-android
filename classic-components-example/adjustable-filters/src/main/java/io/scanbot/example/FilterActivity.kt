@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Callback
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
+import io.scanbot.common.onFailure
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
@@ -24,6 +25,12 @@ import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.imageprocessing.ParametricFilter
 import kotlinx.coroutines.*
 
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 class FilterActivity : AppCompatActivity(), FiltersListener {
 
     companion object {
@@ -89,7 +96,12 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
     }
 
     private suspend fun loadDocument(docId: String) {
-        val doc = withContext(Dispatchers.IO) { scanbotSdk.documentApi.loadDocument(docId).getOrNull() }
+        val doc = withContext(Dispatchers.IO) {
+            scanbotSdk.documentApi.loadDocument(docId)
+                .onFailure {
+                    Log.e(Const.LOG_TAG, "Document with ID $docId loading failed: ${it.message}")
+                }.getOrNull()
+        }
         withContext(Dispatchers.Main) {
             if (doc == null) {
                 showToast("Document with given ID was not found!")

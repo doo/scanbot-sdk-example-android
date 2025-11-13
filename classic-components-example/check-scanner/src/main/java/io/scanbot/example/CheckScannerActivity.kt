@@ -47,35 +47,37 @@ class CheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        val checkScanner = scanbotSDK.createCheckScanner().getOrThrow()
-        frameHandler = attach(cameraView, checkScanner)
-        frameHandler.addResultHandler { result, frame ->
-            result.onSuccess { scanningResult ->
-                if (scanningResult?.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
-                    frameHandler.isEnabled = false
-                    startActivity(
-                        CheckScannerResultActivity.newIntent(
-                            this@CheckScannerActivity,
-                            scanningResult
+        scanbotSDK.createCheckScanner().onSuccess { checkScanner ->
+            frameHandler = attach(cameraView, checkScanner)
+            frameHandler.addResultHandler { result, frame ->
+                result.onSuccess { scanningResult ->
+                    if (scanningResult?.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
+                        frameHandler.isEnabled = false
+                        startActivity(
+                            CheckScannerResultActivity.newIntent(
+                                this@CheckScannerActivity,
+                                scanningResult
+                            )
                         )
-                    )
-                }
-            }.onFailure {
-                if (it is Result.InvalidLicenseError) {
-                    frameHandler.isEnabled = false
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@CheckScannerActivity,
-                            "License is expired",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        finish()
+                    }
+                }.onFailure {
+                    if (it is Result.InvalidLicenseError) {
+                        frameHandler.isEnabled = false
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@CheckScannerActivity,
+                                "License is expired",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            finish()
+                        }
                     }
                 }
-            }
 
-            false
+                false
+            }
         }
+
         findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)

@@ -60,31 +60,34 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         }
 
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.0, 1.0)))
-        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
-        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
-            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        })
-        scannerFrameHandler =
-            BarcodeScannerFrameHandler.attach(cameraView, scanner)
+        ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
+            scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+                setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+            })
+            scannerFrameHandler =
+                BarcodeScannerFrameHandler.attach(cameraView, scanner)
 
-        scannerFrameHandler?.let { frameHandler ->
-            frameHandler.setScanningInterval(1000)
-            frameHandler.addResultHandler(this)
+            scannerFrameHandler?.let { frameHandler ->
+                frameHandler.setScanningInterval(1000)
+                frameHandler.addResultHandler(this@BarcodeScannerActivity)
 
-            val barcodeAutoSnappingController =
-                BarcodeAutoSnappingController.attach(cameraView, frameHandler)
-            barcodeAutoSnappingController.setSensitivity(1f)
+                val barcodeAutoSnappingController =
+                    BarcodeAutoSnappingController.attach(cameraView, frameHandler)
+                barcodeAutoSnappingController.setSensitivity(1f)
+
+            }
+            cameraView.addPictureCallback(object : PictureCallback() {
+
+                override fun onPictureTaken(
+                    image: ImageRef,
+                    captureInfo: CaptureInfo
+                ) {
+                    processPictureTaken(image, captureInfo.imageOrientation)
+                }
+            })
 
         }
-        cameraView.addPictureCallback(object : PictureCallback() {
 
-            override fun onPictureTaken(
-                image: ImageRef,
-                captureInfo: CaptureInfo
-            ) {
-                processPictureTaken(image, captureInfo.imageOrientation)
-            }
-        })
     }
 
     override fun onResume() {

@@ -2,7 +2,9 @@ package io.scanbot.example
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.mapFailure
 import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityScannerBinding
@@ -18,11 +20,9 @@ class ScannerActivity : AppCompatActivity() {
     // @Tag("Credit Card Classic Camera")
     private lateinit var binding: ActivityScannerBinding
 
-    private lateinit var scanner: CreditCardScanner
 
     private var useFlash = false
 
-    private lateinit var frameHandler: CreditCardScannerFrameHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,32 +32,42 @@ class ScannerActivity : AppCompatActivity() {
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         // init scanbot sdk and create credit card scanner
-        scanner = ScanbotSDK(this).createCreditCardScanner().getOrThrow()
+        ScanbotSDK(this).createCreditCardScanner().onSuccess { scanner ->
+            // attach scanner to the camera view
+            val frameHandler = CreditCardScannerFrameHandler.attach(binding.cameraView, scanner)
+            // handle live credit card scanning results
+            frameHandler.addResultHandler { result, frame ->
+                val resultText: String = result.mapSuccess { value ->
+                    if (value.scanningStatus == CreditCardScanningStatus.SUCCESS ||
+                        value.scanningStatus == CreditCardScanningStatus.INCOMPLETE
+                    ) {
+                        CreditCard(value.creditCard!!).cardNumber.value.text
+                    } else {
+                        "Credit card not found"
+                    }
+                }.mapFailure {
+                  it.message ?: "Unknown error"
+                }.getOrNull() ?: ""
+
+                // NOTE: 'handle' method runs in background thread - don't forget to switch to main before touching any Views
+                runOnUiThread { binding.resultTextView.text = resultText }
+
+                false
+            }
+        }
         // set aspect ration for finder overlay
-        binding.finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(1.586, 1.0))) // standard credit card aspect ratio
+        binding.finderOverlay.setRequiredAspectRatios(
+            listOf(
+                AspectRatio(
+                    1.586,
+                    1.0
+                )
+            )
+        ) // standard credit card aspect ratio
 
         // set camera preview mode to fit in the camera container
         binding.cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
-        // attach scanner to the camera view
-        frameHandler = CreditCardScannerFrameHandler.attach(binding.cameraView, scanner)
-        // handle live credit card scanning results
-        frameHandler.addResultHandler { result, frame->
-            val resultText: String = result.mapSuccess { value ->
-                if (value.scanningStatus == CreditCardScanningStatus.SUCCESS ||
-                    value.scanningStatus == CreditCardScanningStatus.INCOMPLETE
-                ) {
-                    CreditCard(value.creditCard!!).cardNumber.value.text
-                } else {
-                    "Credit card not found"
-                }
-            }.getOrNull() ?: result.errorOrNull()?.message ?: "Unknown error"
-
-            // NOTE: 'handle' method runs in background thread - don't forget to switch to main before touching any Views
-            runOnUiThread { binding.resultTextView.text = resultText }
-
-            false
-        }
 
         // configure camera view
         binding.cameraView.setCameraOpenCallback {

@@ -49,48 +49,54 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
 
-        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
-        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
-            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        })
-
-        barcodeScannerView.apply {
-            initCamera()
-            initScanningBehavior(
-                scanner,
-                { result, frame ->
-                    result.onSuccess { data ->
-                        handleSuccess(data)
-                    }.onFailure {
-                        if (it is Result.InvalidLicenseError) {
-                            barcodeScannerView.post {
+        ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
+            scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+                setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+            })
+            barcodeScannerView.apply {
+                initCamera()
+                initScanningBehavior(
+                    scanner,
+                    { result, frame ->
+                        result.onSuccess { data ->
+                            handleSuccess(data)
+                        }.onFailure {
+                            if (it is Result.InvalidLicenseError) {
+                                barcodeScannerView.post {
+                                    Toast.makeText(
+                                        this@BarcodeScannerViewActivity,
+                                        "1-minute trial license has expired!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            } else {
                                 Toast.makeText(
                                     this@BarcodeScannerViewActivity,
-                                    "1-minute trial license has expired!",
+                                    "Error occurred during scanner init",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
-                    }
-                    false
-                },
-                object : IBarcodeScannerViewCallback {
-                    override fun onCameraOpen() {
-                        barcodeScannerView.viewController.useFlash(flashEnabled)
-                    }
+                        false
+                    },
+                    object : IBarcodeScannerViewCallback {
+                        override fun onCameraOpen() {
+                            barcodeScannerView.viewController.useFlash(flashEnabled)
+                        }
 
-                    override fun onPictureTaken(
-                        image: ImageRef,
-                        captureInfo: CaptureInfo
-                    ) {
-                        TODO("Not yet implemented")
-                    }
+                        override fun onPictureTaken(
+                            image: ImageRef,
+                            captureInfo: CaptureInfo
+                        ) {
+                            TODO("Not yet implemented")
+                        }
 
-                    override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
+                        override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
 
+                        }
                     }
-                }
-            )
+                )
+            }
         }
 
         barcodeScannerView.viewController.apply {
@@ -122,10 +128,12 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
     }
 
     private fun handleSuccess(result: BarcodeScannerResult) {
-        BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(result)
-        val intent = Intent(this, BarcodeResultActivity::class.java)
-        startActivity(intent)
-        finish()
+        result.takeIf { it.barcodes.isNotEmpty() }?.let {
+            BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(result)
+            val intent = Intent(this, BarcodeResultActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
     companion object {

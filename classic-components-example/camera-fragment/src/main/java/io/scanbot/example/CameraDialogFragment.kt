@@ -9,11 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
+import io.scanbot.sdk.common.catchWithResult
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.documentscanner.DocumentScanner
@@ -27,41 +29,49 @@ class CameraDialogFragment : DialogFragment() {
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var resultView: ImageView
 
-    private lateinit var scanner: DocumentScanner
 
     private var flashEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val scanbotSDK = ScanbotSDK(requireContext())
-        scanner = scanbotSDK.createDocumentScanner().getOrThrow()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val baseView = requireActivity().layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
-        cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraXView
-        cameraView.setCameraOpenCallback {
-            cameraView.postDelayed({
-                cameraView.continuousFocus()
-                cameraView.useFlash(flashEnabled)
-            }, 700)
-        }
-        resultView = baseView.findViewById<View>(R.id.result) as ImageView
-        val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
-        val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
-        frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
-        DocumentAutoSnappingController.attach(cameraView, frameHandler)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val scanbotSDK = ScanbotSDK(requireContext())
+        val baseView =
+            requireActivity().layoutInflater.inflate(R.layout.scanbot_camera_view, container, false)
 
-        cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
-                processPictureTaken(image, captureInfo.imageOrientation)
+        scanbotSDK.createDocumentScanner().onSuccess { scanner ->
+
+            cameraView = baseView.findViewById<View>(R.id.camera) as ScanbotCameraXView
+            cameraView.setCameraOpenCallback {
+                cameraView.postDelayed({
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
             }
-        })
+            resultView = baseView.findViewById<View>(R.id.result) as ImageView
+            val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
+            val polygonView: PolygonView = baseView.findViewById(R.id.polygonView)
+            frameHandler.addResultHandler(polygonView.documentScannerResultHandler)
+            DocumentAutoSnappingController.attach(cameraView, frameHandler)
 
-        baseView.findViewById<View>(R.id.snap).setOnClickListener { cameraView.takePicture(false) }
-        baseView.findViewById<View>(R.id.flash).setOnClickListener {
-            flashEnabled = !flashEnabled
-            cameraView.useFlash(flashEnabled)
+            cameraView.addPictureCallback(object : PictureCallback() {
+                override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
+                    processPictureTaken(image, scanner)
+                }
+            })
+
+            baseView.findViewById<View>(R.id.snap)
+                .setOnClickListener { cameraView.takePicture(false) }
+            baseView.findViewById<View>(R.id.flash).setOnClickListener {
+                flashEnabled = !flashEnabled
+                cameraView.useFlash(flashEnabled)
+            }
         }
         return baseView
     }
@@ -75,17 +85,17 @@ class CameraDialogFragment : DialogFragment() {
         }
     }
 
-    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
-
+    private fun processPictureTaken(image: ImageRef, scanner: DocumentScanner) = catchWithResult {
         // Run document scanning on original image:
-        val result = scanner.run(image).getOrNull()
-        result?.pointsNormalized?.let { polygonF ->
-            val documentImage = ImageProcessor(image).crop(polygonF).resize(200).processedBitmap().getOrNull()
-            resultView.post {
-                resultView.setImageBitmap(documentImage)
-                cameraView.continuousFocus()
-                cameraView.startPreview()
-            }
+        val result = scanner.run(image).getOrReturn()
+        val documentImage =
+            result.pointsNormalized.takeIf { it.size == 4 }
+                ?.let { ImageProcessor(image).crop(it).resize(200).processedBitmap() }
+                ?.getOrReturn()
+        resultView.post {
+            resultView.setImageBitmap(documentImage)
+            cameraView.continuousFocus()
+            cameraView.startPreview()
         }
     }
 

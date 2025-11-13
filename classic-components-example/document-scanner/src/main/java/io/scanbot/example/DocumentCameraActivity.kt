@@ -45,8 +45,6 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
-    private lateinit var scanbotSdk: ScanbotSDK
-    private lateinit var documentScanner: DocumentScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -57,57 +55,63 @@ class DocumentCameraActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
-        scanbotSdk = ScanbotSDK(this)
-        documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
+        val scanbotSdk = ScanbotSDK(this)
 
         documentScannerView = findViewById(R.id.document_scanner_view)
 
         resultView = findViewById<View>(R.id.result) as ImageView
+
+        scanbotSdk.createDocumentScanner().onSuccess { documentScanner ->
+
+            documentScannerView.apply {
+                initCamera()
+                initScanningBehavior(
+                    documentScanner,
+                    { result, frame ->
+                        // Here you are continuously notified about document scanning results.
+                        // For example, you can show a user guidance text depending on the current scanning status.
+                        result.onSuccess { data ->
+                            userGuidanceHint.post {
+                                showUserGuidance(data.detectionStatus)
+                            }
+                        }
+                        false // typically you need to return false
+                    },
+                    object : IDocumentScannerViewCallback {
+                        override fun onCameraOpen() {
+                            // In this example we demonstrate how to lock the orientation of the UI (Activity)
+                            // as well as the orientation of the taken picture to portrait.
+                            documentScannerView.cameraConfiguration.setCameraOrientationMode(
+                                CameraOrientationMode.PORTRAIT
+                            )
+
+                            documentScannerView.viewController.useFlash(flashEnabled)
+                        }
+
+                        override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
+                            processPictureTaken(image, documentScanner)
+
+                            // continue scanning
+                            documentScannerView.postDelayed({
+                                documentScannerView.viewController.startPreview()
+                            }, 1000)
+                        }
+                    }
+                )
+
+                // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
+                // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
+            }
+        }
+
+
 
         documentScannerView.polygonConfiguration.apply {
             setPolygonFillColor(POLYGON_FILL_COLOR)
             setPolygonFillColorOK(POLYGON_FILL_COLOR_OK)
         }
 
-        documentScannerView.apply {
-            initCamera()
-            initScanningBehavior(
-                documentScanner,
-                { result, frame ->
-                    // Here you are continuously notified about document scanning results.
-                    // For example, you can show a user guidance text depending on the current scanning status.
-                    result.onSuccess { data ->
-                        userGuidanceHint.post {
-                            showUserGuidance(data.detectionStatus)
-                        }
-                    }
-                    false // typically you need to return false
-                },
-                object : IDocumentScannerViewCallback {
-                    override fun onCameraOpen() {
-                        // In this example we demonstrate how to lock the orientation of the UI (Activity)
-                        // as well as the orientation of the taken picture to portrait.
-                        documentScannerView.cameraConfiguration.setCameraOrientationMode(
-                            CameraOrientationMode.PORTRAIT
-                        )
 
-                        documentScannerView.viewController.useFlash(flashEnabled)
-                    }
-
-                    override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
-                        processPictureTaken(image, captureInfo.imageOrientation)
-
-                        // continue scanning
-                        documentScannerView.postDelayed({
-                            documentScannerView.viewController.startPreview()
-                        }, 1000)
-                    }
-                }
-            )
-
-            // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
-            // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
-        }
 
         documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
@@ -210,7 +214,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
+    private fun processPictureTaken(image: ImageRef, documentScanner: DocumentScanner) {
 
         // Run document scanning on original image:
         val result = documentScanner.run(image).getOrNull()

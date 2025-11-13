@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
 
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
@@ -21,8 +22,6 @@ class ScannerActivity : AppCompatActivity() {
     private lateinit var resultTextView: TextView
 
     private lateinit var frameHandler: DocumentDataExtractorFrameHandler
-
-    private lateinit var dataExtractor: DocumentDataExtractor
 
     private var useFlash = false
 
@@ -43,25 +42,27 @@ class ScannerActivity : AppCompatActivity() {
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSdk = ScanbotSDK(this)
-        dataExtractor = scanbotSdk.createDocumentDataExtractor().getOrThrow()
+        scanbotSdk.createDocumentDataExtractor().onSuccess { dataExtractor ->
+            frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor)
 
-        frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor)
-
-        frameHandler.addResultHandler { result, frame ->
-            result.mapSuccess { value ->
-                val resultText: String = if (value.status == DocumentDataExtractionStatus.OK) {
-                    frameHandler.isEnabled = false
-                    DocumentsResultsStorage.result = value
-                    startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
-                    finish()
-                    value.status.toString()
-                } else {
-                    "Document data not found"
+            frameHandler.addResultHandler { result, frame ->
+                result.mapSuccess { value ->
+                    val resultText: String = if (value.status == DocumentDataExtractionStatus.OK) {
+                        frameHandler.isEnabled = false
+                        DocumentsResultsStorage.result = value
+                        startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
+                        finish()
+                        value.status.toString()
+                    } else {
+                        "Document data not found"
+                    }
+                    runOnUiThread { resultTextView.text = resultText }
                 }
-                runOnUiThread { resultTextView.text = resultText }
+                false
             }
-            false
         }
+
+
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)

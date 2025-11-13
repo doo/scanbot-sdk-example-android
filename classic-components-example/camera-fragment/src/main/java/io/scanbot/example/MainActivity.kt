@@ -34,7 +34,7 @@ ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val scanner: DocumentScanner by lazy { scanbotSdk.createDocumentScanner().getOrThrow() }
+    private val scanner: DocumentScanner? by lazy { scanbotSdk.createDocumentScanner().getOrNull() }
 
     private val requestCameraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -60,7 +60,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (scanbotSdk.licenseInfo.isValid) {
-                lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
+                lifecycleScope.launch {
+                    scanner?.let {
+                        processImageForAutoDocumentScanning(
+                            uri,
+                            it
+                        )
+                    }
+                }
             } else {
                 this@MainActivity.showToast("1-minute trial license has expired!")
             }
@@ -69,6 +76,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
@@ -95,7 +103,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Imports a selected image as original image and performs auto document scanning on it. */
-    private suspend fun processImageForAutoDocumentScanning(imageUri: Uri) {
+    private suspend fun processImageForAutoDocumentScanning(
+        imageUri: Uri,
+        scanner: DocumentScanner
+    ) {
         val progressBar = findViewById<View>(R.id.progress_bar)
         val importResultImage = findViewById<ImageView>(R.id.import_result)
         withContext(Dispatchers.Main) {
@@ -103,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.showToast("Importing image...")
         }
 
-        val page = withContext(Dispatchers.Default) {
+        val documentImage = withContext(Dispatchers.Default) {
             catchWithResult {
                 // load the selected image:
                 val inputStream = contentResolver.openInputStream(imageUri)
@@ -119,22 +130,22 @@ class MainActivity : AppCompatActivity() {
                 // run auto document scanning on it:
                 val result = scanner.run(image).getOrReturn()
 
-                /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
+                /** We allow all `OK_*` [statuses][io.scanbot.sdk.documentscanner.DocumentDetectionStatus] just for purpose of this example.
                  * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
                  */
-                val statusOk = (result.status?.name?.startsWith("OK_")) ?: false
+                val statusOk = (result.status.name.startsWith("OK_"))
                 if (statusOk && result.pointsNormalized.isNotEmpty()) {
                     // apply the detected polygon to the new page:
                     page.apply(newPolygon = result.pointsNormalized)
                 }
-                page
+                page.documentImage
             }.getOrNull()
         }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
             // show Page's document image:
-            importResultImage.setImageBitmap(page?.documentImage)
+            importResultImage.setImageBitmap(documentImage)
             importResultImage.visibility = View.VISIBLE
         }
     }

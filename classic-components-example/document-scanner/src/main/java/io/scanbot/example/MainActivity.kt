@@ -10,6 +10,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onSuccess
 
 
 import io.scanbot.example.common.Const
@@ -36,29 +37,31 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val requestCameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            startActivity(Intent(this, DocumentCameraActivity::class.java))
-        } else {
-            this@MainActivity.showToast("Camera permission is required to run this example!")
-        }
-    }
-
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
+    private val requestCameraLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                startActivity(Intent(this, DocumentCameraActivity::class.java))
+            } else {
+                this@MainActivity.showToast("Camera permission is required to run this example!")
+            }
         }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
-    }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
+
+            lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,28 +85,34 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.showToast("Importing page...")
         }
 
-        val page = withContext(Dispatchers.Default) {
+        val documentImage = withContext(Dispatchers.Default) {
             // load the selected image
-            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
-            val image = ImageRef.fromInputStream(inputStream)
+            val image = contentResolver.openInputStream(uri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            } ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
+
 
             // create a new Page object with given image as original image:
-            val document = scanbotSdk.documentApi.createDocument().getOrThrow() //can be handled with .getOrNull() if needed
-            val page = document.addPage(image).getOrThrow() //can be handled with .getOrNull() if needed
+            val document = scanbotSdk.documentApi.createDocument()
+                .getOrNull() //can be handled with .getOrThrow() if needed
+            val page =
+                document?.addPage(image)?.getOrNull() //can be handled with .getOrThrow() if needed
 
             // run document scanning on the image:
-            val scanner= scanbotSdk.createDocumentScanner().getOrThrow()
-            val result = scanner.run(image)?.getOrNull()
-            // set the result to page:
-            page.apply(newPolygon = result?.pointsNormalized ?: PolygonHelper.getFullPolygon())
-            page
+            scanbotSdk.createDocumentScanner().onSuccess { scanner ->
+                val result = scanner.run(image).getOrReturn()
+                // set the result to page:
+                page?.apply(newPolygon = result.pointsNormalized?.takeIf { poly -> poly.isNotEmpty() }
+                    ?: PolygonHelper.getFullPolygon())
+            }
+            page?.documentImage
         }
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
 
             // present cropped page image:
-            binding.importResultImage.setImageBitmap(page.documentImage)
+            binding.importResultImage.setImageBitmap(documentImage)
             binding.importResultImage.visibility = View.VISIBLE
         }
     }

@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.onSuccess
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.repository.BarcodeTypeRepository
@@ -50,53 +51,55 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.nextButton)
         snapResult = findViewById(R.id.snapped_message)
 
-        val scanner = ScanbotSDK(this).createBarcodeScanner().getOrThrow()
-        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
-            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        } )
-        scanButton.setOnClickListener {
-            scanCountView.viewController.scanAndCount() // call this to run the scan and count
-        }
-        nextButton.setOnClickListener {
-            scanCountView.viewController.continueScanning() // call this after the scan to reset the view state and continue scanning
+        ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
+
+            scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+                setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+            })
+            scanButton.setOnClickListener {
+                scanCountView.viewController.scanAndCount() // call this to run the scan and count
+            }
+            nextButton.setOnClickListener {
+                scanCountView.viewController.continueScanning() // call this after the scan to reset the view state and continue scanning
+                scanButton.isEnabled = true
+                nextButton.isEnabled = false
+            }
+
             scanButton.isEnabled = true
             nextButton.isEnabled = false
-        }
 
-        scanButton.isEnabled = true
-        nextButton.isEnabled = false
+            scanCountView.apply {
+                initCamera()
+                initScanningBehavior(
+                    scanner,
+                    callback = object : IBarcodeScanCountViewCallback {
+                        override fun onCameraOpen() {
+                            scanCountView.viewController.useFlash(flashEnabled)
+                        }
 
-        scanCountView.apply {
-            initCamera()
-            initScanningBehavior(
-                scanner,
-                callback = object : IBarcodeScanCountViewCallback {
-                    override fun onCameraOpen() {
-                        scanCountView.viewController.useFlash(flashEnabled)
-                    }
+                        override fun onLicenseError() {
+                            scanCountView.post {
+                                Toast.makeText(
+                                    this@BarcodeScanAndCountViewActivity,
+                                    "1-minute trial license has expired!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
 
-                    override fun onLicenseError() {
-                        scanCountView.post {
-                            Toast.makeText(
-                                this@BarcodeScanAndCountViewActivity,
-                                "1-minute trial license has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                        override fun onScanAndCountStarted() {
+                            scanButton.isEnabled = false
+                        }
+
+                        override fun onScanAndCountFinished(barcodes: List<BarcodeItem>) {
+                            scanButton.isEnabled = false
+                            nextButton.isEnabled = true
+                            // barcodes is the result of the last scanning session, but to ge all counted barcodes, use the following code
+                            handleSnap(scanCountView.countedBarcodes)
                         }
                     }
-
-                    override fun onScanAndCountStarted() {
-                        scanButton.isEnabled = false
-                    }
-
-                    override fun onScanAndCountFinished(barcodes: List<BarcodeItem>) {
-                        scanButton.isEnabled = false
-                        nextButton.isEnabled = true
-                        // barcodes is the result of the last scanning session, but to ge all counted barcodes, use the following code
-                        handleSnap(scanCountView.countedBarcodes)
-                    }
-                }
-            )
+                )
+            }
         }
 
         // Setting the Selection Overlay (AR)
@@ -106,7 +109,7 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
                 defaultStyle: BarcodePolygonsStaticView.BarcodePolygonStyle,
                 barcodeItem: BarcodeItem
             ): BarcodePolygonsStaticView.BarcodePolygonStyle {
-               return defaultStyle
+                return defaultStyle
             }
         })
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :

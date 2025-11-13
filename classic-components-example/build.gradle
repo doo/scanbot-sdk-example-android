@@ -19,8 +19,8 @@ allprojects {
 
         androidCoreKtxVersion = "1.6.0"
         constraintLayoutVersion = "2.0.4"
-        coroutinesAndroidVersion = "1.7.3"
-        coroutinesCoreVersion = "1.7.3"
+        coroutinesAndroidVersion = "1.10.1"
+        coroutinesCoreVersion = "1.10.1"
 
         androidxAppcompatVersion = "1.7.0"
         materialVersion = "1.4.0"
