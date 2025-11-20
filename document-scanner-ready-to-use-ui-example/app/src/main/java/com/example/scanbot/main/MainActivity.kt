@@ -28,7 +28,7 @@ import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 import io.scanbot.sdk.usecases.documents.R
 
 class MainActivity : AppCompatActivity() {

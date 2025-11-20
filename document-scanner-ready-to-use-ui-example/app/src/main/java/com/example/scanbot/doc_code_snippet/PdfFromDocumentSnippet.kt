@@ -23,7 +23,7 @@ import io.scanbot.sdk.pdfgeneration.PageSize
 import io.scanbot.sdk.pdfgeneration.PdfAttributes
 import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.pdfgeneration.ResamplingMethod
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {

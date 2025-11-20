@@ -16,7 +16,7 @@ import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 
 
 class DocumentQualityCheckSnippet : AppCompatActivity() {

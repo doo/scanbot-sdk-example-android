@@ -20,7 +20,7 @@ import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.CroppingActivity
 import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 
 
 class StandaloneCropScreenSnippet : AppCompatActivity() {

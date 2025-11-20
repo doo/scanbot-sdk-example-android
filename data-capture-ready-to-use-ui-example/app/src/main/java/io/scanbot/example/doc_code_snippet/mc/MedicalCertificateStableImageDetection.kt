@@ -15,7 +15,7 @@ import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.mc.*
 import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanner
 import io.scanbot.sdk.medicalcertificate.MedicalCertificateScanningParameters
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

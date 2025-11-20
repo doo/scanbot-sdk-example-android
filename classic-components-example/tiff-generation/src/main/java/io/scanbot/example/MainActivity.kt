@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             tiffGenerator.generateFromFiles(
-                files.toTypedArray(),
+                files,
                 false,
                 resultFile,
                 constructParameters(binarize, addCustomFields)

@@ -19,8 +19,8 @@ import io.scanbot.sdk.imageprocessing.BrightnessFilter
 import io.scanbot.sdk.imageprocessing.OutputMode
 import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
 import io.scanbot.sdk.process.ImageProcessor
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
 import io.scanbot.sdk.util.isDefault
+import io.scanbot.sdk.util.toImageRef
 
 
 class ImageFilterSnippet : AppCompatActivity() {

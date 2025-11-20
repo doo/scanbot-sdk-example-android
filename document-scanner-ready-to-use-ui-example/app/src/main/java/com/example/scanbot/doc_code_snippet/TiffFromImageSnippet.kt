@@ -59,7 +59,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
         // Render the images to a Tiff file.
         val file = File("path/to/tiff/file")
         val created = tiffGenerator.generateFromUris(
-            sourceImages = list.toTypedArray(),
+            sourceImages = list,
             sourceFilesEncrypted = encryptionEnabled,
             targetFile = file,
             parameters = config

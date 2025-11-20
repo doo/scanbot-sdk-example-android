@@ -14,7 +14,7 @@ import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.mrz.*
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

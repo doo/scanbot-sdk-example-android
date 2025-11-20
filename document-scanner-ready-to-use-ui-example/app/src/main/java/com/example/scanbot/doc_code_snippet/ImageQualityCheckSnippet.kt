@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
 import io.scanbot.sdk.image.ImageRef
-import io.scanbot.sdk.ui_v2.document.utils.toImageRef
+import io.scanbot.sdk.util.toImageRef
 
 
 class ImageQualityCheckSnippet : AppCompatActivity() {
