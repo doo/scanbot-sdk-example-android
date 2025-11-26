@@ -163,7 +163,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Localization")
+    // @EndTag("Localization")
 }
 
 class CheckIntroductionSnippet : AppCompatActivity() {
@@ -228,7 +228,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Introduction")
+    // @EndTag("Introduction")
 }
 
 class CheckUserGuidanceSnippet : AppCompatActivity() {
@@ -282,7 +282,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
             resultLauncher.launch(configuration)
         }
     }
-// @EndTag("User guidance")
+    // @EndTag("User guidance")
 }
 
 class CheckTopBarSnippet : AppCompatActivity() {
@@ -327,7 +327,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Top bar")
+    // @EndTag("Top bar")
 }
 
 class CheckFinderSnippet : AppCompatActivity() {
@@ -364,7 +364,7 @@ class CheckFinderSnippet : AppCompatActivity() {
         }
         resultLauncher.launch(configuration)
     }
-// @EndTag("Finder overlay")
+    // @EndTag("Finder overlay")
 }
 
 class CheckActionBarSnippet : AppCompatActivity() {
@@ -421,7 +421,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
         resultLauncher.launch(configuration)
 
     }
-// @EndTag("Action bar")
+    // @EndTag("Action bar")
 }
 
 class CheckScanningSnippet : AppCompatActivity() {
@@ -474,7 +474,7 @@ class CheckScanningSnippet : AppCompatActivity() {
         configuration.sound.soundType = SoundType.MODERN_BEEP
         resultLauncher.launch(configuration)
     }
-// @EndTag("Scanning")
+    // @EndTag("Scanning")
 }
 
 
@@ -524,7 +524,7 @@ fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
     // @Tag("Handle Result")
     checkScannerFrameHandler.addResultHandler { result, frame ->
         result.onSuccess { checkResult ->
-            if (checkResult?.check != null) {
+            if (checkResult.check != null) {
                 // do something with result here
                 val checkDocument = checkResult.check
                 if (checkDocument != null) {
@@ -538,5 +538,5 @@ fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
     }
 
     false
+    // @EndTag("Handle Result")
 }
-// @EndTag("Handle Result")

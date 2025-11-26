@@ -119,8 +119,8 @@ class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
         // In the real application, you should call this function on button click
         startScanning()
     }
-    // @Tag("Localization")
 
+    // @Tag("Localization")
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
         registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
             if (resultEntity.resultOk) {
@@ -145,7 +145,7 @@ class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Localization")
+    // @EndTag("Localization")
 }
 
 class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
@@ -209,7 +209,7 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Introduction")
+    // @EndTag("Introduction")
 }
 
 class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
@@ -253,7 +253,7 @@ class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
         configuration.scanStatusUserGuidance.statesTitles.noDocumentFound = "No Document Found"
         configuration.scanStatusUserGuidance.statesTitles.tooDark = "Try to move to some light"
     }
-// @EndTag("User guidance")
+    // @EndTag("User guidance")
 }
 
 class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
@@ -297,7 +297,7 @@ class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Top bar")
+    // @EndTag("Top bar")
 }
 
 class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
@@ -332,7 +332,7 @@ class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
         }
         resultLauncher.launch(configuration)
     }
-// @EndTag("Finder overlay")
+    // @EndTag("Finder overlay")
 }
 
 class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
@@ -388,7 +388,7 @@ class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
         resultLauncher.launch(configuration)
 
     }
-// @EndTag("Action bar")
+    // @EndTag("Action bar")
 }
 
 class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
@@ -449,7 +449,7 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
         resultLauncher.launch(configuration)
 
     }
-// @EndTag("Scanning")
+    // @EndTag("Scanning")
 }
 
 class ComposeSnippet : AppCompatActivity() {

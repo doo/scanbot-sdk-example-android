@@ -57,6 +57,7 @@ fun createCreditCardScannerSnippet(context: Context) {
 
 class CreditCardStableImageDetection : AppCompatActivity() {
 
+    // @Tag("Extracting credit card data from an image")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
@@ -64,7 +65,6 @@ class CreditCardStableImageDetection : AppCompatActivity() {
     }
 
     private val scanbotSDK = ScanbotSDK(this@CreditCardStableImageDetection)
-    private val context = this
 
     private val pictureForDocDetectionResult =
         this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
@@ -74,7 +74,7 @@ class CreditCardStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                .map { it.toImageRef(contentResolver).getOrNull() }
                                 .forEach { imageRef ->
                                     if (imageRef == null) {
                                         Log.e(
@@ -92,7 +92,6 @@ class CreditCardStableImageDetection : AppCompatActivity() {
             }
         }
 
-
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()
         imageIntent.type = "image/*"
@@ -106,13 +105,12 @@ class CreditCardStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    // @Tag("Extracting credit card data from an image")
-    // Create a data extractor  instance
+    // Create a Credit Card scanner instance
     val creditCardScanner = scanbotSDK.createCreditCardScanner().getOrNull()
 
     private fun processImage(scanner: CreditCardScanner, image: ImageRef) {
         val result = scanner.run(image)
-        // Proceed MRZ scanner result
+        // Process Credit Card scanner result
         // processResult(result)
     }
     // @EndTag("Extracting credit card data from an image")
