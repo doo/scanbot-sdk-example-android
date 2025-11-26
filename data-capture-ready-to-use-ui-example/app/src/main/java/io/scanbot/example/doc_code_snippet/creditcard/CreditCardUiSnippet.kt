@@ -47,7 +47,7 @@ class StartCreditCardUiSnippet : AppCompatActivity() {
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
         registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
-            resultEntity.onSuccess {  creditCardResult ->
+            resultEntity.onSuccess { creditCardResult ->
                 creditCardResult.creditCard?.let {
                     val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
