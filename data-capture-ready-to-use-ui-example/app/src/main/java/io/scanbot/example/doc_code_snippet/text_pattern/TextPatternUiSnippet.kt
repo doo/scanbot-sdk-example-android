@@ -16,6 +16,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.textpattern.*
@@ -45,10 +48,24 @@ class StartTextPatternUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@StartTextPatternUiSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -86,10 +103,24 @@ class TextPatternPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternPaletteSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -136,10 +167,24 @@ class TextPatternLocalizationSnippet : AppCompatActivity() {
     // @Tag("Localization")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternLocalizationSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -172,10 +217,24 @@ class TextPatternIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternIntroductionSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -212,7 +271,8 @@ class TextPatternIntroductionSnippet : AppCompatActivity() {
 
             // Configure the text.
             explanation.color = ScanbotColor("#000000")
-            explanation.text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
+            explanation.text =
+                "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin."
 
             // Configure the done button.
             // e.g the text or the background color.
@@ -235,10 +295,24 @@ class TextPatternUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternUserGuidanceSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -288,10 +362,24 @@ class TextPatternTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternTopBarSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -332,10 +420,24 @@ class TextPatternFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternFinderSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -367,10 +469,24 @@ class TextPatternActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternActionBarSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -423,10 +539,24 @@ class TextPatternScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<TextPatternScannerScreenConfiguration> =
-        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@TextPatternScanningSnippet, result.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }

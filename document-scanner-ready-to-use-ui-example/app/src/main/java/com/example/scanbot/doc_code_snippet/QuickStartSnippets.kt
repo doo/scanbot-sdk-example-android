@@ -55,8 +55,8 @@ class QuickStartDocumentScannerSnippetsActivity : AppCompatActivity() {
 
         documentScreenLauncher =
             registerForActivityResultOk(DocumentScannerActivity.ResultContract()) {
-                    resultEntity: DocumentScannerActivity.Result ->
-                val result: Document? = resultEntity.result
+                    document  ->
+                val result: Document? = document
                 val pages: List<Page>? = result?.pages
 
                 // Display the first page preview image:

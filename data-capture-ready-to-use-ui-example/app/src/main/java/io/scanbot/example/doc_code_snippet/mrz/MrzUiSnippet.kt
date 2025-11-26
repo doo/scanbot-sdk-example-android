@@ -16,6 +16,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.entity.*
@@ -40,18 +43,33 @@ class StartMrzUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@StartMrzUiSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -76,18 +94,33 @@ class MrzPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzPaletteSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -134,18 +167,33 @@ class MrzLocalizationSnippet : AppCompatActivity() {
     // @Tag("Localization")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzLocalizationSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -178,18 +226,33 @@ class MrzIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzIntroductionSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -250,18 +313,33 @@ class MrzUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzUserGuidanceSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -311,18 +389,33 @@ class MrzTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzTopBarSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -363,18 +456,33 @@ class MrzFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzFinderSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -417,18 +525,33 @@ class MrzActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzActionBarSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -481,18 +604,33 @@ class MrzScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<MrzScannerScreenConfiguration> =
-        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity: MrzScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.mrzDocument?.let {
+        registerForActivityResult(MrzScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result.mrzDocument?.let {
                     val mrz = MRZ(it)
                     val givenName: String = mrz.givenNames.value.text
                     val birthDate: String = mrz.birthDate.value.text
                     val expiryDate: String? = mrz.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@MrzScanningSnippet,
                         "Given Name: $givenName, Birth Date: $birthDate, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }

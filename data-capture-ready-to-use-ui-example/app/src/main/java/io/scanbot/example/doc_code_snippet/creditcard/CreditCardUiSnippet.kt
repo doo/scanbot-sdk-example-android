@@ -16,6 +16,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.creditcard.entity.*
@@ -43,18 +46,33 @@ class StartCreditCardUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@StartCreditCardUiSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -79,18 +97,33 @@ class CreditCardPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardPaletteSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -137,18 +170,33 @@ class CreditCardLocalizationSnippet : AppCompatActivity() {
     // @Tag("Localization")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardLocalizationSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -181,18 +229,33 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardIntroductionSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -253,18 +316,33 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardUserGuidanceSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -314,18 +392,33 @@ class CreditCardTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardTopBarSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -366,18 +459,33 @@ class CreditCardFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardFinderSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -410,18 +518,33 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardActionBarSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -474,18 +597,33 @@ class CreditCardScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<CreditCardScannerScreenConfiguration> =
-        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.creditCard?.let {
-                    val creditCard = CreditCard(it)
+        registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess {  creditCardResult ->
+                creditCardResult.creditCard?.let {
+                    val creditCard = CreditCard(creditCardResult.creditCard!!)
                     val cardNumber: String = creditCard.cardNumber.value.text
                     val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                     val expiryDate: String? = creditCard.expiryDate?.value?.text
                     Toast.makeText(
-                        this,
+                        this@CreditCardScanningSnippet,
                         "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                         Toast.LENGTH_LONG
                     ).show()
+                }
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }

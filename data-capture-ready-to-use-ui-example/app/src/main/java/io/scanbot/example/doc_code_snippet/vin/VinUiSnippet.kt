@@ -16,9 +16,14 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.ui_v2.common.*
+import io.scanbot.sdk.ui_v2.textpattern.TextPatternScannerActivity
+import io.scanbot.sdk.ui_v2.textpattern.configuration.TextPatternScannerScreenConfiguration
 import io.scanbot.sdk.ui_v2.vin.VinScannerActivity
 import io.scanbot.sdk.ui_v2.vin.VinScannerView
 import io.scanbot.sdk.ui_v2.vin.configuration.VinIntroCustomImage
@@ -48,10 +53,24 @@ class StartVinUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@StartVinUiSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -75,10 +94,24 @@ class VinPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinPaletteSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -125,10 +158,24 @@ class VinLocalizationSnippet : AppCompatActivity() {
     // @Tag("Localization")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinLocalizationSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -161,10 +208,24 @@ class VinIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinIntroductionSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -224,10 +285,24 @@ class VinUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinUserGuidanceSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -277,10 +352,24 @@ class VinTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinTopBarSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -321,10 +410,24 @@ class VinFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinFinderSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -356,10 +459,24 @@ class VinActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinActionBarSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -412,10 +529,24 @@ class VinScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<VinScannerScreenConfiguration> =
-        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity: VinScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.textResult?.rawText?.let {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        registerForActivityResult(VinScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                Toast.makeText(this@VinScanningSnippet, result.textResult.rawText, Toast.LENGTH_LONG)
+                    .show()
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }

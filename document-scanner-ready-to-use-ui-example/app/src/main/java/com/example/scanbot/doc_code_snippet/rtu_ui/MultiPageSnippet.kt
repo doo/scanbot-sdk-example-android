@@ -5,6 +5,9 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 // @Tag("Multi Page")
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.AcknowledgementMode
@@ -21,12 +24,22 @@ class MultiPageSnippet : AppCompatActivity() {
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.result?.let { document ->
-                    // Handle the document.
+            result.onSuccess { document ->
+                // Handle the scanned document.
+            }.onFailure {
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    is Result.OperationCanceledError -> {
+                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
-            } else {
-                // Indicates that the cancel button was tapped.
             }
         }
     }

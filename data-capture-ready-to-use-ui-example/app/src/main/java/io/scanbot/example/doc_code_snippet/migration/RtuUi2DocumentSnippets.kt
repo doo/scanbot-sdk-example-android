@@ -19,6 +19,9 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.common.*
@@ -43,16 +46,30 @@ class MainActivityWithDocumentScannerRtuV2 : AppCompatActivity() {
         val previewImageView = findViewById<ImageView>(R.id.first_page_image_preview)
 
         documentScannerResultLauncher =
-                registerForActivityResultOk(io.scanbot.sdk.ui_v2.document.DocumentScannerActivity.ResultContract()) {
-                    resultEntity: io.scanbot.sdk.ui_v2.document.DocumentScannerActivity.Result ->
-                    val result: Document? = resultEntity.result
-                    val pages: List<Page>? = result?.pages
-                    pages?.get(0)?.let {
+            registerForActivityResult(DocumentScannerActivity.ResultContract()) { resultEntity ->
+                resultEntity.onSuccess { document ->
+                    val pages: List<Page> = document.pages
+                    pages.get(0).let {
                         // in v2 you can access the image bitmap directly from the Page:
                         val previewImage = it.documentPreviewImage
                         previewImageView.setImageBitmap(previewImage)
                     }
+                }.onFailure {
+                    when (it) {
+                        is Result.InvalidLicenseError -> {
+                            // indicate that the Scanbot SDK license is invalid
+                        }
+
+                        is Result.OperationCanceledError -> {
+                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                        }
+
+                        else -> {
+                            // Handle other errors
+                        }
+                    }
                 }
+            }
 
         findViewById<Button>(R.id.open_document_scanner).setOnClickListener {
             // openDocumentScannerRtuV2()
@@ -86,7 +103,7 @@ private fun openDocumentScannerRtuV2() {
             // When you disable the acknowledgment screen, you can enable the capture feedback,
             // there are different options available, for example you can display a checkmark animation:
             captureFeedback = CaptureFeedback(
-                    snapFeedbackMode = PageSnapFeedbackMode.pageSnapCheckMarkAnimation()
+                snapFeedbackMode = PageSnapFeedbackMode.pageSnapCheckMarkAnimation()
             )
 
             // You may hide the import button in the camera screen, if you don't need it:
@@ -136,17 +153,32 @@ class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
         val previewImageView = findViewById<ImageView>(R.id.first_page_image_preview)
 
         croppingResultLauncher =
-                registerForActivityResultOk(
-                        io.scanbot.sdk.ui_v2.document.CroppingActivity.ResultContract()
-                ) { resultEntity ->
-                    resultEntity.result?.let {
-                        val documentApi = ScanbotSDK(this).documentApi
-                        // This way you can access the document from the Document API:
-                        val document = documentApi.loadDocument(documentId = it.documentUuid).getOrNull()
-                        val previewImage = document?.pageWithId(it.pageUuid)?.documentPreviewImage
-                        previewImageView.setImageBitmap(previewImage)
+            registerForActivityResult(
+                io.scanbot.sdk.ui_v2.document.CroppingActivity.ResultContract()
+            ) { resultEntity ->
+                resultEntity.onSuccess {
+                    val documentApi = ScanbotSDK(this@MainActivityWithCroppingRtuV2).documentApi
+                    // This way you can access the document from the Document API:
+                    val document =
+                        documentApi.loadDocument(documentId = it.documentUuid).getOrNull()
+                    val previewImage = document?.pageWithId(it.pageUuid)?.documentPreviewImage
+                    previewImageView.setImageBitmap(previewImage)
+                }.onFailure {
+                    when (it) {
+                        is Result.InvalidLicenseError -> {
+                            // indicate that the Scanbot SDK license is invalid
+                        }
+
+                        is Result.OperationCanceledError -> {
+                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                        }
+
+                        else -> {
+                            // Handle other errors
+                        }
                     }
                 }
+            }
 
         findViewById<Button>(R.id.open_cropping_ui).setOnClickListener {
             // openCroppingRtuV2(documentUuid, pageUuid, croppingResultLauncher)
@@ -160,12 +192,16 @@ class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
 // @Tag("Configure Cropping UI RTU v2")
 // ...
 // in your Activity class:
-private fun openCroppingRtuV2(documentUuid: String, pageUuid: String, croppingResultLauncher: ActivityResultLauncher<CroppingConfiguration>) {
+private fun openCroppingRtuV2(
+    documentUuid: String,
+    pageUuid: String,
+    croppingResultLauncher: ActivityResultLauncher<CroppingConfiguration>
+) {
     // Customize text resources, behavior and UI:
     val configuration = CroppingConfiguration(
-            // Now you need to pass the document UUID and the page UUID:
-            documentUuid = documentUuid,
-            pageUuid = pageUuid,
+        // Now you need to pass the document UUID and the page UUID:
+        documentUuid = documentUuid,
+        pageUuid = pageUuid,
     )
 
     // Now you can apply your business colors using the Palette object:
@@ -192,13 +228,30 @@ class MainActivityWithFinderRtuV2 : AppCompatActivity() {
         val previewImageView = findViewById<ImageView>(R.id.first_page_image_preview)
 
         documentScannerResultLauncher =
-                registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity: DocumentScannerActivity.Result ->
-                    resultEntity.result?.pages?.get(0)?.let {
-                        // in v2 you can access the image bitmap directly from the result entity:
+            registerForActivityResult(DocumentScannerActivity.ResultContract()) { resultEntity ->
+                resultEntity.onSuccess { document ->
+                    val pages: List<Page> = document.pages
+                    pages.get(0).let {
+                        // in v2 you can access the image bitmap directly from the Page:
                         val previewImage = it.documentPreviewImage
                         previewImageView.setImageBitmap(previewImage)
                     }
+                }.onFailure {
+                    when (it) {
+                        is Result.InvalidLicenseError -> {
+                            // indicate that the Scanbot SDK license is invalid
+                        }
+
+                        is Result.OperationCanceledError -> {
+                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
+                        }
+
+                        else -> {
+                            // Handle other errors
+                        }
+                    }
                 }
+            }
 
         findViewById<Button>(R.id.open_document_scanner).setOnClickListener {
             // openDocumentScannerRtuV2WithFinder(documentScannerResultLauncher)
@@ -243,7 +296,8 @@ private fun openDocumentScannerRtuV2withFinder(documentScannerResultLauncher: Ac
 // @Tag("Storage Migration")
 fun storageMigrationSnippet(context: Context) {
     // Take a list of legacy pages that represent one document and convert them to a new document.
-    val legacyPages: List<io.scanbot.sdk.persistence.page.legacy.Page> = listOf(/* your legacy pages */)
+    val legacyPages: List<io.scanbot.sdk.persistence.page.legacy.Page> =
+        listOf(/* your legacy pages */)
     val document = legacyPages.toDocument(ScanbotSDK(context), documentImageSizeLimit = 2048)
 
     // Now you may delete the files corresponding to the `legacyPages` to free up storage.

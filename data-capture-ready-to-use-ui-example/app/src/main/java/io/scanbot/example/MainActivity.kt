@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import io.scanbot.common.onSuccess
 import io.scanbot.example.databinding.*
 import io.scanbot.example.fragments.*
 import io.scanbot.example.util.*
@@ -175,15 +176,15 @@ class MainActivity : AppCompatActivity() {
 
     init {
         creditCardUiResultLauncher =
-            registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity: CreditCardScannerActivity.Result ->
-                if (resultEntity.resultOk) {
-                    resultEntity.result?.creditCard?.let {
+            registerForActivityResult(CreditCardScannerActivity.ResultContract()) { resultEntity ->
+                resultEntity.onSuccess { result ->
+                    result.creditCard?.let {
                         val creditCard = CreditCard(it)
                         val cardNumber: String = creditCard.cardNumber.value.text
                         val cardholderName: String = creditCard.cardholderName?.value?.text ?: ""
                         val expiryDate: String? = creditCard.expiryDate?.value?.text
                         Toast.makeText(
-                            this,
+                            this@MainActivity,
                             "Card Number: $cardNumber, Cardholder Name: $cardholderName, Expiry Date: $expiryDate",
                             Toast.LENGTH_LONG
                         ).show()
@@ -193,25 +194,20 @@ class MainActivity : AppCompatActivity() {
 
         mrzDefaultUiResultLauncher =
             registerForActivityResultOk(MrzScannerActivity.ResultContract()) { resultEntity ->
-                if (resultEntity.resultOk) {
-                    resultEntity.result?.mrzDocument?.let {
-                        showMrzDialog(it)
-                    }
+                resultEntity?.mrzDocument?.let {
+                    showMrzDialog(it)
                 }
             }
 
         textDataScannerResultLauncher =
-            registerForActivityResult(TextPatternScannerActivity.ResultContract()) { resultEntity: TextPatternScannerActivity.Result ->
-                if (resultEntity.resultOk) {
-                    resultEntity.result?.rawText?.let {
-                        Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-                    }
+            registerForActivityResultOk(TextPatternScannerActivity.ResultContract()) { resultEntity ->
+                resultEntity?.rawText?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }
 
         vinScannerResultLauncher =
-            registerForActivityResultOk(VinScannerActivity.ResultContract()) { resultEntity ->
-                val vinScanResult = resultEntity.result!!
+            registerForActivityResultOk(VinScannerActivity.ResultContract()) { vinScanResult ->
                 Toast.makeText(
                     this@MainActivity,
                     "VIN Scanned: ${vinScanResult.textResult.rawText}",
@@ -221,12 +217,12 @@ class MainActivity : AppCompatActivity() {
 
         dataExtractorResultLauncher =
             registerForActivityResultOk(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
-                handleDocumentDataExtractorResult(listOfNotNull(resultEntity.result))
+                handleDocumentDataExtractorResult(listOfNotNull(resultEntity))
             }
 
         checkScannerResultLauncher =
             registerForActivityResultOk(CheckScannerActivity.ResultContract()) { resultEntity ->
-                handleCheckScannerResult(resultEntity.result!!)
+                handleCheckScannerResult(resultEntity)
             }
     }
 }
