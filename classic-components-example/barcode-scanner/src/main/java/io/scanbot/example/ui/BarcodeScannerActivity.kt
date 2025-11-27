@@ -92,6 +92,7 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
 
     override fun onResume() {
         super.onResume()
+        scannerFrameHandler?.isEnabled = true
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
@@ -106,7 +107,15 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
     private fun handleSuccess(result: BarcodeScannerResult) {
+        if(result.barcodes.isEmpty()) {
+            return
+        }
+        scannerFrameHandler?.isEnabled = false
         BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(result)
         val intent = Intent(this, BarcodeResultActivity::class.java)
         startActivity(intent)
