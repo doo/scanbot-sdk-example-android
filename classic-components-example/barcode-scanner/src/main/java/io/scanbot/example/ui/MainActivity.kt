@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             } )
             val result = scanner.run(imageRef).getOrNull()
 
-            BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, null, null) }
+            BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, imageRef) }
         }
 
         withContext(Dispatchers.Main) {
