@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="polygonView" type="id"/>
+    <item name="finder_overlay_view" type="id"/>
+    <item name="camera_view" type="id"/>
+    <item name="import_image" type="id"/>
 </resources>
