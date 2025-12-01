@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import io.scanbot.common.Result
 import io.scanbot.common.mapSuccess
+import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
@@ -55,7 +57,6 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private lateinit var shutterButton: ShutterButton
 
     private lateinit var documentScannerFrameHandler: DocumentScannerFrameHandler
-    private lateinit var autoSnappingController: DocumentAutoSnappingController
 
 
     private var lastUserGuidanceHintTs = 0L
@@ -70,6 +71,10 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         supportActionBar!!.hide()
 
         applyEdgeToEdge(this.findViewById(R.id.root_view))
+        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
+        polygonView = findViewById<View>(R.id.polygonView) as PolygonView
+        shutterButton = findViewById(R.id.shutterButton)
+        autoSnappingToggleButton = findViewById(R.id.autoSnappingToggle)
 
         val scanbotSDK = ScanbotSDK(this)
         scanbotSDK.createDocumentScanner().onSuccess { documentScanner ->
@@ -94,56 +99,66 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             documentScannerFrameHandler.addResultHandler(polygonView.documentScannerResultHandler)
             documentScannerFrameHandler.addResultHandler(this@MainActivity)
 
-            autoSnappingController =
+            val autoSnappingController =
                 DocumentAutoSnappingController.attach(cameraView, documentScannerFrameHandler)
 
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#sensitivity
             autoSnappingController.setSensitivity(0.85f)
-        }
 
 
-        cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
+            // In this example we demonstrate how to lock the orientation of the UI (Activity)
+            // as well as the orientation of the taken picture to portrait.
+            cameraView.lockToPortrait(true)
 
-        // In this example we demonstrate how to lock the orientation of the UI (Activity)
-        // as well as the orientation of the taken picture to portrait.
-        cameraView.lockToPortrait(true)
+            // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#preview-mode
+            //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
 
-        // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/#preview-mode
-        //cameraView.setPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
+            cameraView.setCameraOpenCallback {
+                cameraView.postDelayed({
+                    // Shutter sound is ON by default. You can disable it:
+                    // cameraView.setShutterSound(false)
 
-        cameraView.setCameraOpenCallback {
-            cameraView.postDelayed({
-                // Shutter sound is ON by default. You can disable it:
-                // cameraView.setShutterSound(false)
+                    cameraView.continuousFocus()
+                    cameraView.useFlash(flashEnabled)
+                }, 700)
+            }
+            resultView = findViewById<View>(R.id.result) as ImageView
 
-                cameraView.continuousFocus()
+            polygonView.setFillColor(POLYGON_FILL_COLOR)
+            polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
+
+
+            userGuidanceHint = findViewById(R.id.userGuidanceHint)
+
+            shutterButton.setOnClickListener { cameraView.takePicture(false) }
+            shutterButton.visibility = View.VISIBLE
+
+            findViewById<View>(R.id.flashToggle).setOnClickListener {
+                flashEnabled = !flashEnabled
                 cameraView.useFlash(flashEnabled)
-            }, 700)
+            }
+
+            autoSnappingToggleButton.setOnClickListener {
+                autoSnappingEnabled = !autoSnappingEnabled
+                setAutoSnapEnabled(autoSnappingController, autoSnappingEnabled)
+            }
+            autoSnappingToggleButton.post {
+                setAutoSnapEnabled(
+                    autoSnappingController,
+                    autoSnappingEnabled
+                )
+            }
+        }.onFailure { error ->
+            when(error){
+                is Result.InvalidLicenseError ->{
+                    Toast.makeText(this@MainActivity, "License is invalid: ${error.message}", Toast.LENGTH_LONG).show()
+                }
+                else ->  {
+                    Toast.makeText(this@MainActivity, "${error.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         }
-        resultView = findViewById<View>(R.id.result) as ImageView
 
-        polygonView = findViewById<View>(R.id.polygonView) as PolygonView
-        polygonView.setFillColor(POLYGON_FILL_COLOR)
-        polygonView.setFillColorOK(POLYGON_FILL_COLOR_OK)
-
-
-        userGuidanceHint = findViewById(R.id.userGuidanceHint)
-
-        shutterButton = findViewById(R.id.shutterButton)
-        shutterButton.setOnClickListener { cameraView.takePicture(false) }
-        shutterButton.visibility = View.VISIBLE
-
-        findViewById<View>(R.id.flashToggle).setOnClickListener {
-            flashEnabled = !flashEnabled
-            cameraView.useFlash(flashEnabled)
-        }
-
-        autoSnappingToggleButton = findViewById(R.id.autoSnappingToggle)
-        autoSnappingToggleButton.setOnClickListener {
-            autoSnappingEnabled = !autoSnappingEnabled
-            setAutoSnapEnabled(autoSnappingEnabled)
-        }
-        autoSnappingToggleButton.post { setAutoSnapEnabled(autoSnappingEnabled) }
     }
 
     private fun askPermission() {
@@ -253,7 +268,10 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }, 1000)
     }
 
-    private fun setAutoSnapEnabled(enabled: Boolean) {
+    private fun setAutoSnapEnabled(
+        autoSnappingController: DocumentAutoSnappingController,
+        enabled: Boolean
+    ) {
         autoSnappingController.isEnabled = enabled
         documentScannerFrameHandler.isEnabled = enabled
         polygonView.visibility = if (enabled) View.VISIBLE else View.GONE
