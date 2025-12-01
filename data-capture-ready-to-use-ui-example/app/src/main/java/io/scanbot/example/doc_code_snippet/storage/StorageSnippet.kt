@@ -71,6 +71,24 @@ fun publicEncryptionParams(context: Context) {
     // @EndTag("Public encryption parameters")
 }
 
+fun aesGcmEncryptedFileIoProcessor(application: Application) {
+    ScanbotSDKInitializer()
+        // ...
+        // @Tag("AesGcmEncryptedFileIoProcessor")
+        .useFileEncryption(enableFileEncryption = true, fileIOProcessor = AesGcmEncryptedFileIoProcessor(object :
+            AesGcmKeyProvider {
+            override fun getAesKeyForContext(
+                file: String,
+                keyMode: AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode,
+            ): ByteArray {
+                val key = "random_key_for_file_encryption".toByteArray()
+                return key // return the key for the file
+            }
+        }))
+        // @EndTag("AesGcmEncryptedFileIoProcessor")
+        .initialize(application)
+}
+
 fun publicEncryptionParams(context: Context, source: File) {
     // @Tag("Image decryption")
     val scanbotSDK = ScanbotSDK(context)
