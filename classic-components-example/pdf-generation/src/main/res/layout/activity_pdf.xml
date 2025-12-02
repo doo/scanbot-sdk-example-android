@@ -1,36 +1,38 @@
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/root_view"
     android:padding="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/title"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/scan_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Load image"
+        />
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/grayscale_check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:checked="true"
+        android:text="Apply grayscale filter"
+        />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_below="@id/grayscale_check_box"
         android:layout_gravity="center_horizontal"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:text="Scanbot SDK Example"
-        />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/pdf_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="PDF"
-        />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/pdf_with_ocr_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="PDF with OCR"
+        android:indeterminate="true"
+        android:visibility="gone"
         />
 </androidx.appcompat.widget.LinearLayoutCompat>
