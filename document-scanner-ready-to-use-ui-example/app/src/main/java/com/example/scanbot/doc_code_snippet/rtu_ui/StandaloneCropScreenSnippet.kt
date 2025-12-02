@@ -44,7 +44,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                                 getUrisFromGalleryResult(imagePickerResult)
                                     // Process images one by one instead of collecting the whole list - less memory consumption.
                                     .asSequence()
-                                    .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                    .map { it.toImageRef(contentResolver).getOrNull() }
                                     .forEach { image ->
                                         if (image == null) {
                                             Log.e(

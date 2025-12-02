@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                                 scanbotSDK.documentApi.createDocument().onSuccess { document ->
                                     getUrisFromGalleryResult(imagePickerResult)
                                         .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                        .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                        .map { it.toImageRef(contentResolver).getOrNull() }
                                         .forEach { image ->
                                             if (image == null) {
                                                 Log.e(
