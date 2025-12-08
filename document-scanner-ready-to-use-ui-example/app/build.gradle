@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "io.scanbot.sdk.usecases.documents"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.scanbot.example.document.usecases.android"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
