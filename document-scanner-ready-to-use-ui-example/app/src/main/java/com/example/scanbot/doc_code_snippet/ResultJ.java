@@ -15,8 +15,8 @@ public class ResultJ {
         if (result instanceof Result.Success) {
             BarcodeScannerResult barcodeScannerResult = ((Result.Success<BarcodeScannerResult>) result).getData();
             // Handle success
-        } else if (result instanceof Result.Unexpected) {
-            String message = ((Result.Unexpected) result).getMessage();
+        } else if (result instanceof Result.Failure) {
+            String message = ((Result.Failure) result).getMessage();
             // Handle failure
             Log.e("TAG", "Barcode scanning failed: " + message);
         }

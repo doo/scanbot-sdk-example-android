@@ -32,10 +32,6 @@ class SinglePageSnippet : AppCompatActivity() {
                         // indicate that the Scanbot SDK license is invalid
                     }
 
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
-                    }
-
                     else -> {
                         // Handle other errors
                     }

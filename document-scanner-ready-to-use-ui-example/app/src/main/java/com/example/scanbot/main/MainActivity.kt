@@ -20,6 +20,7 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
             registerForActivityResult(DocumentScannerActivity.ResultContract()) { activityResult ->
                 activityResult.onSuccess { document ->
                     runPreviewScreen(document.uuid, singlePageOnly = document.pages.size == 1)
+                }.onCancellation {
+                    processNotOkResult()
                 }.onFailure {
                     processNotOkResult()
                 }

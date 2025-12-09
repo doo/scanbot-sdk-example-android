@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -19,14 +20,12 @@ class LaunchSnippet : AppCompatActivity() {
         registerForActivityResult(DocumentScannerActivity.ResultContract()) { result ->
             result.onSuccess { document ->
                 // Handle the scanned document.
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 when (it) {
                     is io.scanbot.common.Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
