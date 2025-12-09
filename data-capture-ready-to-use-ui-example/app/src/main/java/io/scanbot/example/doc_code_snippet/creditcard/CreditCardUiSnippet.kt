@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.*
@@ -59,15 +60,13 @@ class StartCreditCardUiSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -110,15 +109,13 @@ class CreditCardPaletteSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -183,15 +180,13 @@ class CreditCardLocalizationSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -242,15 +237,13 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -329,15 +322,13 @@ class CreditCardUserGuidanceSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -405,15 +396,13 @@ class CreditCardTopBarSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -472,15 +461,13 @@ class CreditCardFinderSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -531,15 +518,13 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -610,15 +595,13 @@ class CreditCardScanningSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {

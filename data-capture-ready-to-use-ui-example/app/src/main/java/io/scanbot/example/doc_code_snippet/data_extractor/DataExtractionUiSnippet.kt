@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.*
@@ -52,14 +53,13 @@ class StartDocumentDataExtractorUiSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -94,14 +94,13 @@ class DocumentDataExtractorPaletteSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -158,14 +157,13 @@ class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -208,15 +206,13 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -287,15 +283,13 @@ class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -346,15 +340,13 @@ class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -405,15 +397,13 @@ class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -455,15 +445,13 @@ class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -526,15 +514,13 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
                 result?.document?.let { document ->
                     wrapGenericDocument(document)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {

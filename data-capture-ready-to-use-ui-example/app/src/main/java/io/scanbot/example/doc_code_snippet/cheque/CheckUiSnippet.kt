@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.*
@@ -65,15 +66,13 @@ class StartCheckUiSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -109,15 +108,13 @@ class CheckPaletteSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -175,15 +172,13 @@ class CheckLocalizationSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -227,15 +222,13 @@ class CheckIntroductionSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -307,15 +300,13 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -376,15 +367,13 @@ class CheckTopBarSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -436,15 +425,13 @@ class CheckFinderSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -488,15 +475,13 @@ class CheckActionBarSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -560,15 +545,13 @@ class CheckScanningSnippet : AppCompatActivity() {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {

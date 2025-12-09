@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.*
@@ -56,15 +57,13 @@ class StartMrzUiSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -107,15 +106,13 @@ class MrzPaletteSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -180,15 +177,13 @@ class MrzLocalizationSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -239,15 +234,13 @@ class MrzIntroductionSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -326,15 +319,13 @@ class MrzUserGuidanceSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -402,15 +393,13 @@ class MrzTopBarSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -469,15 +458,13 @@ class MrzFinderSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -538,15 +525,13 @@ class MrzActionBarSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -617,15 +602,13 @@ class MrzScanningSnippet : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
                     is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {

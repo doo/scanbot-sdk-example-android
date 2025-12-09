@@ -194,14 +194,14 @@ class MainActivity : AppCompatActivity() {
 
         mrzDefaultUiResultLauncher =
             registerForActivityResultOk(MrzScannerActivity.ResultContract()) { resultEntity ->
-                resultEntity?.mrzDocument?.let {
+                resultEntity.mrzDocument?.let {
                     showMrzDialog(it)
                 }
             }
 
         textDataScannerResultLauncher =
             registerForActivityResultOk(TextPatternScannerActivity.ResultContract()) { resultEntity ->
-                resultEntity?.rawText?.let {
+                resultEntity.rawText.let {
                     Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 }
             }

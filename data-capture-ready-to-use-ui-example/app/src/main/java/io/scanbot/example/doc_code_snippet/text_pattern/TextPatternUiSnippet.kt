@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.*
@@ -52,15 +53,13 @@ class StartTextPatternUiSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@StartTextPatternUiSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -107,15 +106,13 @@ class TextPatternPaletteSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternPaletteSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -171,15 +168,13 @@ class TextPatternLocalizationSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternLocalizationSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -221,15 +216,13 @@ class TextPatternIntroductionSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternIntroductionSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -299,15 +292,13 @@ class TextPatternUserGuidanceSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternUserGuidanceSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -366,15 +357,13 @@ class TextPatternTopBarSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternTopBarSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -424,15 +413,13 @@ class TextPatternFinderSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternFinderSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -473,15 +460,13 @@ class TextPatternActionBarSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternActionBarSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {
@@ -543,15 +528,13 @@ class TextPatternScanningSnippet : AppCompatActivity() {
             resultEntity.onSuccess { result ->
                 Toast.makeText(this@TextPatternScanningSnippet, result.rawText, Toast.LENGTH_LONG)
                     .show()
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 // Optional activity closing cause handling to understand the reason scanner result is not provided
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
-                    }
-
-                    is Result.OperationCanceledError -> {
-                        // Indicates that the cancel button was tapped. or screen is closed by other reason.
                     }
 
                     else -> {

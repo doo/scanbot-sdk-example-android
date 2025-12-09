@@ -20,6 +20,7 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.example.R
@@ -54,14 +55,13 @@ class MainActivityWithDocumentScannerRtuV2 : AppCompatActivity() {
                         val previewImage = it.documentPreviewImage
                         previewImageView.setImageBitmap(previewImage)
                     }
+                }.onCancellation {
+                    // Indicates that the cancel button was tapped. Or screen is closed by other reason.
                 }.onFailure {
+                    // Optional activity closing cause handling to understand the reason scanner result is not provided
                     when (it) {
                         is Result.InvalidLicenseError -> {
                             // indicate that the Scanbot SDK license is invalid
-                        }
-
-                        is Result.OperationCanceledError -> {
-                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
                         }
 
                         else -> {
@@ -163,14 +163,13 @@ class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
                         documentApi.loadDocument(documentId = it.documentUuid).getOrNull()
                     val previewImage = document?.pageWithId(it.pageUuid)?.documentPreviewImage
                     previewImageView.setImageBitmap(previewImage)
+                }.onCancellation {
+                    // Indicates that the cancel button was tapped. Or screen is closed by other reason.
                 }.onFailure {
+                    // Optional activity closing cause handling to understand the reason scanner result is not provided
                     when (it) {
                         is Result.InvalidLicenseError -> {
                             // indicate that the Scanbot SDK license is invalid
-                        }
-
-                        is Result.OperationCanceledError -> {
-                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
                         }
 
                         else -> {
@@ -236,14 +235,13 @@ class MainActivityWithFinderRtuV2 : AppCompatActivity() {
                         val previewImage = it.documentPreviewImage
                         previewImageView.setImageBitmap(previewImage)
                     }
+                }.onCancellation {
+                    // Indicates that the cancel button was tapped. Or screen is closed by other reason.
                 }.onFailure {
+                    // Optional activity closing cause handling to understand the reason scanner result is not provided
                     when (it) {
                         is Result.InvalidLicenseError -> {
                             // indicate that the Scanbot SDK license is invalid
-                        }
-
-                        is Result.OperationCanceledError -> {
-                            // Indicates that the cancel button was tapped. or screen is closed by other reason.
                         }
 
                         else -> {

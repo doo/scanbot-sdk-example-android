@@ -86,7 +86,7 @@ class Application : Application(), CoroutineScope {
 
         launch {
             // Leaving as is to clean end-users' storage for next several app updates.
-            ScanbotSDK(this@Application).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@Application).documentApi.deleteAllDocuments()
             SharingCopier.clear(this@Application)
         }
     }
