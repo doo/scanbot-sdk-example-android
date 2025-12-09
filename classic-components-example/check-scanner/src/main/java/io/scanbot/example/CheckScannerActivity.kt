@@ -51,7 +51,7 @@ class CheckScannerActivity : AppCompatActivity() {
             frameHandler = attach(cameraView, checkScanner)
             frameHandler.addResultHandler { result, frame ->
                 result.onSuccess { scanningResult ->
-                    if (scanningResult?.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
+                    if (scanningResult.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
                         frameHandler.isEnabled = false
                         startActivity(
                             CheckScannerResultActivity.newIntent(

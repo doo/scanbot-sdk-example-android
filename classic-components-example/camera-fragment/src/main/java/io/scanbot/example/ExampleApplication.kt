@@ -50,7 +50,7 @@ class ExampleApplication : Application(), CoroutineScope {
 
         launch {
             getAppStorageDir(this@ExampleApplication).deleteRecursively()
-            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@ExampleApplication).documentApi.deleteAllDocuments()
         }
     }
 }
