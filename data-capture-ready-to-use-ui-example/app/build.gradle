@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "io.scanbot.example"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.scanbot.example.sdk.rtu.android"

@@ -59,12 +59,12 @@ fun enableBinarizationInOcrSettingsSnippet(application: Application) {
 
 fun engineModeTesseractSnippet(context: Context) {
     // @Tag("Engine Mode Tesseract")
-    val ocrRecognizer = ScanbotSDK(context).createOcrEngineManager()
+    val ocrEngine = ScanbotSDK(context).createOcrEngineManager()
 
     val languages = mutableSetOf<Language>()
     languages.add(Language.ENG)
 
-    ocrRecognizer.setOcrConfig(
+    ocrEngine.setOcrConfig(
         OcrEngineManager.OcrConfig(
             engineMode = OcrEngineManager.EngineMode.TESSERACT,
             languages = languages,
@@ -125,7 +125,7 @@ fun generatePdfWithOcrLayerSnippet(scanbotSDK: ScanbotSDK, document: Document) {
         resamplingMethod = ResamplingMethod.NONE,
     )
 
-    val pdfGenerated = pdfGenerator.generate(
+    val pdfGenerationResult = pdfGenerator.generate(
         document = document,
         pdfConfig = pdfConfig,
     ).onSuccess {
@@ -144,7 +144,7 @@ fun generatePdfWithOcrLayerFormUrisSnippet(scanbotSDK: ScanbotSDK, imageFileUris
         engineMode = OcrEngineManager.EngineMode.SCANBOT_OCR
     )
     // Create instance of PdfGenerator
-    val ocrEngineManager = scanbotSDK.createPdfGenerator(ocrConfig)
+    val pdfGenerator = scanbotSDK.createPdfGenerator(ocrConfig)
 
     val pdfConfig = PdfConfiguration(
         attributes = PdfAttributes(
@@ -162,7 +162,7 @@ fun generatePdfWithOcrLayerFormUrisSnippet(scanbotSDK: ScanbotSDK, imageFileUris
         resamplingMethod = ResamplingMethod.NONE,
     )
 
-    val generatedPdfFile = ocrEngineManager.generate(
+    val pdfGenerationResult = pdfGenerator.generate(
         imageFileUris = imageFileUris,
         pdfConfig = pdfConfig,
     ).onSuccess { pdfFile ->

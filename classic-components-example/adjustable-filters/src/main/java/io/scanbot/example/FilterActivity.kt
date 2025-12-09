@@ -9,10 +9,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
-import com.squareup.picasso.Callback
-import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
@@ -22,6 +20,7 @@ import io.scanbot.example.fragment.FiltersBottomSheetMenuFragment
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.imagemanipulation.ScanbotSdkImageManipulator
 import io.scanbot.sdk.imageprocessing.ParametricFilter
 import kotlinx.coroutines.*
 
@@ -136,12 +135,19 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
     }
 
     private fun updatePagePreview() {
-        Picasso.get()
-            .load(page.documentPreviewFileUri)
-            .memoryPolicy(MemoryPolicy.NO_CACHE)
-            .resizeDimen(R.dimen.move_preview_size, R.dimen.move_preview_size)
-            .centerInside()
-            .into(binding.image, ImageCallback())
+        page.documentPreviewImageRef?.let { image ->
+            ScanbotSdkImageManipulator.create().resize(image, 400).onSuccess { resizedImage ->
+                lifecycleScope.launch(Dispatchers.Default) {
+                    resizedImage?.toBitmap()?.onSuccess { bitmap ->
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            binding.image.setImageBitmap(bitmap)
+                            binding.progress.visibility = View.GONE
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     override fun onResume() {
@@ -203,16 +209,6 @@ class FilterActivity : AppCompatActivity(), FiltersListener {
             } else {
                 filteringState = FilteringState.PROCESSING_AND_SCHEDULED
             }
-        }
-    }
-
-    inner class ImageCallback : Callback {
-        override fun onSuccess() {
-            binding.progress.visibility = View.GONE
-        }
-
-        override fun onError(e: java.lang.Exception?) {
-            binding.progress.visibility = View.GONE
         }
     }
 }

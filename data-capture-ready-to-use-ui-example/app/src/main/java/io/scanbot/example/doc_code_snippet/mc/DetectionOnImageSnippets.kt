@@ -33,6 +33,6 @@ class ExampleApplication : Application() {
 fun scannerCreationSnippet(context: Context) {
     // @Tag("Create Medical Certificate Scanner")
     val scanbotSdk = ScanbotSDK(context)
-    val medicalCertificateScanner = scanbotSdk.createMedicalCertificateScanner()
+    val medicalCertificateScanner = scanbotSdk.createMedicalCertificateScanner().getOrThrow()
     // @EndTag("Create Medical Certificate Scanner")
 }

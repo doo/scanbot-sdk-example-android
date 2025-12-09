@@ -23,10 +23,6 @@ android {
         }
     }
 
-    kotlin {
-        jvmToolchain(project.ext.jvmToolchainVersion)
-    }
-
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/LICENSE'
@@ -35,13 +31,15 @@ android {
         exclude 'META-INF/DEPENDENCIES'
     }
 
-    buildFeatures {
-        viewBinding = true
-    }
+    buildFeatures.viewBinding = true
 }
+
+kotlin.jvmToolchain(project.ext.jvmToolchainVersion)
 
 dependencies {
     implementation(project(":common"))
     implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
-    implementation("io.scanbot:sdk-package-1:${project.ext.scanbotSdkVersion}")
+
+    // NOTE: use `sdk-package-1` when OCR feature is not needed:
+    implementation("io.scanbot:sdk-package-2:${project.ext.scanbotSdkVersion}")
 }

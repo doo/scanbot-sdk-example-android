@@ -9,7 +9,7 @@ allprojects {
         exampleAppId = "io.scanbot.example.sdk.android"
         submodulesNamespace = "io.scanbot.example"
 
-        compileSdkVersion = 35
+        compileSdkVersion = 36
         minSdkVersion = 21
         targetSdkVersion = 35
 

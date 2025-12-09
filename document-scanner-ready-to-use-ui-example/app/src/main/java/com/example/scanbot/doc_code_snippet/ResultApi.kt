@@ -122,5 +122,5 @@ class ResultApi {
         }.getOrDefault(emptyList())
 
     }
-    // @EndTag("Combine Result of SDK calls"")
+    // @EndTag("Combine Result of SDK calls")
 }

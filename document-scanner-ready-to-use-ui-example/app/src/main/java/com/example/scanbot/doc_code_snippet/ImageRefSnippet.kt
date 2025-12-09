@@ -172,7 +172,7 @@ fun saveImageRefToFile(imageRef: ImageRef, destinationFile: File) {
 
 // @Tag("Convert ImageRef to Bitmap")
 fun getBitmapFromImageRef(imageRef: ImageRef) {
-   val bitmap = imageRef.toBitmap().getOrNull()
+    val bitmap = imageRef.toBitmap().getOrNull()
     imageRef.close() // clear imageRef from native memory if don't needed anymore
     // use the bitmap as usual
 }
