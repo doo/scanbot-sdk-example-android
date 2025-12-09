@@ -18,6 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.DocumentDataExtractorCommonConfiguration
@@ -44,10 +48,23 @@ class StartDocumentDataExtractorUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -72,10 +89,23 @@ class DocumentDataExtractorPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -122,10 +152,23 @@ class DocumentDataExtractorLocalizationSnippet : AppCompatActivity() {
 
     // @Tag("Localization")
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -158,10 +201,23 @@ class DocumentDataExtractorIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -222,10 +278,23 @@ class DocumentDataExtractorUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -266,10 +335,23 @@ class DocumentDataExtractorTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -310,10 +392,23 @@ class DocumentDataExtractorFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -345,10 +440,23 @@ class DocumentDataExtractorActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -401,10 +509,23 @@ class DocumentDataExtractorScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<DocumentDataExtractorScreenConfiguration> =
-        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity: DocumentDataExtractorActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.document?.let { document ->
+        registerForActivityResult(DocumentDataExtractorActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { result ->
+                result?.document?.let { document ->
                     wrapGenericDocument(document)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }

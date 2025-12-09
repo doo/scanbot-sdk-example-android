@@ -20,6 +20,8 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onCancellation
+import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
@@ -44,11 +46,14 @@ class MainActivity : AppCompatActivity() {
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         documentScannerResult =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { activityResult ->
-                if (activityResult.resultCode == Activity.RESULT_OK && activityResult.result != null) {
-                    val document = activityResult.result!!
+            registerForActivityResult(DocumentScannerActivity.ResultContract()) { activityResult ->
+                activityResult.onSuccess { document ->
                     runPreviewScreen(document.uuid, singlePageOnly = document.pages.size == 1)
-                } else processNotOkResult()
+                }.onCancellation {
+                    processNotOkResult()
+                }.onFailure {
+                    processNotOkResult()
+                }
             }
 
         pictureForDocDetectionResult =

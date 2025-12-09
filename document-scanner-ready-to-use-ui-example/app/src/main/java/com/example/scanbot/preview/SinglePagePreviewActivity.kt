@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
@@ -60,15 +61,13 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         get() = Dispatchers.Default + job
 
     private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
-        registerForActivityResultOk(CroppingActivity.ResultContract()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.result?.let { croppingResult ->
-                    document = scanbotSdk.documentApi.loadDocument(croppingResult.documentUuid).getOrNull()
-                        ?: throw IllegalStateException("No such document!")
-                    page = document.pages.firstOrNull()
-                        ?: throw IllegalStateException("No pages in document!")
-                    updateImageView()
-                }
+        registerForActivityResult(CroppingActivity.ResultContract()) { result ->
+            result.onSuccess { result ->
+                document = scanbotSdk.documentApi.loadDocument(result.documentUuid).getOrNull()
+                    ?: throw IllegalStateException("No such document!")
+                page = document.pages.firstOrNull()
+                    ?: throw IllegalStateException("No pages in document!")
+                updateImageView()
             }
         }
 

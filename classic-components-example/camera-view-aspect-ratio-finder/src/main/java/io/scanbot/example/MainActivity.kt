@@ -21,9 +21,11 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.*
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.documentscanner.DocumentDetectionResult
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
 import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.documentscanner.DocumentScannerParameters
+import io.scanbot.sdk.documentscanner.DocumentScanningResult
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
@@ -128,14 +130,14 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     }
 
     override fun handle(
-        result: Result<DocumentScannerFrameHandler.DetectedFrame>,
+        result: Result<DocumentDetectionResult>,
         frame: FrameHandler.Frame
     ): Boolean {
         // Here you are continuously notified about document scanning results.
         // For example, you can show a user guidance text depending on the current scanning status.
         result.onSuccess { value ->
             userGuidanceHint.post {
-                showUserGuidance(value.detectionStatus)
+                showUserGuidance(value.status)
             }
         }
 

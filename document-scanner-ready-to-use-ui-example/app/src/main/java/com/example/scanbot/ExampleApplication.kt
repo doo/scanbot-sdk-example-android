@@ -68,8 +68,7 @@ class ExampleApplication : Application(), CoroutineScope {
 
         launch {
             // Delete all existing documents on app start
-            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage()
-                .deleteAll()
+            ScanbotSDK(this@ExampleApplication).documentApi.deleteAllDocuments()
         }
     }
 }

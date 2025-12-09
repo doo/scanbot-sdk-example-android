@@ -70,8 +70,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         docScannerResultLauncher =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
-                val document = resultEntity.result!!
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { document ->
                 page = document.pageAtIndex(0) ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
                     this@MrzStillImageScanningActivity.showToast("Error obtaining scanned page!")

@@ -72,7 +72,7 @@ class DocumentCameraActivity : AppCompatActivity() {
                         // For example, you can show a user guidance text depending on the current scanning status.
                         result.onSuccess { data ->
                             userGuidanceHint.post {
-                                showUserGuidance(data.detectionStatus)
+                                showUserGuidance(data.status)
                             }
                         }
                         false // typically you need to return false

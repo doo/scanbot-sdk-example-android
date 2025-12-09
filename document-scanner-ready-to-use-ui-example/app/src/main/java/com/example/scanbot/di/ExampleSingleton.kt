@@ -25,7 +25,6 @@ interface ExampleSingleton {
     fun pageTIFFWriter(): TiffGeneratorManager
     fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer
     fun fileIOProcessor(): FileIOProcessor
-    fun pageFileStorage(): PageFileStorage
 }
 
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
@@ -75,13 +74,6 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
         return fileIOProcessor!!
     }
 
-    override fun pageFileStorage(): PageFileStorage {
-        if (pageFileStorage == null) {
-            pageFileStorage = scanbotSdk.getSdkComponent()!!.providePageFileStorage()
-        }
-        return pageFileStorage!!
-    }
-
     companion object {
         private var pdfExtractor: PdfPagesExtractor? = null
         private var textRecognition: OcrEngineManager? = null
@@ -89,6 +81,5 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
         private var tiffGenerator: TiffGeneratorManager? = null
         private var documentQualityAnalyzer: DocumentQualityAnalyzer? = null
         private var fileIOProcessor: FileIOProcessor? = null
-        private var pageFileStorage: PageFileStorage? = null
     }
 }

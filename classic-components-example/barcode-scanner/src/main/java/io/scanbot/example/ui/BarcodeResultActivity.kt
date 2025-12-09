@@ -55,7 +55,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                 BarcodeItemBinding.inflate(layoutInflater, binding.scannedItems, false)
                     .also {
                         item.sourceImage?.let { image ->
-                            it.image.setImageBitmap(image.toBitmap()?.getOrNull())
+                            it.image.setImageBitmap(image.toBitmap().getOrNull())
                         }
                         it.barcodeFormat.text = item.format.name
                         it.docFormat.text = item.extractedDocument?.let {
