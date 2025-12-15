@@ -20,10 +20,10 @@ ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup
 /** This singleton is used only for simplicity. Please, use Hilt or other DI framework in production code. */
 interface ExampleSingleton {
     fun pagePdfExtractorInstance(): PdfPagesExtractor
-    fun pageOcrEngine(): OcrEngineManager
-    fun pagePDFRenderer(): PdfGenerator
-    fun pageTIFFWriter(): TiffGeneratorManager
-    fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer
+    fun pageOcrEngine(): OcrEngineManager?
+    fun pagePDFRenderer(): PdfGenerator?
+    fun pageTIFFWriter(): TiffGeneratorManager?
+    fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer?
     fun fileIOProcessor(): FileIOProcessor
 }
 
@@ -39,32 +39,32 @@ class ExampleSingletonImpl(private val context: Context) : ExampleSingleton {
         return pdfExtractor!!
     }
 
-    override fun pageOcrEngine(): OcrEngineManager {
+    override fun pageOcrEngine(): OcrEngineManager? {
         if (textRecognition == null) {
             textRecognition = scanbotSdk.createOcrEngineManager()
         }
-        return textRecognition!!
+        return textRecognition
     }
 
-    override fun pagePDFRenderer(): PdfGenerator {
+    override fun pagePDFRenderer(): PdfGenerator? {
         if (pdfGenerator == null) {
             pdfGenerator = scanbotSdk.createPdfGenerator()
         }
-        return pdfGenerator!!
+        return pdfGenerator
     }
 
-    override fun pageTIFFWriter(): TiffGeneratorManager {
+    override fun pageTIFFWriter(): TiffGeneratorManager? {
         if (tiffGenerator == null) {
             tiffGenerator = scanbotSdk.createTiffGeneratorManager()
         }
-        return tiffGenerator!!
+        return tiffGenerator
     }
 
-    override fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer {
+    override fun pageDocQualityAnalyzer(): DocumentQualityAnalyzer? {
         if (documentQualityAnalyzer == null) {
             documentQualityAnalyzer = scanbotSdk.createDocumentQualityAnalyzer().getOrNull()
         }
-        return documentQualityAnalyzer!!
+        return documentQualityAnalyzer
     }
 
     override fun fileIOProcessor(): FileIOProcessor {
