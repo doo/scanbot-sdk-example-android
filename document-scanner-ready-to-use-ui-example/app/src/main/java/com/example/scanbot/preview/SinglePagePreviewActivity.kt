@@ -1,6 +1,5 @@
 package com.example.scanbot.preview
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -34,7 +33,6 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.imageprocessing.ParametricFilter
-import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.CroppingActivity
 import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
 import io.scanbot.sdk.usecases.documents.R
@@ -138,7 +136,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
                 val imageQualityResult = withContext(Dispatchers.Default) {
                     // Result is represented by `DocumentQuality` enum.
                     page.documentImageRef?.let {
-                        exampleSingleton.pageDocQualityAnalyzer().run(it)
+                        exampleSingleton.pageDocQualityAnalyzer()?.run(it)
                     }
                 }
                 withContext(Dispatchers.Main) {

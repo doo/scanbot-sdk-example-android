@@ -10,13 +10,13 @@ import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
 
 class GenerateTiffForSharingUseCase @Inject constructor(
     sharingDocumentStorage: ISharingDocumentStorage,
-    private val tiffGenerator: TiffGeneratorManager,
+    private val tiffGenerator: TiffGeneratorManager?,
 ) : GenerateFilesForSharingUseCase(sharingDocumentStorage) {
 
     override suspend fun generateFilesForDocument(documentSharingDir: File, document: Document): List<File> {
         val sharingTiffFile = documentSharingDir.ensureFileExists().resolve("${documentSharingDir.name}.tiff")
 
-        tiffGenerator.generateFromDocument(
+        tiffGenerator?.generateFromDocument(
             document = document,
             targetFile = sharingTiffFile,
             parameters = TiffGeneratorParameters.default(),
