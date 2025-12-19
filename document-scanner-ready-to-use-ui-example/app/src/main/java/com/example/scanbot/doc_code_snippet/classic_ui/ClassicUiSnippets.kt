@@ -138,7 +138,7 @@ fun startDocumentScannerSnippet(cameraView: ScanbotCameraXView, context: Context
     // @Tag("Start Document Scanner (full example)")
     val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
 
-    val frameHandler = DocumentScannerFrameHandler(context, scanner)
+    val frameHandler = DocumentScannerFrameHandler( scanner)
     cameraView.addFrameHandler(frameHandler)
     // @EndTag("Start Document Scanner (full example)")
 }

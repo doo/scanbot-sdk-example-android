@@ -2,6 +2,7 @@ package com.example.scanbot.doc_code_snippet
 
 import io.scanbot.common.Result
 import io.scanbot.common.combineResults
+import io.scanbot.common.getOrDefault
 import io.scanbot.common.mapFailure
 import io.scanbot.common.mapSuccess
 import io.scanbot.common.onFailure

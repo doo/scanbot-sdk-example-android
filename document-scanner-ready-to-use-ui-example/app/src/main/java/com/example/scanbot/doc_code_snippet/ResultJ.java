@@ -29,13 +29,6 @@ public class ResultJ {
         BarcodeScannerResult nullableResult = result.getOrNull();
         // get value or throw exception if unsuccessful then handle exception with try-catch
         BarcodeScannerResult nonNullableResult = result.getOrThrow();
-        // get value or put default value if unsuccessful
-        BarcodeScannerResult resultOrDefaultValue = result.getOrDefault(
-                new BarcodeScannerResult(
-                        new ArrayList<BarcodeItem>(),
-                        false
-                )
-        );
     }
     // @Tag("Handle Result with getter functions in java")
 }
