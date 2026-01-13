@@ -2,13 +2,13 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.app.Application
 import android.content.Context
-import android.graphics.Bitmap
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.documentdata.*
 import io.scanbot.sdk.documentdata.entity.*
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.process.*
 import io.scanbot.sdk.ui.camera.*
 
@@ -37,7 +37,7 @@ fun getDocumentDataExtractorInstanceFromSdkSnippet(context: Context, cameraView:
 
     // Please note that each call to this method will create a new instance of DocumentDataExtractor
     // It should be used on a "single instance per screen" basis
-    val documentDataExtractor = scanbotSdk.createDocumentDataExtractor()
+    val documentDataExtractor = scanbotSdk.createDocumentDataExtractor().getOrThrow()
 
     var acceptedDocumentTypes = RootDocumentType.ALL_TYPES
 
@@ -88,7 +88,7 @@ fun getDocumentDataExtractorInstanceWithEHICFromSdkSnippet(
 
     // Please note that each call to this method will create a new instance of DocumentDataExtractor
     // It should be used on a "single instance per screen" basis
-    val documentDataExtractor = scanbotSdk.createDocumentDataExtractor()
+    val documentDataExtractor = scanbotSdk.createDocumentDataExtractor().getOrThrow()
 
     documentDataExtractor.setConfiguration(
         DocumentDataExtractorConfigurationBuilder()
@@ -121,13 +121,13 @@ fun excludeFieldsFromExtractingSnippet() {
 
 fun rotateImageSnippet(image: ByteArray, imageOrientation: Int) {
     // @Tag("Rotate image")
-    val resultBitmap = ImageProcessor(image).rotate(imageOrientation).processedBitmap()
+    val resultImageRef = ImageProcessor(image).rotate(imageOrientation).processedImageRef()
     // @EndTag("Rotate image")
 }
 
-fun extractFromBitmapSnippet(documentDataExtractor: DocumentDataExtractor, resultBitmap: Bitmap) {
+fun extractFromImageRefSnippet(documentDataExtractor: DocumentDataExtractor, imageRef: ImageRef) {
     // @Tag("Extract data from the image")
-    val recognitionResult = documentDataExtractor.extractFromBitmap(resultBitmap)
+    val recognitionResult = documentDataExtractor.run(imageRef)
     // @EndTag("Extract data from the image")
 }
 

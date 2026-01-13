@@ -6,6 +6,10 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 // @Tag("Crop Screen")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -22,12 +26,20 @@ class CroppingScreenSnippet : AppCompatActivity() {
     private val context = this
     private val documentScannerResult: ActivityResultLauncher<DocumentScanningFlow> by lazy {
         registerForActivityResult(DocumentScannerActivity.ResultContract()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.result?.let { document ->
-                    // Handle the document.
+            result.onSuccess { document ->
+                // Handle the scanned document.
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                when (it) {
+                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
-            } else {
-                // Indicates that the cancel button was tapped.
             }
         }
     }

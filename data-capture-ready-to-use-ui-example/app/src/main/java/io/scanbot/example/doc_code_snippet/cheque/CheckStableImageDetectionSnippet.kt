@@ -2,7 +2,6 @@ package io.scanbot.example.doc_code_snippet.cheque
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,9 +10,16 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.check.*
+import io.scanbot.sdk.image.*
+import io.scanbot.sdk.util.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.arrayOf
+import kotlin.collections.asSequence
+import kotlin.let
+import kotlin.sequences.forEach
+import kotlin.sequences.map
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -44,16 +50,16 @@ class CheckStableImageDetectionSnippet : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver)?.getOrNull() }
+                                .forEach { image ->
+                                    if (image == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load image from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(checkScanner, bitmap)
+                                    checkScanner?.let { processImage(it, image) }
                                 }
 
                         }
@@ -77,14 +83,14 @@ class CheckStableImageDetectionSnippet : AppCompatActivity() {
     }
 
     // Create a check scanner instance
-    val checkScanner = scanbotSDK.createCheckScanner()
+    val checkScanner = scanbotSDK.createCheckScanner().getOrNull()
 
     private fun processImage(
         checkScanner: CheckScanner,
-        bitmap: Bitmap
+        image: ImageRef
     ) {
-        val result = checkScanner.scanFromBitmap(bitmap, 0)
-        result?.check?.let { wrapCheck(it) }
+        val result = checkScanner.run(image)
+        result.getOrNull()?.check?.let { wrapCheck(it) }
         // Check recognition results are processed
     }
     // @EndTag("Extracting cheque data from an image")

@@ -1,9 +1,9 @@
 package io.scanbot.example.model
 
 import io.scanbot.sdk.barcode.BarcodeScannerResult
+import io.scanbot.sdk.image.ImageRef
 
 data class BarcodeResultBundle(
     val barcodeScanningResult: BarcodeScannerResult,
-    val imagePath: String? = null,
-    val previewPath: String? = null
+    val imageRef: ImageRef? = null,
 )

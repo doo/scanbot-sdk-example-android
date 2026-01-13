@@ -11,31 +11,34 @@ package io.scanbot.example.doc_code_snippet.data_extractor
 
 import android.content.Context
 import android.widget.Toast
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
-import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.documentdata.*
 
 fun useDocumentDataExtractorFrameHandler(context: Context) {
     // @Tag("Add a frame handler for DocumentDataExtractor")
-    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor()
+    val dataExtractor = ScanbotSDK(context).createDocumentDataExtractor().getOrThrow()
     val frameHandler = DocumentDataExtractorFrameHandler(dataExtractor)
 
     frameHandler.addResultHandler(object : DocumentDataExtractorFrameHandler.ResultHandler {
 
-        override fun handle(result: FrameHandlerResult<DocumentDataExtractionResult, SdkLicenseError>): Boolean {
-            val isSuccess = result is FrameHandlerResult.Success
-            when {
-                isSuccess -> {
-                    // NOTE: 'handle' method runs in background thread
-                    //   - don't forget to switch to main before touching any Views
-                    Toast.makeText(
-                        context,
-                        "Document found!\nYou can now snap picture.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                else -> {} // Handle Failure case
+        override fun handle(
+            result: Result<DocumentDataExtractionResult>,
+            frame: FrameHandler.Frame
+        ): Boolean {
+            result.onSuccess {
+                // NOTE: 'handle' method runs in background thread
+                //   - don't forget to switch to main before touching any Views
+                Toast.makeText(
+                    context,
+                    "Document found!\nYou can now snap picture.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.onFailure {
+                // Handle Failure case
             }
             return false
         }

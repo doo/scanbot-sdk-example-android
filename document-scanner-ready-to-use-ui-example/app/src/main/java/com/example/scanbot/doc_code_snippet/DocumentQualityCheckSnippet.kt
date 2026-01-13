@@ -9,13 +9,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.process.DocumentQuality
+import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
+import io.scanbot.sdk.util.toImageRef
 
 
 class DocumentQualityCheckSnippet : AppCompatActivity() {
@@ -35,21 +36,22 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e(
-                                            "StandaloneCropSnippet",
-                                            "Failed to load bitmap from URI"
-                                        )
-                                        return@forEach
+                            scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                getUrisFromGalleryResult(imagePickerResult)
+                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                    .map { it.toImageRef(contentResolver).getOrNull() }
+                                    .forEach { image ->
+                                        if (image == null) {
+                                            Log.e(
+                                                "StandaloneCropSnippet",
+                                                "Failed to load image from URI"
+                                            )
+                                            return@forEach
+                                        }
+                                        document.addPage(image)
                                     }
-                                    document.addPage(bitmap)
-                                }
-                            startCropping(document)
+                                startCropping(document)
+                            }
                         }
                     }
                 }
@@ -58,13 +60,13 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
 
     // @Tag("Analyze the quality of a document image")
     // Create a document detector instance
-    val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer()
+    val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer().getOrNull()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
             // Run quality check on the created page
             val documentQuality =
-                qualityAnalyzer.analyzeOnBitmap(page.originalImage!!, orientation = 0)
+                qualityAnalyzer?.run(page.originalImageRef!!)?.getOrNull()
             // proceed the result
             if (documentQuality != null) {
                 printResult(documentQuality.quality)

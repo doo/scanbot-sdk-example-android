@@ -5,11 +5,12 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.mapSuccess
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -32,7 +33,7 @@ class ScannerActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
-        vinScanner = ScanbotSDK(this).createVinScanner()
+        vinScanner = ScanbotSDK(this).createVinScanner().getOrThrow()
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
@@ -41,25 +42,24 @@ class ScannerActivity : AppCompatActivity() {
         // The smaller finder view brings better performance and allows user to scan VIN more precise
         finderOverlay.setRequiredAspectRatios(listOf(AspectRatio(9.0, 1.0)))
         finderOverlay.setFixedFinderHeight(
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        50f, resources.displayMetrics).toInt()
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                50f, resources.displayMetrics
+            ).toInt()
         )
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         vinScannerFrameHandler = VinScannerFrameHandler.attach(cameraView, vinScanner)
 
-        vinScannerFrameHandler.addResultHandler { result ->
-            val resultText: String = when (result) {
-                is FrameHandlerResult.Success -> {
-                    if (result.value.textResult.validationSuccessful) {
-                        "VIN scanned:\n${result.value.textResult.rawText}"
-                    } else {
-                        "VIN not validated"
-                    }
+        vinScannerFrameHandler.addResultHandler { result, frame ->
+            val resultText: String = result.mapSuccess { value ->
+                if (value.textResult.validationSuccessful) {
+                    "VIN scanned:\n${value.textResult.rawText}"
+                } else {
+                    "VIN not validated"
                 }
-                is FrameHandlerResult.Failure -> "Check your setup or license"
-            }
+            }.getOrNull() ?: "Check your license. Error: ${result.errorOrNull()?.message}"
 
             // NOTE: 'handle' method runs in background thread - don't forget to switch to main before touching any Views
             runOnUiThread { resultTextView.text = resultText }

@@ -1,7 +1,6 @@
 package io.scanbot.example
 
 import android.app.Application
-import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.util.log.LoggerProvider
@@ -24,17 +23,16 @@ class ExampleApplication : Application() {
             .withLogging(true)
             // TODO 2/2: Enable the Scanbot SDK license key
             //.license(this, licenseKey)
-            .licenceErrorHandler { status, feature, statusMessage ->
+            .licenseErrorHandler { status, feature, statusMessage ->
                 LoggerProvider.logger.d(
                     "ExampleApplication",
                     "+++> License status: ${status.name}. Status message: $statusMessage"
                 )
-                if (feature != SdkFeature.NoSdkFeature) {
-                    LoggerProvider.logger.d(
-                        "ExampleApplication",
-                        "+++> Feature not available: ${feature.name}"
-                    )
-                }
+
+                LoggerProvider.logger.d(
+                    "ExampleApplication",
+                    "+++> Feature not available: ${feature.name}"
+                )
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
             .initialize(this)
@@ -44,6 +42,9 @@ class ExampleApplication : Application() {
         val licenseInfo = ScanbotSDK(this).licenseInfo
         LoggerProvider.logger.d("ExampleApplication", "License status: ${licenseInfo.status}")
         LoggerProvider.logger.d("ExampleApplication", "License isValid: ${licenseInfo.isValid}")
-        LoggerProvider.logger.d("ExampleApplication", "License expirationDate: ${licenseInfo.expirationDate}")
+        LoggerProvider.logger.d(
+            "ExampleApplication",
+            "License expirationDate: ${licenseInfo.expirationDateString}"
+        )
     }
 }

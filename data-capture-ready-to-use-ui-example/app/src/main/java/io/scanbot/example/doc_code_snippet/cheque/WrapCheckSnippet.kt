@@ -12,7 +12,7 @@ package io.scanbot.example.doc_code_snippet.cheque
 // TODO: add URLs here
 
 import io.scanbot.sdk.check.entity.*
-import io.scanbot.sdk.genericdocument.entity.*
+import io.scanbot.sdk.genericdocument.GenericDocument
 
 fun wrapCheck(genericDocument: GenericDocument) {
     // @Tag("Check Scanner Result Wrapper")

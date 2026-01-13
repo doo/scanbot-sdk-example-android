@@ -3,12 +3,8 @@ package io.scanbot.example.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
-import com.squareup.picasso.Picasso
+import io.scanbot.common.onSuccess
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityBarcodeResultBinding
@@ -17,7 +13,7 @@ import io.scanbot.example.databinding.SnapImageItemBinding
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.textWithExtension
-import java.io.File
+import io.scanbot.sdk.image.ImageRef
 
 class BarcodeResultActivity : AppCompatActivity() {
 
@@ -31,22 +27,23 @@ class BarcodeResultActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         showSnapImageIfExists(
-            BarcodeResultRepository.barcodeResultBundle?.previewPath
-                ?: BarcodeResultRepository.barcodeResultBundle?.imagePath
+            BarcodeResultRepository.barcodeResultBundle?.imageRef
         )
 
         showLatestBarcodeResult(BarcodeResultRepository.barcodeResultBundle?.barcodeScanningResult)
     }
 
-    private fun showSnapImageIfExists(imagePath: String?) {
-        imagePath?.let { path ->
+    private fun showSnapImageIfExists(image: ImageRef?) {
+        image?.let { image ->
             binding.scannedItems.addView(
                 SnapImageItemBinding.inflate(
                     layoutInflater,
                     binding.scannedItems,
                     false
-                ).also {
-                    Picasso.get().load(File(path)).into(it.snapImage)
+                ).apply {
+                    image.toBitmap().onSuccess {
+                        this@apply.snapImage.setImageBitmap(it)
+                    }
                 }.root
             )
         }
@@ -58,7 +55,7 @@ class BarcodeResultActivity : AppCompatActivity() {
                 BarcodeItemBinding.inflate(layoutInflater, binding.scannedItems, false)
                     .also {
                         item.sourceImage?.let { image ->
-                            it.image.setImageBitmap(image.toBitmap())
+                            it.image.setImageBitmap(image.toBitmap().getOrNull())
                         }
                         it.barcodeFormat.text = item.format.name
                         it.docFormat.text = item.extractedDocument?.let {

@@ -6,13 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.scanbot.sdk.imagefilters.ColorDocumentFilter
-import io.scanbot.sdk.imagefilters.GrayscaleFilter
-import io.scanbot.sdk.imagefilters.LegacyFilter
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
-import io.scanbot.sdk.process.ImageFilterType
+import io.scanbot.sdk.imageprocessing.ColorDocumentFilter
+import io.scanbot.sdk.imageprocessing.GrayscaleFilter
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
+import io.scanbot.sdk.imageprocessing.WhiteBlackPointFilter
 import io.scanbot.sdk.usecases.documents.R
 
 /** Represents bottom menu sheet for document screen. */
@@ -38,12 +36,12 @@ class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {
             callListenerAndDismiss(WhiteBlackPointFilter())
         }
         view.findViewById<Button>(R.id.filterNone).setOnClickListener {
-            callListenerAndDismiss(LegacyFilter(ImageFilterType.NONE.code))
+            callListenerAndDismiss(null)
         }
         return view
     }
 
-    private fun callListenerAndDismiss(filter: ParametricFilter) {
+    private fun callListenerAndDismiss(filter: ParametricFilter?) {
         (activity as FiltersListener).onFilterApplied(filter)
         dismissAllowingStateLoss()
     }

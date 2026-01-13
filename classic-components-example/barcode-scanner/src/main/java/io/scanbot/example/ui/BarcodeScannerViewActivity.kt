@@ -15,6 +15,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
+
 import io.scanbot.example.R
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.model.BarcodeResultBundle
@@ -27,7 +31,7 @@ import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.ui.BarcodeScannerView
 import io.scanbot.sdk.barcode.ui.IBarcodeScannerViewCallback
 import io.scanbot.sdk.camera.CaptureInfo
-import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.image.ImageRef
 
 class BarcodeScannerViewActivity : AppCompatActivity() {
     private lateinit var barcodeScannerView: BarcodeScannerView
@@ -45,42 +49,54 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
 
-        val scanner = ScanbotSDK(this).createBarcodeScanner()
-        scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
-            setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-        } )
+        ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
+            scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
+                setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
+            })
+            barcodeScannerView.apply {
+                initCamera()
+                initScanningBehavior(
+                    scanner,
+                    { result, frame ->
+                        result.onSuccess { data ->
+                            handleSuccess(data)
+                        }.onFailure {
+                            if (it is Result.InvalidLicenseError) {
+                                barcodeScannerView.post {
+                                    Toast.makeText(
+                                        this@BarcodeScannerViewActivity,
+                                        "1-minute trial license has expired!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    this@BarcodeScannerViewActivity,
+                                    "Error occurred during scanner init",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                        false
+                    },
+                    object : IBarcodeScannerViewCallback {
+                        override fun onCameraOpen() {
+                            barcodeScannerView.viewController.useFlash(flashEnabled)
+                        }
 
-        barcodeScannerView.apply {
-            initCamera()
-            initScanningBehavior(scanner,
-                { result ->
-                    if (result is FrameHandlerResult.Success) {
-                        handleSuccess(result)
-                    } else {
-                        barcodeScannerView.post {
-                            Toast.makeText(
-                                this@BarcodeScannerViewActivity,
-                                "1-minute trial license has expired!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                        override fun onPictureTaken(
+                            image: ImageRef,
+                            captureInfo: CaptureInfo
+                        ) {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
+
                         }
                     }
-                    false
-                },
-                object : IBarcodeScannerViewCallback {
-                    override fun onCameraOpen() {
-                        barcodeScannerView.viewController.useFlash(flashEnabled)
-                    }
-
-                    override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                        // we don't need full size pictures in this example
-                    }
-
-                    override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {
-
-                    }
-                }
-            )
+                )
+            }
         }
 
         barcodeScannerView.viewController.apply {
@@ -92,9 +108,17 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         barcodeScannerView.viewController.onResume()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Use onActivityResult to handle permission rejection
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSION_CODE
+            )
         }
     }
 
@@ -103,9 +127,9 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
         barcodeScannerView.viewController.onPause()
     }
 
-    private fun handleSuccess(result: FrameHandlerResult.Success<BarcodeScannerResult?>) {
-        result.value?.let {
-            BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(it)
+    private fun handleSuccess(result: BarcodeScannerResult) {
+        result.takeIf { it.barcodes.isNotEmpty() }?.let {
+            BarcodeResultRepository.barcodeResultBundle = BarcodeResultBundle(result)
             val intent = Intent(this, BarcodeResultActivity::class.java)
             startActivity(intent)
             finish()

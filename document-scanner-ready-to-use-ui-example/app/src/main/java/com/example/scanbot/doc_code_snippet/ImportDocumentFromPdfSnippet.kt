@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 
 
@@ -58,17 +59,18 @@ class ImportDocumentFromPdfSnippet : AppCompatActivity() {
                 outputDir = File("path/to/output/folder"),
                 prefix = "image_"
             ).apply {
-                val document = scanbotSDK.documentApi.createDocument()
-                this.forEach { imageUri ->
-                    val bitmap = BitmapFactory.decodeFile(imageUri.toFile().absolutePath)
-                    if (bitmap == null) {
-                        Log.e(
-                            "Snippet",
-                            "Failed to load bitmap from URI"
-                        )
-                        return@forEach
+                scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                    this@apply.forEach { imageUri ->
+                        val bitmap = BitmapFactory.decodeFile(imageUri.toFile().absolutePath)
+                        if (bitmap == null) {
+                            Log.e(
+                                "Snippet",
+                                "Failed to load bitmap from URI"
+                            )
+                            return@forEach
+                        }
+                        document.addPage(bitmap)
                     }
-                    document.addPage(bitmap)
                 }
             }
         }

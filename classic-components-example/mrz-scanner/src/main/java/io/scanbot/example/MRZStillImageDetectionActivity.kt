@@ -11,6 +11,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+
+
 import io.scanbot.example.MRZResultActivity.Companion.newIntent
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
@@ -18,6 +20,7 @@ import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMrzStillImageScanningBinding
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
@@ -30,7 +33,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMrzStillImageScanningBinding.inflate(layoutInflater) }
     private val scanbotSdk by lazy { ScanbotSDK(this) }
-    private val mrzScanner by lazy { scanbotSdk.createMrzScanner().apply {
+    private val mrzScanner by lazy { scanbotSdk.createMrzScanner().getOrThrow().apply {
         setConfiguration(this.copyCurrentConfiguration().apply {
             // frame accumulation is not needed for still image scanning
             this.frameAccumulationConfiguration.minimumNumberOfRequiredFramesWithEqualScanningResult = 1
@@ -67,8 +70,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         docScannerResultLauncher =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { resultEntity ->
-                val document = resultEntity.result!!
+            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { document ->
                 page = document.pageAtIndex(0) ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error obtaining scanned page!")
                     this@MrzStillImageScanningActivity.showToast("Error obtaining scanned page!")
@@ -103,7 +105,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
     }
 
     private suspend fun scanMrz(page: Page) {
-        val result = mrzScanner.scanFromBitmap(page.documentImage, 0)
+        val result = mrzScanner.run(page.documentImageRef!!).getOrNull()
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
@@ -120,14 +122,15 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
 
     private suspend fun importImageToPage(uri: Uri) {
         val page = withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
+            val image = ImageRef.fromInputStream(inputStream)
 
-            val document = scanbotSdk.documentApi.createDocument()
-            val page = document.addPage(bitmap)
+            val document = scanbotSdk.documentApi.createDocument().getOrThrow() // can be handled with .getOrNull() if needed
+            val page = document.addPage(image).getOrThrow() // can be handled with .getOrNull() if needed
 
+            val documentScanner = scanbotSdk.createDocumentScanner().getOrThrow()
             val contourResult =
-                scanbotSdk.createDocumentScanner().scanFromBitmap(bitmap)?.pointsNormalized ?: kotlin.run {
+                documentScanner.run(image).getOrNull()?.pointsNormalized ?: kotlin.run {
                     Log.e(Const.LOG_TAG, "Error finding document on page " + page.uuid)
                     PolygonHelper.getFullPolygon()
                 }

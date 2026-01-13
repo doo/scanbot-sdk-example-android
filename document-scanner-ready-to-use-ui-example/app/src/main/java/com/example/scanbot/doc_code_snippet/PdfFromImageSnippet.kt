@@ -12,8 +12,8 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 
 
 class PdfFromImageSnippet : AppCompatActivity() {
@@ -55,11 +55,11 @@ class PdfFromImageSnippet : AppCompatActivity() {
             // notify the generator that the images are encrypted with global sdk-encryption settings
             val encryptionEnabled = false
             // Join the images into a PDF file.
-            val pdfFile = pdfGenerator.generateFromUris(
-                imageFileUris = list.toTypedArray(),
+            val pdfFile = pdfGenerator.generate(
+                imageFileUris = list,
                 sourceFilesEncrypted = encryptionEnabled,
                 config
-            )
+            ).getOrNull()
 
             if (pdfFile != null && pdfFile.exists()) {
                 // Do something with the PDF file

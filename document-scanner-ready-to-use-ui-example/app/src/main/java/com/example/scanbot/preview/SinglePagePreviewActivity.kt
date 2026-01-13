@@ -1,6 +1,5 @@
 package com.example.scanbot.preview
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -22,14 +21,6 @@ import com.example.scanbot.usecases.GenerateTiffForSharingUseCase
 import com.example.scanbot.utils.ExampleUtils
 import com.example.scanbot.utils.ExampleUtils.showEncryptedDocumentToast
 import com.example.scanbot.utils.applyEdgeToEdge
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.docprocessing.Page
-import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
-import io.scanbot.sdk.ui_v2.document.CroppingActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
-import io.scanbot.sdk.usecases.documents.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,10 +28,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
+import io.scanbot.common.onSuccess
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.docprocessing.Page
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.ui_v2.document.CroppingActivity
+import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
+import io.scanbot.sdk.usecases.documents.R
 
 class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener,
     CoroutineScope {
-
     private val scanbotSdk by lazy { ScanbotSDK(application) }
 
     private lateinit var imageView: ImageView
@@ -61,15 +59,13 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         get() = Dispatchers.Default + job
 
     private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
-        registerForActivityResultOk(CroppingActivity.ResultContract()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                result.result?.let { croppingResult ->
-                    document = scanbotSdk.documentApi.loadDocument(croppingResult.documentUuid)
-                        ?: throw IllegalStateException("No such document!")
-                    page = document.pages.firstOrNull()
-                        ?: throw IllegalStateException("No pages in document!")
-                    updateImageView()
-                }
+        registerForActivityResult(CroppingActivity.ResultContract()) { result ->
+            result.onSuccess { result ->
+                document = scanbotSdk.documentApi.loadDocument(result.documentUuid).getOrNull()
+                    ?: throw IllegalStateException("No such document!")
+                page = document.pages.firstOrNull()
+                    ?: throw IllegalStateException("No pages in document!")
+                updateImageView()
             }
         }
 
@@ -100,7 +96,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
 
         val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
             ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId)
+        document = scanbotSdk.documentApi.loadDocument(docId).getOrNull()
             ?: throw IllegalStateException("No such document!")
         page = document.pages.firstOrNull() ?: throw IllegalStateException("No pages in document!")
 
@@ -139,14 +135,15 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
             lifecycleScope.launch {
                 val imageQualityResult = withContext(Dispatchers.Default) {
                     // Result is represented by `DocumentQuality` enum.
-                    page.documentImage?.let {
-                        exampleSingleton.pageDocQualityAnalyzer().analyzeOnBitmap(it, 0)
+                    page.documentImageRef?.let {
+                        exampleSingleton.pageDocQualityAnalyzer()?.run(it)
                     }
                 }
                 withContext(Dispatchers.Main) {
-                    imageQualityResult?.let { qualityResult ->
+                    imageQualityResult?.getOrNull()?.let { qualityResult ->
                         val text = "Image quality: ${qualityResult.quality?.name}"
-                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@SinglePagePreviewActivity, text, Toast.LENGTH_LONG)
+                            .show()
 
                         updateImageView()
                         progress.visibility = View.GONE
@@ -202,7 +199,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         supportActionBar?.title = getString(R.string.scan_results)
     }
 
-    override fun onFilterApplied(filter: ParametricFilter) {
+    override fun onFilterApplied(filter: ParametricFilter?) {
         applyFilter(filter)
     }
 
@@ -222,12 +219,12 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         saveDocumentImage(false)
     }
 
-    private fun applyFilter(filter: ParametricFilter) {
+    private fun applyFilter(filter: ParametricFilter?) {
         if (!scanbotSdk.licenseInfo.isValid) showLicenseToast()
 
         progress.visibility = View.VISIBLE
         lifecycleScope.launch {
-            page.apply(newFilters = listOf(filter))
+            page.apply(newFilters = filter?.let { listOf(filter) })
             withContext(Dispatchers.Main) {
                 updateImageView()
                 progress.visibility = View.GONE

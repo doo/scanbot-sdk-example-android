@@ -1,12 +1,12 @@
 package com.example.scanbot.main
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,28 +16,27 @@ import com.example.scanbot.Const
 import com.example.scanbot.preview.DocumentPreviewActivity
 import com.example.scanbot.preview.SinglePagePreviewActivity
 import com.example.scanbot.utils.applyEdgeToEdge
-import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
-import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.common.activity.registerForActivityResultOk
-import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
-import io.scanbot.sdk.usecases.documents.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.sdk.common.AspectRatio
-import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerActivity
-import io.scanbot.sdk.ui_v2.barcode.configuration.BarcodeScannerScreenConfiguration
+import io.scanbot.common.onCancellation
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
+import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.ui_v2.common.ScanbotColor
+import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
+import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+import io.scanbot.sdk.usecases.documents.R
+import io.scanbot.sdk.util.toImageRef
 
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSDK = ScanbotSDK(this@MainActivity)
 
     private lateinit var documentScannerResult: ActivityResultLauncher<DocumentScanningFlow>
-    private lateinit var pictureForDocDetectionResult: ActivityResultLauncher<Intent>
+    private lateinit var pictureForDocDetectionResult: ActivityResultLauncher<PickVisualMediaRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,32 +44,33 @@ class MainActivity : AppCompatActivity() {
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         documentScannerResult =
-            registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { activityResult ->
-                if (activityResult.resultCode == Activity.RESULT_OK && activityResult.result != null) {
-                    val document = activityResult.result!!
+            registerForActivityResult(DocumentScannerActivity.ResultContract()) { activityResult ->
+                activityResult.onSuccess { document ->
                     runPreviewScreen(document.uuid, singlePageOnly = document.pages.size == 1)
-                } else processNotOkResult()
+                }.onCancellation {
+                    processNotOkResult()
+                }.onFailure {
+                    processNotOkResult()
+                }
             }
 
         pictureForDocDetectionResult =
-            this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-                if (activityResult.resultCode == Activity.RESULT_OK) {
-                    activityResult.data?.let { imagePickerResult ->
-                        lifecycleScope.launch {
-                            withContext(Dispatchers.Default) {
-                                val document = scanbotSDK.documentApi.createDocument()
-                                getUrisFromGalleryResult(imagePickerResult)
-                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                    .map { it.toBitmap(contentResolver) }
-                                    .forEach { bitmap ->
-                                        if (bitmap == null) {
-                                            Log.e("MainActivity", "Failed to load bitmap from URI")
-                                            return@forEach
-                                        }
-                                        document.addPage(bitmap)
+            this.registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Default) {
+                        scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                            uri?.toImageRef(contentResolver)?.getOrNull()
+                                .also { image ->
+                                    if (image == null) {
+                                        Log.e(
+                                            "MainActivity",
+                                            "Failed to load image from URI"
+                                        )
+                                        return@also
                                     }
-                                runImagesFromGalleryScanner(document.uuid)
-                            }
+                                    document.addPage(image)
+                                }
+                            runImagesFromGalleryScanner(document.uuid)
                         }
                     }
                 }
@@ -102,7 +102,10 @@ class MainActivity : AppCompatActivity() {
         val config = DocumentScanningFlow().apply {
             this.outputSettings.pagesScanLimit = 1
             this.screens.camera.scannerParameters.aspectRatios = listOf(
-                AspectRatio(width = 21.0, height = 29.7) // allow only A4 format documents to be scanned
+                AspectRatio(
+                    width = 21.0,
+                    height = 29.7
+                ) // allow only A4 format documents to be scanned
             )
         }
         documentScannerResult.launch(config)
@@ -134,23 +137,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun importImagesFromLibrary() {
-        val imageIntent = Intent()
-        imageIntent.type = "image/*"
-        imageIntent.action = Intent.ACTION_GET_CONTENT
-        imageIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, false)
-        imageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-        imageIntent.putExtra(
-            Intent.EXTRA_MIME_TYPES,
-            arrayOf("image/jpeg", "image/png", "image/webp", "image/heic")
+        pictureForDocDetectionResult.launch(
+            PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                .setDefaultTab(ActivityResultContracts.PickVisualMedia.DefaultTab.PhotosTab)
+                .build()
         )
-        pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    private suspend fun createDocumentFromUris(uris: List<Uri>): Document {
+    private suspend fun createDocumentFromUris(uris: List<Uri>): Document? {
         return withContext(Dispatchers.Default) {
-            val document = scanbotSDK.documentApi.createDocument()
+            val document = scanbotSDK.documentApi.createDocument().getOrNull()
             uris.forEach { imageUri ->
-                document.addPage(imageUri)
+                document?.addPage(imageUri)
             }
             document
         }

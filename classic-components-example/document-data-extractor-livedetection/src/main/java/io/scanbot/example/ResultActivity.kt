@@ -9,9 +9,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
-import io.scanbot.sdk.genericdocument.entity.Field
+import io.scanbot.sdk.genericdocument.Field
 
 
 class ResultActivity : AppCompatActivity() {
@@ -73,7 +74,7 @@ private class Adapter(
             val confidence = String.format(FIELD_CONFIDENCE_FLOAT_FORMAT, (item.value?.confidence ?: 0.0) * 100)
 
             fieldType.text = String.format(FIELD_TYPE_FORMAT, item.type.name.capitalize())
-            fieldCroppedImage.setImageBitmap(item.image?.toBitmap())
+            fieldCroppedImage.setImageBitmap(item.image?.toBitmap()?.getOrNull())
             fieldTextConfidence.text = String.format(FIELD_CONFIDENCE_FORMAT, confidence)
             fieldExtractedText.text = item.value?.text
         }
@@ -85,7 +86,7 @@ private class Adapter(
         private val cardType: TextView = itemView.findViewById(R.id.cardType)
 
         fun bind(item: DocumentDataExtractionResult) {
-            croppedCard.setImageBitmap(item.croppedImage?.toBitmap())
+            croppedCard.setImageBitmap(item.croppedImage?.toBitmap()?.getOrNull())
             cardType.text = item.document?.type?.name
         }
     }

@@ -8,14 +8,14 @@ import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.scanbot.example.FiltersListener
 import io.scanbot.example.R
-import io.scanbot.sdk.imagefilters.BrightnessFilter
-import io.scanbot.sdk.imagefilters.ColorDocumentFilter
-import io.scanbot.sdk.imagefilters.ContrastFilter
-import io.scanbot.sdk.imagefilters.CustomBinarizationFilter
-import io.scanbot.sdk.imagefilters.GrayscaleFilter
-import io.scanbot.sdk.imagefilters.ParametricFilter
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.imagefilters.WhiteBlackPointFilter
+import io.scanbot.sdk.imageprocessing.BrightnessFilter
+import io.scanbot.sdk.imageprocessing.ColorDocumentFilter
+import io.scanbot.sdk.imageprocessing.ContrastFilter
+import io.scanbot.sdk.imageprocessing.CustomBinarizationFilter
+import io.scanbot.sdk.imageprocessing.GrayscaleFilter
+import io.scanbot.sdk.imageprocessing.ParametricFilter
+import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
+import io.scanbot.sdk.imageprocessing.WhiteBlackPointFilter
 
 /** Represents bottom menu sheet for page filters screen. */
 class FiltersBottomSheetMenuFragment : BottomSheetDialogFragment() {

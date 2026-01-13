@@ -5,9 +5,9 @@ import android.util.Log
 import android.widget.Toast
 import io.scanbot.example.util.SharingCopier
 import io.scanbot.sap.IScanbotSDKLicenseErrorHandler
-import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.licensing.LicenseStatus
 import io.scanbot.sdk.pdf.PdfImagesExtractor
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.page.PageStorageSettings
@@ -49,34 +49,31 @@ class Application : Application(), CoroutineScope {
     override fun onCreate() {
         super.onCreate()
         val sdkLicenseInfo = ScanbotSDKInitializer()
-            .withLogging(BuildConfig.DEBUG)
-            // Optional, custom SDK files directory. Please see the comments below!
-            .sdkFilesDirectory(this, customStorageDirectory())
-            .usePageStorageSettings(
-                PageStorageSettings.Builder()
-                    .imageFormat(CameraImageFormat.JPG)
-                    .imageQuality(80)
-                    .previewTargetMax(1500)
-                    .build()
-            )
-            .prepareOCRLanguagesBlobs(true)
-            .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
-            .useFileEncryption(
-                USE_ENCRYPTION,
-                AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD)
-            )
-            .licenceErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
-                // Optional license failure handler implementation. Handle license issues here.
-                // A license issue can either be an invalid or expired license key
-                // or missing SDK feature (see SDK feature packages on https://scanbot.io).
-                val errorMsg = if (status != Status.StatusOkay && status != Status.StatusTrial) {
-                    "License Error! License status: ${status.name}. $statusMessage"
-                } else {
-                    "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"
-                }
-                Log.d("ScanbotSDKExample", errorMsg)
-                Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
-            })
+                .withLogging(BuildConfig.DEBUG)
+                // Optional, custom SDK files directory. Please see the comments below!
+                .sdkFilesDirectory(this, customStorageDirectory())
+                .usePageStorageSettings(
+                        PageStorageSettings.Builder()
+                                .imageFormat(CameraImageFormat.JPG)
+                                .imageQuality(80)
+                                .previewTargetMax(1500)
+                                .build()
+                )
+                .prepareOCRLanguagesBlobs(true)
+                .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
+                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
+                .licenseErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
+                    // Optional license failure handler implementation. Handle license issues here.
+                    // A license issue can either be an invalid or expired license key
+                    // or missing SDK feature (see SDK feature packages on https://scanbot.io).
+                    val errorMsg = if (status != LicenseStatus.OKAY && status != LicenseStatus.TRIAL) {
+                        "License Error! License status: ${status.name}. $statusMessage"
+                    } else {
+                        "License Error! Missing SDK feature in license: ${feature.name}. $statusMessage"
+                    }
+                    Log.d("ScanbotSDKExample", errorMsg)
+                    Toast.makeText(this@Application, errorMsg, Toast.LENGTH_LONG).show()
+                })
 
             // Uncomment to switch back to the legacy camera approach in Ready-To-Use UI screens
             // .useCameraXRtuUi(false)
@@ -89,7 +86,7 @@ class Application : Application(), CoroutineScope {
 
         launch {
             // Leaving as is to clean end-users' storage for next several app updates.
-            ScanbotSDK(this@Application).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@Application).documentApi.deleteAllDocuments()
             SharingCopier.clear(this@Application)
         }
     }

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "io.scanbot.sdk.usecases.documents"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.scanbot.example.document.usecases.android"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -35,16 +35,15 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
-def scanbotSdkVersion = "7.1.2"
+def scanbotSdkVersion =  "8.0.0"
 
 dependencies {
 
     implementation("io.scanbot:sdk-multitasktext-assets:$scanbotSdkVersion")
-    implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-docqualityanalyzer-assets:$scanbotSdkVersion")
     implementation("io.scanbot:bundle-sdk-barcode-assets:$scanbotSdkVersion")
     implementation("io.scanbot:sdk-package-1:$scanbotSdkVersion")

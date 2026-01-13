@@ -4,10 +4,10 @@ package com.example.scanbot.doc_code_snippet
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.core.ImageRotation
-import io.scanbot.sdk.imagefilters.BrightnessFilter
-import io.scanbot.sdk.imagefilters.OutputMode
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
+import io.scanbot.sdk.image.ImageRotation
+import io.scanbot.sdk.imageprocessing.BrightnessFilter
+import io.scanbot.sdk.imageprocessing.OutputMode
+import io.scanbot.sdk.imageprocessing.ScanbotBinarizationFilter
 
 
 class PageFilterSnippet : AppCompatActivity() {
@@ -23,7 +23,7 @@ class PageFilterSnippet : AppCompatActivity() {
     fun startFiltering() {
         // @Tag("Processing Scanned Page")
         // Retrieve the scanned document
-        val document = scanbotSDK.documentApi.loadDocument("SOME_SAVED_UUID")
+        val document = scanbotSDK.documentApi.loadDocument("SOME_SAVED_UUID").getOrNull()
 
         // Retrieve the selected document page.
         document?.pages?.forEach { page ->

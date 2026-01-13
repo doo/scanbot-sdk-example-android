@@ -4,19 +4,21 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.camera.CameraModule
 import io.scanbot.sdk.camera.CameraOpenCallback
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.FinderPictureCallback
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.camera.PictureCallback
 import io.scanbot.sdk.camera.ScanbotCameraView
 import io.scanbot.sdk.document.DocumentAutoSnappingController
-import io.scanbot.sdk.document.DocumentDetectionResult
-import io.scanbot.sdk.document.DocumentScanner
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.documentscanner.DocumentDetectionResult
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
@@ -82,7 +84,7 @@ fun continuousFocusSnippet(cameraView: ScanbotCameraXView) {
 fun onPictureTakenSnippet(cameraView: ScanbotCameraXView) {
     cameraView.addPictureCallback(object : PictureCallback() {
         // @Tag("onPictureTaken() example")
-        override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+        override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
             // image processing ...
             // ...
 
@@ -134,32 +136,28 @@ fun isFlashEnabled(cameraView: ScanbotCameraXView) {
 
 fun startDocumentScannerSnippet(cameraView: ScanbotCameraXView, context: Context) {
     // @Tag("Start Document Scanner (full example)")
-    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
+    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
 
-    val frameHandler = DocumentScannerFrameHandler(context, scanner)
+    val frameHandler = DocumentScannerFrameHandler( scanner)
     cameraView.addFrameHandler(frameHandler)
     // @EndTag("Start Document Scanner (full example)")
 }
 
 fun startDocumentScannerShortSnippet(cameraView: ScanbotCameraXView, context: Context) {
     // @Tag("Start Document Scanner (short)")
-    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
+    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
     val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
     // @EndTag("Start Document Scanner (short)")
 }
 
 fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
     // @Tag("Handle results")
-    frameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
-        when (result) {
-            is FrameHandlerResult.Success -> {
-                result.value
-                // handle result here result.value.detectionResult
-            }
-
-            is FrameHandlerResult.Failure -> {
-                // there is a license problem that needs to be handled
-            }
+    frameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result, frame ->
+        result.onSuccess { detectedFrame ->
+            detectedFrame
+            // handle result here detectedFrame.detectionResult
+        }.onFailure { exception ->
+            // there is a license or other sdk problem that needs to be handled
         }
         false
     })
@@ -168,7 +166,7 @@ fun handleResultSnippet(frameHandler: DocumentScannerFrameHandler) {
 
 fun documentScanningParamsSnippet(cameraView: ScanbotCameraXView, context: Context) {
     // @Tag("Customize Document Scanner Parameters")
-    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
+    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
     val frameHandler = DocumentScannerFrameHandler.attach(cameraView, scanner)
     scanner.setConfiguration(scanner.copyCurrentConfiguration().apply {
         this.parameters.acceptedSizeScore = 80
@@ -193,7 +191,7 @@ fun autoSnappingSnippet(
     context: Context
 ) {
     // @Tag("Attach DocumentAutoSnappingController")
-    val documentScanner = ScanbotSDK(context).createDocumentScanner()
+    val documentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
     val documentScannerFrameHandler =
         DocumentScannerFrameHandler.attach(cameraView, documentScanner)
     val autoSnappingController =
@@ -221,15 +219,11 @@ fun autoSnappingVisualisationSnippet(
 
 fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentScannerFrameHandler) {
     // @Tag("Handle Document Scanning Results")
-    documentScannerFrameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result ->
-        when (result) {
-            is FrameHandlerResult.Success -> {
-                // handle result here result.value.detectionResult
-            }
-
-            is FrameHandlerResult.Failure -> {
-                // there is a license problem that needs to be handled
-            }
+    documentScannerFrameHandler.addResultHandler(DocumentScannerFrameHandler.ResultHandler { result, frame ->
+        result.onSuccess { detectedFrame ->
+            // Handle successful document detection result
+        }.onFailure { exception ->
+            // Handle error during document detection
         }
         false
     })
@@ -239,12 +233,12 @@ fun handlingDocumentScanningResultSnippet(documentScannerFrameHandler: DocumentS
 fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Context) {
     // @Tag("Handle Camera Picture")
     // Create one instance per screen
-    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner()
+    val scanner: DocumentScanner = ScanbotSDK(context).createDocumentScanner().getOrThrow()
 
     //...
 
     cameraView.addPictureCallback(object : PictureCallback() {
-        override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+        override fun onPictureTaken(imageRef: ImageRef, captureInfo: CaptureInfo) {
             fun restartCamera() {
                 // Continue with the camera preview to scan the next image:
                 cameraView.post {
@@ -254,21 +248,21 @@ fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Contex
             }
 
             // Decode image byte array to Bitmap, and rotate according to orientation:
-            val bitmap =
-                ImageProcessor(image).rotate(captureInfo.imageOrientation).processedBitmap()
+            val image =
+                ImageProcessor(imageRef).rotate(captureInfo.imageOrientation).processedImageRef()
 
-            if (bitmap == null) {
+            if (image == null) {
                 // license or feature is not available
                 restartCamera()
                 return
             }
 
             // Run document contour detection on original image:
-            val scanningResult = scanner.scanFromBitmap(bitmap)
+            val scanningResult = scanner.run(image).getOrNull()
             val documentPolygon = scanningResult?.pointsNormalized
             if (documentPolygon != null) {
                 // And crop using detected polygon to get the final document image:
-                val documentImage = ImageProcessor(bitmap).crop(documentPolygon).processedBitmap()
+                val documentImage = ImageProcessor(image).crop(documentPolygon).processedBitmap()
 
                 // Work with the final document image (store it as a file, etc)
                 // ...
@@ -301,11 +295,11 @@ fun finderPictureCallbackSnippet(cameraView: ScanbotCameraXView, context: Contex
 fun editPolygonViewSetPointsSnippet(
     editPolygonView: EditPolygonImageView,
     context: Context,
-    image: Bitmap
+    image: ImageRef
 ) {
     // @Tag("Set Scanned Contour to EditPolygonImageView")
-    val scanner = ScanbotSDK(context).createDocumentScanner()
-    val scanningResult = scanner.scanFromBitmap(image)
+    val scanner = ScanbotSDK(context).createDocumentScanner().getOrNull()
+    val scanningResult = scanner?.run(image)?.getOrNull()
     editPolygonView.polygon = scanningResult?.pointsNormalized ?: emptyList()
     // @EndTag("Set Scanned Contour to EditPolygonImageView")
 }

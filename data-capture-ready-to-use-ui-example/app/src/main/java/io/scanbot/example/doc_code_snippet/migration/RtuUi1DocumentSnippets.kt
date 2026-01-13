@@ -1,5 +1,9 @@
 package io.scanbot.example.doc_code_snippet.migration
 
+/** Legacy SDK Snippets
+
+package io.scanbot.example.doc_code_snippet.migration
+
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
@@ -10,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.R
 import io.scanbot.sdk.*
 import io.scanbot.sdk.common.*
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.persistence.page.*
 import io.scanbot.sdk.ui.*
 import io.scanbot.sdk.ui.view.camera.*
@@ -178,3 +183,5 @@ private fun openDocumentScannerRtuV1WithFinder(finderScannerResultLauncher: Acti
     finderScannerResultLauncher.launch(configuration)
 }
 // @EndTag("Configure Finder Document Scanner RTU v1")
+
+ */

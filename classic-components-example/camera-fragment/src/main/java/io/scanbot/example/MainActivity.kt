@@ -1,7 +1,6 @@
 package io.scanbot.example
 
 import android.Manifest
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,19 +11,30 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+
+
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.document.DocumentScanner
+import io.scanbot.sdk.common.catchWithResult
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
+
 class MainActivity : AppCompatActivity() {
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val scanner: DocumentScanner by lazy { scanbotSdk.createDocumentScanner() }
+    private val scanner: DocumentScanner? by lazy { scanbotSdk.createDocumentScanner().getOrNull() }
 
     private val requestCameraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -50,7 +60,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (scanbotSdk.licenseInfo.isValid) {
-                lifecycleScope.launch { processImageForAutoDocumentScanning(uri) }
+                lifecycleScope.launch {
+                    scanner?.let {
+                        processImageForAutoDocumentScanning(
+                            uri,
+                            it
+                        )
+                    }
+                }
             } else {
                 this@MainActivity.showToast("1-minute trial license has expired!")
             }
@@ -59,6 +76,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
@@ -85,7 +103,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Imports a selected image as original image and performs auto document scanning on it. */
-    private suspend fun processImageForAutoDocumentScanning(imageUri: Uri) {
+    private suspend fun processImageForAutoDocumentScanning(
+        imageUri: Uri,
+        scanner: DocumentScanner
+    ) {
         val progressBar = findViewById<View>(R.id.progress_bar)
         val importResultImage = findViewById<ImageView>(R.id.import_result)
         withContext(Dispatchers.Main) {
@@ -93,33 +114,38 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.showToast("Importing image...")
         }
 
-        val page = withContext(Dispatchers.Default) {
-            // load the selected image:
-            val inputStream = contentResolver.openInputStream(imageUri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+        val documentImage = withContext(Dispatchers.Default) {
+            catchWithResult {
+                // load the selected image:
+                val inputStream = contentResolver.openInputStream(imageUri)
+                    ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
+                val image = ImageRef.fromInputStream(inputStream)
 
-            // create a new Document object with given image as original image:
-            val newDocument = scanbotSdk.documentApi.createDocument()
-            val page = newDocument.addPage(bitmap)
+                // create a new Document object with given image as original image:
+                val newDocument = scanbotSdk.documentApi.createDocument()
+                    .getOrReturn() // can be handled with .getOrNull() if needed
+                val page = newDocument.addPage(image)
+                    .getOrReturn() // can be handled with .getOrNull() if needed
 
-            // run auto document scanning on it:
-            val result = scanner.scanFromBitmap(bitmap)
+                // run auto document scanning on it:
+                val result = scanner.run(image).getOrReturn()
 
-            /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
-             * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
-             */
-            val statusOk = (result?.status?.name?.startsWith("OK_")) ?: false
-            if (result != null && statusOk && result.pointsNormalized.isNotEmpty()) {
-                // apply the detected polygon to the new page:
-                page.apply(newPolygon = result.pointsNormalized)
-            }
-            page
+                /** We allow all `OK_*` [statuses][io.scanbot.sdk.documentscanner.DocumentDetectionStatus] just for purpose of this example.
+                 * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
+                 */
+                val statusOk = (result.status.name.startsWith("OK_"))
+                if (statusOk && result.pointsNormalized.isNotEmpty()) {
+                    // apply the detected polygon to the new page:
+                    page.apply(newPolygon = result.pointsNormalized)
+                }
+                page.documentImage
+            }.getOrNull()
         }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
             // show Page's document image:
-            importResultImage.setImageBitmap(page.documentImage)
+            importResultImage.setImageBitmap(documentImage)
             importResultImage.visibility = View.VISIBLE
         }
     }

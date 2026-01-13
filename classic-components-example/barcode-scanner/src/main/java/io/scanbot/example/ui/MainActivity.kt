@@ -1,20 +1,16 @@
 package io.scanbot.example.ui
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
+
+
 import io.scanbot.example.R
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
@@ -23,12 +19,20 @@ import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.example.model.BarcodeResultBundle
 import io.scanbot.example.repository.BarcodeResultRepository
 import io.scanbot.example.repository.BarcodeTypeRepository
-import io.scanbot.sap.Status
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.barcode.setBarcodeFormats
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.licensing.LicenseStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity() {
 
@@ -89,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        binding.warningView.isVisible = ScanbotSDK(this).licenseInfo.status == Status.StatusTrial
+        binding.warningView.isVisible = ScanbotSDK(this).licenseInfo.status == LicenseStatus.TRIAL
     }
 
     private suspend fun scanBarcodeAndShowResult(uri: Uri) {
@@ -98,16 +102,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
+            val imageRef = ImageRef.fromInputStream(inputStream)
 
-            val scanner = scanbotSdk.createBarcodeScanner()
+            val scanner = scanbotSdk.createBarcodeScanner().getOrThrow()
             scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
                 setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
             } )
-            val result = scanner.scanFromBitmap(bitmap, 0)
+            val result = scanner.run(imageRef).getOrNull()
 
-            BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, null, null) }
+            BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, imageRef) }
         }
 
         withContext(Dispatchers.Main) {

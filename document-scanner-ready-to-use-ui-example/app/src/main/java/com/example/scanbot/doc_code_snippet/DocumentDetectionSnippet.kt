@@ -9,14 +9,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.scanbot.common.onSuccess
 import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.util.isDefault
+import io.scanbot.sdk.util.toImageRef
 
 
 class DocumentDetectionSnippet : AppCompatActivity() {
@@ -36,21 +37,22 @@ class DocumentDetectionSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e(
-                                            "StandaloneCropSnippet",
-                                            "Failed to load bitmap from URI"
-                                        )
-                                        return@forEach
+                            scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                getUrisFromGalleryResult(imagePickerResult)
+                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                    .map { it.toImageRef(contentResolver).getOrNull() }
+                                    .forEach { image ->
+                                        if (image == null) {
+                                            Log.e(
+                                                "StandaloneCropSnippet",
+                                                "Failed to load image from URI"
+                                            )
+                                            return@forEach
+                                        }
+                                        document.addPage(image)
                                     }
-                                    document.addPage(bitmap)
-                                }
-                            startCropping(document)
+                                startCropping(document)
+                            }
                         }
                     }
                 }
@@ -59,12 +61,12 @@ class DocumentDetectionSnippet : AppCompatActivity() {
 
     // @Tag("Direct Document detection on page")
     // Create a document detector instance
-    val documentScanner = scanbotSDK.createDocumentScanner()
+    val documentScanner = scanbotSDK.createDocumentScanner().getOrNull()
 
     fun startCropping(document: Document) {
         document.pages.forEach { page ->
             // Run detection on the created page
-            val detectionResult = documentScanner.scanFromBitmap(page.originalImage!!)
+            val detectionResult = documentScanner?.run(page.originalImageRef!!)?.getOrNull()
             // Check the result and retrieve the detected polygon.
             if (detectionResult != null &&
                 detectionResult.pointsNormalized.isNotEmpty() &&

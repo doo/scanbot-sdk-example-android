@@ -5,15 +5,16 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
-import io.scanbot.sdk.common.AspectRatio
-import io.scanbot.sdk.documentdata.DocumentDataExtractionMode
 import io.scanbot.sdk.documentdata.DocumentDataExtractionStatus
 import io.scanbot.sdk.documentdata.DocumentDataExtractor
 import io.scanbot.sdk.documentdata.DocumentDataExtractorFrameHandler
+import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui.camera.*
 
 class ScannerActivity : AppCompatActivity() {
@@ -21,8 +22,6 @@ class ScannerActivity : AppCompatActivity() {
     private lateinit var resultTextView: TextView
 
     private lateinit var frameHandler: DocumentDataExtractorFrameHandler
-
-    private lateinit var dataExtractor: DocumentDataExtractor
 
     private var useFlash = false
 
@@ -34,35 +33,36 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
-        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(
-            AspectRatio(4.0, 3.0)
-        ))
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(
+            listOf(
+                AspectRatio(4.0, 3.0)
+            )
+        )
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
 
         val scanbotSdk = ScanbotSDK(this)
-        dataExtractor = scanbotSdk.createDocumentDataExtractor()
+        scanbotSdk.createDocumentDataExtractor().onSuccess { dataExtractor ->
+            frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor)
 
-        frameHandler = DocumentDataExtractorFrameHandler.attach(cameraView, dataExtractor, DocumentDataExtractionMode.LIVE)
-
-        frameHandler.addResultHandler { result ->
-            val resultText: String = when (result) {
-                is FrameHandlerResult.Success -> {
-                    if (result.value.status == DocumentDataExtractionStatus.SUCCESS) {
-                            frameHandler.isEnabled = false
-                            DocumentsResultsStorage.result = result.value
-                            startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
-                            finish()
+            frameHandler.addResultHandler { result, frame ->
+                result.mapSuccess { value ->
+                    val resultText: String = if (value.status == DocumentDataExtractionStatus.OK) {
+                        frameHandler.isEnabled = false
+                        DocumentsResultsStorage.result = value
+                        startActivity(Intent(this@ScannerActivity, ResultActivity::class.java))
+                        finish()
+                        value.status.toString()
+                    } else {
+                        "Document data not found"
                     }
-                    result.value.status.toString()
+                    runOnUiThread { resultTextView.text = resultText }
                 }
-                is FrameHandlerResult.Failure -> "Check your setup or license"
+                false
             }
-
-            runOnUiThread { resultTextView.text =  resultText}
-
-            false
         }
+
+
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)

@@ -2,9 +2,9 @@ package io.scanbot.example
 
 import android.app.Application
 import io.scanbot.example.common.Const
-import io.scanbot.sap.SdkFeature
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.ScanbotSDKInitializer
+import io.scanbot.sdk.licensing.Feature
 import io.scanbot.sdk.util.log.LoggerProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,11 +37,9 @@ class ExampleApplication : Application(), CoroutineScope {
             .withLogging(true)
             // TODO 2/2: Enable the Scanbot SDK license key
             //.license(this, licenseKey)
-            .licenceErrorHandler { status, feature, statusMessage ->
+            .licenseErrorHandler { status, feature, statusMessage ->
                 logger.d(Const.LOG_TAG, "+++> License status: ${status.name}. Status message: $statusMessage")
-                if (feature != SdkFeature.NoSdkFeature) {
-                    logger.d(Const.LOG_TAG, "+++> Feature not available: ${feature.name}")
-                }
+                logger.d(Const.LOG_TAG, "+++> Feature not available: ${feature.name}")
             }
             //.sdkFilesDirectory(this, getExternalFilesDir(null)!!)
             .initialize(this)
@@ -51,11 +49,11 @@ class ExampleApplication : Application(), CoroutineScope {
         val licenseInfo = ScanbotSDK(this).licenseInfo
         logger.d(Const.LOG_TAG, "License status: ${licenseInfo.status}")
         logger.d(Const.LOG_TAG, "License isValid: ${licenseInfo.isValid}")
-        logger.d(Const.LOG_TAG, "License expirationDate: ${licenseInfo.expirationDate}")
+        logger.d(Const.LOG_TAG, "License expirationDate: ${licenseInfo.expirationDateString}")
 
         launch {
             // Clear all previously created documents in storage
-            ScanbotSDK(this@ExampleApplication).getSdkComponent()!!.provideDocumentStorage().deleteAll()
+            ScanbotSDK(this@ExampleApplication).documentApi.deleteAllDocuments()
         }
     }
 }

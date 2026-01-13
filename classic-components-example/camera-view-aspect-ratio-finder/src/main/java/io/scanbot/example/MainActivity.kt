@@ -13,20 +13,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import io.scanbot.common.Result
+import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.*
-import io.scanbot.sdk.common.AspectRatio
-import io.scanbot.sdk.document.DocumentDetectionStatus
-import io.scanbot.sdk.document.DocumentScanner
-import io.scanbot.sdk.document.DocumentScannerParameters
 import io.scanbot.sdk.document.DocumentAutoSnappingController
 import io.scanbot.sdk.document.DocumentScannerFrameHandler
+import io.scanbot.sdk.documentscanner.DocumentDetectionResult
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.documentscanner.DocumentScannerParameters
+import io.scanbot.sdk.documentscanner.DocumentScanningResult
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.AdaptiveFinderOverlayView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ShutterButton
+import io.scanbot.sdk.util.PolygonHelper
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHandler {
     private lateinit var cameraView: ScanbotCameraXView
@@ -46,7 +60,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         super.onCreate(savedInstanceState)
 
         scanbotSDK = ScanbotSDK(this)
-        scanner = scanbotSDK.createDocumentScanner()
+        scanner = scanbotSDK.createDocumentScanner().getOrThrow()
 
         askPermission()
         setContentView(R.layout.activity_main)
@@ -74,9 +88,11 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
         val finderOverlayView = findViewById<View>(R.id.finder_overlay) as AdaptiveFinderOverlayView
         finderOverlayView.setRequiredAspectRatios(requiredPageAspectRatios)
-        scanner.setParameters(scanner.copyCurrentConfiguration().parameters.apply {
-            this.aspectRatios = requiredPageAspectRatios
-            this.ignoreOrientationMismatch = true
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().apply {
+            parameters.apply {
+                this.aspectRatios = requiredPageAspectRatios
+                this.ignoreOrientationMismatch = true
+            }
         })
         frameHandler.addResultHandler(finderOverlayView.documentScannerFrameHandler)
         frameHandler.addResultHandler(this)
@@ -86,7 +102,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
 
         cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
+            override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
                 processPictureTaken(image, captureInfo.imageOrientation)
             }
         })
@@ -113,14 +129,18 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         }
     }
 
-    override fun handle(result: FrameHandlerResult<DocumentScannerFrameHandler.DetectedFrame, SdkLicenseError>): Boolean {
+    override fun handle(
+        result: Result<DocumentDetectionResult>,
+        frame: FrameHandler.Frame
+    ): Boolean {
         // Here you are continuously notified about document scanning results.
         // For example, you can show a user guidance text depending on the current scanning status.
-        userGuidanceHint.post {
-            if (result is FrameHandlerResult.Success) {
-                showUserGuidance(result.value.detectionStatus)
+        result.onSuccess { value ->
+            userGuidanceHint.post {
+                showUserGuidance(value.status)
             }
         }
+
         return false // typically you need to return false
     }
 
@@ -173,47 +193,29 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         lastUserGuidanceHintTs = System.currentTimeMillis()
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
-        // Here we get the full (original) image from the camera.
+    private fun processPictureTaken(image: ImageRef, imageOrientation: Int) {
 
-        // Decode Bitmap from bytes of original image:
-        val options = BitmapFactory.Options()
-
-        // Please note: In this simple demo we downscale the original image to 1/8 for the preview!
-        options.inSampleSize = 8
-
-        // Typically you will need the full resolution of the original image! So please change the "inSampleSize" value to 1!
-        //options.inSampleSize = 1
-        var originalBitmap = BitmapFactory.decodeByteArray(image, 0, image.size, options)
-
-        // Rotate the original image based on the imageOrientation value.
-        // Required for some Android devices like Samsung!
-        if (imageOrientation > 0) {
-            val matrix = Matrix()
-            matrix.setRotate(
-                imageOrientation.toFloat(),
-                originalBitmap.width / 2f,
-                originalBitmap.height / 2f
-            )
-            originalBitmap = Bitmap.createBitmap(
-                originalBitmap,
-                0,
-                0,
-                originalBitmap.width,
-                originalBitmap.height,
-                matrix,
-                false
-            )
-        }
-
-        scanner.setParameters(DocumentScannerParameters(aspectRatios = requiredPageAspectRatios))
-        val polygon = scanner.scanFromBitmap(originalBitmap)!!.pointsNormalized
-
-        val documentImage = ImageProcessor(originalBitmap).crop(polygon).processedBitmap()
-        resultView.post {
-            resultView.setImageBitmap(documentImage)
-            cameraView.continuousFocus()
-            cameraView.startPreview()
+        scanner.setConfiguration(scanner.copyCurrentConfiguration().apply {
+            parameters.apply {
+                this.aspectRatios = requiredPageAspectRatios
+                this.ignoreOrientationMismatch = true
+            }
+        })
+        val image = scanner.run(image).mapSuccess { result ->
+            val polygon = result.pointsNormalized
+            polygon.takeIf { it.isNotEmpty() && it.size == 4 } ?: PolygonHelper.getFullPolygon()
+        }.mapSuccess { polygonCrop ->
+            var documentImage = ScanbotSdkImageProcessor.create()
+                .crop(image, polygonCrop)
+                .getOrReturn()
+            ScanbotSdkImageProcessor.create().resize(documentImage, 200).getOrReturn()
+        }.onSuccess { documentImage ->
+            resultView.post {
+                resultView.setImageBitmap(documentImage.toBitmap().getOrNull())
+                documentImage.close()
+                cameraView.continuousFocus()
+                cameraView.startPreview()
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "io.scanbot.example"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.scanbot.example.sdk.rtu.android"
@@ -74,10 +74,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
-    def scanbotSdkVersion = "7.1.2"
+    def scanbotSdkVersion = "8.0.0"
 
     implementation("io.scanbot:sdk-package-4:$scanbotSdkVersion")
-    implementation("io.scanbot:sdk-package-ui:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use the Generic Document Recognizer feature
@@ -95,17 +94,11 @@ dependencies {
     // This dependency is only needed if you plan to use Credit Card Scanner feature
     implementation("io.scanbot:sdk-creditcard-assets:$scanbotSdkVersion")
 
-    // This dependency is only needed if you plan to use EHIC scanner feature
-    implementation("io.scanbot:sdk-ehic-assets:$scanbotSdkVersion")
-
     // This dependency is only needed if you plan to use MRZ scanner feature
     implementation("io.scanbot:sdk-mrz-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use Check recognizer feature
     implementation("io.scanbot:sdk-check-assets:$scanbotSdkVersion")
-
-    // This dependency is only needed if you plan to use ImageProcessor feature on ML assets. See comment in Application class.
-    implementation("io.scanbot:sdk-ml-imageprocessor-assets:$scanbotSdkVersion")
 
     // This dependency is only needed if you plan to use Pdfium processor for import export of pdfs. See comment in Application class.
     implementation("io.scanbot:bundle-sdk-pdfium:$scanbotSdkVersion")

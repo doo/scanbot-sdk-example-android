@@ -7,6 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.databinding.ActivityMainBinding
 
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
+
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }

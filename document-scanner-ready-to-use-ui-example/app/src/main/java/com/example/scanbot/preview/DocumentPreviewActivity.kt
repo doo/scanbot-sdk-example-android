@@ -24,7 +24,6 @@ import com.example.scanbot.utils.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
-import io.scanbot.sdk.imagefilters.ParametricFilter
 import io.scanbot.sdk.usecases.documents.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
+import io.scanbot.sdk.imageprocessing.ParametricFilter
 
 class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListener, CoroutineScope {
 
@@ -64,7 +64,7 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
 
         val docId = intent.getStringExtra(Const.EXTRA_DOCUMENT_ID)
             ?: throw IllegalStateException("No document id!")
-        document = scanbotSdk.documentApi.loadDocument(docId)
+        document = scanbotSdk.documentApi.loadDocument(docId).getOrNull()
             ?: throw IllegalStateException("No such document!")
 
         exampleSingleton = ExampleSingletonImpl(this)
@@ -134,7 +134,7 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         supportActionBar?.title = getString(R.string.scan_results)
     }
 
-    override fun onFilterApplied(filter: ParametricFilter) {
+    override fun onFilterApplied(filter: ParametricFilter?) {
         applyFilter(filter)
     }
 
@@ -146,14 +146,14 @@ class DocumentPreviewActivity : AppCompatActivity(), FiltersListener, SaveListen
         saveDocumentTiff()
     }
 
-    private fun applyFilter(filter: ParametricFilter) {
+    private fun applyFilter(filter: ParametricFilter?) {
         if (!scanbotSdk.licenseInfo.isValid) {
             showLicenseToast()
         } else {
             progress.visibility = View.VISIBLE
             lifecycleScope.launch {
                 withContext(Dispatchers.Default) {
-                    document.pages.forEach { page -> page.apply(newFilters = listOf(filter)) }
+                    document.pages.forEach { page -> page.apply(newFilters = listOfNotNull(filter)) }
                 }
 
                 withContext(Dispatchers.Main) {

@@ -14,9 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.imagefilters.ScanbotBinarizationFilter
-import io.scanbot.sdk.tiff.model.CompressionMode
-import io.scanbot.sdk.tiff.model.TiffGeneratorParameters
+import io.scanbot.sdk.tiffgeneration.TiffGeneratorParameters
 
 
 class TiffFromImageSnippet : AppCompatActivity() {
@@ -48,7 +46,7 @@ class TiffFromImageSnippet : AppCompatActivity() {
 
     // @Tag("Creating a TIFF from images")
     // Create tiff generator instance
-    val tiffGenerator = scanbotSDK.createTiffGenerator()
+    val tiffGenerator = scanbotSDK.createTiffGeneratorManager()
     fun createTiffFromImages(list: List<Uri>) {
         // Create the default Tiff generation options.
         val config = TiffGeneratorParameters(
@@ -61,13 +59,13 @@ class TiffFromImageSnippet : AppCompatActivity() {
         // Render the images to a Tiff file.
         val file = File("path/to/tiff/file")
         val created = tiffGenerator.generateFromUris(
-            sourceImages = list.toTypedArray(),
+            sourceImages = list,
             sourceFilesEncrypted = encryptionEnabled,
             targetFile = file,
             parameters = config
-        )
+        ).getOrNull()
 
-        if (created && file.exists()) {
+        if (created != null && file.exists()) {
             // Do something with the Tiff file
         }
     }

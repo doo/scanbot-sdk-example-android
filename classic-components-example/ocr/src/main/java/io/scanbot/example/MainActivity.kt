@@ -1,6 +1,6 @@
 package io.scanbot.example
 
-import android.graphics.BitmapFactory
+
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,24 +9,32 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onSuccess
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.ocr.OcrEngine
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.ocr.OcrEngineManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
-    private val opticalCharacterRecognizer: OcrEngine by lazy { scanbotSdk.createOcrEngine() }
+    private val opticalCharacterRecognizer: OcrEngineManager by lazy { scanbotSdk.createOcrEngineManager() }
 
 
     private val selectGalleryImageResultLauncher =
@@ -46,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch {
                 val document = createDocument(uri)
-                recognizeTextWithoutPDF(document)
+                document?.let { recognizeTextWithoutPDF(it) }
                 binding.progressBar.visibility = View.GONE
             }
         }
@@ -62,25 +70,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun createDocument(uri: Uri): Document {
+    private suspend fun createDocument(uri: Uri): Document? {
         return withContext(Dispatchers.IO) {
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            scanbotSdk.documentApi.createDocument().apply { addPage(bitmap) }
+
+            val image = contentResolver.openInputStream(uri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+            scanbotSdk.documentApi.createDocument().getOrNull()
+                ?.apply { image?.let { addPage(it) } }
         }
     }
 
     private suspend fun recognizeTextWithoutPDF(document: Document) {
-        val ocrResult = withContext(Dispatchers.Default) {
+        withContext(Dispatchers.Default) {
             opticalCharacterRecognizer.recognizeFromUris(document.pages.map { it.documentFileUri })
-        }
-
-        withContext(Dispatchers.Main) {
-            ocrResult.let {
-                if (it.ocrPages.isNotEmpty()) {
-                    this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
+                .onSuccess { ocrResult ->
+                    runBlocking(Dispatchers.Main) {
+                        ocrResult.let {
+                            if (it.ocrPages.isNotEmpty()) {
+                                this@MainActivity.showToast("Recognized page content: ${it.recognizedText.trimIndent()}")
+                            }
+                        }
+                    }
                 }
-            }
         }
     }
 }

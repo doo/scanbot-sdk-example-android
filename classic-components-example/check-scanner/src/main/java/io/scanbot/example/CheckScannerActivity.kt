@@ -8,11 +8,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import io.scanbot.common.Result
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.SdkLicenseError
 import io.scanbot.sdk.camera.CameraPreviewMode
-import io.scanbot.sdk.camera.FrameHandlerResult
 import io.scanbot.sdk.check.CheckScannerFrameHandler
 import io.scanbot.sdk.check.CheckScannerFrameHandler.Companion.attach
 import io.scanbot.sdk.check.CheckScanningResult
@@ -45,28 +47,37 @@ class CheckScannerActivity : AppCompatActivity() {
         resultView = findViewById<View>(R.id.result) as TextView
         val scanbotSDK = ScanbotSDK(this)
 
-        val checkScanner = scanbotSDK.createCheckScanner()
-        frameHandler = attach(cameraView, checkScanner)
-        frameHandler.addResultHandler { result: FrameHandlerResult<CheckScanningResult?, SdkLicenseError?>? ->
-            if (result is FrameHandlerResult.Success<*>) {
-                val scanningResult = (result as FrameHandlerResult.Success<*>).value as CheckScanningResult?
-                if (scanningResult?.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
-                    frameHandler.isEnabled = false
-                    startActivity(CheckScannerResultActivity.newIntent(this, scanningResult))
+        scanbotSDK.createCheckScanner().onSuccess { checkScanner ->
+            frameHandler = attach(cameraView, checkScanner)
+            frameHandler.addResultHandler { result, frame ->
+                result.onSuccess { scanningResult ->
+                    if (scanningResult.status == CheckMagneticInkStripScanningStatus.SUCCESS) {
+                        frameHandler.isEnabled = false
+                        startActivity(
+                            CheckScannerResultActivity.newIntent(
+                                this@CheckScannerActivity,
+                                scanningResult
+                            )
+                        )
+                    }
+                }.onFailure {
+                    if (it is Result.InvalidLicenseError) {
+                        frameHandler.isEnabled = false
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@CheckScannerActivity,
+                                "License is expired",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            finish()
+                        }
+                    }
                 }
-            } else if (!scanbotSDK.licenseInfo.isValid) {
-                frameHandler.isEnabled = false
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "License is expired",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    finish()
-                }
+
+                false
             }
-            false
         }
+
         findViewById<View>(R.id.flash).setOnClickListener {
             flashEnabled = !flashEnabled
             cameraView.useFlash(flashEnabled)

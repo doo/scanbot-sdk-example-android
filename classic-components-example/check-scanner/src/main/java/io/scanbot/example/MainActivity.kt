@@ -2,7 +2,6 @@ package io.scanbot.example
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,14 +12,24 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+
+
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity() {
 
@@ -69,16 +78,16 @@ class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) { binding.progressBar.isVisible = true }
 
         val result = withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
+            val imageRef = ImageRef.fromInputStream(inputStream)
 
-            val scanner = scanbotSdk.createCheckScanner()
-            scanner.scanFromBitmap(bitmap, 0)
+            val scanner = scanbotSdk.createCheckScanner().getOrThrow()
+            scanner.run(imageRef).getOrNull()
         }
 
         withContext(Dispatchers.Main) {
             result?.let {
-                CheckScannerResultActivity.tempDocumentImage = it.croppedImage?.toBitmap()
+                CheckScannerResultActivity.tempDocumentImage = it?.croppedImage?.toBitmap()?.getOrNull()
                 startActivity(CheckScannerResultActivity.newIntent(this@MainActivity, it))
             } ?: this@MainActivity.showToast("No  data found!")
         }

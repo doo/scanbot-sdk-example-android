@@ -12,17 +12,17 @@ fun createScannedDocument(sdk: ScanbotSDK, images: List<Bitmap>) {
 
     // Create a new document with the specified maximum image size.
     // Setting the limit to 0, effectively disables the size limit.
-    val scannedDocument = sdk.documentApi.createDocument(documentImageSizeLimit = 2048)
+    val scannedDocument = sdk.documentApi.createDocument(documentImageSizeLimit = 2048).getOrNull()
 
     // add images to the document.
-    images.forEach { scannedDocument.addPage(it) }
+    images.forEach { scannedDocument?.addPage(it) }
 }
 
 fun createFromUri(sdk: ScanbotSDK, uri: Uri): Document? {
     // Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
     // `Document` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
-    val scannedDocument = sdk.documentApi.createDocument(documentImageSizeLimit = 2048)
-    scannedDocument.addPage(uri)
+    val scannedDocument = sdk.documentApi.createDocument(documentImageSizeLimit = 2048).getOrNull()
+    scannedDocument?.addPage(uri)
     // Return newly created scanned document
     return scannedDocument
 }

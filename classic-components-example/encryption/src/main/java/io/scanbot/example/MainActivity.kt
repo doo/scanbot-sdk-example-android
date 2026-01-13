@@ -1,23 +1,24 @@
 package io.scanbot.example
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.onSuccess
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfConfiguration
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.pdf.PdfGenerator
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
 import io.scanbot.sdk.persistence.fileio.FileIOProcessor
-import io.scanbot.sdk.process.PdfGenerator
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fileIOProcessor: FileIOProcessor
-    private lateinit var PdfGenerator: PdfGenerator
+    private lateinit var pdfGenerator: PdfGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         val scanbotSDK = ScanbotSDK(applicationContext)
         fileIOProcessor = scanbotSDK.fileIOProcessor()
-        PdfGenerator = scanbotSDK.createPdfGenerator()
+        pdfGenerator = scanbotSDK.createPdfGenerator()
 
         findViewById<Button>(R.id.encrypt_image).setOnClickListener {
             writeEncryptedImage()
@@ -39,9 +40,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun writeEncryptedImage() {
-        val originalBitmap = loadBitmapFromAssets("demo_image.jpg")
+        val originalImage = loadImageFromAssets("demo_image.jpg")
         val encryptedDestination = getExternalFile("encrypted.jpeg")
-        fileIOProcessor.writeImage(originalBitmap, Bitmap.CompressFormat.JPEG, 100, encryptedDestination)
+        originalImage.toBitmap().getOrNull()?.let { fileIOProcessor.writeImage(it, Bitmap.CompressFormat.JPEG, 100, encryptedDestination) }
         showToast("The encrypted image was written to: $encryptedDestination")
 
         // TODO: to open it you should use
@@ -56,18 +57,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun writeEncryptedPDF() {
-        val originalBitmapFile = copyFromAssetsToInternal("demo_image.jpg")
-        val imageFileUris = listOf(Uri.fromFile(originalBitmapFile))
+        val originalImageFile = copyFromAssetsToInternal("demo_image.jpg")
+        val imageFileUris = listOf(Uri.fromFile(originalImageFile))
         // PDF renderer uses FileIOProcessor under the hood, so all the created files on the persistent storage will be encrypted:
         // Here we use the file from assets as input, so [sourceFilesEncrypted] should be false.
         // If it is planned to use an encrypted file, created via our SDK, it should be true.
-        val encryptedDestination = PdfGenerator.generateFromUris(
-            imageFileUris.toTypedArray(),
+        pdfGenerator.generate(
+            imageFileUris,
             false,
             PdfConfiguration.default().copy(pageSize = PageSize.A4)
-        ) ?: return
+        ).onSuccess { encryptedDestination ->
+            showToast("The encrypted pdf was written to: $encryptedDestination")
+        }
 
-        showToast("The encrypted pdf was written to: $encryptedDestination")
 
         // TODO: to open it you should use
         //  to open it as inputStream:
@@ -85,5 +87,5 @@ class MainActivity : AppCompatActivity() {
 
     private fun getExternalFile(filename: String) = getExternalFilesDir(null)?.resolve(filename)!!
 
-    private fun loadBitmapFromAssets(filePath: String): Bitmap = BitmapFactory.decodeStream(assets.open(filePath))
+    private fun loadImageFromAssets(filePath: String): ImageRef = ImageRef.fromInputStream(assets.open(filePath))
 }

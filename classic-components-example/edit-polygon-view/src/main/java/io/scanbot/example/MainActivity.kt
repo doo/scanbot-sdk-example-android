@@ -1,8 +1,5 @@
 package io.scanbot.example
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Pair
@@ -14,16 +11,24 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.common.LineSegmentFloat
-import io.scanbot.sdk.document.DocumentDetectionStatus
-import io.scanbot.sdk.document.DocumentScanner
-import io.scanbot.sdk.process.ImageProcessor
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.documentscanner.DocumentScanner
+import io.scanbot.sdk.geometry.LineSegmentFloat
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.image.ImageRotation
+import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.ui.EditPolygonImageView
 import io.scanbot.sdk.ui.MagnifierView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.roundToInt
+
+/**
+Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+Please, check the official documentation for more details:
+Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,8 +39,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rotateButton: Button
     private lateinit var backButton: Button
 
-    private lateinit var originalBitmap: Bitmap
-    private lateinit var previewBitmap: Bitmap
+    private lateinit var originalImage: ImageRef
+    private lateinit var previewImage: ImageRef
 
     private lateinit var scanner: DocumentScanner
 
@@ -50,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         val scanbotSDK = ScanbotSDK(this)
-        scanner = scanbotSDK.createDocumentScanner()
+
+        scanner = scanbotSDK.createDocumentScanner().getOrThrow()
 
         supportActionBar!!.hide()
 
@@ -73,16 +79,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            val initImageResult = withContext(Dispatchers.Default) {
-                originalBitmap = loadBitmapFromAssets("demo_image.jpg")
-                previewBitmap = resizeForPreview(originalBitmap)
-
-                val result = scanner.scanFromBitmap(originalBitmap)
+            withContext(Dispatchers.Default) {
+                originalImage = loadImageFromAssets("demo_image.jpg")
+                previewImage = resizeForPreview(originalImage)
+            }
+            val result = withContext(Dispatchers.Default) {
+                scanner.run(originalImage).getOrThrow()
+            }
+            val editViewMetadata = withContext(Dispatchers.Default) {
                 return@withContext when (result?.status) {
-                    DocumentDetectionStatus.OK,
-                    DocumentDetectionStatus.OK_BUT_BAD_ANGLES,
-                    DocumentDetectionStatus.OK_BUT_TOO_SMALL,
-                    DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
+                    DocumentDetectionStatus.OK, DocumentDetectionStatus.OK_BUT_BAD_ANGLES, DocumentDetectionStatus.OK_BUT_TOO_SMALL, DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
                         val linesPair = Pair(
                             result?.horizontalLinesNormalized ?: emptyList(),
                             result?.verticalLinesNormalized ?: emptyList()
@@ -97,33 +103,25 @@ class MainActivity : AppCompatActivity() {
             }
 
             withContext(Dispatchers.Main) {
-                editPolygonView.setImageBitmap(previewBitmap)
+                editPolygonView.setImageBitmap(previewImage?.toBitmap()?.getOrNull())
                 magnifierView.setupMagnifier(editPolygonView)
 
                 // set detected polygon and lines into EditPolygonImageView
-                editPolygonView.polygon = initImageResult.polygon
+                editPolygonView.polygon = editViewMetadata.polygon
                 editPolygonView.setLines(
-                    initImageResult.linesPair.first,
-                    initImageResult.linesPair.second
+                    editViewMetadata.linesPair.first, editViewMetadata.linesPair.second
                 )
             }
         }
     }
 
-    private fun loadBitmapFromAssets(filePath: String): Bitmap {
+    private fun loadImageFromAssets(filePath: String): ImageRef {
         val inputStream = assets.open(filePath)
-        return BitmapFactory.decodeStream(inputStream)
+        return ImageRef.fromInputStream(inputStream)
     }
 
-    private fun resizeForPreview(bitmap: Bitmap): Bitmap {
-        val maxW = 1000f
-        val maxH = 1000f
-        val oldWidth = bitmap.width.toFloat()
-        val oldHeight = bitmap.height.toFloat()
-        val scaleFactor = if (oldWidth > oldHeight) maxW / oldWidth else maxH / oldHeight
-        val scaledWidth = (oldWidth * scaleFactor).roundToInt()
-        val scaledHeight = (oldHeight * scaleFactor).roundToInt()
-        return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false)
+    private fun resizeForPreview(image: ImageRef): ImageRef {
+        return ScanbotSdkImageProcessor.create().resize(image, 1000).getOrNull() ?: image
     }
 
     private fun rotatePreview() {
@@ -137,27 +135,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun crop() {
         // crop & warp image by selected polygon (editPolygonView.getPolygon())
-        var documentImage =
-            ImageProcessor(originalBitmap).crop(editPolygonView.polygon).processedBitmap()
-        documentImage?.let {
-            if (rotationDegrees > 0) {
-                // rotate the final cropped image result based on current rotation value:
-                val matrix = Matrix()
-                matrix.postRotate(rotationDegrees.toFloat())
-                documentImage = Bitmap.createBitmap(it, 0, 0, it.width, it.height, matrix, true)
-            }
 
-            editPolygonView.visibility = View.GONE
-            cropButton.visibility = View.GONE
-            rotateButton.visibility = View.GONE
-            resultImageView.setImageBitmap(resizeForPreview(documentImage!!))
-            resultImageView.visibility = View.VISIBLE
-            backButton.visibility = View.VISIBLE
-        }
+        val polygon = editPolygonView.polygon
+        val imageProcessor = ScanbotSdkImageProcessor.create()
+        val croppedImage = imageProcessor.crop(originalImage, polygon).getOrThrow()
+        var documentImage =
+            if (rotationDegrees > 0) imageProcessor.rotate(croppedImage, rotationDegrees.toImageRotation() ).getOrThrow()
+            else croppedImage
+
+        editPolygonView.visibility = View.GONE
+        cropButton.visibility = View.GONE
+        rotateButton.visibility = View.GONE
+        resultImageView.setImageBitmap(resizeForPreview(documentImage!!).toBitmap().getOrNull())
+        resultImageView.visibility = View.VISIBLE
+        backButton.visibility = View.VISIBLE
     }
 
     internal inner class InitImageResult(
         val linesPair: Pair<List<LineSegmentFloat>, List<LineSegmentFloat>>,
         val polygon: List<PointF>
     )
+
+
+    fun Int.toImageRotation() = when (this) {
+        90 -> ImageRotation.CLOCKWISE_90
+        180 -> ImageRotation.CLOCKWISE_180
+        270 -> ImageRotation.COUNTERCLOCKWISE_90
+        else -> ImageRotation.NONE
+    }
+
 }

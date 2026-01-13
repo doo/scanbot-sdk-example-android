@@ -41,8 +41,8 @@ fun extractorCreationSnippet(context: Context) {
 fun ehicExtractorCreationSnippet(context: Context) {
     // @Tag("Create Document Data Extractor for EHIC")
     val scanbotSdk = ScanbotSDK(context)
-    val dataExtractor = scanbotSdk.createDocumentDataExtractor()
-    dataExtractor.setConfiguration(
+    val dataExtractor = scanbotSdk.createDocumentDataExtractor().getOrNull()
+    dataExtractor?.setConfiguration(
         DocumentDataExtractorConfigurationBuilder()
             .setAcceptedDocumentTypes(listOf(RootDocumentType.EuropeanHealthInsuranceCard, RootDocumentType.DeHealthInsuranceCardFront))
             .build())

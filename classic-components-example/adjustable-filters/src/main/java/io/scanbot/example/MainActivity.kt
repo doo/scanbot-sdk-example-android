@@ -1,6 +1,5 @@
 package io.scanbot.example
 
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,45 +8,61 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.mapSuccess
+import io.scanbot.common.onSuccess
+
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.showToast
 import io.scanbot.example.databinding.ActivityMainBinding
 import io.scanbot.sdk.ScanbotSDK
+import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
+import io.scanbot.sdk.image.ImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+/**
+ Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
+ Please, check the official documentation for more details:
+ Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
+ ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
+ */
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private val scanbotSdk: ScanbotSDK by lazy { ScanbotSDK(this) }
 
-    private val selectGalleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (!scanbotSdk.licenseInfo.isValid) {
-            this@MainActivity.showToast("1-minute trial license has expired!")
-            Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
-            return@registerForActivityResult
-        }
+    private val selectGalleryImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (!scanbotSdk.licenseInfo.isValid) {
+                this@MainActivity.showToast("1-minute trial license has expired!")
+                Log.e(Const.LOG_TAG, "1-minute trial license has expired!")
+                return@registerForActivityResult
+            }
 
-        if (uri == null) {
-            showToast("Error obtaining selected image!")
-            Log.e(Const.LOG_TAG, "Error obtaining selected image!")
-            return@registerForActivityResult
-        }
+            if (uri == null) {
+                showToast("Error obtaining selected image!")
+                Log.e(Const.LOG_TAG, "Error obtaining selected image!")
+                return@registerForActivityResult
+            }
 
-        lifecycleScope.launch {
-            val documentId = createAndScanDocumentPage(uri)
+            lifecycleScope.launch {
+                val documentId = createAndScanDocumentPage(uri)
 
-            if (documentId != null) {
-                filterActivityResultLauncher.launch(FilterActivity.newIntent(this@MainActivity, documentId))
-            } else {
-                Log.e(Const.LOG_TAG, "Error creating document with page!")
-                showToast("Error creating document with page!")
+                if (documentId != null) {
+                    filterActivityResultLauncher.launch(
+                        FilterActivity.newIntent(
+                            this@MainActivity,
+                            documentId
+                        )
+                    )
+                } else {
+                    Log.e(Const.LOG_TAG, "Error creating document with page!")
+                    showToast("Error creating document with page!")
+                }
             }
         }
-    }
 
     private val filterActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -61,7 +76,9 @@ class MainActivity : AppCompatActivity() {
                     return@registerForActivityResult
                 }
 
-                val page = ScanbotSDK(this).documentApi.loadDocument(documentId)?.pages?.firstOrNull()
+                val page =
+                    ScanbotSDK(this).documentApi.loadDocument(documentId)
+                        .getOrNull()?.pages?.firstOrNull()
                 if (page == null) {
                     Log.e(Const.LOG_TAG, "Error loading document with page!")
                     showToast("Error loading document with page!")
@@ -87,15 +104,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun createAndScanDocumentPage(imageUri: Uri): String? {
-        val bitmap = withContext(Dispatchers.IO) {
+        val imageRef = withContext(Dispatchers.IO) {
             val inputStream = contentResolver.openInputStream(imageUri)
-            BitmapFactory.decodeStream(inputStream)
-        }
-
-        if (bitmap == null) {
-            Log.e(Const.LOG_TAG, "Error loading image (bitmap is `null`)!")
-            showToast("Error loading image!")
-            return null
+                ?: throw Exception("Cannot open input stream from URI")
+            ImageRef.fromInputStream(inputStream)
         }
 
         val sdk = ScanbotSDK(this)
@@ -107,31 +119,38 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE
         val resultDocument = withContext(Dispatchers.Default) {
-            val result = sdk.createDocumentScanner().scanFromBitmap(bitmap)
+            sdk.createDocumentScanner().mapSuccess { documentScanner ->
 
-            if (result == null) {
-                Log.e(Const.LOG_TAG, "Error finding document (result is `null`)!")
-                showToast("Error finding document!")
-                return@withContext null
+                val result = documentScanner?.scan(imageRef)
+                    ?.getOrReturn() // it is also possible to check specific error by che
+                val detectionResult = result?.detectionResult
+                Log.d(Const.LOG_TAG, "Doc found: ${result}")
+
+                val status =
+                    detectionResult?.status ?: DocumentDetectionStatus.ERROR_NOTHING_DETECTED
+
+                /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
+                 * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
+                 */
+
+                val isScanOk = status?.name?.startsWith("OK", true) ?: false
+                if (isScanOk.not()) {
+                    Log.e(
+                        Const.LOG_TAG,
+                        "Bad document photo - scanning status was ${status.name}!"
+                    )
+                    showToast("Bad document photo - status ${status.name}!")
+                    throw Exception("Bad document photo - scanning status was ${status.name}!")
+                }
+
+                sdk.documentApi.createDocument().onSuccess { document ->
+                    val page = document.addPage(imageRef).getOrReturn() //can be handled with .getOrNull() if needed
+                    Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
+                    page.apply(newPolygon = detectionResult?.pointsNormalized)
+                    document
+                }.getOrReturn()
             }
-            Log.d(Const.LOG_TAG, "Doc found: ${result.status}")
-
-            /** We allow all `OK_*` [statuses][DocumentDetectionStatus] just for purpose of this example.
-             * Otherwise it is a good practice to differentiate between statuses and handle them accordingly.
-             */
-            val isScanOk = result.status.name.startsWith("OK", true)
-            if (isScanOk.not()) {
-                Log.e(Const.LOG_TAG, "Bad document photo - scanning status was ${result.status.name}!")
-                showToast("Bad document photo - status ${result.status.name}!")
-                return@withContext null
-            }
-
-            val document = sdk.documentApi.createDocument()
-            val page = document.addPage(bitmap)
-            Log.d(Const.LOG_TAG, "Page added: ${page.uuid}")
-            page.apply(newPolygon = result.pointsNormalized)
-            document
-        }
+        }.getOrNull()
 
         binding.progressBar.visibility = View.GONE
         Log.d(Const.LOG_TAG, "Document created: ${resultDocument?.uuid}")

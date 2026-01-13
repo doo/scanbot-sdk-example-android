@@ -13,6 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
 import io.scanbot.sdk.creditcard.*
+import io.scanbot.sdk.image.ImageRef
+import io.scanbot.sdk.util.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,6 +57,7 @@ fun createCreditCardScannerSnippet(context: Context) {
 
 class CreditCardStableImageDetection : AppCompatActivity() {
 
+    // @Tag("Extracting credit card data from an image")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // In the real application, you should call this function on button click
@@ -62,7 +65,6 @@ class CreditCardStableImageDetection : AppCompatActivity() {
     }
 
     private val scanbotSDK = ScanbotSDK(this@CreditCardStableImageDetection)
-    private val context = this
 
     private val pictureForDocDetectionResult =
         this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
@@ -72,16 +74,16 @@ class CreditCardStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver).getOrNull() }
+                                .forEach { imageRef ->
+                                    if (imageRef == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load imageRef from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(creditCardScanner, bitmap)
+                                    creditCardScanner?.let { processImage(it, imageRef) }
                                 }
 
                         }
@@ -89,7 +91,6 @@ class CreditCardStableImageDetection : AppCompatActivity() {
                 }
             }
         }
-
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()
@@ -104,13 +105,12 @@ class CreditCardStableImageDetection : AppCompatActivity() {
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
 
-    // @Tag("Extracting credit card data from an image")
-    // Create a data extractor  instance
-    val creditCardScanner = scanbotSDK.createCreditCardScanner()
+    // Create a Credit Card scanner instance
+    val creditCardScanner = scanbotSDK.createCreditCardScanner().getOrNull()
 
-    private fun processImage(scanner: CreditCardScanner, bitmap: Bitmap) {
-        val result = scanner.scanFromBitmap(bitmap, 0)
-        // Proceed MRZ scanner result
+    private fun processImage(scanner: CreditCardScanner, image: ImageRef) {
+        val result = scanner.run(image)
+        // Process Credit Card scanner result
         // processResult(result)
     }
     // @EndTag("Extracting credit card data from an image")

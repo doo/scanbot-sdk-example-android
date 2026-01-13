@@ -17,9 +17,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
+import io.scanbot.common.Result
+import io.scanbot.common.onCancellation
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.example.*
 import io.scanbot.sdk.*
-import io.scanbot.sdk.camera.FrameHandlerResult
+import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.check.CheckScanner
 import io.scanbot.sdk.check.CheckScannerFrameHandler
 import io.scanbot.sdk.check.CheckScanningResult
@@ -56,11 +60,24 @@ class StartCheckUiSnippet : AppCompatActivity() {
     // @Tag("Launching the scanner")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -85,11 +102,24 @@ class CheckPaletteSnippet : AppCompatActivity() {
     // @Tag("Palette")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -136,11 +166,24 @@ class CheckLocalizationSnippet : AppCompatActivity() {
     // @Tag("Localization")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -160,7 +203,7 @@ class CheckLocalizationSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Localization")
+    // @EndTag("Localization")
 }
 
 class CheckIntroductionSnippet : AppCompatActivity() {
@@ -173,11 +216,24 @@ class CheckIntroductionSnippet : AppCompatActivity() {
     // @Tag("Introduction")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -225,7 +281,7 @@ class CheckIntroductionSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Introduction")
+    // @EndTag("Introduction")
 }
 
 class CheckUserGuidanceSnippet : AppCompatActivity() {
@@ -238,11 +294,24 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
     // @Tag("User guidance")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-                resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -279,7 +348,7 @@ class CheckUserGuidanceSnippet : AppCompatActivity() {
             resultLauncher.launch(configuration)
         }
     }
-// @EndTag("User guidance")
+    // @EndTag("User guidance")
 }
 
 class CheckTopBarSnippet : AppCompatActivity() {
@@ -292,11 +361,24 @@ class CheckTopBarSnippet : AppCompatActivity() {
     // @Tag("Top bar")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -324,7 +406,7 @@ class CheckTopBarSnippet : AppCompatActivity() {
 
         resultLauncher.launch(configuration)
     }
-// @EndTag("Top bar")
+    // @EndTag("Top bar")
 }
 
 class CheckFinderSnippet : AppCompatActivity() {
@@ -337,11 +419,24 @@ class CheckFinderSnippet : AppCompatActivity() {
     // @Tag("Finder overlay")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -361,7 +456,7 @@ class CheckFinderSnippet : AppCompatActivity() {
         }
         resultLauncher.launch(configuration)
     }
-// @EndTag("Finder overlay")
+    // @EndTag("Finder overlay")
 }
 
 class CheckActionBarSnippet : AppCompatActivity() {
@@ -374,11 +469,24 @@ class CheckActionBarSnippet : AppCompatActivity() {
     // @Tag("Action bar")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -418,7 +526,7 @@ class CheckActionBarSnippet : AppCompatActivity() {
         resultLauncher.launch(configuration)
 
     }
-// @EndTag("Action bar")
+    // @EndTag("Action bar")
 }
 
 class CheckScanningSnippet : AppCompatActivity() {
@@ -431,11 +539,24 @@ class CheckScanningSnippet : AppCompatActivity() {
     // @Tag("Scanning")
 
     val resultLauncher: ActivityResultLauncher<CheckScannerScreenConfiguration> =
-        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity: CheckScannerActivity.Result ->
-            if (resultEntity.resultOk) {
-          resultEntity.result?.check?.let {
+        registerForActivityResult(CheckScannerActivity.ResultContract()) { resultEntity ->
+            resultEntity.onSuccess { checkResult ->
+                checkResult.check?.let {
                     // Here you can handle `check document` and present recognized Check information (routing number, account number, etc.)
                     wrapCheck(it)
+                }
+            }.onCancellation {
+                // Indicates that the cancel button was tapped. Or screen is closed by other reason.
+            }.onFailure {
+                // Optional activity closing cause handling to understand the reason scanner result is not provided
+                when (it) {
+                    is Result.InvalidLicenseError -> {
+                        // indicate that the Scanbot SDK license is invalid
+                    }
+
+                    else -> {
+                        // Handle other errors
+                    }
                 }
             }
         }
@@ -471,7 +592,7 @@ class CheckScanningSnippet : AppCompatActivity() {
         configuration.sound.soundType = SoundType.MODERN_BEEP
         resultLauncher.launch(configuration)
     }
-// @EndTag("Scanning")
+    // @EndTag("Scanning")
 }
 
 
@@ -506,13 +627,12 @@ class ComposeSnippet : AppCompatActivity() {
 }
 
 
-
 //Classic snippets
 
 fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
     // @Tag("Get Instances")
     val scanbotSDK = ScanbotSDK(context)
-    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner()
+    val checkScanner: CheckScanner = scanbotSDK.createCheckScanner().getOrThrow()
     val checkScannerFrameHandler: CheckScannerFrameHandler =
         CheckScannerFrameHandler.attach(cameraView, checkScanner)
     // @EndTag("Get Instances")
@@ -520,27 +640,21 @@ fun getInstances(context: Context, cameraView: ScanbotCameraXView) {
 
 fun handleResult(checkScannerFrameHandler: CheckScannerFrameHandler) {
     // @Tag("Handle Result")
-    checkScannerFrameHandler.addResultHandler(object : CheckScannerFrameHandler.ResultHandler {
-        override fun handle(result: FrameHandlerResult<CheckScanningResult, SdkLicenseError>): Boolean {
-            when (result) {
-                is FrameHandlerResult.Success -> {
-                    val checkResult: CheckScanningResult? =
-                        (result as FrameHandlerResult.Success<CheckScanningResult?>).value
-                    if (checkResult?.check != null) {
-                        // do something with result here
-                        val checkDocument = checkResult.check
-                        if (checkDocument != null) {
-                            wrapCheck(checkDocument)
-                        }
-                    }
+    checkScannerFrameHandler.addResultHandler { result, frame ->
+        result.onSuccess { checkResult ->
+            if (checkResult.check != null) {
+                // do something with result here
+                val checkDocument = checkResult.check
+                if (checkDocument != null) {
+                    wrapCheck(checkDocument)
                 }
-
-                is FrameHandlerResult.Failure -> {
-                } // handle license error here
             }
-
-            return false
+        }.onFailure {
+            // handle error here
         }
-    })
+        false
+    }
+
+    false
     // @EndTag("Handle Result")
 }

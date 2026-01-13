@@ -6,16 +6,20 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.scanbot.common.onSuccess
+
+
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.camera.PictureCallback
-import io.scanbot.sdk.common.AspectRatio
 import io.scanbot.sdk.documentdata.DocumentDataAutoSnappingController
 import io.scanbot.sdk.documentdata.DocumentDataExtractionResult
 import io.scanbot.sdk.documentdata.DocumentDataExtractionStatus
 import io.scanbot.sdk.documentdata.DocumentDataExtractor
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.ui.camera.FinderOverlayView
 import io.scanbot.sdk.ui.camera.IScanbotCameraView
 import io.scanbot.sdk.ui.camera.ScanbotCameraXView
@@ -40,23 +44,27 @@ class ScannerActivity : AppCompatActivity() {
         scanbotSdk = ScanbotSDK(this)
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
-        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(listOf(
-            AspectRatio(4.0, 3.0)
-        ))
+        findViewById<FinderOverlayView>(R.id.finder_overlay).setRequiredAspectRatios(
+            listOf(
+                AspectRatio(4.0, 3.0)
+            )
+        )
 
         cameraView.setPreviewMode(CameraPreviewMode.FIT_IN)
-
-        autoSnappingController = DocumentDataAutoSnappingController.attach(cameraView, scanbotSdk.createDocumentDataExtractor())
+        scanbotSdk.createDocumentDataExtractor().onSuccess { extractor ->
+            autoSnappingController =
+                DocumentDataAutoSnappingController.attach(cameraView, extractor)
+            cameraView.addPictureCallback(object : PictureCallback() {
+                override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
+                    processPictureTaken(image, extractor)
+                }
+            })
+        }
 
         cameraView.setCameraOpenCallback {
             cameraView.useFlash(useFlash)
             cameraView.continuousFocus()
         }
-        cameraView.addPictureCallback(object : PictureCallback() {
-            override fun onPictureTaken(image: ByteArray, captureInfo: CaptureInfo) {
-                processPictureTaken(image, captureInfo.imageOrientation)
-            }
-        })
 
         findViewById<Button>(R.id.flashButton).setOnClickListener { toggleFlash() }
 
@@ -67,7 +75,7 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun processPictureTaken(image: ByteArray, imageOrientation: Int) {
+    private fun processPictureTaken(image: ImageRef, extractor: DocumentDataExtractor) {
         // pause autoSnappingController to stop scanning on a preview during the data extraction on the full-size picture
         autoSnappingController.isEnabled = false
 
@@ -75,24 +83,30 @@ class ScannerActivity : AppCompatActivity() {
             shutterButton.isEnabled = false
         }
 
-        val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-        val result = scanbotSdk.createDocumentDataExtractor()
-            .apply { setConfiguration(this.copyCurrentConfiguration().apply { resultAccumulationConfig.minConfirmations = 1 }) }
-            .extractFromBitmap(bitmap, orientation = imageOrientation)
+        extractor.apply {
+            setConfiguration(
+                this.copyCurrentConfiguration()
+                    .apply { resultAccumulationConfig.minConfirmations = 1 })
+        }.run(image).onSuccess { result ->
+            val isSuccess = result.status == DocumentDataExtractionStatus.OK
 
-        val isSuccess = result != null && result.status == DocumentDataExtractionStatus.SUCCESS
-
-        if (isSuccess) {
-            result?.document?.let {
-                proceedToResult(result)
+            if (isSuccess) {
+                result.document?.let {
+                    proceedToResult(result)
+                }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(
+                        this@ScannerActivity,
+                        "Error scanning: ${result.status}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    shutterButton.isEnabled = true
+                }
+                autoSnappingController.isEnabled = true
             }
-        } else {
-            runOnUiThread {
-                Toast.makeText(this@ScannerActivity, "Error scanning: ${result?.status}", Toast.LENGTH_SHORT).show()
-                shutterButton.isEnabled = true
-            }
-            autoSnappingController.isEnabled = true
         }
+
     }
 
     private fun proceedToResult(result: DocumentDataExtractionResult) {

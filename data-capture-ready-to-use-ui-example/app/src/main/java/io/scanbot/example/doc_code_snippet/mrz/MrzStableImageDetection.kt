@@ -12,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.scanbot.example.util.*
 import io.scanbot.sdk.*
+import io.scanbot.sdk.image.ImageRef
 import io.scanbot.sdk.mrz.*
+import io.scanbot.sdk.util.toImageRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,10 +40,10 @@ class ExampleApplication : Application() {
 
         // Initialize the Scanbot Scanner SDK:
         ScanbotSDKInitializer()
-                .license(this, licenseKey)
-                // TODO: other configuration calls
-                .prepareOCRLanguagesBlobs(true)
-                .initialize(this)
+            .license(this, licenseKey)
+            // TODO: other configuration calls
+            .prepareOCRLanguagesBlobs(true)
+            .initialize(this)
     }
 }
 // @EndTag("Initialize SDK")
@@ -73,16 +75,16 @@ class MrzStableImageDetection : AppCompatActivity() {
                         withContext(Dispatchers.Default) {
                             getUrisFromGalleryResult(imagePickerResult)
                                 .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
+                                .map { it.toImageRef(contentResolver)?.getOrNull()}
+                                .forEach { image ->
+                                    if (image == null) {
                                         Log.e(
                                             "Snippet",
-                                            "Failed to load bitmap from URI"
+                                            "Failed to load image from URI"
                                         )
                                         return@forEach
                                     }
-                                    processImage(mrzScanner, bitmap)
+                                    processImage(mrzScanner, image)
                                 }
 
                         }
@@ -107,10 +109,10 @@ class MrzStableImageDetection : AppCompatActivity() {
 
     // @Tag("Extracting mrz data from an image")
     // Create a data extractor  instance
-    val mrzScanner = scanbotSDK.createMrzScanner()
+    val mrzScanner = scanbotSDK.createMrzScanner().getOrThrow()
 
-    private fun processImage(mrzScanner: MrzScanner, bitmap: Bitmap) {
-        val mrzRecognitionResult = mrzScanner.scanFromBitmap(bitmap, 0)
+    private fun processImage(mrzScanner: MrzScanner, image: ImageRef) {
+        val mrzRecognitionResult = mrzScanner.run(image)
         // Proceed MRZ scanner result
         // processResult(result)
     }

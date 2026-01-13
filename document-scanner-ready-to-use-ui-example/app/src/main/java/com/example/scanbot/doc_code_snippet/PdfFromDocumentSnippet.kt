@@ -10,18 +10,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.example.scanbot.utils.getUrisFromGalleryResult
-import com.example.scanbot.utils.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.pdf.model.PageDirection
-import io.scanbot.pdf.model.PageFit
-import io.scanbot.pdf.model.PageSize
-import io.scanbot.pdf.model.PdfAttributes
-import io.scanbot.pdf.model.PdfConfiguration
-import io.scanbot.pdf.model.ResamplingMethod
+import io.scanbot.common.Result
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
+import io.scanbot.sdk.pdfgeneration.PageDirection
+import io.scanbot.sdk.pdfgeneration.PageFit
+import io.scanbot.sdk.pdfgeneration.PageSize
+import io.scanbot.sdk.pdfgeneration.PdfAttributes
+import io.scanbot.sdk.pdfgeneration.PdfConfiguration
+import io.scanbot.sdk.pdfgeneration.ResamplingMethod
+import io.scanbot.sdk.util.toImageRef
 
 
 class PdfFromDocumentSnippet : AppCompatActivity() {
@@ -41,21 +43,22 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
-                            val document = scanbotSDK.documentApi.createDocument()
-                            getUrisFromGalleryResult(imagePickerResult)
-                                .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
-                                .map { it.toBitmap(contentResolver) }
-                                .forEach { bitmap ->
-                                    if (bitmap == null) {
-                                        Log.e(
-                                            "StandaloneCropSnippet",
-                                            "Failed to load bitmap from URI"
-                                        )
-                                        return@forEach
+                            scanbotSDK.documentApi.createDocument().onSuccess { document ->
+                                getUrisFromGalleryResult(imagePickerResult)
+                                    .asSequence() // process images one by one instead of collecting the whole list - less memory consumption
+                                    .map { it.toImageRef(contentResolver).getOrNull() }
+                                    .forEach { bitmap ->
+                                        if (bitmap == null) {
+                                            Log.e(
+                                                "StandaloneCropSnippet",
+                                                "Failed to load bitmap from URI"
+                                            )
+                                            return@forEach
+                                        }
+                                        document.addPage(bitmap)
                                     }
-                                    document.addPage(bitmap)
-                                }
-                            createPdfFromImages(document)
+                                createPdfFromImages(document)
+                            }
                         }
                     }
                 }
@@ -82,12 +85,12 @@ class PdfFromDocumentSnippet : AppCompatActivity() {
             pageFit = PageFit.NONE,
             resamplingMethod = ResamplingMethod.NONE,
         )
-        val pdfGenerated = pdfGenerator.generateFromDocument(
+        val result = pdfGenerator.generate(
             document,
             config
         )
         val pdfFile = document.pdfUri.toFile()
-        if (pdfGenerated && pdfFile.exists()) {
+        if (result is Result.Success && pdfFile.exists()) {
             // Do something with the PDF file
         } else {
             Log.e("PdfFromDocumentSnippet", "Failed to create PDF")

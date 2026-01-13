@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.scanbot.example.R
-import io.scanbot.sdk.genericdocument.entity.*
+import io.scanbot.sdk.genericdocument.GenericDocument
 import io.scanbot.sdk.mrz.*
 
 
@@ -23,7 +23,7 @@ class MRZDialogFragment : androidx.fragment.app.DialogFragment() {
         const val NAME = "MRZDialogFragment"
 
         @JvmStatic
-        fun newInstance(data:  GenericDocument): MRZDialogFragment {
+        fun newInstance(data: GenericDocument): MRZDialogFragment {
             val frag = MRZDialogFragment()
             val args = Bundle()
             args.putParcelable(MRZ_DATA, data)
