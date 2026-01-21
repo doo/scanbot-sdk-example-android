@@ -196,7 +196,6 @@ fun MenuScreen(navController: NavHostController) {
             ) {
                 Text(  modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navController.navigate(route) }
                     .padding(vertical = 24.dp),text=title, style = MaterialTheme.typography.titleMedium)
                 Divider(Modifier.fillMaxWidth().align(Alignment.BottomCenter), color = Color.LightGray.copy(alpha = 0.3f))
             }
