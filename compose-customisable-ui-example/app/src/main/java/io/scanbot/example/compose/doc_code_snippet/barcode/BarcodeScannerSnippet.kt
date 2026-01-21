@@ -75,13 +75,13 @@ fun BarcodeScannerSnippet() {
                     is Result.InvalidLicenseError -> {
                         Log.e(
                             "BarcodeScannerScreen",
-                            "MRZ scanning license error: ${error.message}"
+                            "Barcodes scanning license error: ${error.message}"
                         )
                     }
 
                     else -> {
                         // Handle error here
-                        Log.e("BarcodeScannerScreen", "MRZ scanning error: ${error.message}")
+                        Log.e("BarcodeScannerScreen", "Barcodes scanning error: ${error.message}")
                     }
                 }
             }
