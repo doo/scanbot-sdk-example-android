@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -37,13 +35,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.scanbot.demo.composeui.ui.theme.ScanbotsdkandroidTheme
-import io.scanbot.demo.composeui.ui.theme.сolorWarningBackground
+import io.scanbot.demo.composeui.ui.theme.colorWarningBackground
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.licensing.LicenseStatus
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,7 +164,7 @@ fun MenuScreen(navController: NavHostController) {
             item() {
                 Surface(
                     modifier = Modifier.padding(bottom = 24.dp),
-                    color = сolorWarningBackground,
+                    color = colorWarningBackground,
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
