@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
+import io.scanbot.common.onFailure
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.geometry.AspectRatio
@@ -68,7 +70,12 @@ fun BarcodeScannerScreen1(navController: NavHostController) {
                 .weight(1.0f),
             finderConfiguration = FinderConfiguration(
                 verticalAlignment = Alignment.Top,
-                previewInsets = PaddingValues(top = 32.dp, bottom = 32.dp, start = 16.dp, end = 16.dp),
+                previewInsets = PaddingValues(
+                    top = 32.dp,
+                    bottom = 32.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                ),
                 // Modify aspect ratio of the viewfinder here:
                 aspectRatio = AspectRatio(1.0, 1.0),
                 // Change viewfinder overlay color here:
@@ -138,14 +145,17 @@ fun BarcodeScannerScreen1(navController: NavHostController) {
                     }, density = LocalDensity.current
                 )
             },
-            onBarcodesScanned = { barcodeResult ->
-                // Apply feedback, sound, vibration here if needed
-                // ...
+            onBarcodeScanningResult = { result ->
+                result.onSuccess { data ->
+                    // Apply feedback, sound, vibration here if needed
+                    // ...
 
-                // Handle scanned barcodes here (for example, show a dialog)
-                Log.d(
-                    "BarcodeComposeClassic", "Scanned barcodes: ${barcodeResult.barcodes}"
-                )
+                    // Handle scanned barcodes here (for example, show a dialog)
+                    Log.d(
+                        "BarcodeComposeClassic", "Scanned barcodes: ${data.barcodes}"
+                    )
+                }
+
             },
         )
         Row {
@@ -189,7 +199,11 @@ fun BarcodeScannerScreen2(navController: NavHostController) {
         }
     }
     val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
         BarcodeScannerCustomUI(
             modifier = Modifier.weight(1f),
             cameraEnabled = cameraEnabled.value,
@@ -202,16 +216,23 @@ fun BarcodeScannerScreen2(navController: NavHostController) {
                 strokeColor = Color.Blue
             ),
             permissionView = {},
-            onBarcodesScanned = { result: BarcodeScannerResult ->
-
-                result.barcodes.forEach { barcode ->
-                    if (scannedBarcodes.none { it.text == barcode.text && it.format == barcode.format }) {
-                        scope.launch {
-                            // Provide sound and vibration feedback on scan:
-                            soundController.playBleepSound()
+            onBarcodeScanningResult = { result ->
+                result.onSuccess { result ->
+                    result.barcodes.forEach { data ->
+                        if (scannedBarcodes.none { it.text == data.text && it.format == data.format }) {
+                            scope.launch {
+                                // Provide sound and vibration feedback on scan:
+                                soundController.playBleepSound()
+                            }
+                            scannedBarcodes.add(data)
                         }
-                        scannedBarcodes.add(barcode)
                     }
+                }.onFailure { error ->
+                    Log.e(
+                        "BarcodeScannerScreen2",
+                        "Barcode scanning error: ${error.message}",
+                        error
+                    )
                 }
             }
         )
@@ -246,7 +267,9 @@ fun BarcodeScannerScreen3(navController: NavHostController) {
         val touchToFocusEnabled = remember { mutableStateOf(true) }
         val previewMode = remember { mutableStateOf(CameraPreviewMode.FIT_IN) }
         BarcodeScannerCustomUI(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             cameraEnabled = cameraEnabled.value,
             cameraPreviewMode = previewMode.value,
             barcodeScanningEnabled = barcodeScanningEnabled.value,
@@ -259,19 +282,28 @@ fun BarcodeScannerScreen3(navController: NavHostController) {
                 strokeColor = Color.Blue
             ),
             permissionView = {},
-            onBarcodesScanned = { result: BarcodeScannerResult ->
-                // Navigate to detail screen for the first barcode
-                val firstBarcode = result.barcodes.firstOrNull()
-                if (firstBarcode != null) {
-                    navController.navigate(
-                        Screen.BarcodeDetail.createRoute(
-                            firstBarcode.text,
-                            firstBarcode.format.name
-                        ),
-                        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+            onBarcodeScanningResult = { result ->
+                result.onSuccess { data ->
+                    // Navigate to detail screen for the first barcode
+                    val firstBarcode = data.barcodes.firstOrNull()
+                    if (firstBarcode != null) {
+                        navController.navigate(
+                            Screen.BarcodeDetail.createRoute(
+                                firstBarcode.text,
+                                firstBarcode.format.name
+                            ),
+                            navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+                        )
+                    }
+                }.onFailure { error ->
+                    Log.e(
+                        "BarcodeScannerScreen3",
+                        "Barcode scanning error: ${error.message}",
+                        error
                     )
                 }
             }
+
         )
         Column(modifier = Modifier.fillMaxWidth()) {
             Button(onClick = {

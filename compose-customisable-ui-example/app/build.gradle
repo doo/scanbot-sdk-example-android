@@ -66,13 +66,13 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.google.android.material:material:1.13.0")
-    // we are using compose dependencies that come transitively via Scanbot SDK,
-    // so we need to set the same version for compose compiler to avoid version conflicts
-    def coroutines_version = "1.7.3"
+    // we are using compose dependencies that come transitively via Scanbot SDK.
+    // If you need additional compose dependencies, please make sure to use the same versions as Scanbot SDK to avoid version conflicts.
+    def coroutines_version = "1.10.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
-    def scanbotSdkVersion = "8.1.0.73-STAGING-SNAPSHOT"
+    def scanbotSdkVersion = "8.1.0.76-STAGING-SNAPSHOT"
 
     implementation("io.scanbot:sdk-package-4:$scanbotSdkVersion")
     implementation("io.scanbot:rtu-ui-v2-bundle:$scanbotSdkVersion")

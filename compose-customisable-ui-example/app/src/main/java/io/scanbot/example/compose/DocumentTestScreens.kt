@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.documentscanner.DocumentScannerConfiguration
 import io.scanbot.sdk.documentscanner.DocumentScannerParameters
 import io.scanbot.sdk.geometry.AspectRatio
@@ -54,10 +55,13 @@ fun DocumentScannerScreen1(navController: NavHostController) {
         val autosnappingEnabled = remember { mutableStateOf(false) }
         val cameraInProcessingState = remember { mutableStateOf(false) }
         val scannedImage = remember { mutableStateOf<Bitmap?>(null) }
-        val takePictureActionController = remember { mutableStateOf<TakePictureActionController?>(null) }
+        val takePictureActionController =
+            remember { mutableStateOf<TakePictureActionController?>(null) }
 
         Box(
-            modifier = Modifier.fillMaxWidth().weight(1.0f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1.0f),
         ) {
             DocumentScannerCustomUI(
                 // Modify Size here:
@@ -77,7 +81,10 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 finderConfiguration = FinderConfiguration(
                     //strokeColor = Color.Cyan,
                     verticalAlignment = Alignment.Top,
-                    aspectRatio = AspectRatio(21.0,29.0) // Use default aspect ratio matching document size
+                    aspectRatio = AspectRatio(
+                        21.0,
+                        29.0
+                    ) // Use default aspect ratio matching document size
                 ),
                 permissionView = {
                     // View that will be shown while camera permission is not granted
@@ -90,10 +97,12 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                         })
                 },
                 arPolygonView = { dataFlow ->
-                    ScanbotDocumentArOverlay(dataFlow = dataFlow, getProgressPolygonStyle = { defaultStyle ->
-                        // Customize polygon style if needed
-                        defaultStyle.copy(strokeWidth = 8f, strokeColor = Color.Green)
-                    })
+                    ScanbotDocumentArOverlay(
+                        dataFlow = dataFlow,
+                        getProgressPolygonStyle = { defaultStyle ->
+                            // Customize polygon style if needed
+                            defaultStyle.copy(strokeWidth = 8f, strokeColor = Color.Green)
+                        })
                 },
                 onTakePictureCalled = {
                     Log.d("DocumentScannerScreen1", "Take picture called")
@@ -104,10 +113,15 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                     cameraInProcessingState.value = false
                 },
                 onPictureSnapped = { imageRef, captureInfo ->
-                    Log.d("DocumentScannerScreen1", "Picture snapped: $imageRef, captureInfo: $captureInfo")
+                    Log.d(
+                        "DocumentScannerScreen1",
+                        "Picture snapped: $imageRef, captureInfo: $captureInfo"
+                    )
                     scannedImage.value =
-                        ScanbotSdkImageManipulator.create().resize(imageRef, 300).getOrNull()?.toBitmap()?.getOrNull()
-                    cameraInProcessingState.value = false // Picture is received, allow auto-snapping again or proceed further and allow image snap after some additional processing
+                        ScanbotSdkImageManipulator.create().resize(imageRef, 300).getOrNull()
+                            ?.toBitmap()?.getOrNull()
+                    cameraInProcessingState.value =
+                        false // Picture is received, allow auto-snapping again or proceed further and allow image snap after some additional processing
                 },
                 onTakePictureControllerCreated = {
                     takePictureActionController.value = it
@@ -115,25 +129,30 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 onAutoSnappingShouldTriggered = {
                     !cameraInProcessingState.value // Disable auto-snapping while awaiting picture result after snap is triggered
                 },
-                onDocumentOnFrameScanned = { result ->
-                    // Apply feedback, sound, vibration here if needed
-                    // ...
+                onDocumentScanningResult = { result ->
+                    result.onSuccess { data ->
+                        // Apply feedback, sound, vibration here if needed
+                        // ...
 
-                    // Handle scanned barcodes here (for example, show a dialog)
-                    Log.d(
-                        "BarcodeComposeClassic",
-                        "Scanned polygon: ${
-                            result.pointsNormalized.map {
-                                with(density) {
-                                    "(${it.x.toDp().value.toInt()}, ${it.y.toDp().value.toInt()})"
+                        // Handle scanned barcodes here (for example, show a dialog)
+                        Log.d(
+                            "BarcodeComposeClassic",
+                            "Scanned polygon: ${
+                                data.pointsNormalized.map {
+                                    with(density) {
+                                        "(${it.x.toDp().value.toInt()}, ${it.y.toDp().value.toInt()})"
+                                    }
                                 }
-                            }
-                        }",
-                    )
+                            }",
+                        )
+                    }
+
                 },
             )
             ScanbotSnapButton(
-                modifier = Modifier.height(100.dp).align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .height(100.dp)
+                    .align(Alignment.BottomCenter),
                 clickable = scanningEnabled.value,
                 autoCapture = autosnappingEnabled.value
             ) {

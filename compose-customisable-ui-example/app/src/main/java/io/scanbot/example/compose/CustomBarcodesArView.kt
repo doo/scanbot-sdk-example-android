@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun CustomBarcodesArView(
-    barcodesFlow: SharedFlow<Pair<BarcodeScannerResult,FrameHandler.Frame>?>,
+    barcodesFlow: SharedFlow<Pair<BarcodeScannerResult, FrameHandler.Frame>?>,
     onBarcodeClick: (BarcodeItem) -> Unit = {},
     density: Density,
 ) {
@@ -47,33 +47,33 @@ fun CustomBarcodesArView(
             // If only polygon is needed without any additional UI, leave this block empty
         },
 
-// Uncomment and  Customize AR view for barcode polygon here if needed
-//        view = { path, barcodeItem, data, shouldHighlight ->
-//            // Implement custom view for barcode polygon if needed
-//            Box(modifier = Modifier.layout { measurable, constraints ->
-//                val placeable = measurable.measure(constraints);
-//
-//                var rectF: Rect
-//                path.getBounds().also { rectF = it }
-//
-//                val width = placeable.width
-//                val height = placeable.height
-//                val x = rectF.center.x - width / 2
-//                val y = rectF.center.y + rectF.height / 2 + 10.dp.toPx() // place below the polygon
-//                layout(width, height) {
-//                    placeable.placeRelative(x.toInt(), y.toInt())
-//                }
-//            }) {
-//                Text(
-//                    text = data,
-//                    color = if (shouldHighlight) Color.Red else Color.Green,
-//                    style = MaterialTheme.typography.body2,
-//                    modifier = Modifier
-//                        .background(Color.Black.copy(alpha = 0.5f))
-//                        .padding(4.dp)
-//                )
-//            }
-//        },
+        // Uncomment and  Customize AR view for barcode polygon here if needed
+        /*   view = { path, barcodeItem, data, shouldHighlight ->
+               // Implement custom view for barcode polygon if needed
+               Box(modifier = Modifier.layout { measurable, constraints ->
+                   val placeable = measurable.measure(constraints);
+
+                   var rectF: Rect
+                   path.getBounds().also { rectF = it }
+
+                   val width = placeable.width
+                   val height = placeable.height
+                   val x = rectF.center.x - width / 2
+                   val y = rectF.center.y + rectF.height / 2 + 10.dp.toPx() // place below the polygon
+                   layout(width, height) {
+                       placeable.placeRelative(x.toInt(), y.toInt())
+                   }
+               }) {
+                   Text(
+                       text = data,
+                       color = if (shouldHighlight) Color.Red else Color.Green,
+                       style = MaterialTheme.typography.body2,
+                       modifier = Modifier
+                           .background(Color.Black.copy(alpha = 0.5f))
+                           .padding(4.dp)
+                   )
+               }
+           },*/
         onClick = onBarcodeClick,
     )
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ui_v2.common.CameraPermissionScreen
 import io.scanbot.sdk.ui_v2.common.components.ScanbotCameraPermissionView
 import io.scanbot.sdk.ui_v2.mrz.MrzScannerCustomUI
@@ -41,49 +42,49 @@ fun MrzScannerScreen1(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f),
-  /*          finderConfiguration = FinderConfiguration(
-                verticalAlignment = Alignment.Top,
-                // Modify aspect ratio of the viewfinder here:
-                aspectRatio = AspectRatio(adjustedMrzThreeLinedFinderAspectRatio, 1.0),
-                // Alternatively, it is possible to provide a completely custom viewfinder content:
-                finderContent = {
-                    // Box with border stroke color as an example of custom viewfinder content
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Transparent)
-                            // Same but with rounded corners
-                            .border(
-                                4.dp,
-                                Color.Cyan,
-                                shape = RoundedCornerShape(
-                                    16.dp
-                                )
-                            )
-                    ) {
+            /*          finderConfiguration = FinderConfiguration(
+                          verticalAlignment = Alignment.Top,
+                          // Modify aspect ratio of the viewfinder here:
+                          aspectRatio = AspectRatio(adjustedMrzThreeLinedFinderAspectRatio, 1.0),
+                          // Alternatively, it is possible to provide a completely custom viewfinder content:
+                          finderContent = {
+                              // Box with border stroke color as an example of custom viewfinder content
+                              Box(
+                                  modifier = Modifier
+                                      .fillMaxSize()
+                                      .background(Color.Transparent)
+                                      // Same but with rounded corners
+                                      .border(
+                                          4.dp,
+                                          Color.Cyan,
+                                          shape = RoundedCornerShape(
+                                              16.dp
+                                          )
+                                      )
+                              ) {
 
-                    }
-                },
-                topContent = {
-                    androidx.compose.material.Text(
-                        "Custom Top Content",
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                },
-                bottomContent = {
-                    // You may add custom buttons and other elements here:
-                    androidx.compose.material.Text(
-                        "Custom Bottom Content",
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
-            ),*/
+                              }
+                          },
+                          topContent = {
+                              androidx.compose.material.Text(
+                                  "Custom Top Content",
+                                  color = Color.White,
+                                  textAlign = TextAlign.Center,
+                                  modifier = Modifier
+                                      .fillMaxWidth()
+                              )
+                          },
+                          bottomContent = {
+                              // You may add custom buttons and other elements here:
+                              androidx.compose.material.Text(
+                                  "Custom Bottom Content",
+                                  color = Color.White,
+                                  textAlign = TextAlign.Center,
+                                  modifier = Modifier
+                                      .fillMaxWidth()
+                              )
+                          }
+                      ),*/
             cameraEnabled = cameraEnabled.value,
             mrzScanningEnabled = scanningEnabled.value,
             torchEnabled = torchEnabled.value,
@@ -98,14 +99,17 @@ fun MrzScannerScreen1(navController: NavHostController) {
                         // Handle permission screen close if needed
                     })
             },
-            onMrzScanned = { mrz ->
-                // Apply feedback, sound, vibration here if needed
-                // ...
+            onMrzScanningResult = { result ->
+                result.onSuccess { data ->
+                    // Apply feedback, sound, vibration here if needed
+                    // ...
 
-                // Handle scanned barcodes here (for example, show a dialog)
-                Log.d(
-                    "MrzScannerScreen", "Scanned mrz: ${mrz.rawMRZ}"
-                )
+                    // Handle scanned barcodes here (for example, show a dialog)
+                    Log.d(
+                        "MrzScannerScreen", "Scanned mrz: ${data.rawMRZ}"
+                    )
+                }
+
             },
         )
         Row {
