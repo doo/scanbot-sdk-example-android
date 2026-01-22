@@ -18,6 +18,7 @@ import io.scanbot.sdk.ui_v2.mrz.*
 // @Tag("Detailed MRZ Scanner Composable")
 @Composable
 fun MrzScannerSnippet() {
+    //@Tag("Mutable states for camera control")
     // Use these states to control camera, torch and zoom
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
@@ -25,6 +26,7 @@ fun MrzScannerSnippet() {
     // Unused in this example, but you may use it to
     // enable/disable barcode scanning dynamically
     val scanningEnabled = remember { mutableStateOf(true) }
+    //@EndTag("Mutable states for camera control")
     MrzScannerCustomUI(
         // Modify Size here:
         modifier = Modifier
