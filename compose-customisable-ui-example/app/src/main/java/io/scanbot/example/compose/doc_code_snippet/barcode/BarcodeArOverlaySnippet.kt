@@ -12,11 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import io.scanbot.sdk.barcode.BarcodeItem
-import io.scanbot.sdk.barcode.BarcodeScannerResult
-import io.scanbot.sdk.barcode.textWithExtension
-import io.scanbot.sdk.camera.FrameHandler
-import io.scanbot.sdk.ui_v2.barcode.components.ar_tracking.ScanbotBarcodesArOverlay
+import io.scanbot.sdk.barcode.*
+import io.scanbot.sdk.camera.*
+import io.scanbot.sdk.ui_v2.barcode.components.ar_tracking.*
 import kotlinx.coroutines.flow.SharedFlow
 
 
@@ -94,3 +92,4 @@ fun BarcodeArOverlaySnippet(
         },
     )
 }
+//@EndTag("Customisable barcode AR view")
