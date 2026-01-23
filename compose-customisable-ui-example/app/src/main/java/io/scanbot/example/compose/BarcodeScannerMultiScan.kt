@@ -70,6 +70,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                 backgroundColor = sbBrandColor,
                 navigationIcon = {
                     Icon(
+                        tint = Color.White, 
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = ""
                     )
