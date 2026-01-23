@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.scanbot.common.*
+import io.scanbot.example.compose.CustomBarcodesArView
 import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerCustomUI
@@ -54,6 +55,11 @@ fun BarcodeScannerSnippet() {
         // Set zoom level. Range from 1.0 to 5.0:
         zoomLevel = zoom.floatValue,
         // Permission view that will be shown if camera permission is not granted
+        arPolygonView = { dataFlow->
+            CustomBarcodesArView(dataFlow,{
+                //handle click on barcode in AR
+            })
+        },
         permissionView = {
             // View that will be shown while camera permission is not granted
             // Use custom layout of camera permission handling view here:

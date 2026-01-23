@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,7 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.scanbot.demo.composeui.ui.theme.ScanbotsdkandroidTheme
-import io.scanbot.demo.composeui.ui.theme.colorWarningBackground
+import io.scanbot.demo.composeui.ui.theme.sbBrandColor
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.licensing.LicenseStatus
 import java.net.URLDecoder
@@ -67,8 +66,8 @@ class MainActivity : ComponentActivity() {
 
 sealed class Screen(val route: String) {
     object Menu : Screen("menu")
-    object BarcodeScanner1 : Screen("BarcodeScanner1")
-    object BarcodeScanner2 : Screen("BarcodeScanner2")
+    object BarcodeScanner1 : Screen("BarcodeScannerSingle")
+    object BarcodeScanner2 : Screen("BarcodeScannerMulti")
     object BarcodeScanner3 : Screen("BarcodeScanner3")
     object DocumentScanner1 : Screen("DocumentScanner1")
     object MrzScanner1 : Screen("MrzScanner1")
@@ -88,8 +87,8 @@ sealed class Screen(val route: String) {
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Menu.route) {
         composable(Screen.Menu.route) { MenuScreen(navController) }
-        composable(Screen.BarcodeScanner1.route) { BarcodeScannerScreen1(navController) }
-        composable(Screen.BarcodeScanner2.route) { BarcodeScannerScreen2(navController) }
+        composable(Screen.BarcodeScanner1.route) { BarcodeScannerSingleScan(navController) }
+        composable(Screen.BarcodeScanner2.route) { BarcodeScannerMultiScan(navController) }
         composable(Screen.BarcodeScanner3.route) { BarcodeScannerScreen3(navController) }
         composable(Screen.DocumentScanner1.route) { DocumentScannerScreen1(navController) }
         composable(Screen.MrzScanner1.route) { MrzScannerScreen1(navController) }
@@ -120,19 +119,19 @@ fun MenuScreen(navController: NavHostController) {
 
     val menuItems = listOf(
         Triple(
-            "Barcode Ar overlay + finder",
+            "Barcode Single Mode",
             Screen.BarcodeScanner1.route,
-            "Navigate to AR overlay + finder screen"
+            "Barcode scanner with AR overlay"
         ),
         Triple(
-            "Barcode Half Camera With List",
+            "Barcode Multi Mode",
             Screen.BarcodeScanner2.route,
-            "Navigate to Half Camera With List screen"
+            "Barcode multi scan mode"
         ),
         Triple(
-            "Barcode Fit in Preview + result navigation",
+            "Barcode Fit in Preview",
             Screen.BarcodeScanner3.route,
-            "Navigate to Fit in Preview + result navigation screen"
+            "Navigate to Fit in Preview"
         ),
         Triple(
             "Document Default Scanner",
@@ -164,7 +163,7 @@ fun MenuScreen(navController: NavHostController) {
             item() {
                 Surface(
                     modifier = Modifier.padding(bottom = 24.dp),
-                    color = colorWarningBackground,
+                    color = sbBrandColor,
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
@@ -194,31 +193,21 @@ fun MenuScreen(navController: NavHostController) {
                     },
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(  modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),text=title, style = MaterialTheme.typography.titleMedium)
-                Divider(Modifier.fillMaxWidth().align(Alignment.BottomCenter), color = Color.LightGray.copy(alpha = 0.3f))
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Divider(
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    color = Color.LightGray.copy(alpha = 0.3f)
+                )
             }
-
         }
     }
 }
 
-@Composable
-fun BarcodeDetailScreen(data: String, format: String) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Barcode Data:", style = MaterialTheme.typography.titleLarge)
-            Text(
-                data,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text("Format: $format", style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
