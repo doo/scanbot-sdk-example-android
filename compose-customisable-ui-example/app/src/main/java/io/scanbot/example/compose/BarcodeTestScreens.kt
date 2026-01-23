@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
+import io.scanbot.example.compose.components.CorneredFinder
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.geometry.AspectRatio
@@ -85,22 +86,8 @@ fun BarcodeScannerScreen1(navController: NavHostController) {
 
                 // Alternatively, it is possible to provide a completely custom viewfinder content:
                 finderContent = {
-                    // Box with border stroke color as an example of custom viewfinder content
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Transparent)
-                            // Same but with rounded corners
-                            .border(
-                                4.dp,
-                                Color.Cyan,
-                                shape = RoundedCornerShape(
-                                    16.dp
-                                )
-                            )
-                    ) {
-
-                    }
+                    // Custom cornered viewfinder. Can be replaced with any custom Composable
+                    CorneredFinder()
                 },
                 topContent = {
                     androidx.compose.material.Text(
@@ -213,7 +200,10 @@ fun BarcodeScannerScreen2(navController: NavHostController) {
             finderConfiguration = FinderConfiguration(
                 aspectRatio = AspectRatio(2.0, 1.0),
                 overlayColor = Color(0x5500FF00),
-                strokeColor = Color.Blue
+                strokeColor = Color.Transparent,
+                finderContent = {
+                    CorneredFinder()
+                }
             ),
             permissionView = {},
             onBarcodeScanningResult = { result ->
