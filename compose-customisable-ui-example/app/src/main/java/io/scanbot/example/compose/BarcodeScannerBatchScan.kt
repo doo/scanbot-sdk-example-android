@@ -88,6 +88,7 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+                // @Tag("Batch Scanning")
                 BarcodeScannerCustomUI(
                     modifier = Modifier.weight(1f),
                     cameraEnabled = cameraEnabled.value,
@@ -131,6 +132,7 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
                         }
                     }
                 )
+                // @EndTag("Batch Scanning")
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()

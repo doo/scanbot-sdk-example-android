@@ -43,7 +43,6 @@ import kotlin.random.*
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
 fun BarcodeScannerSingleScan(navController: NavHostController) {
-
     // Use these states to control camera, torch and zoom
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
@@ -83,7 +82,7 @@ fun BarcodeScannerSingleScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
+                // @Tag("Scanning single barcode")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
@@ -175,6 +174,8 @@ fun BarcodeScannerSingleScan(navController: NavHostController) {
                         }
                     },
                 )
+                // @EndTag("Scanning single barcode")
+
                 Row {
                     androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()

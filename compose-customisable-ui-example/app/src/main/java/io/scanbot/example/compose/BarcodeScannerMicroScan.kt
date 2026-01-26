@@ -83,7 +83,7 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
+                // @Tag("Scanning tiny barcodes")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
@@ -177,6 +177,7 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                         }
                     },
                 )
+                // @EndTag("Scanning tiny barcodes")
                 Row {
                     androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()

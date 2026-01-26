@@ -85,6 +85,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+                // @Tag("Scanning multiple barcodes")
                 BarcodeScannerCustomUI(
                     modifier = Modifier.weight(1f),
                     cameraEnabled = cameraEnabled.value,
@@ -130,6 +131,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                         }
                     }
                 )
+                // @EndTag("Scanning multiple barcodes")
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()

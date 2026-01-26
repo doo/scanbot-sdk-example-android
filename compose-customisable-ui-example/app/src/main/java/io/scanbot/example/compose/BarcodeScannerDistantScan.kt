@@ -84,7 +84,7 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
+                //@Tag("Scanning distant barcodes")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
@@ -176,6 +176,7 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
                         }
                     },
                 )
+                // @EndTag("Scanning distant barcodes")
                 Row {
                     androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()
