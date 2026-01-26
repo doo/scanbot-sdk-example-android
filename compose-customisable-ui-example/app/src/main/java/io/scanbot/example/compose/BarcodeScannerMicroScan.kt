@@ -42,7 +42,7 @@ import kotlin.random.*
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerSingleScan(navController: NavHostController) {
+fun BarcodeScannerMicroScan(navController: NavHostController) {
 
     // Use these states to control camera, torch and zoom
     val zoom = remember { mutableFloatStateOf(1.0f) }
@@ -59,7 +59,7 @@ fun BarcodeScannerSingleScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Barcode Single Scan",
+                        text = "Micro Barcode Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -89,6 +89,8 @@ fun BarcodeScannerSingleScan(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.0f),
+                    // THIS IS IMPORTANT FOR MICR0 SCAN USECASE
+                    minFocusDistanceLock = true,
                     finderConfiguration = FinderConfiguration(
                         verticalAlignment = Alignment.Top,
                         previewInsets = PaddingValues(

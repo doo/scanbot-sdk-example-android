@@ -66,9 +66,11 @@ class MainActivity : ComponentActivity() {
 
 sealed class Screen(val route: String) {
     object Menu : Screen("menu")
-    object BarcodeScanner1 : Screen("BarcodeScannerSingle")
-    object BarcodeScanner2 : Screen("BarcodeScannerMulti")
-    object BarcodeScanner3 : Screen("BarcodeScanner3")
+    object BarcodeScannerSingle : Screen("BarcodeScannerSingle")
+    object BarcodeScannerMulti : Screen("BarcodeScannerMulti")
+    object BarcodeScannerBatch : Screen("BarcodeScannerBatch")
+    object BarcodeScannerMicro : Screen("BarcodeScannerMicro")
+    object BarcodeScannerDistant : Screen("BarcodeScannerDistant")
     object DocumentScanner1 : Screen("DocumentScanner1")
     object MrzScanner1 : Screen("MrzScanner1")
     data class BarcodeDetail(val data: String, val format: String) :
@@ -87,9 +89,12 @@ sealed class Screen(val route: String) {
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Menu.route) {
         composable(Screen.Menu.route) { MenuScreen(navController) }
-        composable(Screen.BarcodeScanner1.route) { BarcodeScannerSingleScan(navController) }
-        composable(Screen.BarcodeScanner2.route) { BarcodeScannerMultiScan(navController) }
-        composable(Screen.BarcodeScanner3.route) { BarcodeScannerScreen3(navController) }
+        composable(Screen.BarcodeScannerSingle.route) { BarcodeScannerSingleScan(navController) }
+        composable(Screen.BarcodeScannerMulti.route) { BarcodeScannerMultiScan(navController) }
+        composable(Screen.BarcodeScannerBatch.route) { BarcodeScannerBatchScan(navController) }
+        composable(Screen.BarcodeScannerMicro.route) { BarcodeScannerMicroScan(navController) }
+        composable(Screen.BarcodeScannerDistant.route) { BarcodeScannerDistantScan(navController) }
+
         composable(Screen.DocumentScanner1.route) { DocumentScannerScreen1(navController) }
         composable(Screen.MrzScanner1.route) { MrzScannerScreen1(navController) }
         composable(
@@ -120,18 +125,28 @@ fun MenuScreen(navController: NavHostController) {
     val menuItems = listOf(
         Triple(
             "Barcode Single Mode",
-            Screen.BarcodeScanner1.route,
+            Screen.BarcodeScannerSingle.route,
             "Barcode scanner with AR overlay"
         ),
         Triple(
-            "Barcode Multi Mode",
-            Screen.BarcodeScanner2.route,
-            "Barcode multi scan mode"
+            "Barcodes Multi Mode",
+            Screen.BarcodeScannerMulti.route,
+            "Barcode multi scan mode without finder"
         ),
         Triple(
-            "Barcode Fit in Preview",
-            Screen.BarcodeScanner3.route,
-            "Navigate to Fit in Preview"
+            "Barcodes Batch Mode",
+            Screen.BarcodeScannerBatch.route,
+            "Barcode batch scan mode"
+        ),
+        Triple(
+            "Barcodes Micro Barcode Mode",
+            Screen.BarcodeScannerMicro.route,
+            "Barcode micro barcode scan mode"
+        ),
+        Triple(
+            "Barcodes Distant Barcode Mode",
+            Screen.BarcodeScannerDistant.route,
+            "Barcode distant barcode scan mode"
         ),
         Triple(
             "Document Default Scanner",

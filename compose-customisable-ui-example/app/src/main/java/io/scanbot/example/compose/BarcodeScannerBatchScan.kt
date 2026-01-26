@@ -31,15 +31,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.scanbot.common.*
-import io.scanbot.demo.composeui.ui.theme.*
+import io.scanbot.demo.composeui.ui.theme.sbBrandColor
+import io.scanbot.example.compose.components.*
 import io.scanbot.sdk.barcode.*
+import io.scanbot.sdk.geometry.*
 import io.scanbot.sdk.ui_v2.barcode.*
+import io.scanbot.sdk.ui_v2.common.components.*
 import io.scanbot.sdk.util.snap.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerMultiScan(navController: NavHostController) {
+fun BarcodeScannerBatchScan(navController: NavHostController) {
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
@@ -61,7 +64,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Multiple Barcodes Scan",
+                        text = "Batch Barcodes Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -91,16 +94,14 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                     barcodeScanningEnabled = barcodeScanningEnabled.value,
                     torchEnabled = torchEnabled.value,
                     zoomLevel = zoom.floatValue,
-                    finderConfiguration = null,
-                    arPolygonView = { dataFlow ->
-                        CustomBarcodesArView(dataFlow, { barcode ->
-                            if (scannedBarcodes.any { it.textWithExtension == barcode.textWithExtension }) {
-                                scannedBarcodes.add(barcode)
-                            } else {
-                                scannedBarcodes.removeAll { it.textWithExtension == barcode.textWithExtension }
-                            }
-                        })
-                    },
+                    finderConfiguration = FinderConfiguration(
+                        aspectRatio = AspectRatio(2.0, 1.0),
+                        overlayColor = Color(0x5500FF00),
+                        strokeColor = Color.Transparent,
+                        finderContent = {
+                            CorneredFinder()
+                        }
+                    ),
                     permissionView = {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(

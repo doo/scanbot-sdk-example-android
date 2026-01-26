@@ -42,10 +42,11 @@ import kotlin.random.*
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerSingleScan(navController: NavHostController) {
-
+fun BarcodeScannerDistantScan(navController: NavHostController) {
     // Use these states to control camera, torch and zoom
-    val zoom = remember { mutableFloatStateOf(1.0f) }
+
+    // THIS IS IMPORTANT FOR MICR0 SCAN USECASE
+    val zoom = remember { mutableFloatStateOf(20.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
 
@@ -59,7 +60,7 @@ fun BarcodeScannerSingleScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Barcode Single Scan",
+                        text = "Distant Barcode Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
