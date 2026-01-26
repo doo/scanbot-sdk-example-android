@@ -71,6 +71,8 @@ sealed class Screen(val route: String) {
     object BarcodeScannerBatch : Screen("BarcodeScannerBatch")
     object BarcodeScannerMicro : Screen("BarcodeScannerMicro")
     object BarcodeScannerDistant : Screen("BarcodeScannerDistant")
+    object BarcodeFindAndPick : Screen("BarcodeFindAndPick")
+
     object DocumentScanner1 : Screen("DocumentScanner1")
     object MrzScanner1 : Screen("MrzScanner1")
     data class BarcodeDetail(val data: String, val format: String) :
@@ -94,7 +96,7 @@ fun AppNavHost(navController: NavHostController) {
         composable(Screen.BarcodeScannerBatch.route) { BarcodeScannerBatchScan(navController) }
         composable(Screen.BarcodeScannerMicro.route) { BarcodeScannerMicroScan(navController) }
         composable(Screen.BarcodeScannerDistant.route) { BarcodeScannerDistantScan(navController) }
-
+        composable(Screen.BarcodeFindAndPick.route) { BarcodeFindAndPick(navController) }
         composable(Screen.DocumentScanner1.route) { DocumentScannerScreen1(navController) }
         composable(Screen.MrzScanner1.route) { MrzScannerScreen1(navController) }
         composable(
@@ -147,6 +149,10 @@ fun MenuScreen(navController: NavHostController) {
             "Barcodes Distant Barcode Mode",
             Screen.BarcodeScannerDistant.route,
             "Barcode distant barcode scan mode"
+        ), Triple(
+            "Barcodes Find and Pick Mode",
+            Screen.BarcodeFindAndPick.route,
+            "Find Specific barcode and pick it"
         ),
         Triple(
             "Document Default Scanner",
