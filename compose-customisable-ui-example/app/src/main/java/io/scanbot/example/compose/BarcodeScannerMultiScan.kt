@@ -101,6 +101,10 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                             } else {
                                 scannedBarcodes.removeAll { it.textWithExtension == barcode.textWithExtension }
                             }
+                        }, onShouldHighlight = { barcode ->
+                            scannedBarcodes.any {
+                                it.textWithExtension == barcode.textWithExtension
+                            }
                         })
                     },
                     permissionView = {

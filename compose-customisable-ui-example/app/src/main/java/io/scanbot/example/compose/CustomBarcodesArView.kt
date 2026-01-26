@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharedFlow
 fun CustomBarcodesArView(
     barcodesFlow: SharedFlow<Pair<BarcodeScannerResult, FrameHandler.Frame>?>,
     onBarcodeClick: (BarcodeItem) -> Unit = {},
+    onShouldHighlight: (BarcodeItem) -> Boolean = { false },
 ) {
     val density = LocalDensity.current
 
@@ -51,7 +52,7 @@ fun CustomBarcodesArView(
         shouldHighlight = { barcodeItem ->
             // Here you can implement any custom logic.
             // Return true to highlight a barcode with different style.
-            false
+            onShouldHighlight(barcodeItem)
         },
         // Customize AR view  for barcode data here if needed
         view = { path, barcodeItem, data, shouldHighlight ->
