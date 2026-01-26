@@ -92,4 +92,4 @@ fun BarcodeArOverlaySnippet(
         },
     )
 }
-//@EndTag("Customisable barcode AR view")
+// @EndTag("Customisable barcode AR view")

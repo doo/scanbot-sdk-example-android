@@ -26,7 +26,7 @@ fun MrzScannerSnippet() {
     // Unused in this example, but you may use it to
     // enable/disable barcode scanning dynamically
     val scanningEnabled = remember { mutableStateOf(true) }
-    //@EndTag("Mutable states for camera control")
+    // @EndTag("Mutable states for camera control")
     MrzScannerCustomUI(
         // Modify Size here:
         modifier = Modifier

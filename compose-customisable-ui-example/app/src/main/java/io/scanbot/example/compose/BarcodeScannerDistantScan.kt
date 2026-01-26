@@ -84,7 +84,7 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                //@Tag("Scanning distant barcodes")
+                // @Tag("Scanning distant barcodes")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier

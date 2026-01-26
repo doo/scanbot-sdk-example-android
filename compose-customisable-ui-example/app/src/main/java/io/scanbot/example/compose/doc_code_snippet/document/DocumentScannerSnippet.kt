@@ -52,7 +52,7 @@ fun DocumentScannerSnippet() {
     val sdk = remember { ScanbotSDK(context) }
     val imageProcessor = remember { ScanbotSdkImageProcessor.create() }
     val documentScanner = remember { sdk.createDocumentScanner().getOrNull() }
-    //@Tag("Mutable states for camera control")
+    // @Tag("Mutable states for camera control")
     // Use these states to control camera, torch and zoom
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
@@ -66,7 +66,7 @@ fun DocumentScannerSnippet() {
     val scannedImage = remember { mutableStateOf<Bitmap?>(null) }
     val takePictureActionController =
         remember { mutableStateOf<TakePictureActionController?>(null) }
-    //@EndTag("Mutable states for camera control")
+    // @EndTag("Mutable states for camera control")
     Box(
         modifier = Modifier
             .fillMaxWidth(),

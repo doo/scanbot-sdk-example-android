@@ -23,7 +23,7 @@ import io.scanbot.sdk.ui_v2.common.components.ScanbotCameraPermissionView
 // @Tag("Detailed Barcode Scanner Composable")
 @Composable
 fun BarcodeScannerSnippet() {
-    //@Tag("Mutable states for camera control")
+    // @Tag("Mutable states for camera control")
     // Use these states to control camera, torch and zoom
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
@@ -31,7 +31,7 @@ fun BarcodeScannerSnippet() {
     // Unused in this example, but you may use it to
     // enable/disable barcode scanning dynamically
     val scanningEnabled = remember { mutableStateOf(true) }
-    //@EndTag("Mutable states for camera control")
+    // @EndTag("Mutable states for camera control")
     BarcodeScannerCustomUI(
         // Modify Size here:
         modifier = Modifier
