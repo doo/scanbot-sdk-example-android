@@ -45,7 +45,7 @@ import kotlin.random.*
 fun BarcodeScannerDistantScan(navController: NavHostController) {
     // Use these states to control camera, torch and zoom
 
-    // THIS IS IMPORTANT FOR MICR0 SCAN USECASE
+    // THIS IS IMPORTANT FOR DISTANT SCAN USECASE
     val zoom = remember { mutableFloatStateOf(20.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
