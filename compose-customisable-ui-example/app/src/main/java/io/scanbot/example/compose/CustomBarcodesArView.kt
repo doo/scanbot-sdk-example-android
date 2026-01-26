@@ -50,9 +50,10 @@ fun CustomBarcodesArView(
         },
         shouldHighlight = { barcodeItem ->
             // Here you can implement any custom logic.
+            // Return true to highlight a barcode with different style.
             false
         },
-        // Uncomment and  Customize AR view for barcode polygon here if needed
+        // Customize AR view  for barcode data here if needed
         view = { path, barcodeItem, data, shouldHighlight ->
             // Implement custom view for barcode polygon if needed
             Box(modifier = Modifier.layout { measurable, constraints ->

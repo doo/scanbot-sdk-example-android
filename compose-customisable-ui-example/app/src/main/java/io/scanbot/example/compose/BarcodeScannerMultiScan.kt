@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.scanbot.common.*
 import io.scanbot.demo.composeui.ui.theme.*
+import io.scanbot.example.compose.components.BarcodeItem
 import io.scanbot.sdk.barcode.*
 import io.scanbot.sdk.ui_v2.barcode.*
 import io.scanbot.sdk.util.snap.*
@@ -95,7 +96,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                     finderConfiguration = null,
                     arPolygonView = { dataFlow ->
                         CustomBarcodesArView(dataFlow, { barcode ->
-                            if (scannedBarcodes.any { it.textWithExtension == barcode.textWithExtension }) {
+                            if (scannedBarcodes.none { it.textWithExtension == barcode.textWithExtension }) {
                                 scannedBarcodes.add(barcode)
                             } else {
                                 scannedBarcodes.removeAll { it.textWithExtension == barcode.textWithExtension }
@@ -139,20 +140,7 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                         .padding(8.dp),
                 ) {
                     items(scannedBarcodes.reversed()) { barcode ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Text(
-                                "Data: ${barcode.text}",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                "Format: ${barcode.format}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                        BarcodeItem(barcode)
                     }
                 }
             }

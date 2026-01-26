@@ -140,20 +140,7 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
                         .padding(8.dp),
                 ) {
                     items(scannedBarcodes.reversed()) { barcode ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Text(
-                                "Data: ${barcode.text}",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                "Format: ${barcode.format}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                        BarcodeItem(barcode)
                     }
                 }
             }
