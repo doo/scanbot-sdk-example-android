@@ -247,22 +247,12 @@ fun handlingCameraPictureSnippet(cameraView: ScanbotCameraXView, context: Contex
                 }
             }
 
-            // Decode image byte array to Bitmap, and rotate according to orientation:
-            val image =
-                ImageProcessor(imageRef).rotate(captureInfo.imageOrientation).processedImageRef()
-
-            if (image == null) {
-                // license or feature is not available
-                restartCamera()
-                return
-            }
-
             // Run document contour detection on original image:
-            val scanningResult = scanner.run(image).getOrNull()
+            val scanningResult = scanner.run(imageRef).getOrNull()
             val documentPolygon = scanningResult?.pointsNormalized
             if (documentPolygon != null) {
                 // And crop using detected polygon to get the final document image:
-                val documentImage = ImageProcessor(image).crop(documentPolygon).processedBitmap()
+                val documentImage = ImageProcessor(imageRef).crop(documentPolygon).processedBitmap()
 
                 // Work with the final document image (store it as a file, etc)
                 // ...
