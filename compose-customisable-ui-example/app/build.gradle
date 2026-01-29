@@ -64,7 +64,6 @@ configurations {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.google.android.material:material:1.13.0")
     // we are using compose dependencies that come transitively via Scanbot SDK.
     // If you need additional compose dependencies, please make sure to use the same versions as Scanbot SDK to avoid version conflicts.
