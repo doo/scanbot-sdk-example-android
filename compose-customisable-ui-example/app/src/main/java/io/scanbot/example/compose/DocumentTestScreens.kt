@@ -1,5 +1,8 @@
+@file:kotlin.OptIn(ExperimentalPermissionsApi::class)
+
 package io.scanbot.example.compose
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.OptIn
@@ -29,6 +32,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
@@ -208,17 +214,21 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 takePictureActionController.value?.invoke()
             }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-            ) {
-                Surface(color = Color.Green.copy(alpha = 0.3f)) {
-                    Text(
-                        text = instructionString(documentScanningStatus.value),
-                        color = Color.White
-                    )
+            val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+            if(cameraPermissionState.status == PermissionStatus.Granted){
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                ) {
+                    Surface(color = Color.Green.copy(alpha = 0.3f)) {
+                        Text(
+                            text = instructionString(documentScanningStatus.value),
+                            color = Color.White
+                        )
+                    }
                 }
             }
+
 
             if (scannedImage.value != null) {
                 AsyncImage(
