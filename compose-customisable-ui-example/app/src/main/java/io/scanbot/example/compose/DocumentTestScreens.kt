@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +41,9 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
 import io.scanbot.sdk.documentscanner.DocumentScannerConfiguration
 import io.scanbot.sdk.documentscanner.DocumentScannerParameters
-import io.scanbot.sdk.geometry.AspectRatio
-import io.scanbot.sdk.imagemanipulation.ScanbotSdkImageManipulator
 import io.scanbot.sdk.imageprocessing.ScanbotSdkImageProcessor
 import io.scanbot.sdk.ui_v2.common.CameraPermissionScreen
 import io.scanbot.sdk.ui_v2.common.camera.TakePictureActionController
-import io.scanbot.sdk.ui_v2.common.components.FinderConfiguration
 import io.scanbot.sdk.ui_v2.common.components.ScanbotCameraPermissionView
 import io.scanbot.sdk.ui_v2.common.components.ScanbotSnapButton
 import io.scanbot.sdk.ui_v2.document.DocumentScannerCustomUI
@@ -59,7 +56,7 @@ import kotlin.random.Random
 
 @Composable
 @OptIn(ExperimentalCamera2Interop::class)
-fun DocumentScannerScreen1(navController: NavHostController) {
+fun DocumentScannerScreen(navController: NavHostController) {
     val density = LocalDensity.current
     Column(modifier = Modifier.systemBarsPadding()) {
         val context = LocalContext.current
@@ -173,7 +170,7 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                         result.getOrNull()?.status ?: DocumentDetectionStatus.ERROR_NOTHING_DETECTED
                     result.onSuccess { data ->
                         Log.d(
-                            "BarcodeComposeClassic",
+                            "DocumentS",
                             "Scanned polygon: ${
                                 data.pointsNormalized.map {
                                     with(density) {
@@ -183,9 +180,19 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                             }",
                         )
                     }
-
                 },
             )
+            Button(modifier = Modifier.align(Alignment.TopEnd), onClick = {
+                autosnappingEnabled.value = !autosnappingEnabled.value
+            }) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Autosnapping")
+                    Checkbox(autosnappingEnabled.value, {
+                        autosnappingEnabled.value = !it
+                    })
+                }
+            }
+
             ScanbotSnapButton(
                 modifier = Modifier
                     .height(72.dp)
@@ -207,20 +214,24 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 // outer circle line width
                 lineWidth = 4.dp,
                 // size of the empty space between inner and outer components
-                emptyLineWidth =5.dp,
+                emptyLineWidth = 5.dp,
                 // initial angle of the 360 degrees rotating big arc
                 bigArcInitialAngle = 200f
             ) {
                 takePictureActionController.value?.invoke()
             }
 
-            val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-            if(cameraPermissionState.status == PermissionStatus.Granted){
-                Box(
+            val cameraPermissionState =
+                rememberPermissionState(permission = Manifest.permission.CAMERA)
+            if (cameraPermissionState.status == PermissionStatus.Granted) {
+
+                Surface(
                     modifier = Modifier
-                        .align(Alignment.Center)
+                        .align(Alignment.Center), color = Color.Green.copy(alpha = 0.3f)
                 ) {
-                    Surface(color = Color.Green.copy(alpha = 0.3f)) {
+                    Box(
+                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+                    ) {
                         Text(
                             text = instructionString(documentScanningStatus.value),
                             color = Color.White
@@ -258,13 +269,6 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                     cameraEnabled.value = !cameraEnabled.value
                 }) {
                     Text("Visibility")
-                }
-            }
-            Row {
-                Button(modifier = Modifier.weight(1f), onClick = {
-                    autosnappingEnabled.value = !autosnappingEnabled.value
-                }) {
-                    Text("Autosnapping: ${autosnappingEnabled.value}")
                 }
             }
         }

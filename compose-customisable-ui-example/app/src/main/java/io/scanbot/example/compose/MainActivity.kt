@@ -24,8 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -91,14 +89,8 @@ sealed class Screen(val route: String) {
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Menu.route) {
         composable(Screen.Menu.route) { MenuScreen(navController) }
-        composable(Screen.BarcodeScannerSingle.route) { BarcodeScannerSingleScan(navController) }
-        composable(Screen.BarcodeScannerMulti.route) { BarcodeScannerMultiScan(navController) }
-        composable(Screen.BarcodeScannerBatch.route) { BarcodeScannerBatchScan(navController) }
-        composable(Screen.BarcodeScannerMicro.route) { BarcodeScannerMicroScan(navController) }
-        composable(Screen.BarcodeScannerDistant.route) { BarcodeScannerDistantScan(navController) }
-        composable(Screen.BarcodeFindAndPick.route) { BarcodeFindAndPick(navController) }
-        composable(Screen.DocumentScanner1.route) { DocumentScannerScreen1(navController) }
-        composable(Screen.MrzScanner1.route) { MrzScannerScreen1(navController) }
+        composable(Screen.DocumentScanner1.route) { DocumentScannerScreen(navController) }
+        composable(Screen.MrzScanner1.route) { MrzScannerScreen(navController) }
         composable(
             route = "barcodeDetail/{data}/{format}",
             arguments = listOf(
@@ -126,41 +118,12 @@ fun MenuScreen(navController: NavHostController) {
 
     val menuItems = listOf(
         Triple(
-            "Barcode Single Mode",
-            Screen.BarcodeScannerSingle.route,
-            "Barcode scanner with AR overlay"
-        ),
-        Triple(
-            "Barcodes Multi Mode",
-            Screen.BarcodeScannerMulti.route,
-            "Barcode multi scan mode without finder"
-        ),
-        Triple(
-            "Barcodes Batch Mode",
-            Screen.BarcodeScannerBatch.route,
-            "Barcode batch scan mode"
-        ),
-        Triple(
-            "Barcodes Micro Barcode Mode",
-            Screen.BarcodeScannerMicro.route,
-            "Barcode micro barcode scan mode"
-        ),
-        Triple(
-            "Barcodes Distant Barcode Mode",
-            Screen.BarcodeScannerDistant.route,
-            "Barcode distant barcode scan mode"
-        ), Triple(
-            "Barcodes Find and Pick Mode",
-            Screen.BarcodeFindAndPick.route,
-            "Find Specific barcode and pick it"
-        ),
-        Triple(
-            "Document Default Scanner",
+            "Document Scanner",
             Screen.DocumentScanner1.route,
             ""
         ),
         Triple(
-            "Mrz Default Scanner",
+            "MRZ Scanner",
             Screen.MrzScanner1.route,
             ""
         )
@@ -194,15 +157,6 @@ fun MenuScreen(navController: NavHostController) {
                     )
                 }
             }
-        }
-
-        item() {
-            Text(
-                "Scanners Examples".uppercase(),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
         }
         items(menuItems) { (title, route, description) ->
             Box(
