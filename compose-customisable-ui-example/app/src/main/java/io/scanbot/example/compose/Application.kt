@@ -58,8 +58,8 @@ class Application : Application(), CoroutineScope {
                                 .previewTargetMax(1500)
                                 .build()
                 )
-                .prepareOCRLanguagesBlobs(true)
-                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
+                //.prepareOCRLanguagesBlobs(true)
+                //.useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenseErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
