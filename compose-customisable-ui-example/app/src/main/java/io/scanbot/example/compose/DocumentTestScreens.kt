@@ -192,7 +192,7 @@ fun DocumentScannerScreen(navController: NavHostController) {
                     })
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Autosnapping")
+                    Text("Auto-Snapping")
                     Checkbox(autosnappingEnabled.value, {
                         autosnappingEnabled.value = it
                     })
