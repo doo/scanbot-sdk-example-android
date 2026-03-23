@@ -227,7 +227,7 @@ fun DocumentScannerScreen(navController: NavHostController) {
 
                 Surface(
                     modifier = Modifier
-                        .align(Alignment.Center), color = Color.Green.copy(alpha = 0.3f)
+                        .align(Alignment.Center).padding( 16.dp), color = Color.Green.copy(alpha = 0.3f)
                 ) {
                     Box(
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
