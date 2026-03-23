@@ -138,7 +138,7 @@ fun MenuScreen(navController: NavHostController) {
     ) {
         item() {
             Text(
-                "Scanbot SDK Compose Customisable UI Demo",
+                "Scanbot SDK Compose Custom UI Demo",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 24.dp)
             )

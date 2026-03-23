@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
-rootProject.name = "Scanbot Compose Customisable UI example"
+rootProject.name = "Scanbot Compose Custom UI example"
