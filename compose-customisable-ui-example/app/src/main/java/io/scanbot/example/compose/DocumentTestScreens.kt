@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -182,15 +183,18 @@ fun DocumentScannerScreen(navController: NavHostController) {
                     }
                 },
             )
-            Button(modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.TopEnd), onClick = {
-                autosnappingEnabled.value = !autosnappingEnabled.value
-            }) {
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.TopEnd)
+                    .clickable(onClick = {
+                        autosnappingEnabled.value = !autosnappingEnabled.value
+                    })
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Autosnapping")
                     Checkbox(autosnappingEnabled.value, {
-                        autosnappingEnabled.value = !it
+                        autosnappingEnabled.value = it
                     })
                 }
             }
