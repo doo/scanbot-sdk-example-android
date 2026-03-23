@@ -188,7 +188,7 @@ fun DocumentScannerScreen1(navController: NavHostController) {
             )
             ScanbotSnapButton(
                 modifier = Modifier
-                    .height(100.dp)
+                    .height(72.dp)
                     .align(Alignment.BottomCenter),
                 // Disable button when scanning or auto-snapping is disabled
                 clickable = scanningEnabled.value && !cameraInProcessingState.value,
@@ -199,15 +199,15 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 // rotation speed of the outer big arc in auto-capture mode
                 bigArcSpeed = 3000,
                 // speed of the progress arc during processing
-                progressSpeed = 500,
+                progressSpeed = 1000,
                 // color of buttons inner component
                 innerColor = Color.Red,
                 // outer color of buttons outer component
                 outerColor = Color.White,
                 // outer circle line width
-                lineWidth = 1.dp,
+                lineWidth = 4.dp,
                 // size of the empty space between inner and outer components
-                emptyLineWidth = 10.dp,
+                emptyLineWidth =5.dp,
                 // initial angle of the 360 degrees rotating big arc
                 bigArcInitialAngle = 200f
             ) {
@@ -242,7 +242,7 @@ fun DocumentScannerScreen1(navController: NavHostController) {
         }
         Column() {
             Row {
-                androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
+                Button(modifier = Modifier.weight(1f), onClick = {
                     zoom.floatValue = 1.0f + Random.nextFloat()
                 }) {
                     Text("Zoom")
@@ -261,7 +261,7 @@ fun DocumentScannerScreen1(navController: NavHostController) {
                 }
             }
             Row {
-                androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
+                Button(modifier = Modifier.weight(1f), onClick = {
                     autosnappingEnabled.value = !autosnappingEnabled.value
                 }) {
                     Text("Autosnapping: ${autosnappingEnabled.value}")

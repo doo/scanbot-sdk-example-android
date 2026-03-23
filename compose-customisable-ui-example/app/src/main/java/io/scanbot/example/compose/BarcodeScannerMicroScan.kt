@@ -179,7 +179,7 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                 )
                 // @EndTag("Scanning tiny barcodes")
                 Row {
-                    androidx.compose.material.Button(modifier = Modifier.weight(1f), onClick = {
+                    Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()
                     }) {
                         Text("Zoom")

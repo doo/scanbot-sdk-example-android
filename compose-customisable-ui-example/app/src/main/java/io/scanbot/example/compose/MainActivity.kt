@@ -33,7 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import io.scanbot.demo.composeui.ui.theme.ScanbotsdkandroidTheme
+import io.scanbot.demo.composeui.ui.theme.ScanbotSdkAndroidTheme
 import io.scanbot.demo.composeui.ui.theme.sbBrandColor
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.licensing.LicenseStatus
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainApp() {
-        ScanbotsdkandroidTheme {
+        ScanbotSdkAndroidTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

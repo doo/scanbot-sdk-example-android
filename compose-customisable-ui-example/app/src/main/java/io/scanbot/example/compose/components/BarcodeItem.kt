@@ -14,13 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.scanbot.sdk.barcode.BarcodeItem
 
 @Composable
 fun BarcodeItem(barcode: BarcodeItem) {
     Surface(color = MaterialTheme.colorScheme.surface) {
-        Row() {
+        Row(Modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier
                     .padding(8.dp)
@@ -35,22 +36,26 @@ fun BarcodeItem(barcode: BarcodeItem) {
                         contentScale = ContentScale.Inside
                     )
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text(
-                        "Data: ${barcode.text}",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 4.dp)
+            ) {
+                Text(
+                    "Data: ${barcode.text}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
+                )
+                Text(
+                    "Format: ${barcode.format}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Text(
-                        "Format: ${barcode.format}",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
+                )
             }
         }
     }
