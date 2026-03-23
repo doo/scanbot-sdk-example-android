@@ -26,7 +26,7 @@ Make sure you have the latest stable version of [Android Studio](https://develop
 2. There are 4 separate folders with standalone examples:  
 
 	* **classic-components-example**: Example project for the Scanbot SDK Classic Components which allow for full customization. 
-  * **compose-customisable-ui-example**: Example project for the Scanbot SDK Compose Custom Components which allow for full customization.
+	* **compose-customisable-ui-example**: Example project for the Scanbot SDK Compose Custom Components which allow for full customization.
 	* **document-scanner-ready-to-use-ui-example:** Example project for the Scanbot Document Scanner SDK using our Ready-To-Use UI components.
 	* **data-capture-ready-to-use-ui-example**: Example project showcasing the Scanbot Data Capture Modules using our Ready-to-Use UI components.
 
