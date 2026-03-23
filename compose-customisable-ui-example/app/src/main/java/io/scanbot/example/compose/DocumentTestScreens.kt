@@ -182,7 +182,9 @@ fun DocumentScannerScreen(navController: NavHostController) {
                     }
                 },
             )
-            Button(modifier = Modifier.align(Alignment.TopEnd), onClick = {
+            Button(modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.TopEnd), onClick = {
                 autosnappingEnabled.value = !autosnappingEnabled.value
             }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -196,6 +198,7 @@ fun DocumentScannerScreen(navController: NavHostController) {
             ScanbotSnapButton(
                 modifier = Modifier
                     .height(72.dp)
+                    .padding(bottom = 16.dp)
                     .align(Alignment.BottomCenter),
                 // Disable button when scanning or auto-snapping is disabled
                 clickable = scanningEnabled.value && !cameraInProcessingState.value,
@@ -227,7 +230,9 @@ fun DocumentScannerScreen(navController: NavHostController) {
 
                 Surface(
                     modifier = Modifier
-                        .align(Alignment.Center).padding( 16.dp), color = Color.Green.copy(alpha = 0.3f)
+                        .align(Alignment.Center)
+                        .padding(16.dp),
+                    color = Color.Green.copy(alpha = 0.3f)
                 ) {
                     Box(
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
