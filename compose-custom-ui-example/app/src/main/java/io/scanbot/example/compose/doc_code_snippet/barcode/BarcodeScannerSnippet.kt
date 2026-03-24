@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.scanbot.common.*
-import io.scanbot.example.compose.unused.CustomBarcodesArView
+import io.scanbot.example.compose.barcode.CustomBarcodesArView
 import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerCustomUI

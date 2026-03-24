@@ -1,4 +1,4 @@
-package io.scanbot.example.compose.unused
+package io.scanbot.example.compose.barcode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
