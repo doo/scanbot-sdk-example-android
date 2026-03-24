@@ -1,4 +1,4 @@
-package io.scanbot.example.compose
+package io.scanbot.example.compose.unused
 
 import android.util.Log
 import androidx.annotation.OptIn
@@ -31,18 +31,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.scanbot.common.*
-import io.scanbot.demo.composeui.ui.theme.sbBrandColor
-import io.scanbot.example.compose.components.*
+import io.scanbot.demo.composeui.ui.theme.*
+import io.scanbot.example.compose.components.BarcodeItem
 import io.scanbot.sdk.barcode.*
-import io.scanbot.sdk.geometry.*
 import io.scanbot.sdk.ui_v2.barcode.*
-import io.scanbot.sdk.ui_v2.common.components.*
 import io.scanbot.sdk.util.snap.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerBatchScan(navController: NavHostController) {
+fun BarcodeScannerMultiScan(navController: NavHostController) {
     val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
@@ -64,7 +62,7 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Batch Barcodes Scan",
+                        text = "Multiple Barcodes Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -88,21 +86,27 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // @Tag("Batch Scanning")
+                // @Tag("Scanning multiple barcodes")
                 BarcodeScannerCustomUI(
                     modifier = Modifier.weight(1f),
                     cameraEnabled = cameraEnabled.value,
                     barcodeScanningEnabled = barcodeScanningEnabled.value,
                     torchEnabled = torchEnabled.value,
                     zoomLevel = zoom.floatValue,
-                    finderConfiguration = FinderConfiguration(
-                        aspectRatio = AspectRatio(2.0, 1.0),
-                        overlayColor = Color(0x5500FF00),
-                        strokeColor = Color.Transparent,
-                        finderContent = {
-                            CorneredFinder()
-                        }
-                    ),
+                    finderConfiguration = null,
+                    arPolygonView = { dataFlow ->
+                        CustomBarcodesArView(dataFlow, { barcode ->
+                            if (scannedBarcodes.none { it.textWithExtension == barcode.textWithExtension }) {
+                                scannedBarcodes.add(barcode)
+                            } else {
+                                scannedBarcodes.removeAll { it.textWithExtension == barcode.textWithExtension }
+                            }
+                        }, onShouldHighlight = { barcode ->
+                            scannedBarcodes.any {
+                                it.textWithExtension == barcode.textWithExtension
+                            }
+                        })
+                    },
                     permissionView = {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
@@ -132,7 +136,7 @@ fun BarcodeScannerBatchScan(navController: NavHostController) {
                         }
                     }
                 )
-                // @EndTag("Batch Scanning")
+                // @EndTag("Scanning multiple barcodes")
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
