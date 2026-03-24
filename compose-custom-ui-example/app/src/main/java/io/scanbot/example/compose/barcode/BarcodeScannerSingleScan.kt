@@ -1,4 +1,4 @@
-package io.scanbot.example.compose
+package io.scanbot.example.compose.barcode
 
 import android.util.Log
 import androidx.annotation.OptIn
@@ -33,20 +33,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import io.scanbot.common.*
 import io.scanbot.demo.composeui.ui.theme.sbBrandColor
+import io.scanbot.example.compose.Screen
 import io.scanbot.example.compose.components.*
 import io.scanbot.sdk.geometry.*
 import io.scanbot.sdk.ui_v2.barcode.*
-import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.components.*
 import kotlin.random.*
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerDistantScan(navController: NavHostController) {
+fun BarcodeScannerSingleScan(navController: NavHostController) {
     // Use these states to control camera, torch and zoom
-
-    // THIS IS IMPORTANT FOR DISTANT SCAN USECASE
-    val zoom = remember { mutableFloatStateOf(20.0f) }
+    val zoom = remember { mutableFloatStateOf(1.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
 
@@ -60,7 +58,7 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Distant Barcode Scan",
+                        text = "Barcode Single Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -84,7 +82,7 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // @Tag("Scanning distant barcodes")
+                // @Tag("Scanning single barcode")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
@@ -176,7 +174,8 @@ fun BarcodeScannerDistantScan(navController: NavHostController) {
                         }
                     },
                 )
-                // @EndTag("Scanning distant barcodes")
+                // @EndTag("Scanning single barcode")
+
                 Row {
                     Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()

@@ -1,4 +1,4 @@
-package io.scanbot.example.compose
+package io.scanbot.example.compose.barcode
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

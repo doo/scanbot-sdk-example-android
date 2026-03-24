@@ -33,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.scanbot.demo.composeui.ui.theme.ScanbotSdkAndroidTheme
 import io.scanbot.demo.composeui.ui.theme.sbBrandColor
+import io.scanbot.example.compose.barcode.BarcodeDetailScreen
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.licensing.LicenseStatus
 import java.net.URLDecoder

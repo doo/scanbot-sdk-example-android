@@ -1,4 +1,4 @@
-package io.scanbot.example.compose
+package io.scanbot.example.compose.barcode
 
 import android.util.Log
 import androidx.annotation.OptIn

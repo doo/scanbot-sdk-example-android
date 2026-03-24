@@ -1,4 +1,4 @@
-package io.scanbot.example.compose
+package io.scanbot.example.compose.barcode
 
 import android.util.Log
 import androidx.annotation.OptIn
@@ -33,19 +33,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import io.scanbot.common.*
 import io.scanbot.demo.composeui.ui.theme.sbBrandColor
+import io.scanbot.example.compose.Screen
 import io.scanbot.example.compose.components.*
 import io.scanbot.sdk.geometry.*
 import io.scanbot.sdk.ui_v2.barcode.*
-import io.scanbot.sdk.ui_v2.common.*
 import io.scanbot.sdk.ui_v2.common.components.*
 import kotlin.random.*
 
 @OptIn(ExperimentalCamera2Interop::class)
 @Composable
-fun BarcodeScannerMicroScan(navController: NavHostController) {
-
+fun BarcodeScannerDistantScan(navController: NavHostController) {
     // Use these states to control camera, torch and zoom
-    val zoom = remember { mutableFloatStateOf(1.0f) }
+
+    // THIS IS IMPORTANT FOR DISTANT SCAN USECASE
+    val zoom = remember { mutableFloatStateOf(20.0f) }
     val torchEnabled = remember { mutableStateOf(false) }
     val cameraEnabled = remember { mutableStateOf(true) }
 
@@ -59,7 +60,7 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Micro Barcode Scan",
+                        text = "Distant Barcode Scan",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -83,14 +84,12 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // @Tag("Scanning tiny barcodes")
+                // @Tag("Scanning distant barcodes")
                 BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.0f),
-                    // THIS IS IMPORTANT FOR MICR0 SCAN USECASE
-                    minFocusDistanceLock = true,
                     finderConfiguration = FinderConfiguration(
                         verticalAlignment = Alignment.Top,
                         previewInsets = PaddingValues(
@@ -177,7 +176,7 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                         }
                     },
                 )
-                // @EndTag("Scanning tiny barcodes")
+                // @EndTag("Scanning distant barcodes")
                 Row {
                     Button(modifier = Modifier.weight(1f), onClick = {
                         zoom.floatValue = 1.0f + Random.nextFloat()
