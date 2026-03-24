@@ -59,9 +59,9 @@ class Application : Application(), CoroutineScope {
                                 .previewTargetMax(1500)
                                 .build()
                 )
-                .prepareOCRLanguagesBlobs(true)
+                //.prepareOCRLanguagesBlobs(true)
                 .pdfImagesExtractorType(PdfImagesExtractor.Type.ANDROID_PDF_WRITER)
-                .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
+                //.useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
                 .licenseErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
