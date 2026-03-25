@@ -1,0 +1,47 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = project.ext.submodulesNamespace
+    compileSdk = project.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId = project.ext.exampleAppId
+        minSdk = project.ext.minSdkVersion
+        targetSdk = project.ext.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        named("debug") {
+            // set this to `false` to allow debugging and run a "non-release" build
+            minifyEnabled = false
+            debuggable = true
+        }
+    }
+
+    kotlin {
+        jvmToolchain(project.ext.jvmToolchainVersion)
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation("io.scanbot:sdk-package-1:${project.ext.scanbotSdkVersion}")
+    implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
+}
