@@ -44,7 +44,7 @@ class DocumentDetectionSnippet : AppCompatActivity() {
                                     .forEach { image ->
                                         if (image == null) {
                                             Log.e(
-                                                "StandaloneCropSnippet",
+                                                "DocumentDetectionSnippet",
                                                 "Failed to load image from URI"
                                             )
                                             return@forEach

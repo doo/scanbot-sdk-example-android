@@ -13,13 +13,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.scanbot.common.onSuccess
+import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
-import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
+import io.scanbot.sdk.documentscanner.DocumentStraighteningMode
+import io.scanbot.sdk.documentscanner.DocumentStraighteningParameters
+import io.scanbot.sdk.geometry.AspectRatio
+import io.scanbot.sdk.util.isDefault
 import io.scanbot.sdk.util.toImageRef
 
 
-class DocumentQualityCheckSnippet : AppCompatActivity() {
+class DocumentStraighteningSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +31,7 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@DocumentQualityCheckSnippet)
+    private val scanbotSDK = ScanbotSDK(this@DocumentStraighteningSnippet)
     private val context = this
 
     private val pictureForDocDetectionResult =
@@ -43,14 +47,14 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
                                     .forEach { image ->
                                         if (image == null) {
                                             Log.e(
-                                                "QualityCheckSnippet",
+                                                "StraighteningSnippet",
                                                 "Failed to load image from URI"
                                             )
                                             return@forEach
                                         }
                                         document.addPage(image)
                                     }
-                                startDqa(document)
+                                startStraightening(document)
                             }
                         }
                     }
@@ -58,34 +62,21 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
             }
         }
 
-    // @Tag("Analyze the quality of a document image")
-    // Create a document detector instance
-    val qualityAnalyzer = scanbotSDK.createDocumentQualityAnalyzer().getOrNull()
-
-    fun startDqa(document: Document) {
+    // @Tag("Direct Document straightening on page")
+    fun startStraightening(document: Document) {
         document.pages.forEach { page ->
-            // Run quality check on the created page
-            val documentQuality =
-                qualityAnalyzer?.run(page.originalImageRef!!)?.getOrNull()
-            // proceed the result
-            if (documentQuality != null) {
-                printResult(documentQuality.quality)
-            }
+            page.apply(
+                newStraighteningParameters = DocumentStraighteningParameters(
+                    straighteningMode = DocumentStraighteningMode.STRAIGHTEN,
+                    // Expected aspect ratios for the documents. Comment if unknown.
+                    aspectRatios = listOf(AspectRatio(3.0, 4.0))
+                )
+            )
+            // Set the source of the page to IMPORTED if needs
+            page.source = PageImageSource.IMPORTED
         }
     }
-    // @EndTag("Analyze the quality of a document image")
-
-    // Print the result.
-    fun printResult(quality: DocumentQuality?) {
-        when (quality) {
-            DocumentQuality.VERY_POOR -> print("The quality of the document is very poor")
-            DocumentQuality.POOR -> print("The quality of the document is poor")
-            DocumentQuality.REASONABLE -> print("The quality of the document is reasonable")
-            DocumentQuality.GOOD -> print("The quality of the document is good")
-            DocumentQuality.EXCELLENT -> print("The quality of the document is excellent")
-            else -> print("No document was found")
-        }
-    }
+    // @EndTag("Direct Document detection on page")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()
