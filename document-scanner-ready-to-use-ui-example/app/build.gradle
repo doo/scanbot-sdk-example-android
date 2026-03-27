@@ -39,7 +39,7 @@ android {
     }
 }
 
-def scanbotSdkVersion =  "8.1.0"
+def scanbotSdkVersion =  "9.0.0.99-STAGING-SNAPSHOT"
 
 dependencies {
 
