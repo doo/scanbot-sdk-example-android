@@ -103,7 +103,7 @@ class DocumentCameraActivity : AppCompatActivity() {
             setPolygonFillColor(POLYGON_FILL_COLOR)
             setPolygonFillColorOK(POLYGON_FILL_COLOR_OK)
         }
-        
+
         documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
             setAcceptedSizeScore(75.0)
