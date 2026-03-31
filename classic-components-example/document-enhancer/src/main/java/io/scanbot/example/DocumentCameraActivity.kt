@@ -75,20 +75,11 @@ class DocumentCameraActivity : AppCompatActivity() {
                         // Here you are continuously notified about document scanning results.
                         // For example, you can show a user guidance text depending on the current scanning status.
                         result.onSuccess { data ->
-                            userGuidanceHint.post {
-                                showUserGuidance(data.status)
-                            }
                         }
                         false // typically you need to return false
                     },
                     object : IDocumentScannerViewCallback {
                         override fun onCameraOpen() {
-                            // In this example we demonstrate how to lock the orientation of the UI (Activity)
-                            // as well as the orientation of the taken picture to portrait.
-                            documentScannerView.cameraConfiguration.setCameraOrientationMode(
-                                CameraOrientationMode.PORTRAIT
-                            )
-
                             documentScannerView.viewController.useFlash(flashEnabled)
                         }
 
@@ -105,21 +96,14 @@ class DocumentCameraActivity : AppCompatActivity() {
                         }
                     }
                 )
-
-                // See https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/using-scanbot-camera-view/#preview-mode
-                // cameraConfiguration.setCameraPreviewMode(io.scanbot.sdk.camera.CameraPreviewMode.FIT_IN)
             }
         }
-
-
 
         documentScannerView.polygonConfiguration.apply {
             setPolygonFillColor(POLYGON_FILL_COLOR)
             setPolygonFillColorOK(POLYGON_FILL_COLOR_OK)
         }
-
-
-
+        
         documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
             setAcceptedSizeScore(75.0)
@@ -128,8 +112,6 @@ class DocumentCameraActivity : AppCompatActivity() {
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/autosnapping/#sensitivity
             setAutoSnappingSensitivity(0.85f)
         }
-
-        userGuidanceHint = findViewById(R.id.userGuidanceHint)
 
         shutterButton = findViewById(R.id.shutterButton)
         shutterButton.setOnClickListener { documentScannerView.viewController.takePicture(false) }
@@ -168,69 +150,20 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.onPause()
     }
 
-    private fun showUserGuidance(result: DocumentDetectionStatus) {
-        if (!autoSnappingEnabled) {
-            return
-        }
-        if (System.currentTimeMillis() - lastUserGuidanceHintTs < 400) {
-            return
-        }
-
-        when (result) {
-            DocumentDetectionStatus.OK -> {
-                userGuidanceHint.text = "Don't move"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.OK_BUT_TOO_SMALL -> {
-                userGuidanceHint.text = "Move closer"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.OK_BUT_BAD_ANGLES -> {
-                userGuidanceHint.text = "Perspective"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> {
-                userGuidanceHint.text = "No Document"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.ERROR_TOO_NOISY -> {
-                userGuidanceHint.text = "Background too noisy"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreOrientationMistmatch) {
-                    userGuidanceHint.text = "Don't move"
-                } else {
-                    userGuidanceHint.text = "Wrong aspect ratio.\nRotate your device."
-                }
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            DocumentDetectionStatus.ERROR_TOO_DARK -> {
-                userGuidanceHint.text = "Poor light"
-                userGuidanceHint.visibility = View.VISIBLE
-            }
-
-            else -> userGuidanceHint.visibility = View.GONE
-        }
-        lastUserGuidanceHintTs = System.currentTimeMillis()
-    }
-
     private fun processPictureTaken(image: ImageRef, documentEnhancer: DocumentEnhancer) {
         // STRAIGHTEN SCANNED IMAGE ASSUMING DOCUMENT IS BENT
         // Run document enhancer unwarping on original image:
         val result = documentEnhancer.straighten(image, DocumentStraighteningParameters().apply {
             straighteningMode = DocumentStraighteningMode.STRAIGHTEN
             // uncomment if you want wo set specific aspect ratios for documents
-           // aspectRatios = listOf(AspectRatio(29.0, 21.0))
+            // aspectRatios = listOf(AspectRatio(29.0, 21.0))
         }).getOrNull()
 
-        resultView.post { resultView.setImageBitmap(result?.straightenedImage?.toBitmap()?.getOrNull()) }
+        resultView.post {
+            resultView.setImageBitmap(
+                result?.straightenedImage?.toBitmap()?.getOrNull()
+            )
+        }
     }
 
     private fun setAutoSnapEnabled(enabled: Boolean) {
