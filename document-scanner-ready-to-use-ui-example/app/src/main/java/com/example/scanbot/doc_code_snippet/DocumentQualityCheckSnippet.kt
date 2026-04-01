@@ -16,6 +16,7 @@ import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.documentqualityanalyzer.DocumentQuality
+import io.scanbot.sdk.documentqualityanalyzer.DocumentQualityAssessment
 import io.scanbot.sdk.util.toImageRef
 
 
@@ -76,13 +77,11 @@ class DocumentQualityCheckSnippet : AppCompatActivity() {
     // @EndTag("Analyze the quality of a document image")
 
     // Print the result.
-    fun printResult(quality: DocumentQuality?) {
+    fun printResult(quality: DocumentQualityAssessment?) {
         when (quality) {
-            DocumentQuality.VERY_POOR -> print("The quality of the document is very poor")
-            DocumentQuality.POOR -> print("The quality of the document is poor")
-            DocumentQuality.REASONABLE -> print("The quality of the document is reasonable")
-            DocumentQuality.GOOD -> print("The quality of the document is good")
-            DocumentQuality.EXCELLENT -> print("The quality of the document is excellent")
+            DocumentQualityAssessment.ACCEPTABLE ->  print("The quality of the document is good enough for processing.")
+            DocumentQualityAssessment.UNACCEPTABLE ->  print("The quality of the document is not good enough for processing.")
+            DocumentQualityAssessment.UNCERTAIN -> print("The quality of the document is uncertain. It may be good enough for processing, but there is a risk that the result will not be good.")
             else -> print("No document was found")
         }
     }
