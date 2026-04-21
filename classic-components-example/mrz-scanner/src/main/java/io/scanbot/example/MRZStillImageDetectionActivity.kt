@@ -66,7 +66,7 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         docScannerResultLauncher =
@@ -121,10 +121,21 @@ class MrzStillImageScanningActivity : AppCompatActivity() {
     }
 
     private suspend fun importImageToPage(uri: Uri) {
-        val page = withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
-            val image = ImageRef.fromInputStream(inputStream)
+        val image = withContext(Dispatchers.IO) {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+        }
+        if (image == null) {
+            withContext(Dispatchers.Main) {
+                binding.progressBar.visibility = View.GONE
+                showToast("Error opening selected image!")
+                Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+            }
+            return
+        }
 
+        val page = withContext(Dispatchers.Default) {
             val document = scanbotSdk.documentApi.createDocument().getOrThrow() // can be handled with .getOrNull() if needed
             val page = document.addPage(image).getOrThrow() // can be handled with .getOrNull() if needed
 

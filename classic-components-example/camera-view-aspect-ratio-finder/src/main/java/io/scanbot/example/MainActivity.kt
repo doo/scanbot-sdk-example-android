@@ -36,8 +36,8 @@ import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.util.PolygonHelper
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
         askPermission()
         setContentView(R.layout.activity_main)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView

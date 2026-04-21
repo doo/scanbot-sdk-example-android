@@ -36,7 +36,7 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mrz_live_scanner)
         askPermission()
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         // Configure Initial camera state

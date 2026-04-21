@@ -39,7 +39,7 @@ class AutoSnappingCheckScannerActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_autosnapping_check_scanner)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.camera).also { cameraView ->

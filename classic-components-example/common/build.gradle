@@ -9,14 +9,11 @@ android {
 
     defaultConfig {
         minSdk = project.ext.minSdkVersion
-
-        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "consumer-rules.pro")
     }
 
     buildTypes {
         named("release") {
             minifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 

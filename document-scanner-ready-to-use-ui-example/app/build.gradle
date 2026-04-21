@@ -21,12 +21,10 @@ android {
             minifyEnabled = false
             shrinkResources = false
             debuggable = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         named("release") {
             minifyEnabled = false
             debuggable = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
@@ -39,7 +37,7 @@ android {
     }
 }
 
-def scanbotSdkVersion =  "9.0.0.100-STAGING-SNAPSHOT"
+def scanbotSdkVersion =  "9.0.0.108-STAGING-SNAPSHOT"
 
 dependencies {
 

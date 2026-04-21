@@ -36,7 +36,7 @@ class DocumentCameraActivity : AppCompatActivity() {
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
-    private val ignoreOrientationMistmatch = true
+    private val ignoreOrientationMismatch = true
 
     private lateinit var documentScannerView: DocumentScannerView
 
@@ -52,7 +52,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
         askPermission()
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         val scanbotSdk = ScanbotSDK(this)
@@ -116,7 +116,7 @@ class DocumentCameraActivity : AppCompatActivity() {
         documentScannerView.viewController.apply {
             setAcceptedAngleScore(60.0)
             setAcceptedSizeScore(75.0)
-            setIgnoreOrientationMismatch(ignoreOrientationMistmatch)
+            setIgnoreOrientationMismatch(ignoreOrientationMismatch)
 
             // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/autosnapping/#sensitivity
             setAutoSnappingSensitivity(0.85f)
@@ -196,7 +196,7 @@ class DocumentCameraActivity : AppCompatActivity() {
             }
 
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreOrientationMistmatch) {
+                if (ignoreOrientationMismatch) {
                     userGuidanceHint.text = "Don't move"
                 } else {
                     userGuidanceHint.text = "Wrong aspect ratio.\nRotate your device."

@@ -30,7 +30,7 @@ class ScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         vinScanner = ScanbotSDK(this).createVinScanner().getOrThrow()

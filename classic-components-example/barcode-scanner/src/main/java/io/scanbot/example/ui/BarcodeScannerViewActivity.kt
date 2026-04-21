@@ -4,17 +4,12 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import io.scanbot.common.Result
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
@@ -88,7 +83,11 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
                             image: ImageRef,
                             captureInfo: CaptureInfo
                         ) {
-                            TODO("Not yet implemented")
+                            image.toBitmap().onSuccess { bitmap ->
+                                resultView.post {
+                                    resultView.setImageBitmap(bitmap)
+                                }
+                            }
                         }
 
                         override fun onSelectionOverlayBarcodeClicked(barcodeItem: BarcodeItem) {

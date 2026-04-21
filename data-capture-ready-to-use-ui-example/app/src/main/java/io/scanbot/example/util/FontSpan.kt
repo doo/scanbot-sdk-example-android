@@ -13,11 +13,17 @@ open class FontSpan(private val font: Typeface) : MetricAffectingSpan() {
     private fun update(textPaint: TextPaint) {
         textPaint.apply {
             val old = typeface
-            val oldStyle = old?.style ?: 0
+            val oldStyle = old?.style ?: Typeface.NORMAL
+            val normalizedStyle = when (oldStyle) {
+                Typeface.BOLD,
+                Typeface.ITALIC,
+                Typeface.BOLD_ITALIC -> oldStyle
+                else -> Typeface.NORMAL
+            }
 
             // keep the style set before
-            val font = Typeface.create(font, oldStyle)
-            typeface = font
+            val updatedTypeface = Typeface.create(font, normalizedStyle)
+            typeface = updatedTypeface
         }
     }
 }

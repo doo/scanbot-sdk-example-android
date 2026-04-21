@@ -24,3 +24,9 @@ framework or features, please visit our [Support Page](https://docs.scanbot.io/s
 
 👉 [Scanbot Document Scanner SDK documentation](https://docs.scanbot.io/document-scanner-sdk/android/introduction/)
 
+## How to run
+
+1. Open `scanbot-sdk-example-android/document-scanner-ready-to-use-ui-example` in Android Studio.
+2. Sync Gradle.
+3. Add your license key in `ExampleApplication` or stay in demo mode.
+4. Run the app on a device or emulator.
