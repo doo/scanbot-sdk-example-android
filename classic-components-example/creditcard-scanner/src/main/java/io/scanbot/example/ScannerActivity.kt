@@ -17,7 +17,7 @@ import io.scanbot.sdk.creditcard.entity.CreditCard
 import io.scanbot.sdk.geometry.AspectRatio
 
 class ScannerActivity : AppCompatActivity() {
-    // @Tag("Credit Card Classic Camera")
+    // @Tag("Credit Card Custom UI")
     private lateinit var binding: ActivityScannerBinding
 
 
@@ -81,5 +81,5 @@ class ScannerActivity : AppCompatActivity() {
         useFlash = !useFlash
         binding.cameraView.useFlash(useFlash)
     }
-    // @EndTag("Credit Card Classic Camera")
+    // @EndTag("Credit Card Custom UI")
 }
