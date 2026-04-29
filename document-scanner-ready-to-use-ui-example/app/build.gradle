@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "io.scanbot.example.document.usecases.android"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -37,7 +37,7 @@ android {
     }
 }
 
-def scanbotSdkVersion =  "9.0.0.108-STAGING-SNAPSHOT"
+def scanbotSdkVersion =  "9.0.0.109-STAGING-SNAPSHOT"
 
 dependencies {
 

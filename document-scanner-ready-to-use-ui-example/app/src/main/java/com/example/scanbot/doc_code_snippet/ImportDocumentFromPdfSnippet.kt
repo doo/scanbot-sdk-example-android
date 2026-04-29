@@ -54,14 +54,14 @@ class ImportDocumentFromPdfSnippet : AppCompatActivity() {
     val extractor = scanbotSDK.createPdfImagesExtractor()
     fun createDocumentFromPdf(list: List<Uri>) {
         list.forEach { pdfUri ->
-            extractor.imageUrlsFromPdf(
+            extractor.extract(
                 pdfFile = pdfUri.toFile(),
                 outputDir = File("path/to/output/folder"),
                 prefix = "image_"
             ).apply {
                 scanbotSDK.documentApi.createDocument().onSuccess { document ->
-                    this@apply.forEach { imageUri ->
-                        val bitmap = BitmapFactory.decodeFile(imageUri.toFile().absolutePath)
+                    document.pages.forEach { page ->
+                        val bitmap = BitmapFactory.decodeFile(page.documentFileUri.toFile().absolutePath)
                         if (bitmap == null) {
                             Log.e(
                                 "Snippet",
