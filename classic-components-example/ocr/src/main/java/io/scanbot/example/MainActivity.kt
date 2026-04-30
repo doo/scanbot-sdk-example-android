@@ -24,8 +24,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         binding.scanButton.setOnClickListener {

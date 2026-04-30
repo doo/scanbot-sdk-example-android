@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(binding.root)
 
         binding.pdfButton.setOnClickListener {

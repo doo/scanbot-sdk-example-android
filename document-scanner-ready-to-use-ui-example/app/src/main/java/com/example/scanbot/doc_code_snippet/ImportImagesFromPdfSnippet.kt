@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 
 
@@ -51,12 +52,12 @@ class ImportImagesFromPdfSnippet : AppCompatActivity() {
     val extractor = scanbotSDK.createPdfImagesExtractor()
     fun createDocumentFromPdf(list: List<Uri>) {
         list.forEach { pdfUri ->
-            val images = extractor.imageUrlsFromPdf(
+            val images = extractor.extract(
                 pdfFile = pdfUri.toFile(),
                 outputDir = File("path/to/output/folder"),
                 prefix = "image_"
             )
-            if (images.isNotEmpty()) {
+           images.onSuccess { imageFiles ->
                 // do something with the images
             }
         }

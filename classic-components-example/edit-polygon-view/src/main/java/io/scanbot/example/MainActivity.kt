@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         scanner = scanbotSDK.createDocumentScanner().getOrThrow()
 
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
 
         editPolygonView = findViewById(R.id.polygonView)
         magnifierView = findViewById(R.id.magnifier)

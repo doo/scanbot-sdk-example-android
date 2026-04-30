@@ -25,8 +25,8 @@ import io.scanbot.sdk.imageprocessing.ParametricFilter
 import kotlinx.coroutines.*
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */

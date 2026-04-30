@@ -30,8 +30,8 @@ import java.io.File
 import java.util.UUID
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -94,19 +94,25 @@ class MainActivity : AppCompatActivity() {
         val result = withContext(Dispatchers.IO) {
 
             // Convert URIs to local files DON'T USE IN PRODUCTION
-            val files = imageUris.toTypedArray().map { uri ->
-
+            val files = imageUris.mapNotNull { uri ->
                 val file = appStorageDir.resolve(
                     UUID.randomUUID().toString() + ".jpg"
                 )
                 file.createNewFile()
+                val inputStream = contentResolver.openInputStream(uri)
+                if (inputStream == null) {
+                    Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+                    return@mapNotNull null
+                }
                 file.outputStream().use { output ->
-                    val openInputStream = contentResolver.openInputStream(uri)
-                    openInputStream.use { input ->
-                        input?.copyTo(output)
+                    inputStream.use { input ->
+                        input.copyTo(output)
                     }
                 }
                 file
+            }
+            if (files.size != imageUris.size) {
+                return@withContext null
             }
 
             tiffGenerator.generateFromFiles(

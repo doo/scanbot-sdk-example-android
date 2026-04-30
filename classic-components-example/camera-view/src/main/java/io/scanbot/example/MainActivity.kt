@@ -43,8 +43,8 @@ import io.scanbot.sdk.ui.camera.ShutterButton
 import io.scanbot.sdk.util.PolygonHelper
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -63,13 +63,13 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
     private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
-    private val ignoreOrientationMistmatch = true
+    private val ignoreOrientationMismatch = true
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         askPermission()
         setContentView(R.layout.activity_main)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
 
         applyEdgeToEdge(this.findViewById(R.id.root_view))
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 // Please note: https://docs.scanbot.io/document-scanner-sdk/android/features/document-scanner/ui-components/
                 setConfiguration(copyCurrentConfiguration().apply {
                     parameters.apply {
-                        this.ignoreOrientationMismatch = ignoreOrientationMistmatch
+                        this.ignoreOrientationMismatch = ignoreOrientationMismatch
                         this.acceptedSizeScore = 75
                         this.acceptedAngleScore = 60
                     }
@@ -150,11 +150,11 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
                 )
             }
         }.onFailure { error ->
-            when(error){
-                is Result.InvalidLicenseError ->{
+            when (error) {
+                is Result.InvalidLicenseError -> {
                     Toast.makeText(this@MainActivity, "License is invalid: ${error.message}", Toast.LENGTH_LONG).show()
                 }
-                else ->  {
+                else -> {
                     Toast.makeText(this@MainActivity, "${error.message}", Toast.LENGTH_LONG).show()
                 }
             }
@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
             }
 
             DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> {
-                if (ignoreOrientationMistmatch) {
+                if (ignoreOrientationMismatch) {
                     userGuidanceHint.text = "Don't move"
                     // change polygon color to "OK"
                     polygonView.setFillColor(POLYGON_FILL_COLOR_OK)

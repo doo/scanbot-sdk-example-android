@@ -28,7 +28,7 @@ class ScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)

@@ -142,12 +142,10 @@ class DocumentCameraActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        documentScannerView.viewController.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        documentScannerView.viewController.onPause()
     }
 
     private fun processPictureTaken(image: ImageRef, documentEnhancer: DocumentEnhancer) {

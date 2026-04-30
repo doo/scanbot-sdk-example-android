@@ -25,8 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -115,12 +115,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         val documentImage = withContext(Dispatchers.Default) {
-            catchWithResult {
-                // load the selected image:
-                val inputStream = contentResolver.openInputStream(imageUri)
-                    ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
-                val image = ImageRef.fromInputStream(inputStream)
+            val image = contentResolver.openInputStream(imageUri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+            if (image == null) {
+                Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $imageUri")
+                return@withContext null
+            }
 
+            catchWithResult {
                 // create a new Document object with given image as original image:
                 val newDocument = scanbotSdk.documentApi.createDocument()
                     .getOrReturn() // can be handled with .getOrNull() if needed
@@ -144,6 +147,10 @@ class MainActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
+            if (documentImage == null) {
+                this@MainActivity.showToast("Error opening selected image!")
+                return@withContext
+            }
             // show Page's document image:
             importResultImage.setImageBitmap(documentImage)
             importResultImage.visibility = View.VISIBLE

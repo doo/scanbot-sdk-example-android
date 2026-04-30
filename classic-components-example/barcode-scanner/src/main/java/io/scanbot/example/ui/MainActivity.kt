@@ -28,8 +28,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -101,14 +101,25 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.isVisible = true
         }
 
-        withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
-            val imageRef = ImageRef.fromInputStream(inputStream)
+        val imageRef = withContext(Dispatchers.IO) {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+        }
+        if (imageRef == null) {
+            withContext(Dispatchers.Main) {
+                binding.progressBar.isVisible = false
+                showToast("Error opening selected image!")
+                Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+            }
+            return
+        }
 
+        withContext(Dispatchers.Default) {
             val scanner = scanbotSdk.createBarcodeScanner().getOrThrow()
             scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
                 setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
-            } )
+            })
             val result = scanner.run(imageRef).getOrNull()
 
             BarcodeResultRepository.barcodeResultBundle = result?.let { BarcodeResultBundle(it, imageRef) }

@@ -38,24 +38,35 @@ fun Uri.toBitmap(
 ): Bitmap? {
     val maxImageSideSize = 4090
     try {
-        var bitmap: Bitmap? = null
-
         val input = contentResolver.openInputStream(this)
+            ?: run {
+                onException(IllegalStateException("Cannot open input stream from URI: $this"))
+                return null
+            }
         var orientation = 0
 
-        input.use {
+        input.use { stream ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val exif = ExifInterface(input!!)
+                val exif = ExifInterface(stream)
                 orientation = exifToGrad(exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0))
             }
         }
         val inputNew = contentResolver.openInputStream(this)
+            ?: run {
+                onException(IllegalStateException("Cannot open input stream from URI: $this"))
+                return null
+            }
 
-        bitmap = inputNew.use { BitmapFactory.decodeStream(inputNew) }
+        val decodedBitmap = inputNew.use { BitmapFactory.decodeStream(it) }
+        if (decodedBitmap == null) {
+            onException(IllegalStateException("Failed to decode image from URI: $this"))
+            return null
+        }
 
+        var bitmap = decodedBitmap
         val width = bitmap.width
         val height = bitmap.height
-        if (bitmap != null && (orientation != 0 || width > maxImageSideSize || height > maxImageSideSize)) {
+        if (orientation != 0 || width > maxImageSideSize || height > maxImageSideSize) {
             val matrix = Matrix()
             if (orientation != 0) {
                 matrix.setRotate(orientation.toFloat(), width / 2f, height / 2f)

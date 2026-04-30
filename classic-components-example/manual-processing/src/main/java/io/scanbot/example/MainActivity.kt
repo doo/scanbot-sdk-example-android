@@ -23,8 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -66,10 +66,21 @@ class MainActivity : AppCompatActivity() {
     private suspend fun processImage(imageUri: Uri) {
         withContext(Dispatchers.Main) { binding.progressBar.visibility = View.VISIBLE }
 
+        val image = withContext(Dispatchers.IO) {
+            contentResolver.openInputStream(imageUri)?.use { inputStream ->
+                ImageRef.fromInputStream(inputStream)
+            }
+        }
+        if (image == null) {
+            withContext(Dispatchers.Main) {
+                binding.progressBar.visibility = View.GONE
+                showToast("Error opening selected image!")
+                Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $imageUri")
+            }
+            return
+        }
+
         val page = withContext(Dispatchers.Default) {
-            val inputStream = contentResolver.openInputStream(imageUri)
-                ?: throw IllegalStateException("Cannot open input stream from URI: $imageUri")
-            val image = ImageRef.fromInputStream(inputStream)
             val scanner = scanbotSdk.createDocumentScanner().getOrThrow()
             val detectedPolygon =
                 scanner.run(image).getOrNull()?.pointsNormalized ?: PolygonHelper.getFullPolygon()
