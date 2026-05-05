@@ -299,4 +299,5 @@ private fun instructionString(status: DocumentDetectionStatus): String = when (s
     DocumentDetectionStatus.ERROR_PARTIALLY_VISIBLE_TOO_CLOSE -> "Please move the device away from the document"
     DocumentDetectionStatus.ERROR_TOO_DARK -> "Please turn on more light"
     DocumentDetectionStatus.ERROR_TOO_NOISY -> "Image is too noisy"
+    DocumentDetectionStatus.OK_BUT_ALREADY_CROPPED ->  "Already cropped, please move the device"
 }
