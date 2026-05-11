@@ -193,7 +193,7 @@ fun DocumentScannerSnippet() {
             // Callback invoked after each frame with document scanning result.
             onDocumentScanningResult = { result ->
                 result.onSuccess { data ->
-                    // Handle scanned barcodes here (for example, show a dialog)
+                    // Handle scanned polygon data here (for example, show a dialog)
                     val points = data.pointsNormalized
                     val status = data.status
                 }
