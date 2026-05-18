@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                 straighteningMode = DocumentStraighteningMode.STRAIGHTEN
                 // uncomment if you want wo set specific aspect ratios for documents
                 // aspectRatios = listOf(AspectRatio(29.0, 21.0))
-            })
+            })?.getOrNull() //can be handled with .getOrThrow() if needed
             page?.documentImage
         }
 

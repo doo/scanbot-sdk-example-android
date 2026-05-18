@@ -43,5 +43,6 @@ android {
 dependencies {
     implementation(project(":common"))
     implementation("io.scanbot:sdk-package-1:${project.ext.scanbotSdkVersion}")
+    implementation("io.scanbot:sdk-document-enhancer-assets:${project.ext.scanbotSdkVersion}")
     implementation("androidx.appcompat:appcompat:${project.ext.androidxAppcompatVersion}")
 }
