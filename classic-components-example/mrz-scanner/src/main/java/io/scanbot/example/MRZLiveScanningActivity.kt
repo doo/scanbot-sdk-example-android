@@ -25,7 +25,7 @@ import io.scanbot.sdk.util.log.LoggerProvider
 class MRZLiveScanningActivity : AppCompatActivity() {
     private val logger = LoggerProvider.logger
 
-    // @Tag("Mrz Classic Camera")
+    // @Tag("MRZ Custom UI")
     private lateinit var cameraView: ScanbotCameraXView
     private lateinit var finderOverlay: FinderOverlayView
     private lateinit var mrzScannerFrameHandler: MrzScannerFrameHandler
@@ -88,8 +88,8 @@ class MRZLiveScanningActivity : AppCompatActivity() {
         super.onResume()
         mrzScannerFrameHandler.isEnabled = true
     }
+    // @EndTag("MRZ Custom UI")
 
-    // @EndTag("Mrz Classic Camera")
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,

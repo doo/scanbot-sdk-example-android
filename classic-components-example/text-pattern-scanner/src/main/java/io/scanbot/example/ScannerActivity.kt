@@ -17,7 +17,7 @@ import io.scanbot.sdk.ui.camera.ScanbotCameraXView
 import io.scanbot.sdk.ui.camera.ZoomFinderOverlayView
 
 class ScannerActivity : AppCompatActivity() {
-    // @Tag("Text Pattern Classic Camera")
+    // @Tag("Text Pattern Custom UI")
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var resultTextView: TextView
     private var useFlash = false
@@ -80,5 +80,5 @@ class ScannerActivity : AppCompatActivity() {
         useFlash = !useFlash
         cameraView.useFlash(useFlash)
     }
-    // @EndTag("Text Pattern Classic Camera")
+    // @EndTag("Text Pattern Custom UI")
 }
