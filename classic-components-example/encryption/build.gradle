@@ -15,7 +15,7 @@ android {
 
     buildTypes {
         named("debug") {
-            // set this to `false` to allow debugging and run a "non-release" build
+            
             minifyEnabled = false
             debuggable = true
         }

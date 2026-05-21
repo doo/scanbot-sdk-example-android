@@ -69,8 +69,8 @@ class ImageStraighteningSnippet : AppCompatActivity() {
                // Expected aspect ratios for the documents. Comment if unknown.
                aspectRatios = listOf(AspectRatio(3.0, 4.0))
            )
-           enhancer.straighten(imageRef, params).onSuccess { straightenedImage ->
-               // straightenedImage is an ImageRef of the straightened image, you can display it in the UI or save it to storage
+           enhancer.straighten(imageRef, params).onSuccess { result ->
+               //  result.straightenedImage is an ImageRef of the straightened image, you can display it in the UI or save it to storage
            }
        }
     }
