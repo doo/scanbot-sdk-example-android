@@ -15,10 +15,6 @@ android {
         versionName = "1.0"
     }
 
-    kotlin {
-        jvmToolchain(project.ext.jvmToolchainVersion)
-    }
-
     buildTypes {
         named("debug") {
             
@@ -39,6 +35,8 @@ android {
         viewBinding = true
     }
 }
+
+kotlin.jvmToolchain(project.ext.jvmToolchainVersion)
 
 dependencies {
     implementation(project(":common"))

@@ -23,10 +23,6 @@ android {
         }
     }
 
-    kotlin {
-        jvmToolchain(project.ext.jvmToolchainVersion)
-    }
-
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/LICENSE'
@@ -39,6 +35,8 @@ android {
         viewBinding = true
     }
 }
+
+kotlin.jvmToolchain(project.ext.jvmToolchainVersion)
 
 dependencies {
     implementation(project(":common"))
