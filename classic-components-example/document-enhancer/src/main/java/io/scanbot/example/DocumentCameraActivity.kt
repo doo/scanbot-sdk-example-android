@@ -1,43 +1,31 @@
 package io.scanbot.example
 
+
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.Matrix
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import io.scanbot.common.onSuccess
-
-
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
-import io.scanbot.sdk.document.DocumentScannerFrameHandler
 import io.scanbot.sdk.document.ui.DocumentScannerView
 import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
-import io.scanbot.sdk.documentscanner.DocumentDetectionStatus
 import io.scanbot.sdk.documentscanner.DocumentEnhancer
-import io.scanbot.sdk.documentscanner.DocumentScanner
 import io.scanbot.sdk.documentscanner.DocumentStraighteningMode
 import io.scanbot.sdk.documentscanner.DocumentStraighteningParameters
-import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.image.ImageRef
-import io.scanbot.sdk.process.ImageProcessor
 import io.scanbot.sdk.ui.camera.ShutterButton
-import io.scanbot.sdk.ui.view.base.configuration.CameraOrientationMode
 
 class DocumentCameraActivity : AppCompatActivity() {
 
-    private var lastUserGuidanceHintTs = 0L
     private var flashEnabled = false
     private var autoSnappingEnabled = true
     private val ignoreOrientationMistmatch = true
@@ -45,7 +33,6 @@ class DocumentCameraActivity : AppCompatActivity() {
     private lateinit var documentScannerView: DocumentScannerView
 
     private lateinit var resultView: ImageView
-    private lateinit var userGuidanceHint: TextView
     private lateinit var autoSnappingToggleButton: Button
     private lateinit var shutterButton: ShutterButton
 
@@ -62,7 +49,6 @@ class DocumentCameraActivity : AppCompatActivity() {
         val scanbotSdk = ScanbotSDK(this)
 
         documentScannerView = findViewById(R.id.document_scanner_view)
-
         resultView = findViewById<View>(R.id.result) as ImageView
         val documentEnhancer = scanbotSdk.createDocumentEnhancer()
         scanbotSdk.createDocumentScanner().onSuccess { documentScanner ->
@@ -176,7 +162,6 @@ class DocumentCameraActivity : AppCompatActivity() {
             shutterButton.showAutoButton()
         } else {
             shutterButton.showManualButton()
-            userGuidanceHint.visibility = View.GONE
         }
     }
 
