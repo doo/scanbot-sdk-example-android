@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Imports a selected image as original image and performs auto document scanning on it. */
+    /** Imports a selected image and performs document straightening on it. */
     private suspend fun processImage(uri: Uri) {
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.VISIBLE
@@ -93,25 +93,19 @@ class MainActivity : AppCompatActivity() {
                 ImageRef.fromInputStream(inputStream)
             } ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
 
-            // create a new Page object with given image as original image:
-            val document = scanbotSdk.documentApi.createDocument()
-                .getOrNull() //can be handled with .getOrThrow() if needed
-            val page =
-                document?.addPage(image)?.getOrNull() //can be handled with .getOrThrow() if needed
-
-            // run document scanning on the page image:
-            page?.apply(newStraighteningParameters = DocumentStraighteningParameters().apply {
-                straighteningMode = DocumentStraighteningMode.STRAIGHTEN
-                // uncomment if you want wo set specific aspect ratios for documents
-                // aspectRatios = listOf(AspectRatio(29.0, 21.0))
-            })?.getOrNull() //can be handled with .getOrThrow() if needed
-            page?.documentImage
+            // run document scanning on the image:
+            scanbotSdk.createDocumentEnhancer().getOrNull()
+                ?.straighten(image, parameters = DocumentStraighteningParameters().apply {
+                    straighteningMode = DocumentStraighteningMode.STRAIGHTEN
+                    // uncomment if you want wo set specific aspect ratios for documents
+                    // aspectRatios = listOf(AspectRatio(29.0, 21.0))
+                })?.getOrNull()?.straightenedImage?.toBitmap()?.getOrNull()
         }
 
         withContext(Dispatchers.Main) {
             binding.progressBar.visibility = View.GONE
 
-            // present cropped page image:
+            // present straightened image:
             binding.importResultImage.setImageBitmap(documentImage)
             binding.importResultImage.visibility = View.VISIBLE
         }
