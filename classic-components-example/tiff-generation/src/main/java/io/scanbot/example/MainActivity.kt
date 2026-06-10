@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onFailure
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.getAppStorageDir
@@ -120,7 +121,9 @@ class MainActivity : AppCompatActivity() {
                 false,
                 resultFile,
                 constructParameters(binarize, addCustomFields)
-            ).getOrNull()
+            ).onFailure {
+                Log.e(Const.LOG_TAG, "Error during TIFF generation: ${it.message}", it)
+            }.getOrNull()
         }
 
         withContext(Dispatchers.Main)
@@ -151,11 +154,6 @@ class MainActivity : AppCompatActivity() {
                     65001,
                     "custom_string_field_name",
                     UserFieldStringValue("testStringValue"),
-                ),
-                UserField(
-                    65001,
-                    "custom_number_field_name",
-                    UserFieldIntValue(100)
                 ),
                 UserField(
                     65535,
