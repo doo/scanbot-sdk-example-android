@@ -50,7 +50,11 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         scanButton = findViewById(R.id.snapButton)
         nextButton = findViewById(R.id.nextButton)
         snapResult = findViewById(R.id.snapped_message)
-
+        val flashButton: Button = findViewById(R.id.flash)
+        flashButton.setOnClickListener {
+            flashEnabled = !flashEnabled
+            scanCountView.viewController.useFlash(flashEnabled)
+        }
         ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
 
             scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {

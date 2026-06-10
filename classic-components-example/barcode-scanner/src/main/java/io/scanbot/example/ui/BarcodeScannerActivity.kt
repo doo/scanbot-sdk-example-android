@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +52,11 @@ class BarcodeScannerActivity : AppCompatActivity(), BarcodeScannerFrameHandler.R
         cameraView = findViewById(R.id.camera)
         resultView = findViewById(R.id.result)
         finderOverlay = findViewById(R.id.finder_overlay)
-
+        val flashButton: Button = findViewById(R.id.flash)
+        flashButton.setOnClickListener {
+            flashEnabled = !flashEnabled
+            cameraView.useFlash(flashEnabled)
+        }
         cameraView.setCameraOpenCallback {
             cameraView.postDelayed({
                 cameraView.useFlash(flashEnabled)

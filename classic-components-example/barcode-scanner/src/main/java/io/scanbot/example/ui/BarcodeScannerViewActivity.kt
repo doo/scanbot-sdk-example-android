@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -43,7 +44,11 @@ class BarcodeScannerViewActivity : AppCompatActivity() {
 
         barcodeScannerView = findViewById(R.id.barcode_scanner_view)
         resultView = findViewById(R.id.result)
-
+        val flashButton: Button = findViewById(R.id.flash)
+        flashButton.setOnClickListener {
+            flashEnabled = !flashEnabled
+            barcodeScannerView.viewController.useFlash(flashEnabled)
+        }
         ScanbotSDK(this).createBarcodeScanner().onSuccess { scanner ->
             scanner.setConfiguration(scanner.copyCurrentConfiguration().copy().apply {
                 setBarcodeFormats(barcodeFormats = BarcodeTypeRepository.selectedTypes.toList())
