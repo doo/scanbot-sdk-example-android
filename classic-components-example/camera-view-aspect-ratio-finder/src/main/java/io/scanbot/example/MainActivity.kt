@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
 
     private var flashEnabled = false
     private var lastUserGuidanceHintTs = 0L
-    private val requiredPageAspectRatios = listOf(AspectRatio(4.0, 3.0))
+    private val requiredPageAspectRatios = listOf(AspectRatio(86.0, 53.0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
@@ -66,9 +66,9 @@ class MainActivity : AppCompatActivity(), DocumentScannerFrameHandler.ResultHand
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
-
         cameraView = findViewById<View>(R.id.camera) as ScanbotCameraXView
         cameraView.setPreviewMode(CameraPreviewMode.FILL_IN)
+        cameraView.isSnapAnimationEnabled(true)
 
         // Lock the orientation of the UI (Activity) as well as the orientation of the taken picture to portrait.
         cameraView.lockToPortrait(true)
