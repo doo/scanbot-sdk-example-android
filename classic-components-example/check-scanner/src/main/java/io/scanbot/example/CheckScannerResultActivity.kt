@@ -19,7 +19,7 @@ class CheckScannerResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_result)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         val fieldsLayout = findViewById<LinearLayout>(R.id.check_result_fields_layout)

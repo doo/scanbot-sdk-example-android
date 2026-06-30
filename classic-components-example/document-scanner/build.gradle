@@ -17,14 +17,10 @@ android {
 
     buildTypes {
         named("debug") {
-            // set this to `false` to allow debugging and run a "non-release" build
+            
             minifyEnabled = false
             debuggable = true
         }
-    }
-
-    kotlin {
-        jvmToolchain(project.ext.jvmToolchainVersion)
     }
 
     packagingOptions {
@@ -39,6 +35,8 @@ android {
         viewBinding = true
     }
 }
+
+kotlin.jvmToolchain(project.ext.jvmToolchainVersion)
 
 dependencies {
     implementation(project(":common"))

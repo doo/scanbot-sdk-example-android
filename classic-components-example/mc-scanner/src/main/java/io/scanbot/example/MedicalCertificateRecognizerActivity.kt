@@ -44,7 +44,7 @@ class MedicalCertificateScannerActivity : AppCompatActivity() {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mc_scanner)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
         askPermission()
         resultImageView = findViewById(R.id.resultImageView)

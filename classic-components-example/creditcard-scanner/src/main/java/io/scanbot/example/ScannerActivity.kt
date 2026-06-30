@@ -28,7 +28,7 @@ class ScannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityScannerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(this.findViewById(R.id.root_view))
 
         // init scanbot sdk and create credit card scanner

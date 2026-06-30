@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CameraPreviewMode
@@ -21,7 +20,6 @@ class ScannerActivity : AppCompatActivity() {
     // @Tag("Text Pattern Custom UI")
     private lateinit var cameraView: IScanbotCameraView
     private lateinit var resultTextView: TextView
-    
     private var useFlash = false
 
     private lateinit var patternScanner: TextPatternScanner
@@ -30,14 +28,14 @@ class ScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
-        supportActionBar!!.hide()
+        supportActionBar?.hide()
         applyEdgeToEdge(findViewById(R.id.root_view))
 
         cameraView = findViewById<ScanbotCameraXView>(R.id.cameraView)
         resultTextView = findViewById(R.id.resultTextView)
 
         val zoomFinderOverlay = findViewById<ZoomFinderOverlayView>(R.id.finder_overlay)
-        // The smaller finder view brings better performance and allows user to scan text more precise
+        // The smaller finder view brings better performance and allows the user to scan text more precisely
         zoomFinderOverlay.setRequiredAspectRatios(listOf(AspectRatio(4.0, 1.0)))
         zoomFinderOverlay.zoomLevel = 1.8f
 
@@ -47,10 +45,10 @@ class ScannerActivity : AppCompatActivity() {
         // TODO: set validation string and validation callback which matches the need of the task
         // For the pattern: # - digits, ? - for any character. Other characters represent themselves
         // In this example we are waiting for a string which starts with 1 or 2, and then 5 more digits
-        patternScanner.setConfiguration( patternScanner.copyCurrentConfiguration().copy(
+        patternScanner.setConfiguration(patternScanner.copyCurrentConfiguration().copy(
             // validator = PresetContentValidator(preset = ValidatorPreset.VEHICLE_IDENTIFICATION_NUMBER),
             // validator = PatternContentValidator(pattern = "######"),
-            validator = CustomContentValidator(callback =  object : ContentValidationCallback {
+            validator = CustomContentValidator(callback = object : ContentValidationCallback {
                 override fun clean(rawText: String): String {
                     return rawText.replace(" ", "_")
                 }
@@ -62,8 +60,10 @@ class ScannerActivity : AppCompatActivity() {
         ))
 
         patternScannerFrameHandler = TextPatternScannerFrameHandler.attach(cameraView, patternScanner)
-        patternScannerFrameHandler.addResultHandler { result, frame ->
-            val resultText: String = result.getOrNull()?.rawText ?:   result.errorOrNull()?.localizedMessage ?: "No result"
+        patternScannerFrameHandler.addResultHandler { result, _ ->
+            val resultText = result.getOrNull()?.rawText
+                ?: result.errorOrNull()?.localizedMessage
+                ?: "No result"
             runOnUiThread { resultTextView.text = resultText }
 
             false

@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
+import io.scanbot.common.onFailure
 import io.scanbot.example.common.Const
 import io.scanbot.example.common.applyEdgeToEdge
 import io.scanbot.example.common.getAppStorageDir
@@ -30,8 +31,8 @@ import java.io.File
 import java.util.UUID
 
 /**
-Ths example uses new sdk APIs presented in Scanbot SDK v.8.x.x
-Please, check the official documentation for more details:
+This example uses the SDK APIs introduced in Scanbot SDK v8.x.x.
+Please check the official documentation for more details:
 Result API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/result-api/
 ImageRef API https://docs.scanbot.io/android/document-scanner-sdk/detailed-setup-guide/image-ref-api/
  */
@@ -94,19 +95,25 @@ class MainActivity : AppCompatActivity() {
         val result = withContext(Dispatchers.IO) {
 
             // Convert URIs to local files DON'T USE IN PRODUCTION
-            val files = imageUris.toTypedArray().map { uri ->
-
+            val files = imageUris.mapNotNull { uri ->
                 val file = appStorageDir.resolve(
                     UUID.randomUUID().toString() + ".jpg"
                 )
                 file.createNewFile()
+                val inputStream = contentResolver.openInputStream(uri)
+                if (inputStream == null) {
+                    Log.e(Const.LOG_TAG, "Cannot open input stream from URI: $uri")
+                    return@mapNotNull null
+                }
                 file.outputStream().use { output ->
-                    val openInputStream = contentResolver.openInputStream(uri)
-                    openInputStream.use { input ->
-                        input?.copyTo(output)
+                    inputStream.use { input ->
+                        input.copyTo(output)
                     }
                 }
                 file
+            }
+            if (files.size != imageUris.size) {
+                return@withContext null
             }
 
             tiffGenerator.generateFromFiles(
@@ -114,7 +121,9 @@ class MainActivity : AppCompatActivity() {
                 false,
                 resultFile,
                 constructParameters(binarize, addCustomFields)
-            ).getOrNull()
+            ).onFailure {
+                Log.e(Const.LOG_TAG, "Error during TIFF generation: ${it.message}", it)
+            }.getOrNull()
         }
 
         withContext(Dispatchers.Main)
@@ -145,11 +154,6 @@ class MainActivity : AppCompatActivity() {
                     65001,
                     "custom_string_field_name",
                     UserFieldStringValue("testStringValue"),
-                ),
-                UserField(
-                    65001,
-                    "custom_number_field_name",
-                    UserFieldIntValue(100)
                 ),
                 UserField(
                     65535,
