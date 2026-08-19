@@ -53,12 +53,19 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
             // The Document Cleanup screen is reachable from the Review screen via the
             // `documentCleanupButton`. Make sure the review screen is enabled and the button
             // is visible.
+            // NOTE: toolBar only shows 5 items minimum, and dynamically hides the rest in a popup menu.
+            // On a standard smartphone device, the cleanup button is usually reachable only from the 'More' menu.
             screens.review.apply {
                 enabled = true
-                bottomBar.documentCleanupButton.visible = true
+
+                toolBar.documentCleanupButton.barButton.visible = true
+
                 // Optionally style the button.
-                bottomBar.documentCleanupButton.title.color =
+                toolBar.documentCleanupButton.barButton.title.color =
                     ScanbotColor(color = Color.White)
+                // OR - optionally style the relevant popup-menu item.
+                toolBar.documentCleanupButton.popupMenuItem.title.color =
+                    ScanbotColor(color = Color.Black)
             }
 
             // Retrieve the cleanup screen configuration from the main configuration object.
@@ -93,7 +100,7 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                 }
 
                 // Optional: show an introduction screen the first time the user opens cleanup.
-                introduction.visible = true
+                introduction.showAutomatically = true
 
                 // Customize the alert dialogs shown for Reset and for cancelling with unsaved
                 // changes.
