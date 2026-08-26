@@ -27,7 +27,7 @@ class ExampleApplication : Application(), CoroutineScope {
          * Please note: Scanbot Document Scanner SDK will run without a license key for one minute per session!
          * After the trial period has expired all SDK features and UI components will stop working.
          * You can get a free "no-strings-attached" trial license key. Please submit the trial license
-         * form (https://scanbot.io/trial) on our website by using the app identifier
+         * form (https://docs.scanbot.io/trial/) on our website by using the app identifier
          * "io.scanbot.example.document.usecases.android" of this example app.
          */
         private const val LICENSE_KEY = "" // "YOUR_SCANBOT_SDK_LICENSE_KEY"

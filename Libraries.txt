@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for Android version 9.0.0
+Open Source libraries used in the Scanbot SDK for Android version 9.0.1
 
 CWAC-Camera
 
@@ -1971,12 +1971,12 @@ defined by AIM ITS/04-023 International Technical Standard - Extended Channel In
 
 magic-enum
 
-Version v0.8.1
+Version v0.9.7
 (https://github.com/Neargye/magic_enum)
 
 MIT License
 
-Copyright (c) 2019 - 2022 Daniil Goncharov
+Copyright (c) 2019 - 2024 Daniil Goncharov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -3480,6 +3480,3 @@ Version 1.1.0
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-
-
