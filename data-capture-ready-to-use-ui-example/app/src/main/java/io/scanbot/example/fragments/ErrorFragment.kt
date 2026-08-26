@@ -43,7 +43,7 @@ class ErrorFragment : androidx.fragment.app.DialogFragment() {
         }
         builder.setPositiveButton(getString(R.string.get_license)) { _, _ ->
             run {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://scanbot.io/trial/"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.scanbot.io/trial/"))
                 activity?.startActivity(Intent.createChooser(intent, "Choose Browser"))
                 dismiss()
             }
