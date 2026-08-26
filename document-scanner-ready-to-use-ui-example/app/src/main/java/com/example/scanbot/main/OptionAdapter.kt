@@ -40,7 +40,7 @@ class OptionAdapter(
                 }
                 view.findViewById<TextView>(R.id.support_trial_license_button).setOnClickListener {
                     // Use "io.scanbot.example.document.usecases.android" as an application ID to get a 7-day trial license key for this app.
-                    ExampleUtils.openBrowser(parent.context, "https://scanbot.io/trial/")
+                    ExampleUtils.openBrowser(parent.context, "https://docs.scanbot.io/trial/")
                 }
                 SupportViewHolder(view)
             }
