@@ -34,7 +34,7 @@ import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.docprocessing.Page
 import io.scanbot.sdk.imageprocessing.ParametricFilter
 import io.scanbot.sdk.ui_v2.document.CroppingActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui_v2.document.configuration.CroppingStandaloneConfiguration
 import io.scanbot.sdk.usecases.documents.R
 
 class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveListener,
@@ -58,7 +58,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
 
-    private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
+    private val croppingResult: ActivityResultLauncher<CroppingStandaloneConfiguration> =
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
             result.onSuccess { result ->
                 document = scanbotSdk.documentApi.loadDocument(result.documentUuid).getOrNull()
@@ -160,7 +160,7 @@ class SinglePagePreviewActivity : AppCompatActivity(), FiltersListener, SaveList
         }
 
         val configuration =
-            CroppingConfiguration(documentUuid = document.uuid, pageUuid = page.uuid)
+            CroppingStandaloneConfiguration(documentUuid = document.uuid, pageUuid = page.uuid)
         croppingResult.launch(configuration)
     }
 

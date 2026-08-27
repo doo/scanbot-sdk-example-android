@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun runMultiPageScanner() {
         val config = DocumentScanningFlow().apply {
-            this.screens.camera.bottomBar.shutterButton.innerColor = ScanbotColor(Color.RED)
+            this.screens.camera.toolBar.shutterButton.innerColor = ScanbotColor(Color.RED)
         }
         documentScannerResult.launch(config)
     }

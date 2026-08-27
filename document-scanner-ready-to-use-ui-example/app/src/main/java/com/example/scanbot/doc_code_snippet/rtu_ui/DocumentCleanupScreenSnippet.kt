@@ -79,13 +79,13 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                 // Background color of the canvas behind the image.
                 backgroundColor = ScanbotColor(value = "#222222")
 
-                // Configure the bottom bar buttons (undo / redo / reset).
-                bottomBar.undoButton.title.text = "Undo"
-                bottomBar.redoButton.title.text = "Redo"
-                bottomBar.resetButton.title.text = "Reset"
+                // Configure the tool bar buttons (undo / redo / reset).
+                toolBar.undoButton.title.text = "Undo"
+                toolBar.redoButton.title.text = "Redo"
+                toolBar.resetButton.title.text = "Reset"
 
-                // Configure the stroke-size scrollbar.
-                bottomBar.strokeSizeScrollbar.apply {
+                // Configure the stroke-size slider.
+                toolBar.strokeSizeSlider.apply {
                     visible = true
                     minStrokeSize = 1
                     maxStrokeSize = 50

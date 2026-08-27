@@ -70,7 +70,7 @@ class ReviewScreenSnippet : AppCompatActivity() {
             screens.cropping.apply {
 
                 // Hide the reset button.
-                bottomBar.resetButton.visible = false
+                toolBar.resetButton.visible = false
             }
             // Retrieve the retake button configuration from the main configuration object.
             screens.review.apply {
