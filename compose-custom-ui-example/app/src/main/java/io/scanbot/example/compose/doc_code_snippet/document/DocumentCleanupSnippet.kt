@@ -46,7 +46,10 @@ import io.scanbot.sdk.ui_v2.document.screen.documentcleanup.DocumentCleanupActio
 fun DocumentCleanupCustomUISnippet(image: ImageRef) {
     val controller = remember { mutableStateOf<DocumentCleanupActionController?>(null) }
     val brushSize = remember { mutableFloatStateOf(40f) }
-    var inProgress by remember { mutableStateOf(false) }
+    val activeController = controller.value
+    val canUndo = activeController?.canUndo?.collectAsState()?.value ?: false
+    val canRedo = activeController?.canRedo?.collectAsState()?.value ?: false
+    val progress = activeController?.progress?.collectAsState()?.value ?: false
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
@@ -73,15 +76,13 @@ fun DocumentCleanupCustomUISnippet(image: ImageRef) {
                 onResultImageChanged = { newImage ->
                     Log.d("DocumentCleanupCustomUI", "New result image: $newImage")
                 },
-                // Invoked when a heavy cleanup operation starts (true) or finishes (false).
-                onProgressChanged = { inProgress = it },
                 // Invoked on SDK setup or cleanup failures.
                 onError = { error ->
                     Log.e("DocumentCleanupCustomUI", "Cleanup error: ${error.message}")
                 },
             )
 
-            if (inProgress) {
+            if (progress) {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -91,11 +92,6 @@ fun DocumentCleanupCustomUISnippet(image: ImageRef) {
         }
 
         Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-            val activeController = controller.value
-            val canUndo = activeController?.canUndoFlow?.collectAsState()?.value ?: false
-            val canRedo = activeController?.canRedoFlow?.collectAsState()?.value ?: false
-            val progress = activeController?.progressFlow?.collectAsState()?.value ?: false
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

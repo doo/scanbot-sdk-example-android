@@ -60,7 +60,11 @@ fun DocumentCleanupScreen(navController: NavHostController) {
     var inputImage by remember { mutableStateOf<ImageRef?>(null) }
     val controller = remember { mutableStateOf<DocumentCleanupActionController?>(null) }
     val brushSize = remember { mutableFloatStateOf(40f) }
-    var inProgress by remember { mutableStateOf(false) }
+
+    val activeController = controller.value
+    val canUndo = activeController?.canUndo?.collectAsState()?.value ?: false
+    val canRedo = activeController?.canRedo?.collectAsState()?.value ?: false
+    val progress = activeController?.progress?.collectAsState()?.value ?: false
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -100,12 +104,11 @@ fun DocumentCleanupScreen(navController: NavHostController) {
                     onResultImageChanged = {
                         Log.d("DocumentCleanupScreen", "New result image received")
                     },
-                    onProgressChanged = { inProgress = it },
                     onError = { error ->
                         Log.e("DocumentCleanupScreen", "Cleanup error", error)
                     },
                 )
-                if (inProgress) {
+                if (progress) {
                     LinearProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -139,27 +142,22 @@ fun DocumentCleanupScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            val activeController = controller.value
-            val canUndo = activeController?.canUndoFlow?.collectAsState()?.value ?: false
-            val canRedo = activeController?.canRedoFlow?.collectAsState()?.value ?: false
-            val progress = activeController?.progressFlow?.collectAsState()?.value ?: false
-
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     modifier = Modifier.weight(1f),
                     enabled = canUndo && !progress,
                     onClick = { activeController?.undo() },
-                ) { Text("Undo") }
+                ) { Text(text = "Undo", color = Color.White) }
                 Button(
                     modifier = Modifier.weight(1f),
                     enabled = canRedo && !progress,
                     onClick = { activeController?.redo() },
-                ) { Text("Redo") }
+                ) { Text(text = "Redo", color = Color.White) }
                 Button(
                     modifier = Modifier.weight(1f),
                     enabled = canUndo && !progress,
                     onClick = { activeController?.reset() },
-                ) { Text("Reset") }
+                ) { Text(text = "Reset", color = Color.White) }
             }
 
             Text(
