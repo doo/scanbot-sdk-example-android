@@ -18,7 +18,7 @@ import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.camera.CaptureInfo
 import io.scanbot.sdk.document.ui.DocumentScannerView
 import io.scanbot.sdk.document.ui.IDocumentScannerViewCallback
-import io.scanbot.sdk.documentscanner.DocumentEnhancer
+import io.scanbot.sdk.documentscanner.DocumentStraightener
 import io.scanbot.sdk.documentscanner.DocumentStraighteningMode
 import io.scanbot.sdk.documentscanner.DocumentStraighteningParameters
 import io.scanbot.sdk.image.ImageRef
@@ -50,7 +50,7 @@ class DocumentCameraActivity : AppCompatActivity() {
 
         documentScannerView = findViewById(R.id.document_scanner_view)
         resultView = findViewById<View>(R.id.result) as ImageView
-        val documentEnhancer = scanbotSdk.createDocumentEnhancer()
+        val documentStraightener = scanbotSdk.createDocumentStraightener()
         scanbotSdk.createDocumentScanner().onSuccess { documentScanner ->
 
             documentScannerView.apply {
@@ -70,8 +70,8 @@ class DocumentCameraActivity : AppCompatActivity() {
                         }
 
                         override fun onPictureTaken(image: ImageRef, captureInfo: CaptureInfo) {
-                            documentEnhancer.onSuccess { documentEnhancer ->
-                                processPictureTaken(image, documentEnhancer)
+                            documentStraightener.onSuccess { straightener ->
+                                processPictureTaken(image, straightener)
                             }
 
 
@@ -134,10 +134,10 @@ class DocumentCameraActivity : AppCompatActivity() {
         super.onPause()
     }
 
-    private fun processPictureTaken(image: ImageRef, documentEnhancer: DocumentEnhancer) {
+    private fun processPictureTaken(image: ImageRef, documentStraightener: DocumentStraightener) {
         // STRAIGHTEN SCANNED IMAGE ASSUMING DOCUMENT IS BENT
-        // Run document enhancer unwarping on original image:
-        val result = documentEnhancer.straighten(image, DocumentStraighteningParameters().apply {
+        // Run document straightening on original image:
+        val result = documentStraightener.run(image, DocumentStraighteningParameters().apply {
             straighteningMode = DocumentStraighteningMode.STRAIGHTEN
             // uncomment if you want wo set specific aspect ratios for documents
             // aspectRatios = listOf(AspectRatio(29.0, 21.0))

@@ -94,8 +94,8 @@ class MainActivity : AppCompatActivity() {
             } ?: throw IllegalStateException("Cannot open input stream from URI: $uri")
 
             // run document scanning on the image:
-            scanbotSdk.createDocumentEnhancer().getOrNull()
-                ?.straighten(image, parameters = DocumentStraighteningParameters().apply {
+            scanbotSdk.createDocumentStraightener().getOrNull()
+                ?.run(image, parameters = DocumentStraighteningParameters().apply {
                     straighteningMode = DocumentStraighteningMode.STRAIGHTEN
                     // uncomment if you want wo set specific aspect ratios for documents
                     // aspectRatios = listOf(AspectRatio(29.0, 21.0))
