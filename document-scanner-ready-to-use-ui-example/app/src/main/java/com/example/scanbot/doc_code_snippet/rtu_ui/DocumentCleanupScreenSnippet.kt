@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
+import io.scanbot.sdk.imageprocessing.DocumentCleanupConfiguration
 // @Tag("Document Cleanup Screen")
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
@@ -70,7 +71,11 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
 
             // Retrieve the cleanup screen configuration from the main configuration object.
             screens.cleanup.apply {
-
+                this.engineConfiguration = DocumentCleanupConfiguration(
+                    keepText = false,  // If true, the cleanup tool will not allow erasing text. But it takes some time to process OCR on the image initially,
+                    maxUndoRedoStackSize = 4, // The maximum number of undo/redo operations that can be performed. Make it less to save up memory
+                    maxCleanupResolution = 1000,  // Downscale stroke area to this value in pixels to speed up the cleanup process. The smaller tha value the faster but quality will be lower too.
+                )
                 // Customize the top bar.
                 topBarTitle.text = "Clean up the page"
                 topBarBackButton.text = "Cancel"
