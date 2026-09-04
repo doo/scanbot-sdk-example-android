@@ -74,7 +74,7 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                 this.engineConfiguration = DocumentCleanupConfiguration(
                     keepText = false,  // If true, the cleanup tool will not allow erasing text. But it takes some time to process OCR on the image initially,
                     maxUndoRedoStackSize = 4, // The maximum number of undo/redo operations that can be performed. Make it less to save up memory
-                    maxCleanupResolution = 1000,  // Downscale stroke area to this value in pixels to speed up the cleanup process. The smaller tha value the faster but quality will be lower too.
+                    maxCleanupResolution = 1_200_000,  // Downscales stroke area to this value in pixels (width x height) to speed up the cleanup process. The smaller the value the faster but quality will be lower too.
                 )
                 // Customize the top bar.
                 topBarTitle.text = "Clean up the page"
