@@ -107,11 +107,11 @@ private fun openDocumentScannerRtuV2() {
             )
 
             // You may hide the import button in the camera screen, if you don't need it:
-            toolBar.importButton.visible = false
+            toolbar.importButton.visible = false
         }
 
         // Equivalent to setToolBarBackgroundColor(Color.RED), but not recommended:
-        appearance.toolBarBackgroundColor = ScanbotColor(Color.BLUE)
+        appearance.toolbarBackgroundColor = ScanbotColor(Color.BLUE)
 
         // However, now all the colors can be conveniently set using the Palette object:
         palette.apply {
@@ -274,7 +274,7 @@ private fun openDocumentScannerRtuV2withFinder(documentScannerResultLauncher: Ac
                 visible = true
                 aspectRatio = AspectRatio(3.0, 4.0)
             }
-            toolBar.apply {
+            toolbar.apply {
                 previewButton = PreviewButton.noButtonMode()
                 autoSnappingModeButton.visible = false
                 importButton.visible = false

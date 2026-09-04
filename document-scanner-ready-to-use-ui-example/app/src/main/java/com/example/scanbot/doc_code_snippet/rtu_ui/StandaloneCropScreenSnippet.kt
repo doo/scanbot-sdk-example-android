@@ -102,7 +102,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         val configuration =
             CroppingStandaloneConfiguration(documentUuid = document.uuid, pageUuid = page.uuid).apply {
                 // e.g disable the rotation feature.
-                cropping.toolBar.rotateButton.visible = false
+                cropping.toolbar.rotateButton.visible = false
 
                 // e.g. configure various colors.
                 appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)

@@ -55,7 +55,7 @@ class ReviewScreenSnippet : AppCompatActivity() {
                 zoomButton.visible = false
 
                 // Hide the add button.
-                toolBar.addButton.barButton.visible = false
+                toolbar.addButton.barButton.visible = false
             }
             // Retrieve the instance of the reorder pages configuration from the main configuration object.
             screens.reorderPages.apply {
@@ -70,16 +70,16 @@ class ReviewScreenSnippet : AppCompatActivity() {
             screens.cropping.apply {
 
                 // Hide the reset button.
-                toolBar.resetButton.visible = false
+                toolbar.resetButton.visible = false
             }
             // Retrieve the retake button configuration from the main configuration object.
             screens.review.apply {
 
                 // Show the retake button.
-                toolBar.retakeButton.barButton.visible = true
+                toolbar.retakeButton.barButton.visible = true
 
                 // Configure the retake title color.
-                toolBar.retakeButton.barButton.title.color = ScanbotColor(color = Color.Black)
+                toolbar.retakeButton.barButton.title.color = ScanbotColor(color = Color.Black)
             }
         }
 

@@ -54,18 +54,18 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
             // The Document Cleanup screen is reachable from the Review screen via the
             // `documentCleanupButton`. Make sure the review screen is enabled and the button
             // is visible.
-            // NOTE: toolBar only shows 5 items minimum, and dynamically hides the rest in a popup menu.
+            // NOTE: toolbar only shows 5 items minimum, and dynamically hides the rest in a popup menu.
             // On a standard smartphone device, the cleanup button is usually reachable only from the 'More' menu.
             screens.review.apply {
                 enabled = true
 
-                toolBar.documentCleanupButton.barButton.visible = true
+                toolbar.documentCleanupButton.barButton.visible = true
 
                 // Optionally style the button.
-                toolBar.documentCleanupButton.barButton.title.color =
+                toolbar.documentCleanupButton.barButton.title.color =
                     ScanbotColor(color = Color.White)
                 // OR - optionally style the relevant popup-menu item.
-                toolBar.documentCleanupButton.popupMenuItem.title.color =
+                toolbar.documentCleanupButton.popupMenuItem.title.color =
                     ScanbotColor(color = Color.Black)
             }
 
@@ -85,12 +85,12 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                 backgroundColor = ScanbotColor(value = "#222222")
 
                 // Configure the tool bar buttons (undo / redo / reset).
-                toolBar.undoButton.title.text = "Undo"
-                toolBar.redoButton.title.text = "Redo"
-                toolBar.resetButton.title.text = "Reset"
+                toolbar.undoButton.title.text = "Undo"
+                toolbar.redoButton.title.text = "Redo"
+                toolbar.resetButton.title.text = "Reset"
 
                 // Configure the stroke-size slider.
-                toolBar.strokeSizeSlider.apply {
+                toolbar.strokeSizeSlider.apply {
                     visible = true
                     minStrokeSize = 1
                     maxStrokeSize = 50

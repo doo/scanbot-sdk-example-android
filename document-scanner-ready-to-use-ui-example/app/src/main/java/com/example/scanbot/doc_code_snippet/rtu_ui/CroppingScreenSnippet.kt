@@ -58,7 +58,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
 
             // MARK: Configure the tool bar and the tool bar buttons.
             // Set the background color of the tool bar.
-            appearance.toolBarBackgroundColor = ScanbotColor(value = "#C8193C")
+            appearance.toolbarBackgroundColor = ScanbotColor(value = "#C8193C")
             // e.g. configure .
             appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)
             // Retrieve the camera screen configuration.
@@ -67,7 +67,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
             localization.croppingTopBarCancelButtonTitle = "Cancel"
             screens.cropping.apply {
                 // e.g disable the rotation feature.
-                toolBar.rotateButton.visible = false
+                toolbar.rotateButton.visible = false
 
                 topBarConfirmButton.foreground.color =
                     ScanbotColor(color = Color.WHITE)

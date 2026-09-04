@@ -64,14 +64,14 @@ class AcknowledgeScreenSnippet : AppCompatActivity() {
 
                 // You can also configure the buttons in the tool bar of the acknowledgment screen.
                 // e.g To force the user to retake, if the captured document is not OK.
-                toolBar.proceedAnywayButton.visible = false
+                toolbar.proceedAnywayButton.visible = false
 
                 // Hide the titles of the buttons.
-                toolBar.proceedAnywayButton.documentNotFound.title.visible = false
-                toolBar.proceedAnywayButton.uncertainQuality.title.visible = false
-                toolBar.proceedAnywayButton.unacceptableQuality.title.visible = false
-                toolBar.acceptWhenAcceptableButton.title.visible = false
-                toolBar.retakeButton.title.visible = false
+                toolbar.proceedAnywayButton.documentNotFound.title.visible = false
+                toolbar.proceedAnywayButton.uncertainQuality.title.visible = false
+                toolbar.proceedAnywayButton.unacceptableQuality.title.visible = false
+                toolbar.acceptWhenAcceptableButton.title.visible = false
+                toolbar.retakeButton.title.visible = false
 
                 // Configure the acknowledgment screen's hint message which is shown if the least acceptable quality is not met.
                 documentNotFoundWarning.visible = true
