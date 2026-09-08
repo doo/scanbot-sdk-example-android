@@ -56,9 +56,9 @@ class CroppingScreenSnippet : AppCompatActivity() {
             // Controls whether to resume an existing draft session or start a new one when DOCUMENT_UUID is null.
             cleanScanningSession = true
 
-            // MARK: Configure the bottom bar and the bottom bar buttons.
-            // Set the background color of the bottom bar.
-            appearance.bottomBarBackgroundColor = ScanbotColor(value = "#C8193C")
+            // MARK: Configure the tool bar and the tool bar buttons.
+            // Set the background color of the tool bar.
+            appearance.toolbarBackgroundColor = ScanbotColor(value = "#C8193C")
             // e.g. configure .
             appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)
             // Retrieve the camera screen configuration.
@@ -67,7 +67,7 @@ class CroppingScreenSnippet : AppCompatActivity() {
             localization.croppingTopBarCancelButtonTitle = "Cancel"
             screens.cropping.apply {
                 // e.g disable the rotation feature.
-                bottomBar.rotateButton.visible = false
+                toolbar.rotateButton.visible = false
 
                 topBarConfirmButton.foreground.color =
                     ScanbotColor(color = Color.WHITE)

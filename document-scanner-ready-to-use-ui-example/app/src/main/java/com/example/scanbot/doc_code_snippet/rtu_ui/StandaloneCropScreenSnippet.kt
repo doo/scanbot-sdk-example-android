@@ -23,7 +23,7 @@ import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
 import io.scanbot.sdk.ui_v2.document.CroppingActivity
 import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingConfiguration
+import io.scanbot.sdk.ui_v2.document.configuration.CroppingStandaloneConfiguration
 import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
 import io.scanbot.sdk.util.toImageRef
 
@@ -69,7 +69,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         }
 
     // @Tag("Using Cropping UI")
-    private val croppingResult: ActivityResultLauncher<CroppingConfiguration> =
+    private val croppingResult: ActivityResultLauncher<CroppingStandaloneConfiguration> =
         registerForActivityResult(CroppingActivity.ResultContract()) { result ->
             result.onSuccess { result ->
                 // Retrieve the cropped document.
@@ -100,9 +100,9 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         val page = document.pages.getOrNull(0) ?: return
         // Create the default configuration object.
         val configuration =
-            CroppingConfiguration(documentUuid = document.uuid, pageUuid = page.uuid).apply {
+            CroppingStandaloneConfiguration(documentUuid = document.uuid, pageUuid = page.uuid).apply {
                 // e.g disable the rotation feature.
-                cropping.bottomBar.rotateButton.visible = false
+                cropping.toolbar.rotateButton.visible = false
 
                 // e.g. configure various colors.
                 appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)

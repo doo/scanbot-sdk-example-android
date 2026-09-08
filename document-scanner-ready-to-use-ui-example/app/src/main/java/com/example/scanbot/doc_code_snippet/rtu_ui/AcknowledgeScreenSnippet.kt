@@ -62,16 +62,16 @@ class AcknowledgeScreenSnippet : AppCompatActivity() {
                 // Set the background color for the acknowledgment screen.
                 backgroundColor = ScanbotColor(value = "#EFEFEF")
 
-                // You can also configure the buttons in the bottom bar of the acknowledgment screen.
+                // You can also configure the buttons in the tool bar of the acknowledgment screen.
                 // e.g To force the user to retake, if the captured document is not OK.
-                bottomBar.proceedAnywayButton.visible = false
+                toolbar.proceedAnywayButton.visible = false
 
                 // Hide the titles of the buttons.
-                bottomBar.proceedAnywayButton.documentNotFound.title.visible = false
-                bottomBar.proceedAnywayButton.uncertainQuality.title.visible = false
-                bottomBar.proceedAnywayButton.unacceptableQuality.title.visible = false
-                bottomBar.acceptWhenAcceptableButton.title.visible = false
-                bottomBar.retakeButton.title.visible = false
+                toolbar.proceedAnywayButton.documentNotFound.title.visible = false
+                toolbar.proceedAnywayButton.uncertainQuality.title.visible = false
+                toolbar.proceedAnywayButton.unacceptableQuality.title.visible = false
+                toolbar.acceptWhenAcceptableButton.title.visible = false
+                toolbar.retakeButton.title.visible = false
 
                 // Configure the acknowledgment screen's hint message which is shown if the least acceptable quality is not met.
                 documentNotFoundWarning.visible = true

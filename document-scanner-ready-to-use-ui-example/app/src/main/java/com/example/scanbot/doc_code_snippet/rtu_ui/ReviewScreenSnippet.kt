@@ -1,12 +1,10 @@
 package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
-import io.scanbot.common.Result
 import io.scanbot.common.onCancellation
 import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
@@ -57,7 +55,7 @@ class ReviewScreenSnippet : AppCompatActivity() {
                 zoomButton.visible = false
 
                 // Hide the add button.
-                bottomBar.addButton.visible = false
+                toolbar.addButton.barButton.visible = false
             }
             // Retrieve the instance of the reorder pages configuration from the main configuration object.
             screens.reorderPages.apply {
@@ -72,16 +70,16 @@ class ReviewScreenSnippet : AppCompatActivity() {
             screens.cropping.apply {
 
                 // Hide the reset button.
-                bottomBar.resetButton.visible = false
+                toolbar.resetButton.visible = false
             }
             // Retrieve the retake button configuration from the main configuration object.
             screens.review.apply {
 
                 // Show the retake button.
-                bottomBar.retakeButton.visible = true
+                toolbar.retakeButton.barButton.visible = true
 
                 // Configure the retake title color.
-                bottomBar.retakeButton.title.color = ScanbotColor(color = Color.Black)
+                toolbar.retakeButton.barButton.title.color = ScanbotColor(color = Color.Black)
             }
         }
 
