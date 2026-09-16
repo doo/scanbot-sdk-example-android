@@ -99,13 +99,14 @@ Besides Android, the Scanbot SDK is also available on iOS and most common cross-
 
 * [iOS](https://github.com/doo/scanbot-sdk-example-ios) (native)
 * [JavaScript](https://github.com/doo/scanbot-sdk-example-web)
+* [React Native](https://github.com/doo/scanbot-sdk-example-react-native)
+* [.NET MAUI](https://github.com/doo/scanbot-sdk-maui-example)
 * [Flutter](https://github.com/doo/scanbot-sdk-example-flutter)
+* [Kotlin Multiplatform](https://github.com/doo/scanbot-sdk-example-kmp)
 * [Capacitor & Ionic (Angular)](https://github.com/doo/scanbot-sdk-example-capacitor-ionic)
 * [Capacitor & Ionic (React)](https://github.com/doo/scanbot-sdk-example-ionic-react)
 * [Capacitor & Ionic (Vue.js)](https://github.com/doo/scanbot-sdk-example-ionic-vuejs)
 * [Cordova & Ionic](https://github.com/doo/scanbot-sdk-example-ionic) 
-* [.NET MAUI](https://github.com/doo/scanbot-sdk-maui-example)
-* [React Native](https://github.com/doo/scanbot-sdk-example-react-native)
 * [Xamarin](https://github.com/doo/scanbot-sdk-example-xamarin) & [Xamarin.Forms](https://github.com/doo/scanbot-sdk-example-xamarin-forms)
 
 Our Barcode Scanner SDK additionally also supports [Compose Multiplatform / KMP](https://github.com/doo/scanbot-barcode-scanner-sdk-example-kmp), [UWP](https://github.com/doo/scanbot-barcode-scanner-sdk-example-windows) (Windows), and [Linux](https://github.com/doo/scanbot-sdk-example-linux).
