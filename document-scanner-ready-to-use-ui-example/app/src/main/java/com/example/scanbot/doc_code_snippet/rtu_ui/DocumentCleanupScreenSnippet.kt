@@ -98,11 +98,14 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                 }
 
                 // Customize the stroke-size indicator (the round preview of the current brush).
-                strokeSizeIndicator.apply {
+                stroke.indicator.apply {
                     backgroundColor = ScanbotColor(value = "#00C853")
                     borderColor = ScanbotColor(value = "#FFFFFF")
                     opacity = 0.9
                 }
+
+                // Customize the stroke color
+                stroke.color = ScanbotColor(value = "#00C853")
 
                 // Optional: show an introduction screen the first time the user opens cleanup.
                 introduction.showAutomatically = true
@@ -131,3 +134,14 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
     }
 }
 // @EndTag("Document Cleanup Screen")
+
+fun cleanupBarButtonSnippet() {
+    val configuration = DocumentScanningFlow().apply {
+        // @Tag("Cleanup Bar Button")
+        screens.review.apply {
+            enabled = true
+            toolbar.documentCleanupButton.barButton.visible = true
+        }
+        // @EndTag("Cleanup Bar Button")
+    }
+}
