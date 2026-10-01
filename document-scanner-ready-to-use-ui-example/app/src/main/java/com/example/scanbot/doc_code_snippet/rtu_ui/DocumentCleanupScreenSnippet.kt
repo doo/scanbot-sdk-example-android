@@ -97,15 +97,15 @@ class DocumentCleanupScreenSnippet : AppCompatActivity() {
                     title.text = "Brush size"
                 }
 
-                // Customize the stroke-size indicator (the round preview of the current brush).
-                stroke.indicator.apply {
-                    backgroundColor = ScanbotColor(value = "#00C853")
-                    borderColor = ScanbotColor(value = "#FFFFFF")
-                    opacity = 0.9
+                // Customize the stroke color and the stroke-size indicator (the round preview
+                // of the current brush).
+                stroke.apply {
+                    color = ScanbotColor(value = "#00C853")
+                    indicator.apply {
+                        borderColor = ScanbotColor(value = "#FFFFFF")
+                        opacity = 0.9
+                    }
                 }
-
-                // Customize the stroke color
-                stroke.color = ScanbotColor(value = "#00C853")
 
                 // Optional: show an introduction screen the first time the user opens cleanup.
                 introduction.showAutomatically = true
