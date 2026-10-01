@@ -1,7 +1,6 @@
 package com.example.scanbot.doc_code_snippet.rtu_ui
 
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -21,14 +20,12 @@ import io.scanbot.common.onSuccess
 import io.scanbot.sdk.ScanbotSDK
 import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.ui_v2.common.ScanbotColor
-import io.scanbot.sdk.ui_v2.document.CroppingActivity
-import io.scanbot.sdk.ui_v2.document.DocumentScannerActivity
-import io.scanbot.sdk.ui_v2.document.configuration.CroppingStandaloneConfiguration
-import io.scanbot.sdk.ui_v2.document.configuration.DocumentScanningFlow
+import io.scanbot.sdk.ui_v2.document.DocumentCleanupActivity
+import io.scanbot.sdk.ui_v2.document.configuration.DocumentCleanupStandaloneConfiguration
 import io.scanbot.sdk.util.toImageRef
 
 
-class StandaloneCropScreenSnippet : AppCompatActivity() {
+class StandaloneCleanupScreenSnippet : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +33,12 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
         importImagesFromLibrary()
     }
 
-    private val scanbotSDK = ScanbotSDK(this@StandaloneCropScreenSnippet)
+    private val scanbotSDK = ScanbotSDK(this@StandaloneCleanupScreenSnippet)
     private val context = this
 
     private val pictureForDocDetectionResult =
         this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK) {
+            if (activityResult.resultCode == RESULT_OK) {
                 activityResult.data?.let { imagePickerResult ->
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
@@ -53,14 +50,14 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                                     .forEach { image ->
                                         if (image == null) {
                                             Log.e(
-                                                "StandaloneCropSnippet",
+                                                "StandaloneCleanupSnippet",
                                                 "Failed to load image from URI"
                                             )
                                             return@forEach
                                         }
                                         document.addPage(image)
                                     }
-                                startCropping(document)
+                                startCleanup(document)
                             }
                         }
                     }
@@ -68,13 +65,13 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
             }
         }
 
-    // @Tag("Using Cropping UI")
-    private val croppingResult: ActivityResultLauncher<CroppingStandaloneConfiguration> =
-        registerForActivityResult(CroppingActivity.ResultContract()) { result ->
+    // @Tag("Using Cleanup UI")
+    private val cleanupResult: ActivityResultLauncher<DocumentCleanupStandaloneConfiguration> =
+        registerForActivityResult(DocumentCleanupActivity.ResultContract()) { result ->
             result.onSuccess { result ->
-                // Retrieve the cropped document.
+                // Retrieve the  document.
                 val document =
-                    ScanbotSDK(this@StandaloneCropScreenSnippet).documentApi.loadDocument(
+                    ScanbotSDK(this@StandaloneCleanupScreenSnippet).documentApi.loadDocument(
                         documentId = result.documentUuid
                     ).onSuccess { document ->
                         val page = document.pageWithId(result.pageUuid)
@@ -84,7 +81,7 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
                 // Indicates that the cancel button was tapped. Or screen is closed by other reason.
             }.onFailure {
                 when (it) {
-                    is io.scanbot.common.Result.InvalidLicenseError -> {
+                    is Result.InvalidLicenseError -> {
                         // indicate that the Scanbot SDK license is invalid
                     }
 
@@ -95,28 +92,31 @@ class StandaloneCropScreenSnippet : AppCompatActivity() {
             }
         }
 
-    fun startCropping(document: Document) {
+    fun startCleanup(document: Document) {
         // Retrieve the selected document page.
         val page = document.pages.getOrNull(0) ?: return
         // Create the default configuration object.
         val configuration =
-            CroppingStandaloneConfiguration(documentUuid = document.uuid, pageUuid = page.uuid).apply {
-                // e.g disable the rotation feature.
-                cropping.toolbar.rotateButton.visible = false
+            DocumentCleanupStandaloneConfiguration(
+                documentUuid = document.uuid,
+                pageUuid = page.uuid
+            ).apply {
+                // e.g disable stroke size slider.
+                cleanup.toolbar.strokeSizeSlider.visible = false
 
                 // e.g. configure various colors.
                 appearance.topBarBackgroundColor = ScanbotColor(color = Color.RED)
-                cropping.topBarConfirmButton.foreground.color = ScanbotColor(color = Color.WHITE)
+                cleanup.topBarConfirmButton.foreground.color = ScanbotColor(color = Color.WHITE)
 
                 // e.g. customize a UI element's text.
-                localization.croppingTopBarCancelButtonTitle = "Cancel"
+                localization.documentCleanupTopBarCancelButtonTitle = "Cancel"
 
             }
 
         // Start the recognizer activity.
-        croppingResult.launch(configuration)
+        cleanupResult.launch(configuration)
     }
-// @EndTag("Using Cropping UI")
+// @EndTag("Using Cleanup UI")
 
     private fun importImagesFromLibrary() {
         val imageIntent = Intent()

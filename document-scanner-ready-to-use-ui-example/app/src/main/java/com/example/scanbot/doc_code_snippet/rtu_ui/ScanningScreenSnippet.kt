@@ -57,9 +57,9 @@ class ScanningScreenSnippet : AppCompatActivity() {
             // Controls whether to resume an existing draft session or start a new one when DOCUMENT_UUID is null.
             cleanScanningSession = true
 
-            // MARK: Configure the bottom bar and the bottom bar buttons.
-            // Set the background color of the bottom bar.
-            appearance.bottomBarBackgroundColor = ScanbotColor(value = "#C8193C")
+            // MARK: Configure the tool bar and the tool bar buttons.
+            // Set the background color of the tool bar.
+            appearance.toolbarBackgroundColor = ScanbotColor(value = "#C8193C")
 
             // Retrieve the camera screen configuration.
             screens.camera.apply {
@@ -95,21 +95,21 @@ class ScanningScreenSnippet : AppCompatActivity() {
                 userGuidance.statesTitles.captureManual = "The document is ready to be captured"
 
                 // Import button is used to import image from the gallery.
-                bottomBar.importButton.visible = true
-                bottomBar.importButton.title.visible = true
-                bottomBar.importButton.title.text = "Import"
+                toolbar.importButton.visible = true
+                toolbar.importButton.title.visible = true
+                toolbar.importButton.title.text = "Import"
 
                 // Configure the auto/manual snap button.
-                bottomBar.autoSnappingModeButton.title.visible = true
-                bottomBar.autoSnappingModeButton.title.text = "Auto"
-                bottomBar.manualSnappingModeButton.title.visible = true
-                bottomBar.manualSnappingModeButton.title.text = "Manual"
+                toolbar.autoSnappingModeButton.title.visible = true
+                toolbar.autoSnappingModeButton.title.text = "Auto"
+                toolbar.manualSnappingModeButton.title.visible = true
+                toolbar.manualSnappingModeButton.title.text = "Manual"
 
                 // Configure the torch off/on button.
-                bottomBar.torchOnButton.title.visible = true
-                bottomBar.torchOnButton.title.text = "On"
-                bottomBar.torchOffButton.title.visible = true
-                bottomBar.torchOffButton.title.text = "Off"
+                toolbar.torchOnButton.title.visible = true
+                toolbar.torchOnButton.title.text = "On"
+                toolbar.torchOffButton.title.visible = true
+                toolbar.torchOffButton.title.text = "Off"
 
 
                 // MARK: Configure the document capture feedback.

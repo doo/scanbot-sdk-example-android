@@ -21,13 +21,13 @@
             android:id="@+id/show_doc_scanner_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Scan document and enhance" />
+            android:text="Scan document and straighten" />
 
         <Button
             android:id="@+id/import_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Import image and enhance" />
+            android:text="Import image and straighten" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ProgressBar

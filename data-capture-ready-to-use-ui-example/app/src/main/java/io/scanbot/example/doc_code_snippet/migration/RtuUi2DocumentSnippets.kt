@@ -107,11 +107,11 @@ private fun openDocumentScannerRtuV2() {
             )
 
             // You may hide the import button in the camera screen, if you don't need it:
-            bottomBar.importButton.visible = false
+            toolbar.importButton.visible = false
         }
 
-        // Equivalent to setBottomBarBackgroundColor(Color.RED), but not recommended:
-        appearance.bottomBarBackgroundColor = ScanbotColor(Color.BLUE)
+        // Equivalent to setToolBarBackgroundColor(Color.RED), but not recommended:
+        appearance.toolbarBackgroundColor = ScanbotColor(Color.BLUE)
 
         // However, now all the colors can be conveniently set using the Palette object:
         palette.apply {
@@ -143,7 +143,7 @@ private fun openDocumentScannerRtuV2() {
 // @Tag("Open Cropping UI RTU v2")
 // Your activity class:
 class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
-    private lateinit var croppingResultLauncher: ActivityResultLauncher<CroppingConfiguration>
+    private lateinit var croppingResultLauncher: ActivityResultLauncher<CroppingStandaloneConfiguration>
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -194,10 +194,10 @@ class MainActivityWithCroppingRtuV2 : AppCompatActivity() {
 private fun openCroppingRtuV2(
     documentUuid: String,
     pageUuid: String,
-    croppingResultLauncher: ActivityResultLauncher<CroppingConfiguration>
+    croppingResultLauncher: ActivityResultLauncher<CroppingStandaloneConfiguration>
 ) {
     // Customize text resources, behavior and UI:
-    val configuration = CroppingConfiguration(
+    val configuration = CroppingStandaloneConfiguration(
         // Now you need to pass the document UUID and the page UUID:
         documentUuid = documentUuid,
         pageUuid = pageUuid,
@@ -274,7 +274,7 @@ private fun openDocumentScannerRtuV2withFinder(documentScannerResultLauncher: Ac
                 visible = true
                 aspectRatio = AspectRatio(3.0, 4.0)
             }
-            bottomBar.apply {
+            toolbar.apply {
                 previewButton = PreviewButton.noButtonMode()
                 autoSnappingModeButton.visible = false
                 importButton.visible = false

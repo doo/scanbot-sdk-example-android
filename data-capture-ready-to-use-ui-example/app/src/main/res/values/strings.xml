@@ -7,7 +7,7 @@
     <string name="scan_mrz">Scan MRZ</string>
     <string name="scan_ehic">Scan European Health Insurance Card</string>
     <string name="scan_mc">Medical Certificate recognizer</string>
-    <string name="copyright_note">© 2024 by Scanbot SDK GmbH. All rights reserved.</string>
+    <string name="copyright_note">© 2026 by Scanbot SDK GmbH. All rights reserved.</string>
     <string name="the_demo_expired">The demo app will terminate because of the missing license key. Get your free 30-day license today!</string>
     <string name="demo_expired">Demo Expired</string>
     <string name="cancel_dialog_button">Cancel</string>

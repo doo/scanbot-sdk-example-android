@@ -1,7 +1,6 @@
 package com.example.scanbot.doc_code_snippet
 
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,16 +11,12 @@ import com.example.scanbot.utils.getUrisFromGalleryResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.scanbot.common.onFailure
 import io.scanbot.common.onSuccess
-import io.scanbot.page.PageImageSource
 import io.scanbot.sdk.ScanbotSDK
-import io.scanbot.sdk.docprocessing.Document
 import io.scanbot.sdk.documentscanner.DocumentStraighteningMode
 import io.scanbot.sdk.documentscanner.DocumentStraighteningParameters
 import io.scanbot.sdk.geometry.AspectRatio
 import io.scanbot.sdk.image.ImageRef
-import io.scanbot.sdk.util.isDefault
 import io.scanbot.sdk.util.toImageRef
 
 
@@ -34,7 +29,6 @@ class ImageStraighteningSnippet : AppCompatActivity() {
     }
 
     private val scanbotSDK = ScanbotSDK(this@ImageStraighteningSnippet)
-    private val context = this
 
     private val pictureForDocDetectionResult =
         this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
@@ -63,13 +57,13 @@ class ImageStraighteningSnippet : AppCompatActivity() {
 
     // @Tag("Direct Document straightening on image")
     fun startStraightening(imageRef: ImageRef) {
-       scanbotSDK.createDocumentEnhancer().onSuccess { enhancer ->
+       scanbotSDK.createDocumentStraightener().onSuccess { enhancer ->
            val params =   DocumentStraighteningParameters(
                straighteningMode = DocumentStraighteningMode.STRAIGHTEN,
                // Expected aspect ratios for the documents. Comment if unknown.
                aspectRatios = listOf(AspectRatio(3.0, 4.0))
            )
-           enhancer.straighten(imageRef, params).onSuccess { result ->
+           enhancer.run(imageRef, params).onSuccess { result ->
                //  result.straightenedImage is an ImageRef of the straightened image, you can display it in the UI or save it to storage
            }
        }
@@ -88,6 +82,4 @@ class ImageStraighteningSnippet : AppCompatActivity() {
         )
         pictureForDocDetectionResult.launch(Intent.createChooser(imageIntent, "Select Picture"))
     }
-
 }
-

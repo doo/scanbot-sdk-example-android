@@ -26,7 +26,7 @@ include(
     ":edit-polygon-view",
     ":camera-fragment",
     ":document-scanner",
-    ":document-enhancer",
+    ":document-straightener",
     ":barcode-scanner",
     ":mrz-scanner",
     ":mc-scanner",

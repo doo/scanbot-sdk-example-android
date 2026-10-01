@@ -72,6 +72,7 @@ sealed class Screen(val route: String) {
     object BarcodeFindAndPick : Screen("BarcodeFindAndPick")
 
     object DocumentScanner1 : Screen("DocumentScanner1")
+    object DocumentCleanup1 : Screen("DocumentCleanup1")
     object MrzScanner1 : Screen("MrzScanner1")
     data class BarcodeDetail(val data: String, val format: String) :
         Screen("barcodeDetail/{data}/{format}") {
@@ -90,6 +91,7 @@ fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Menu.route) {
         composable(Screen.Menu.route) { MenuScreen(navController) }
         composable(Screen.DocumentScanner1.route) { DocumentScannerScreen(navController) }
+        composable(Screen.DocumentCleanup1.route) { DocumentCleanupScreen(navController) }
         composable(Screen.MrzScanner1.route) { MrzScannerScreen(navController) }
         composable(
             route = "barcodeDetail/{data}/{format}",
@@ -120,6 +122,11 @@ fun MenuScreen(navController: NavHostController) {
         Triple(
             "Document Scanner",
             Screen.DocumentScanner1.route,
+            ""
+        ),
+        Triple(
+            "Document Cleanup",
+            Screen.DocumentCleanup1.route,
             ""
         ),
         Triple(
