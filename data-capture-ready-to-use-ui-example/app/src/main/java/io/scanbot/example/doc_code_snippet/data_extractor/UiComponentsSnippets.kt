@@ -119,12 +119,6 @@ fun excludeFieldsFromExtractingSnippet() {
     // @EndTag("Exclude fields from being recognized")
 }
 
-fun rotateImageSnippet(image: ByteArray, imageOrientation: Int) {
-    // @Tag("Rotate image")
-    val resultImageRef = ImageProcessor(image).rotate(imageOrientation).processedImageRef()
-    // @EndTag("Rotate image")
-}
-
 fun extractFromImageRefSnippet(documentDataExtractor: DocumentDataExtractor, imageRef: ImageRef) {
     // @Tag("Extract data from the image")
     val recognitionResult = documentDataExtractor.run(imageRef)
