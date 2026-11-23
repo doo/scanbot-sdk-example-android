@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
 fun convertToJson(result: OcrResult): String {
 
     // Each page returns its blocks, lines, words, and glyphs as JSON with `toJson()`.
-    // `OcrResult` doesn't provide `toJson()`, so wrap the pages in one JSON object.
+    // `io.scanbot.sdk.ocr.OcrResult` doesn't provide `toJson()`, so wrap the pages in one JSON object.
     val pages = JSONArray(result.ocrPages.map { it.toJson() })
     return JSONObject().put("pages", pages).toString()
 }
