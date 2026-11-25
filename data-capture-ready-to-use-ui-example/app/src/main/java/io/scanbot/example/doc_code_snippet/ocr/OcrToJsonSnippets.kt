@@ -1,5 +1,6 @@
 package io.scanbot.example.doc_code_snippet.ocr
 
+import android.graphics.PointF
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.roundToInt
 
 /*
     NOTE: this snippet of code is to be used only as a part of the website documentation.
@@ -78,13 +80,13 @@ class OcrToJsonSnippetActivity : AppCompatActivity() {
         val ocrEngineManager = ScanbotSDK(this).createOcrEngineManager()
         val result = ocrEngineManager.recognizeFromDocument(document).getOrThrow()
 
-        // Step 3: collect the text of every line.
+        // Step 3: collect the text and the position of every line.
         val pages = JSONArray()
         for (page in result.ocrPages) {
             val lines = JSONArray()
             for (block in page.blocks) {
                 for (line in block.lines) {
-                    lines.put(line.text)
+                    lines.put(JSONObject().put("text", line.text).put("box", boxAround(line.roi)))
                 }
             }
             pages.put(JSONObject().put("lines", lines))
@@ -92,6 +94,15 @@ class OcrToJsonSnippetActivity : AppCompatActivity() {
 
         // Create the JSON.
         return JSONObject().put("pages", pages).toString()
+    }
+
+    // The box around the polygon of a line: x, y, width, and height in pixels of the page image.
+    private fun boxAround(roi: List<PointF>): JSONArray {
+        val left = roi.minOf { it.x }
+        val top = roi.minOf { it.y }
+        val width = roi.maxOf { it.x } - left
+        val height = roi.maxOf { it.y } - top
+        return JSONArray(listOf(left, top, width, height).map { it.roundToInt() })
     }
     // @EndTag("Creating the JSON")
 }
