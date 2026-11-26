@@ -51,9 +51,14 @@ class OcrToJsonSnippetActivity : AppCompatActivity() {
         registerForActivityResultOk(DocumentScannerActivity.ResultContract()) { document ->
             lifecycleScope.launch {
                 try {
-                    // Steps 2 and 3: run OCR on the page and create the JSON.
-                    // OCR takes time, so run it off the main thread.
-                    val json = withContext(Dispatchers.Default) { createJson(document) }
+                    // OCR takes time, so run steps 2 and 3 off the main thread.
+                    val json = withContext(Dispatchers.Default) {
+                        // Step 2: run OCR on the page.
+                        val result = runOcr(document)
+
+                        // Step 3: create the JSON.
+                        createJson(result)
+                    }
 
                     // Pass the JSON to your LLM.
                     Log.i("OcrToJson", json)
@@ -73,14 +78,19 @@ class OcrToJsonSnippetActivity : AppCompatActivity() {
     }
     // @EndTag("Scanning a page")
 
-    // @Tag("Creating the JSON")
-    private fun createJson(document: Document): String {
+    // @Tag("Running OCR")
+    private fun runOcr(document: Document): OcrResult {
 
-        // Step 2: run OCR on the scanned page.
+        // Run OCR with the default settings.
         val ocrEngineManager = ScanbotSDK(this).createOcrEngineManager()
-        val result = ocrEngineManager.recognizeFromDocument(document).getOrThrow()
+        return ocrEngineManager.recognizeFromDocument(document).getOrThrow()
+    }
+    // @EndTag("Running OCR")
 
-        // Step 3: collect the text and the position of every line.
+    // @Tag("Creating the JSON")
+    private fun createJson(result: OcrResult): String {
+
+        // Collect the text and the position of every line.
         val pages = JSONArray()
         for (page in result.ocrPages) {
             val lines = JSONArray()
