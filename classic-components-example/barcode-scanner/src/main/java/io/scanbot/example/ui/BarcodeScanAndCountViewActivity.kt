@@ -2,8 +2,6 @@ package io.scanbot.example.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.PointF
-import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +26,7 @@ import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.setBarcodeFormats
 import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.barcode.ui.BarcodePolygonsStaticView
+import io.scanbot.sdk.barcode.ui.BarcodePolygonsView
 import io.scanbot.sdk.barcode.ui.BarcodeScanAndCountView
 import io.scanbot.sdk.barcode.ui.IBarcodeScanCountViewCallback
 
@@ -107,15 +106,17 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
         }
 
         // Setting the Selection Overlay (AR)
-        scanCountView.counterOverlayController.setBarcodeAppearanceDelegate(object :
-            BarcodePolygonsStaticView.BarcodeAppearanceDelegate {
-            override fun getPolygonStyle(
-                defaultStyle: BarcodePolygonsStaticView.BarcodePolygonStyle,
-                barcodeItem: BarcodeItem
-            ): BarcodePolygonsStaticView.BarcodePolygonStyle {
-                return defaultStyle
-            }
-        })
+        scanCountView.counterOverlayController.setBarcodeAppearanceDelegate { barcodeItem, proposedAppearance ->
+            // Return the proposed appearance to keep the default polygon style and acceptance.
+            // To customize, return proposedAppearance.copy(polygonStyle = ..., isAccepted = ..., viewPosition = ...).
+            proposedAppearance.copy(
+                // Place the item view (see the factory/binder below) under the polygon.
+                viewPosition = BarcodePolygonsView.BarcodeItemViewPosition(
+                    boundsAnchorY = 0.5f,
+                    viewAnchorY = 0.5f,
+                )
+            )
+        }
         scanCountView.counterOverlayController.setBarcodeItemViewFactory(object :
             BarcodePolygonsStaticView.BarcodeItemViewFactory {
             override fun createView(): View {
@@ -135,15 +136,6 @@ class BarcodeScanAndCountViewActivity : AppCompatActivity() {
 //                valueTextView.isVisible = false //uncomment to show barcode value
 //                valueTextView.text = barcodeItem.textWithExtension
 //                valueTextView.maxLines = 2
-            }
-        })
-
-        scanCountView.counterOverlayController.setBarcodeItemViewPositionHandler(object :
-            BarcodePolygonsStaticView.BarcodeItemViewPositionHandler {
-
-            override fun adjustPosition(view: View, path: List<PointF>, bounds: RectF) {
-                val valueTextView = view.findViewById<TextView>(R.id.custom_ar_view_value)
-                valueTextView.translationY = bounds.height() / 2 + 20f
             }
         })
 
