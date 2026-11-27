@@ -62,7 +62,7 @@ class ExampleApplication : Application(), CoroutineScope {
                 }
 
             })
-            // .useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor("YOUR_ENCRYPTION_KEY"))
+            // .useFileEncryption(USE_ENCRYPTION, AesGcmEncryptedFileIoProcessor(yourAesGcmKeyProvider))
             .license(this, LICENSE_KEY)
             .initialize(this)
 

@@ -94,8 +94,8 @@ fun BarcodeScannerMultiScan(navController: NavHostController) {
                     torchEnabled = torchEnabled.value,
                     zoomLevel = zoom.floatValue,
                     finderConfiguration = null,
-                    arPolygonView = { dataFlow ->
-                        CustomBarcodesArView(dataFlow, { barcode ->
+                    arPolygonView = {
+                        CustomBarcodesArView({ barcode ->
                             if (scannedBarcodes.none { it.textWithExtension == barcode.textWithExtension }) {
                                 scannedBarcodes.add(barcode)
                             } else {

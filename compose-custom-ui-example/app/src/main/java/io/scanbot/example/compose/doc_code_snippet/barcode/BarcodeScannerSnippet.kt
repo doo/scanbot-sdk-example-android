@@ -55,8 +55,8 @@ fun BarcodeScannerSnippet() {
         // Set zoom level. Range from 1.0 to 5.0:
         zoomLevel = zoom.floatValue,
         // Permission view that will be shown if camera permission is not granted
-        arPolygonView = { dataFlow->
-            CustomBarcodesArView(dataFlow,{
+        arPolygonView = {
+            CustomBarcodesArView({
                 //handle click on barcode in AR
             })
         },

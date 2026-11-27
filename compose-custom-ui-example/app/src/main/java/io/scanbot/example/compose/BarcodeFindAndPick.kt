@@ -109,10 +109,9 @@ fun BarcodeFindAndPick(navController: NavHostController) {
                             )
                         }
                     },
-                    arPolygonView = { barcodesFlow ->
+                    arPolygonView = {
                         // Configure AR overlay polygon appearance inside CustomBarcodesArView if needed
                         ScanbotBarcodesArOverlay(
-                            barcodesFlow,
                             getData = { barcodeItem -> barcodeItem.textWithExtension },
                             getPolygonStyle = { defaultStyle, barcodeItem ->
                                 // Customize polygon style here.

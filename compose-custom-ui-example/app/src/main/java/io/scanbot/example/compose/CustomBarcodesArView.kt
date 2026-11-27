@@ -14,22 +14,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import io.scanbot.sdk.barcode.BarcodeItem
-import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.textWithExtension
-import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.ui_v2.barcode.components.ar_tracking.ScanbotBarcodesArOverlay
-import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun CustomBarcodesArView(
-    barcodesFlow: SharedFlow<Pair<BarcodeScannerResult, FrameHandler.Frame>?>,
     onBarcodeClick: (BarcodeItem) -> Unit = {},
     onShouldHighlight: (BarcodeItem) -> Boolean = { false },
 ) {
     val density = LocalDensity.current
 
     ScanbotBarcodesArOverlay(
-        barcodesFlow,
         getData = { barcodeItem -> barcodeItem.textWithExtension },
         getPolygonStyle = { defaultStyle, barcodeItem ->
             // Customize polygon style here.

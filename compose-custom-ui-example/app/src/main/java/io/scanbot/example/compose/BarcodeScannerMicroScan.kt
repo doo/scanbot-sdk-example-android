@@ -145,10 +145,9 @@ fun BarcodeScannerMicroScan(navController: NavHostController) {
                             )
                         }
                     },
-                    arPolygonView = { barcodesFlow ->
+                    arPolygonView = {
                         // Configure AR overlay polygon appearance inside CustomBarcodesArView if needed
                         CustomBarcodesArView(
-                            barcodesFlow = barcodesFlow,
                             onBarcodeClick = {
                                 // Handle barcode click on barcode from AR overlay if needed
                             }

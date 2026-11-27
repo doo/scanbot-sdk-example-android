@@ -293,6 +293,7 @@ private fun instructionString(status: DocumentDetectionStatus): String = when (s
     DocumentDetectionStatus.OK_BUT_BAD_ASPECT_RATIO -> "Document aspect ratio mismatch"
     DocumentDetectionStatus.OK_BUT_ORIENTATION_MISMATCH -> "Please rotate the device"
     DocumentDetectionStatus.OK_BUT_OFF_CENTER -> "Please center the document in the camera preview"
+    DocumentDetectionStatus.OK_BUT_PARTIALLY_VISIBLE -> "Please fit the document fully in the preview"
     DocumentDetectionStatus.OK_BUT_TOO_DARK -> " Please turn on more light"
     DocumentDetectionStatus.ERROR_NOTHING_DETECTED -> "Document not detected"
     DocumentDetectionStatus.ERROR_PARTIALLY_VISIBLE -> "Please fit the document fully in the preview"
