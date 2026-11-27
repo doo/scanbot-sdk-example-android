@@ -10,12 +10,14 @@ import io.scanbot.sdk.ScanbotSDKInitializer
 import io.scanbot.sdk.licensing.LicenseStatus
 import io.scanbot.sdk.persistence.CameraImageFormat
 import io.scanbot.sdk.persistence.page.PageStorageSettings
-import io.scanbot.sdk.persistence.fileio.AESEncryptedFileIOProcessor
+import io.scanbot.sdk.persistence.fileio.AesGcmEncryptedFileIoProcessor
+import io.scanbot.sdk.persistence.fileio.AesGcmKeyProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.File
+import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 
 class Application : Application(), CoroutineScope {
@@ -42,7 +44,7 @@ class Application : Application(), CoroutineScope {
         private const val ENCRYPTION_PASSWORD = "password"
 
         // TODO: you can select an encryption method
-        private val ENCRYPTION_METHOD = AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
+        private val ENCRYPTION_METHOD = AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode.AES256
     }
 
     override fun onCreate() {
@@ -59,7 +61,7 @@ class Application : Application(), CoroutineScope {
                                 .build()
                 )
                 //.prepareOCRLanguagesBlobs(true)
-                //.useFileEncryption(USE_ENCRYPTION, AESEncryptedFileIOProcessor(ENCRYPTION_PASSWORD, ENCRYPTION_METHOD))
+                //.useFileEncryption(USE_ENCRYPTION, AesGcmEncryptedFileIoProcessor(encryptionKeyProvider(), ENCRYPTION_METHOD))
                 .licenseErrorHandler(IScanbotSDKLicenseErrorHandler { status, feature, statusMessage ->
                     // Optional license failure handler implementation. Handle license issues here.
                     // A license issue can either be an invalid or expired license key
@@ -105,5 +107,16 @@ class Application : Application(), CoroutineScope {
             File(this.getExternalFilesDir(null) ?: this.filesDir, "my-custom-storage-folder")
         customDir.mkdirs()
         return customDir
+    }
+
+    // TODO: you should store the key in a secure place (e.g. Android Keystore) instead of deriving it from a hardcoded password
+    private fun encryptionKeyProvider() = object : AesGcmKeyProvider {
+        override fun getAesKeyForContext(
+            file: String,
+            keyMode: AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode,
+        ): ByteArray {
+            // The key length must match the selected mode: 16 bytes for AES128 and 32 bytes for AES256.
+            return MessageDigest.getInstance("SHA-256").digest(ENCRYPTION_PASSWORD.toByteArray()).copyOf(keyMode.keySize)
+        }
     }
 }

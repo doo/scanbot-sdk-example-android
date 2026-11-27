@@ -277,8 +277,8 @@ class CreditCardIntroductionSnippet : AppCompatActivity() {
             // Or you can also use our default image.
             image = CreditCardIntroOneSideImage()
 
-            // Configure the color of the handler on top.
-            handlerColor = ScanbotColor("#EFEFEF")
+            // Configure the color of the handle on top.
+            handleColor = ScanbotColor("#EFEFEF")
 
             // Configure the color of the divider.
             dividerColor = ScanbotColor("#EFEFEF")
@@ -541,16 +541,16 @@ class CreditCardActionBarSnippet : AppCompatActivity() {
         // Retrieve the instance of the action bar from the configuration object.
         configuration.actionBar.apply {
 
-            // Show the flash button.
-            flashButton.visible = true
+            // Show the torch button.
+            torchButton.visible = true
 
-            // Configure the inactive state of the flash button.
-            flashButton.backgroundColor = ScanbotColor("#7A000000")
-            flashButton.foregroundColor = ScanbotColor("#FFFFFF")
+            // Configure the inactive state of the torch button.
+            torchButton.backgroundColor = ScanbotColor("#7A000000")
+            torchButton.foregroundColor = ScanbotColor("#FFFFFF")
 
-            // Configure the active state of the flash button.
-            flashButton.activeBackgroundColor = ScanbotColor("#FFCE5C")
-            flashButton.activeForegroundColor = ScanbotColor("#000000")
+            // Configure the active state of the torch button.
+            torchButton.activeBackgroundColor = ScanbotColor("#FFCE5C")
+            torchButton.activeForegroundColor = ScanbotColor("#000000")
 
             // Show the zoom button.
             zoomButton.visible = true

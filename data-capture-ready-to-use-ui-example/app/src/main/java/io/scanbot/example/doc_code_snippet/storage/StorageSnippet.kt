@@ -50,43 +50,19 @@ fun customEncryption(application: Application) {
         // ...
         .useFileEncryption(
             true,
-            AESEncryptedFileIOProcessor(
-                "any_user_password",
-                AESEncryptedFileIOProcessor.AESEncrypterMode.AES256
-            )
+            AesGcmEncryptedFileIoProcessor(object : AesGcmKeyProvider {
+                override fun getAesKeyForContext(
+                    file: String,
+                    keyMode: AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode,
+                ): ByteArray {
+                    // The key length must match the mode: 16 bytes for AES128, 32 bytes for AES256.
+                    val key = "random_key_for_file_encryption".toByteArray().copyOf(keyMode.keySize)
+                    return key // return the key for the file
+                }
+            }, AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode.AES256)
         )
         .initialize(application)
     // @EndTag("Encryption setup")
-}
-
-fun publicEncryptionParams(context: Context) {
-    // @Tag("Public encryption parameters")
-    val scanbotSDK = ScanbotSDK(context)
-    val aesEncryptedFileIOProcessor = scanbotSDK.fileIOProcessor() as AESEncryptedFileIOProcessor
-
-    val generatedKey = aesEncryptedFileIOProcessor.key
-    val initialSalt = aesEncryptedFileIOProcessor.salt
-    val initialIterationCounts = aesEncryptedFileIOProcessor.iterationCount
-    val initialIV = aesEncryptedFileIOProcessor.initializationVector
-    // @EndTag("Public encryption parameters")
-}
-
-fun aesGcmEncryptedFileIoProcessor(application: Application) {
-    ScanbotSDKInitializer()
-        // ...
-        // @Tag("AesGcmEncryptedFileIoProcessor")
-        .useFileEncryption(enableFileEncryption = true, fileIOProcessor = AesGcmEncryptedFileIoProcessor(object :
-            AesGcmKeyProvider {
-            override fun getAesKeyForContext(
-                file: String,
-                keyMode: AesGcmEncryptedFileIoProcessor.AESGCMEncrypterMode,
-            ): ByteArray {
-                val key = "random_key_for_file_encryption".toByteArray()
-                return key // return the key for the file
-            }
-        }))
-        // @EndTag("AesGcmEncryptedFileIoProcessor")
-        .initialize(application)
 }
 
 fun publicEncryptionParams(context: Context, source: File) {
